@@ -899,6 +899,11 @@ function saveProgress(id) {
   }
 }
 
+function removeProgress(id) {
+  const progress = loadProgress().filter(function(x) { return x !== id; });
+  localStorage.setItem("cpp_progress", JSON.stringify(progress));
+}
+
 function isLearned(id) {
   return loadProgress().includes(id);
 }
@@ -1053,10 +1058,9 @@ function renderDetail(id) {
       '<button ' +
         'id="learn-btn" ' +
         'class="learn-btn ' + (learned ? "learned" : "") + '" ' +
-        'onclick="markLearned(' + p.id + ')" ' +
-        (learned ? 'disabled' : '') +
+        'onclick="toggleLearned(' + p.id + ')" ' +
       '>' +
-        (learned ? "✔ CLEAR" : "MARK AS CLEAR") +
+        (learned ? "✔ CLEAR  ／  クリックで取り消す" : "MARK AS CLEAR") +
       '</button>' +
     '</div>';
 }
@@ -1291,6 +1295,11 @@ function saveMissionProgress(id) {
   }
 }
 
+function removeMissionProgress(id) {
+  const progress = loadMissionProgress().filter(function(x) { return x !== id; });
+  localStorage.setItem("cpp_mission_progress", JSON.stringify(progress));
+}
+
 function isMissionCleared(id) {
   return loadMissionProgress().includes(id);
 }
@@ -1398,10 +1407,9 @@ function renderMissionDetail(id) {
       '<button ' +
         'id="mission-clear-btn" ' +
         'class="learn-btn master-btn ' + (cleared ? 'learned' : '') + '" ' +
-        'onclick="markMissionCleared(' + m.id + ')" ' +
-        (cleared ? 'disabled' : '') +
+        'onclick="toggleMissionCleared(' + m.id + ')" ' +
       '>' +
-        (cleared ? '✔ MISSION CLEARED' : 'MISSION COMPLETE') +
+        (cleared ? '✔ MISSION CLEARED  ／  クリックで取り消す' : 'MISSION COMPLETE') +
       '</button>' +
     '</div>';
 }
@@ -1447,17 +1455,27 @@ async function getMissionAIFeedback(missionId) {
 
 // ===== ミッションクリア =====
 
-function markMissionCleared(id) {
-  saveMissionProgress(id);
+function toggleMissionCleared(id) {
+  if (isMissionCleared(id)) {
+    removeMissionProgress(id);
+  } else {
+    saveMissionProgress(id);
+  }
   renderMissionDetail(id);
+  renderMissionList();
 }
 
-// ===== 学習済みにする =====
+// ===== 学習済みのトグル（マーク ↔ 取り消し） =====
 
-function markLearned(id) {
-  saveProgress(id);
+function toggleLearned(id) {
+  if (isLearned(id)) {
+    removeProgress(id);
+  } else {
+    saveProgress(id);
+  }
   renderDetail(id);
   updateProgressDisplay();
+  renderList();
 }
 
 // ===== 初期化 =====
