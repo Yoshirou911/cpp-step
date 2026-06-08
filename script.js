@@ -639,6 +639,162 @@ int main() {
   }
 ];
 
+// ===== 単元ガイドデータ =====
+
+const unitGuides = [
+  {
+    id: "unit01",
+    name: "UNIT 01  ◆  基礎入力・出力",
+    summary: "C++プログラムの基本構造を学びます。プログラムはどう書き始めるのか、どうやって画面に文字を出すのか、どうやってキーボードから値を受け取るのかを理解しましょう。",
+    points: [
+      "C++のプログラムは必ず main() 関数から始まる",
+      "#include でライブラリを読み込むことで機能を追加できる",
+      "cout で出力、cin で入力ができる",
+      "変数は「型 名前 = 値;」の形で宣言する",
+      "const をつけると値を変更できない定数になる"
+    ],
+    words: [
+      { term: "#include", desc: "ライブラリを読み込む命令。#include <iostream> で入出力機能が使えるようになる。" },
+      { term: "iostream", desc: "入出力（Input/Output Stream）を扱うライブラリ。cout や cin が使えるようになる。" },
+      { term: "using namespace std", desc: "std:: という前置きを省略できるようにするおまじない。これがないと std::cout と書く必要がある。" },
+      { term: "main()", desc: "プログラムの起点となる関数。C++プログラムはここから実行が始まる。" },
+      { term: "cout", desc: "画面（標準出力）へ出力するストリーム。<< で内容をつなぐ。" },
+      { term: "cin", desc: "キーボード（標準入力）から値を受け取るストリーム。>> で変数に代入する。" },
+      { term: "endl", desc: "改行を表す。cout << endl; で改行される。\\n でも同様に改行できる。" },
+      { term: "変数", desc: "値を入れておく箱。名前をつけて後から参照・変更できる。" },
+      { term: "型", desc: "変数の種類。int（整数）、double（小数）、string（文字列）、bool（真偽）など。" },
+      { term: "const", desc: "変更できない定数を作るキーワード。const double PI = 3.14159; のように使う。" },
+      { term: "return 0", desc: "main関数の終わりに書く。プログラムが正常終了したことをOSに伝える。" }
+    ]
+  },
+  {
+    id: "unit02",
+    name: "UNIT 02  ◆  演算と条件分岐",
+    summary: "計算の方法と、条件によって処理を変える分岐構造を学びます。プログラムは「状況に応じて違う動きをする」ことが重要で、それを実現するのが条件分岐です。",
+    points: [
+      "算術演算子（+, -, *, /, %）で計算できる",
+      "int 同士の割り算は小数点以下が切り捨てられる",
+      "if / else if / else で条件に応じた処理を書ける",
+      "switch 文は特定の値で処理を分けるのに向いている",
+      "比較演算子と論理演算子で複雑な条件を作れる"
+    ],
+    words: [
+      { term: "算術演算子", desc: "計算に使う記号。+(加算) -(減算) *(乗算) /(除算) %(余り) がある。" },
+      { term: "% (モジュロ)", desc: "割り算の余りを求める演算子。17 % 5 = 2。偶数・奇数判定によく使う。" },
+      { term: "整数除算", desc: "int 同士の割り算。小数点以下は切り捨て。7 / 2 = 3 になる。" },
+      { term: "if 文", desc: "条件が true のときだけ処理を実行する構文。if (条件) { 処理 } の形で書く。" },
+      { term: "else", desc: "if の条件が false のときに実行される処理。" },
+      { term: "else if", desc: "複数の条件を順番に判定するときに使う。最初に true になった条件だけ実行される。" },
+      { term: "switch 文", desc: "変数の値によって処理を分ける構文。break を忘れると次の case も実行される。" },
+      { term: "比較演算子", desc: "値を比較する演算子。== (等しい), != (等しくない), <, >, <=, >= がある。" },
+      { term: "論理演算子", desc: "&& (かつ), || (または), ! (否定) の3種類。条件を組み合わせるのに使う。" },
+      { term: "三項演算子", desc: "条件 ? 真の値 : 偽の値 の形。if-else を1行で書ける省略形。" },
+      { term: "bool 型", desc: "true か false の2値を持つ型。条件式の結果はこの型になる。" }
+    ]
+  },
+  {
+    id: "unit03",
+    name: "UNIT 03  ◆  ループ",
+    summary: "同じ処理を繰り返す「ループ」を学びます。100回同じ処理をしたいとき、同じコードを100回書く必要はありません。ループを使えば数行で書けます。",
+    points: [
+      "for 文は「何回繰り返すか」が決まっているときに使う",
+      "while 文は「条件が満たされる間」繰り返すときに使う",
+      "do-while 文は必ず1回実行してから条件を確認する",
+      "break でループを途中で抜け、continue で次へスキップできる",
+      "ループの中にループを書くことを「ネスト」という"
+    ],
+    words: [
+      { term: "for 文", desc: "for (初期化; 条件; 更新) { 処理 } の形。回数が決まった繰り返しに向いている。" },
+      { term: "while 文", desc: "while (条件) { 処理 } の形。条件が true の間ずっと繰り返す。" },
+      { term: "do-while 文", desc: "do { 処理 } while (条件); の形。必ず1回実行してから条件を確認する。" },
+      { term: "ループ変数", desc: "for文で使うカウンター用の変数（よく i や j を使う）。" },
+      { term: "インクリメント (++)", desc: "変数の値を1増やす。i++ は i = i + 1 と同じ。" },
+      { term: "デクリメント (--)", desc: "変数の値を1減らす。i-- は i = i - 1 と同じ。" },
+      { term: "break", desc: "ループを途中で強制終了する命令。switch 文でも使う。" },
+      { term: "continue", desc: "ループの残りの処理をスキップして、次のループ回へ進む命令。" },
+      { term: "無限ループ", desc: "終わらないループ。while(true) { } などで意図的に作ることもあるが、バグの原因にもなる。" },
+      { term: "ネスト", desc: "ループの中にループを書くこと。九九の表などに使う。外側×内側の回数だけ実行される。" }
+    ]
+  },
+  {
+    id: "unit04",
+    name: "UNIT 04  ◆  配列と文字列",
+    summary: "複数の値をまとめて扱う「配列」と、文字列操作を学びます。データをまとめて管理することで、プログラムが大幅にシンプルになります。",
+    points: [
+      "配列は同じ型の値を連続して格納できるデータ構造",
+      "インデックスは 0 から始まる（5要素なら 0〜4）",
+      "vector は後からサイズを変えられる便利な配列",
+      "string は文字の配列で、便利なメソッドが多数ある",
+      "範囲 for 文（for (型 変数 : 配列)）で全要素を操作できる"
+    ],
+    words: [
+      { term: "配列", desc: "同じ型の値を連続して格納するデータ構造。int arr[5]; のように宣言する。" },
+      { term: "インデックス", desc: "配列の要素番号。0 から始まる。arr[0] が最初、arr[4] が5番目（最後）。" },
+      { term: "要素", desc: "配列の中に入っている各値のこと。" },
+      { term: "初期化", desc: "宣言と同時に値を設定すること。int arr[3] = {1, 2, 3}; のように書く。" },
+      { term: "多次元配列", desc: "配列の配列。int matrix[3][3]; で3×3の2次元配列。[行][列] でアクセス。" },
+      { term: "vector", desc: "サイズを動的に変えられる配列。#include <vector> が必要。実用的な場面でよく使う。" },
+      { term: "push_back()", desc: "vector の末尾に要素を追加するメソッド。" },
+      { term: "pop_back()", desc: "vector の末尾の要素を削除するメソッド。" },
+      { term: "size() / length()", desc: "配列・vector・string の要素数・文字数を返すメソッド。" },
+      { term: "範囲 for 文", desc: "for (型 変数 : コレクション) の形で全要素を順に処理できる構文。" },
+      { term: "バッファオーバーフロー", desc: "配列の範囲外にアクセスしてしまうバグ。C++ではエラーにならず危険な動作をすることがある。" }
+    ]
+  },
+  {
+    id: "unit05",
+    name: "UNIT 05  ◆  関数",
+    summary: "処理をまとめて名前をつけた「関数」を学びます。同じ処理を何度も書く必要がなくなり、コードが読みやすく・再利用しやすくなります。",
+    points: [
+      "関数は「型 名前(引数) { 処理; return 値; }」の形で定義する",
+      "main() より前に定義するか、前方宣言が必要",
+      "値渡しでは引数のコピーが渡され、元の変数は変わらない",
+      "参照渡し（&）では元の変数を直接変更できる",
+      "同名で引数が違う関数を複数定義できる（オーバーロード）",
+      "再帰関数は自分自身を呼び出す。必ず終了条件が必要"
+    ],
+    words: [
+      { term: "関数", desc: "処理をまとめて名前をつけたもの。何度でも呼び出して再利用できる。" },
+      { term: "引数 (パラメータ)", desc: "関数に渡す値。関数定義の () の中に書く。" },
+      { term: "戻り値 (返り値)", desc: "関数が処理結果として返す値。return 文で返す。" },
+      { term: "void", desc: "戻り値がないことを示す型。void func() は何も返さない関数。" },
+      { term: "return", desc: "関数から値を返す・関数を終了する命令。" },
+      { term: "値渡し", desc: "引数のコピーが関数に渡される。関数内で変更しても元の変数は変わらない。" },
+      { term: "参照渡し", desc: "引数に & をつけると元の変数を直接渡せる。関数内での変更が元の変数に反映される。" },
+      { term: "関数プロトタイプ", desc: "関数の型・名前・引数を事前に宣言すること。定義より前で使いたいときに必要。" },
+      { term: "オーバーロード", desc: "同じ名前で引数の型・数が違う関数を複数定義すること。呼び出し時に自動判別される。" },
+      { term: "再帰", desc: "関数が自分自身を呼び出すこと。必ず終了条件（ベースケース）が必要。ないと無限ループになる。" },
+      { term: "スコープ", desc: "変数が有効な範囲。{ } の中で宣言した変数はその外からはアクセスできない。" }
+    ]
+  },
+  {
+    id: "unit06",
+    name: "UNIT 06  ◆  ポインタと参照",
+    summary: "メモリのアドレスを扱う「ポインタ」を学びます。C++で最も難しい概念のひとつですが、理解するとメモリの仕組みが分かりより高度なプログラムが書けるようになります。",
+    points: [
+      "変数はメモリ上の特定のアドレスに格納されている",
+      "&（アドレス演算子）で変数のアドレスを取得できる",
+      "*（間接参照）でポインタが指すアドレスの値を取得できる",
+      "参照（&）はポインタより安全で扱いやすい変数の別名",
+      "new でメモリを動的確保し、delete で解放する"
+    ],
+    words: [
+      { term: "メモリ", desc: "プログラムがデータを保存する場所（RAM）。変数はメモリ上の特定の場所に格納される。" },
+      { term: "アドレス", desc: "メモリ上の場所を示す番号。郵便番号のようなもの。" },
+      { term: "ポインタ", desc: "アドレスを格納する変数。int* ptr; で宣言する。" },
+      { term: "& (アドレス演算子)", desc: "変数のメモリアドレスを取得する演算子。&x で変数 x のアドレスが得られる。" },
+      { term: "* (間接参照演算子)", desc: "ポインタが指すアドレスの値を取得する演算子（デリファレンス）。*ptr でアドレスの中の値が得られる。" },
+      { term: "参照 (reference)", desc: "変数の別名。int& ref = x; で ref を通じて x を操作できる。ポインタより安全。" },
+      { term: "nullptr", desc: "何も指さないポインタの値（NULL の代わり）。ポインタを使い終わったら nullptr を代入する。" },
+      { term: "動的メモリ確保", desc: "new を使って実行時にメモリを確保すること。配列のサイズを実行時に決めたいときに使う。" },
+      { term: "new", desc: "ヒープメモリを動的確保する演算子。int* p = new int; のように使う。" },
+      { term: "delete", desc: "new で確保したメモリを解放する演算子。使い終わったら必ず呼ぶ。" },
+      { term: "メモリリーク", desc: "new で確保したメモリを delete せずに放置すること。メモリが無駄に使われ続けるバグの原因。" },
+      { term: "スタック / ヒープ", desc: "スタック: 通常の変数が置かれる領域。ヒープ: new で確保される領域。ヒープは手動解放が必要。" }
+    ]
+  }
+];
+
 // ===== ミッションデータ =====
 
 const missions = [
@@ -1045,15 +1201,79 @@ async function sendChatMessage() {
 function switchTab(tab) {
   document.getElementById('tab-problems').classList.remove('active');
   document.getElementById('tab-missions').classList.remove('active');
+  document.getElementById('tab-guide').classList.remove('active');
   document.getElementById('tab-' + tab).classList.add('active');
 
   if (tab === 'problems') {
     renderList();
     showPage('list');
-  } else {
+  } else if (tab === 'missions') {
     renderMissionList();
     showPage('mission-list');
+  } else {
+    renderGuide();
+    showPage('guide');
   }
+}
+
+// ===== ガイドページの描画 =====
+
+function renderGuide() {
+  const content = document.getElementById('guide-content');
+  content.innerHTML = '';
+
+  // ヘッダー
+  var header = document.createElement('div');
+  header.className = 'guide-header';
+  header.innerHTML =
+    '<div class="guide-title">◆ GUIDE</div>' +
+    '<div class="guide-sub">単元の説明・重要ポイント・用語集をまとめています。</div>';
+  content.appendChild(header);
+
+  unitGuides.forEach(function(unit) {
+    var section = document.createElement('div');
+    section.className = 'guide-unit';
+    section.id = 'guide-' + unit.id;
+
+    var pointsHtml = unit.points.map(function(p) {
+      return '<li>' + p + '</li>';
+    }).join('');
+
+    var wordsHtml = unit.words.map(function(w) {
+      return '<div class="vocab-card">' +
+        '<span class="vocab-term">' + w.term + '</span>' +
+        '<p class="vocab-desc">' + w.desc + '</p>' +
+      '</div>';
+    }).join('');
+
+    section.innerHTML =
+      '<div class="guide-unit-header" onclick="toggleGuideUnit(\'' + unit.id + '\')">' +
+        '<span class="guide-unit-name">' + unit.name + '</span>' +
+        '<span class="guide-toggle-icon" id="icon-' + unit.id + '">▶</span>' +
+      '</div>' +
+      '<div class="guide-unit-body hidden" id="body-' + unit.id + '">' +
+        '<div class="guide-summary">' +
+          '<p>' + unit.summary + '</p>' +
+        '</div>' +
+        '<div class="guide-section">' +
+          '<div class="guide-section-title">◆ 重要ポイント</div>' +
+          '<ul class="guide-points">' + pointsHtml + '</ul>' +
+        '</div>' +
+        '<div class="guide-section">' +
+          '<div class="guide-section-title">◆ 用語集</div>' +
+          '<div class="vocab-grid">' + wordsHtml + '</div>' +
+        '</div>' +
+      '</div>';
+
+    content.appendChild(section);
+  });
+}
+
+function toggleGuideUnit(id) {
+  var body = document.getElementById('body-' + id);
+  var icon = document.getElementById('icon-' + id);
+  body.classList.toggle('hidden');
+  icon.textContent = body.classList.contains('hidden') ? '▶' : '▼';
 }
 
 // ===== ミッション一覧の描画 =====

@@ -207,6 +207,162 @@ header::after {
   text-shadow: 0 0 10px rgba(255, 107, 0, 0.4);
 }
 
+/* ========== ガイドページ ========== */
+#page-guide {
+  max-width: 760px;
+  margin: 30px auto;
+  padding: 0 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.guide-header {
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 107, 0, 0.15);
+}
+
+.guide-title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--orange);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  text-shadow: 0 0 10px rgba(255, 107, 0, 0.3);
+}
+
+.guide-sub {
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+/* 単元アコーディオン */
+.guide-unit {
+  margin-bottom: 8px;
+  border: 1px solid rgba(255, 107, 0, 0.1);
+  border-left: 3px solid rgba(255, 107, 0, 0.2);
+  background: var(--surface);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+
+.guide-unit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.guide-unit-header:hover {
+  background: rgba(255, 107, 0, 0.05);
+}
+
+.guide-unit-name {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--orange);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.guide-toggle-icon {
+  font-size: 0.7rem;
+  color: rgba(255, 107, 0, 0.45);
+  transition: transform 0.2s;
+}
+
+.guide-unit-body {
+  padding: 0 20px 20px;
+  border-top: 1px solid rgba(255, 107, 0, 0.08);
+}
+
+.guide-summary {
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255, 107, 0, 0.08);
+  margin-bottom: 16px;
+}
+
+.guide-summary p {
+  font-size: 0.92rem;
+  line-height: 1.85;
+  color: var(--text);
+}
+
+.guide-section {
+  margin-bottom: 20px;
+}
+
+.guide-section-title {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--orange);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  opacity: 0.7;
+}
+
+/* 重要ポイントリスト */
+.guide-points {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.guide-points li {
+  font-size: 0.9rem;
+  color: var(--text);
+  padding: 8px 12px;
+  background: rgba(255, 107, 0, 0.04);
+  border-left: 2px solid rgba(255, 107, 0, 0.3);
+  line-height: 1.6;
+}
+
+.guide-points li::before {
+  content: '▶  ';
+  color: rgba(255, 107, 0, 0.5);
+  font-size: 0.65rem;
+}
+
+/* 用語集グリッド */
+.vocab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px;
+}
+
+.vocab-card {
+  background: var(--panel);
+  border: 1px solid rgba(255, 107, 0, 0.08);
+  border-left: 2px solid rgba(255, 107, 0, 0.3);
+  padding: 10px 14px;
+  transition: border-color 0.2s;
+}
+
+.vocab-card:hover {
+  border-left-color: var(--orange);
+  background: rgba(255, 107, 0, 0.04);
+}
+
+.vocab-term {
+  display: block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.88rem;
+  color: var(--orange);
+  margin-bottom: 5px;
+  letter-spacing: 0.04em;
+}
+
+.vocab-desc {
+  font-size: 0.83rem;
+  color: var(--text);
+  line-height: 1.7;
+}
+
 /* ========== ミッション一覧 ========== */
 #page-mission-list {
   max-width: 760px;
