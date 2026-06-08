@@ -1001,6 +1001,10 @@ function renderDetail(id) {
   const p = problems.find(function(x) { return x.id === id; });
   const learned = isLearned(p.id);
 
+  // 既存エディタのコードを保存してから破棄
+  var savedCode = aceEditor ? aceEditor.getValue() : null;
+  if (aceEditor) { aceEditor.destroy(); aceEditor = null; }
+
   const detail = document.getElementById("detail-content");
   detail.innerHTML =
     '<div class="detail-meta">' +
@@ -1037,7 +1041,7 @@ function renderDetail(id) {
 
     '<div class="section">' +
       '<h3>コードエディタ</h3>' +
-      '<textarea id="code-editor" class="code-editor" placeholder="ここにC++コードを書いてください..."></textarea>' +
+      '<div id="code-editor" class="code-editor-ace"></div>' +
       '<div class="editor-options">' +
         '<label class="stdin-label">標準入力（cin用）：</label>' +
         '<input id="stdin-input" class="stdin-input" type="text" placeholder="例: 5">' +
@@ -1063,12 +1067,64 @@ function renderDetail(id) {
         (learned ? "✔ CLEAR  ／  クリックで取り消す" : "MARK AS CLEAR") +
       '</button>' +
     '</div>';
+
+  // Ace Editor を初期化（再描画のときはコードを引き継ぐ）
+  initAceEditor(savedCode !== null ? savedCode : ACE_STARTER);
+}
+
+// ===== Ace Editor 初期化 =====
+
+var aceEditor = null;
+
+var ACE_STARTER =
+'#include <iostream>\n' +
+'using namespace std;\n' +
+'\n' +
+'int main() {\n' +
+'    \n' +
+'    return 0;\n' +
+'}\n';
+
+function initAceEditor(initialCode) {
+  // CDN のベースパスを設定（テーマ・モードの遅延ロード用）
+  ace.config.set('basePath', 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.5/');
+
+  aceEditor = ace.edit('code-editor');
+
+  // ダークテーマ（Monokai）
+  aceEditor.setTheme('ace/theme/monokai');
+
+  // C++ 構文ハイライト
+  aceEditor.session.setMode('ace/mode/c_cpp');
+
+  // 初期コードをセット（カーソルを末尾へ）
+  aceEditor.setValue(initialCode !== undefined ? initialCode : ACE_STARTER, -1);
+
+  aceEditor.setOptions({
+    fontSize          : '14px',
+    fontFamily        : "'Share Tech Mono', 'Consolas', monospace",
+    showPrintMargin   : false,
+    tabSize           : 4,
+    useSoftTabs       : true,
+    wrap              : false,
+    showGutter        : true,
+    highlightActiveLine: true,
+    enableBasicAutocompletion: true,
+    enableLiveAutocompletion : false,
+  });
+
+  // Tab キーでスペース4つ挿入
+  aceEditor.commands.addCommand({
+    name: 'insertTab',
+    bindKey: { win: 'Tab', mac: 'Tab' },
+    exec: function(editor) { editor.insert('    '); }
+  });
 }
 
 // ===== コードを実行する（Wandbox API） =====
 
 async function runCode() {
-  const code = document.getElementById("code-editor").value.trim();
+  const code = aceEditor ? aceEditor.getValue().trim() : '';
   if (!code) { alert("コードを入力してください"); return; }
 
   const btn = document.querySelector(".run-btn");
@@ -1126,7 +1182,7 @@ async function askAI(system, messages) {
 
 async function getAIFeedback(problemId) {
   const p = problems.find(function(x) { return x.id === problemId; });
-  const code = document.getElementById('code-editor').value.trim();
+  const code = aceEditor ? aceEditor.getValue().trim() : '';
   if (!code) { alert('コードを入力してください'); return; }
 
   const btn = document.querySelector('.ai-feedback-btn');
@@ -1353,6 +1409,10 @@ function renderMissionDetail(id) {
   const cleared = isMissionCleared(m.id);
   const detail = document.getElementById('mission-detail-content');
 
+  // 既存エディタのコードを保存してから破棄
+  var savedCode = aceEditor ? aceEditor.getValue() : null;
+  if (aceEditor) { aceEditor.destroy(); aceEditor = null; }
+
   const reqItems = m.requirements.map(function(r, i) {
     return '<li>◆ ' + r + '</li>';
   }).join('');
@@ -1386,7 +1446,7 @@ function renderMissionDetail(id) {
 
     '<div class="section">' +
       '<h3>コードエディタ</h3>' +
-      '<textarea id="code-editor" class="code-editor" placeholder="ここにC++コードを書いてください..."></textarea>' +
+      '<div id="code-editor" class="code-editor-ace"></div>' +
       '<div class="editor-options">' +
         '<label class="stdin-label">標準入力（cin用）：</label>' +
         '<input id="stdin-input" class="stdin-input" type="text" placeholder="スペース区切りで入力">' +
@@ -1412,13 +1472,16 @@ function renderMissionDetail(id) {
         (cleared ? '✔ MISSION CLEARED  ／  クリックで取り消す' : 'MISSION COMPLETE') +
       '</button>' +
     '</div>';
+
+  // Ace Editor を初期化
+  initAceEditor(savedCode !== null ? savedCode : ACE_STARTER);
 }
 
 // ===== ミッションAIレビュー =====
 
 async function getMissionAIFeedback(missionId) {
   const m = missions.find(function(x) { return x.id === missionId; });
-  const code = document.getElementById('code-editor').value.trim();
+  const code = aceEditor ? aceEditor.getValue().trim() : '';
   if (!code) { alert('コードを入力してください'); return; }
 
   const btn = document.querySelector('.ai-feedback-btn');
