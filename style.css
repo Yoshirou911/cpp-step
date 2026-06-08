@@ -23,20 +23,24 @@ body {
   background-color: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  background-image:
-    radial-gradient(ellipse 80% 55% at -8% -8%,  rgba(255,107,0,0.11) 0%, transparent 58%),
-    radial-gradient(ellipse 55% 65% at 108% 108%, rgba(180,55,0,0.07)  0%, transparent 58%),
-    radial-gradient(ellipse 40% 40% at 50%  50%,  rgba(255,107,0,0.025) 0%, transparent 70%),
-    radial-gradient(rgba(255,107,0,0.065) 1px, transparent 1px);
-  background-size: auto, auto, auto, 36px 36px;
+
+  /* 未来都市の夜景（Unsplash） */
+  background-image: url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center top;
+  background-attachment: fixed;
 }
 
-/* ビネット */
+/* 暗いオーバーレイ＋オレンジ大気光＋ビネット */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: radial-gradient(ellipse 95% 95% at 50% 45%, transparent 30%, rgba(0,0,0,0.60) 100%);
+  background:
+    radial-gradient(ellipse 70% 50% at 0%   0%,   rgba(255,107,0,0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 55% at 100% 100%, rgba(180,55,0,0.08)  0%, transparent 55%),
+    radial-gradient(ellipse 100% 100% at 50% 50%, transparent 25%, rgba(0,0,0,0.60) 100%),
+    rgba(6,4,2,0.78);
   pointer-events: none;
   z-index: 0;
 }
@@ -287,10 +291,10 @@ header::after {
 
 /* ========== 問題カード ========== */
 .problem-card {
-  background: rgba(255,120,20,0.025);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,107,0,0.07);
+  background: rgba(10,7,4,0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,107,0,0.10);
   border-left: 2px solid rgba(255,107,0,0.22);
   padding: 14px 22px 14px 18px;
   margin-bottom: 5px;
@@ -430,9 +434,9 @@ header::after {
 
 /* ========== セクションパネル ========== */
 .section {
-  background: rgba(255,120,20,0.022);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(8,5,3,0.58);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-left: 2px solid rgba(255,107,0,0.22);
   border-top: 1px solid rgba(255,107,0,0.08);
   border-right: 1px solid rgba(255,107,0,0.04);
@@ -769,11 +773,11 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 /* 単元アコーディオン */
 .guide-unit {
   margin-bottom: 8px;
-  border: 1px solid rgba(255,107,0,0.07);
-  border-left: 2px solid rgba(255,107,0,0.22);
-  background: rgba(255,120,20,0.022);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,107,0,0.10);
+  border-left: 2px solid rgba(255,107,0,0.25);
+  background: rgba(8,5,3,0.58);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
   box-shadow: 0 2px 18px rgba(0,0,0,0.22);
   transition: border-color 0.2s;
@@ -955,10 +959,10 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 }
 
 .mission-card {
-  background: rgba(192,64,255,0.022);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(192,64,255,0.07);
+  background: rgba(8,4,12,0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(192,64,255,0.10);
   border-left: 2px solid rgba(192,64,255,0.22);
   padding: 17px 22px;
   margin-bottom: 8px;
