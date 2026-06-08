@@ -147,6 +147,63 @@ header::after {
   z-index: 1;
 }
 
+/* ランクバッジ */
+.rank-badge {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  padding: 2px 8px;
+  border: 1px solid currentColor;
+  clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+  white-space: nowrap;
+}
+
+.rank-badge-lg {
+  font-size: 0.75rem;
+  padding: 4px 14px;
+}
+
+.rank-rookie   { color: #9B9B9B; }
+.rank-bronze   { color: #C47A2F; }
+.rank-silver   { color: #B8C8D8; }
+.rank-gold     { color: #EFC050; }
+.rank-platinum { color: #00C8B4; }
+.rank-diamond  { color: #5588FF; }
+
+/* 単元ヘッダー */
+.unit-header {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: rgba(255, 107, 0, 0.45);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  padding: 20px 4px 8px;
+  border-bottom: 1px solid rgba(255, 107, 0, 0.12);
+  margin-bottom: 8px;
+}
+
+.unit-header:first-child { padding-top: 4px; }
+
+/* カード右側 */
+.card-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 詳細ページのメタ情報 */
+.detail-meta {
+  margin-bottom: 6px;
+}
+
+.detail-unit {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: rgba(255, 107, 0, 0.4);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
 #page-list h2 {
   font-size: 0.7rem;
   font-weight: 700;
