@@ -1,4 +1,4 @@
-// ===== 問題データ =====
+﻿// ===== 問題データ =====
 
 const problems = [
 
@@ -1004,6 +1004,8 @@ function renderDetail(id) {
   // 既存エディタのコードを保存してから破棄
   var savedCode = aceEditor ? aceEditor.getValue() : null;
   if (aceEditor) { aceEditor.destroy(); aceEditor = null; }
+  currentProblemId = id;
+  currentEditorMode = 'scratch';  // モードをリセット
 
   const detail = document.getElementById("detail-content");
   detail.innerHTML =
@@ -1040,7 +1042,10 @@ function renderDetail(id) {
     '</div>' +
 
     '<div class="section">' +
-      '<h3>コードエディタ</h3>' +
+      '<div class="editor-mode-bar">' +
+        '<button id="mode-scratch" class="mode-btn active" onclick="setEditorMode(&apos;scratch&apos;)">✏ 一から書く</button>' +
+        '<button id="mode-fill"   class="mode-btn"        onclick="setEditorMode(&apos;fill&apos;)">📝 穴埋めモード</button>' +
+      '</div>' +
       '<div id="code-editor" class="code-editor-ace"></div>' +
       '<div class="editor-options">' +
         '<label class="stdin-label">標準入力（cin用）：</label>' +
@@ -1075,6 +1080,8 @@ function renderDetail(id) {
 // ===== Ace Editor 初期化 =====
 
 var aceEditor = null;
+var currentProblemId = null;
+var currentEditorMode = 'scratch';
 
 var ACE_STARTER =
 '#include <iostream>\n' +
@@ -1119,6 +1126,59 @@ function initAceEditor(initialCode) {
     bindKey: { win: 'Tab', mac: 'Tab' },
     exec: function(editor) { editor.insert('    '); }
   });
+}
+
+// ===== 穴埋めスケルトン生成 =====
+
+function buildSkeleton(p) {
+  // #include 行だけ抜き出してヒントにする（答えは含まない）
+  var includes = p.answer.split('
+')
+    .filter(function(l) { return l.trim().startsWith('#include'); })
+    .join('
+');
+  return includes +
+    '
+using namespace std;
+
+' +
+    'int main() {
+' +
+    '    // TODO: ここにコードを書いてください
+' +
+    '    
+' +
+    '    return 0;
+' +
+    '}';
+}
+
+// ===== エディタモード切り替え =====
+
+function setEditorMode(mode) {
+  if (!aceEditor) return;
+  var p = problems.find(function(x) { return x.id === currentProblemId; });
+
+  // コードが書かれていたら確認
+  var current = aceEditor.getValue().trim();
+  var isDefault = current === ACE_STARTER.trim() || current === (p ? buildSkeleton(p).trim() : '');
+  if (!isDefault && current !== '') {
+    if (!confirm('現在のコードが消えます。よいですか？')) return;
+  }
+
+  currentEditorMode = mode;
+
+  var scratchBtn = document.getElementById('mode-scratch');
+  var fillBtn   = document.getElementById('mode-fill');
+  if (scratchBtn) scratchBtn.classList.toggle('active', mode === 'scratch');
+  if (fillBtn)   fillBtn.classList.toggle('active',   mode === 'fill');
+
+  if (mode === 'scratch') {
+    aceEditor.setValue(ACE_STARTER, -1);
+  } else {
+    aceEditor.setValue(p ? buildSkeleton(p) : ACE_STARTER, -1);
+  }
+  aceEditor.focus();
 }
 
 // ===== コードを実行する（Wandbox API） =====
@@ -1445,7 +1505,10 @@ function renderMissionDetail(id) {
     '</div>' +
 
     '<div class="section">' +
-      '<h3>コードエディタ</h3>' +
+      '<div class="editor-mode-bar">' +
+        '<button id="mode-scratch" class="mode-btn active" onclick="setEditorMode(&apos;scratch&apos;)">✏ 一から書く</button>' +
+        '<button id="mode-fill"   class="mode-btn"        onclick="setEditorMode(&apos;fill&apos;)">📝 穴埋めモード</button>' +
+      '</div>' +
       '<div id="code-editor" class="code-editor-ace"></div>' +
       '<div class="editor-options">' +
         '<label class="stdin-label">標準入力（cin用）：</label>' +

@@ -541,6 +541,42 @@ pre::before {
 
 code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 
+/* ========== エディタモード切り替えバー ========== */
+.editor-mode-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.mode-btn {
+  background: transparent;
+  border: 1px solid rgba(255,107,0,0.18);
+  color: rgba(255,107,0,0.40);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 7px 16px;
+  cursor: pointer;
+  transition: all 0.18s;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+}
+
+.mode-btn:hover {
+  color: rgba(255,107,0,0.75);
+  border-color: rgba(255,107,0,0.35);
+  background: rgba(255,107,0,0.05);
+}
+
+.mode-btn.active {
+  background: rgba(255,107,0,0.12);
+  border-color: var(--orange);
+  color: var(--orange);
+  border-left: 2px solid var(--orange);
+  text-shadow: 0 0 10px rgba(255,107,0,0.4);
+}
+
 /* ========== Ace コードエディタ ========== */
 .code-editor-ace {
   width: 100%;
