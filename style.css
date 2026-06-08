@@ -169,6 +169,251 @@ header::after {
 .rank-gold     { color: #EFC050; }
 .rank-platinum { color: #00C8B4; }
 .rank-diamond  { color: #5588FF; }
+.rank-master   { color: #C040FF; text-shadow: 0 0 8px rgba(192, 64, 255, 0.6); }
+
+/* ========== タブナビゲーション ========== */
+#nav-tabs {
+  background: #0a0806;
+  border-bottom: 1px solid rgba(255, 107, 0, 0.15);
+  display: flex;
+  gap: 0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.nav-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: rgba(255, 107, 0, 0.35);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 12px 28px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-tab:hover {
+  color: rgba(255, 107, 0, 0.7);
+}
+
+.nav-tab.active {
+  color: var(--orange);
+  border-bottom-color: var(--orange);
+  text-shadow: 0 0 10px rgba(255, 107, 0, 0.4);
+}
+
+/* ========== ミッション一覧 ========== */
+#page-mission-list {
+  max-width: 760px;
+  margin: 30px auto;
+  padding: 0 16px;
+  position: relative;
+  z-index: 1;
+}
+
+#page-mission-detail {
+  max-width: 760px;
+  margin: 30px auto;
+  padding: 0 16px;
+  position: relative;
+  z-index: 1;
+}
+
+#mission-back-btn {
+  background: transparent;
+  border: 1px solid rgba(192, 64, 255, 0.35);
+  border-left: 3px solid #C040FF;
+  color: #C040FF;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-bottom: 24px;
+  padding: 8px 18px;
+  transition: all 0.2s;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+
+#mission-back-btn:hover {
+  background: rgba(192, 64, 255, 0.1);
+  box-shadow: 0 0 16px rgba(192, 64, 255, 0.2);
+}
+
+.mission-list-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(192, 64, 255, 0.15);
+}
+
+.mission-list-title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #C040FF;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  text-shadow: 0 0 10px rgba(192, 64, 255, 0.4);
+}
+
+.mission-list-sub {
+  font-size: 0.9rem;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.mission-progress-text {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(192, 64, 255, 0.5);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.mission-card {
+  background: var(--surface);
+  border: 1px solid rgba(192, 64, 255, 0.12);
+  border-left: 3px solid rgba(192, 64, 255, 0.25);
+  padding: 16px 20px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.18s;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+
+.mission-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -80%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(192, 64, 255, 0.04), transparent);
+  transition: left 0.4s ease;
+}
+
+.mission-card:hover::after { left: 150%; }
+
+.mission-card:hover {
+  border-color: rgba(192, 64, 255, 0.45);
+  border-left-color: #C040FF;
+  box-shadow: 0 0 20px rgba(192, 64, 255, 0.1);
+  transform: translateX(5px);
+}
+
+.mission-card.cleared {
+  border-left-color: var(--green);
+}
+
+.mission-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.mission-number {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: rgba(192, 64, 255, 0.45);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.mission-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--bright);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.mission-card-desc {
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.mission-card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mission-req-count {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: rgba(192, 64, 255, 0.4);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mission-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--green);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.mission-badge.not-cleared {
+  color: rgba(168, 152, 120, 0.25);
+}
+
+/* ミッション詳細 */
+.mission-number-large {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: rgba(192, 64, 255, 0.4);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.mission-requirements {
+  list-style: none;
+  padding: 0;
+}
+
+.mission-requirements li {
+  font-size: 0.92rem;
+  color: var(--text);
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 107, 0, 0.06);
+  line-height: 1.6;
+}
+
+.mission-requirements li::before { content: ''; }
+
+.master-btn {
+  background: rgba(192, 64, 255, 0.08) !important;
+  color: #C040FF !important;
+  border-color: #C040FF !important;
+  text-shadow: 0 0 8px rgba(192, 64, 255, 0.5) !important;
+  box-shadow: 0 0 14px rgba(192, 64, 255, 0.1) !important;
+}
+
+.master-btn:hover:not(:disabled) {
+  background: rgba(192, 64, 255, 0.18) !important;
+  box-shadow: 0 0 28px rgba(192, 64, 255, 0.3) !important;
+}
+
+.master-btn.learned {
+  background: rgba(0, 230, 118, 0.08) !important;
+  color: var(--green) !important;
+  border-color: var(--green) !important;
+  text-shadow: 0 0 8px rgba(0, 230, 118, 0.5) !important;
+  box-shadow: 0 0 16px rgba(0, 230, 118, 0.15) !important;
+}
 
 /* 単元ヘッダー */
 .unit-header {

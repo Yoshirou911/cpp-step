@@ -10,15 +10,20 @@
 
   <header>
     <h1 id="site-title">C++ STEP</h1>
-    <p id="progress-text">0 / 10 問 クリア</p>
+    <p id="progress-text">0 / 30 問 クリア</p>
     <div id="progress-bar-wrap">
       <div id="progress-bar"></div>
     </div>
   </header>
 
+  <!-- タブナビゲーション -->
+  <div id="nav-tabs">
+    <button class="nav-tab active" id="tab-problems" onclick="switchTab('problems')">◆ PROBLEMS</button>
+    <button class="nav-tab" id="tab-missions" onclick="switchTab('missions')">◆ MISSIONS</button>
+  </div>
+
   <!-- 問題一覧ページ -->
   <div id="page-list">
-    <h2>問題一覧</h2>
     <div id="problem-list"></div>
   </div>
 
@@ -26,6 +31,17 @@
   <div id="page-detail" class="hidden">
     <button id="back-btn">← 一覧に戻る</button>
     <div id="detail-content"></div>
+  </div>
+
+  <!-- ミッション一覧ページ -->
+  <div id="page-mission-list" class="hidden">
+    <div id="mission-list"></div>
+  </div>
+
+  <!-- ミッション詳細ページ -->
+  <div id="page-mission-detail" class="hidden">
+    <button id="mission-back-btn">← ミッション一覧に戻る</button>
+    <div id="mission-detail-content"></div>
   </div>
 
   <!-- AI チャットパネル -->

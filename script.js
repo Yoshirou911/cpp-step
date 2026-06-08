@@ -639,6 +639,95 @@ int main() {
   }
 ];
 
+// ===== ミッションデータ =====
+
+const missions = [
+  {
+    id: 1, rank: "GOLD",
+    title: "じゃんけんゲーム",
+    description: "コンピュータとじゃんけんができるプログラムを作れ。プレイヤーが0（グー）・1（チョキ）・2（パー）を入力し、コンピュータはランダムに出す。勝敗を判定して表示しろ。",
+    requirements: [
+      "0=グー、1=チョキ、2=パーの入力を受け取る",
+      "コンピュータはランダムに手を選ぶ",
+      "勝ち・負け・あいこを判定して表示する",
+      "無効な入力（0〜2以外）はエラーメッセージを出す"
+    ],
+    sampleIO: `入力: 0\nCPU: パー(2)\n結果: 負け`,
+    hint: "rand() % 3 で 0〜2 の乱数が得られます。srand(time(0)) を main の最初に書いてください。勝敗の条件は (player - cpu + 3) % 3 で判定できます。"
+  },
+  {
+    id: 2, rank: "PLATINUM",
+    title: "FizzBuzz 拡張版",
+    description: "1 から N までの数を出力するプログラムを作れ。ただし 3 の倍数は「Fizz」、5 の倍数は「Buzz」、15 の倍数は「FizzBuzz」と出力しろ。N はユーザーが入力する。",
+    requirements: [
+      "N をユーザーが入力する",
+      "1〜N を順番に出力する",
+      "3の倍数 → Fizz",
+      "5の倍数 → Buzz",
+      "15の倍数 → FizzBuzz（FizzでもBuzzでもなく）",
+      "N が 0 以下なら「無効」と出力する"
+    ],
+    sampleIO: `入力: 15\n1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz`,
+    hint: "15の倍数の判定を先に書かないと、Fizz や Buzz が先に引っかかってしまいます。条件の順番に注意してください。"
+  },
+  {
+    id: 3, rank: "PLATINUM",
+    title: "数当てゲーム",
+    description: "コンピュータが 1〜100 のランダムな整数を選ぶ。プレイヤーが数を入力するたびに「もっと大きい」「もっと小さい」「正解！」を表示するゲームを作れ。",
+    requirements: [
+      "1〜100の乱数を生成する",
+      "ユーザーの入力が正解より小さければ「もっと大きい」",
+      "ユーザーの入力が正解より大きければ「もっと小さい」",
+      "正解したら「正解！ X回で当てました」と表示して終了",
+      "入力が 1〜100 の範囲外なら「範囲外です」と表示する"
+    ],
+    sampleIO: `入力: 50\nもっと大きい\n入力: 75\nもっと小さい\n入力: 62\n正解！ 3回で当てました`,
+    hint: "rand() % 100 + 1 で 1〜100 の乱数。whileループで正解するまで繰り返します。試行回数をカウントする変数を用意しましょう。"
+  },
+  {
+    id: 4, rank: "DIAMOND",
+    title: "簡易電卓",
+    description: "2つの数値と演算子（+, -, *, /）を入力して結果を表示する電卓プログラムを作れ。ループで繰り返し計算でき、「q」を入力したら終了する。",
+    requirements: [
+      "数値 演算子 数値 の形で入力を受け取る",
+      "+, -, *, / の四則演算に対応する",
+      "ゼロ除算はエラーメッセージを表示する",
+      "ループで繰り返し計算できる",
+      "「q」を入力したらプログラムを終了する"
+    ],
+    sampleIO: `入力: 10 + 5\n結果: 15\n入力: 10 / 0\nエラー: ゼロ除算\n入力: q\n終了`,
+    hint: "演算子は char 型で受け取れます。switch 文で分岐するとスッキリ書けます。ゼロ除算は if (b == 0) でチェックしましょう。"
+  },
+  {
+    id: 5, rank: "DIAMOND",
+    title: "成績管理システム",
+    description: "生徒の名前と点数（複数科目）を入力して管理するプログラムを作れ。合計・平均・合否を計算して出力しろ。",
+    requirements: [
+      "生徒数 N を入力する",
+      "各生徒の名前と点数（5科目）を入力する",
+      "各生徒の合計・平均を計算して表示する",
+      "平均 60 点以上で「合格」、未満で「不合格」",
+      "クラス全体の最高平均・最低平均を表示する"
+    ],
+    sampleIO: `生徒数: 2\n名前: Taro\n点数(5科目): 80 70 90 60 75\n合計: 375  平均: 75.0  合格\n名前: Hanako\n点数(5科目): 50 40 60 55 45\n合計: 250  平均: 50.0  不合格`,
+    hint: "生徒数が可変なので vector を使うと便利です。二次元配列や構造体を使って整理するとコードが読みやすくなります。"
+  },
+  {
+    id: 6, rank: "MASTER",
+    title: "素数列挙プログラム",
+    description: "N 以下の素数をすべて出力するプログラムを作れ。「エラトステネスの篩（ふるい）」アルゴリズムを使って効率的に実装しろ。",
+    requirements: [
+      "N をユーザーが入力する",
+      "エラトステネスの篩で N 以下の素数をすべて列挙する",
+      "素数を 1 行に 10 個ずつ表示する",
+      "素数の個数も最後に表示する",
+      "N が 2 未満なら「素数なし」と表示する"
+    ],
+    sampleIO: `入力: 50\n2  3  5  7  11  13  17  19  23  29\n31  37  41  43  47\n素数の個数: 15`,
+    hint: "エラトステネスの篩：bool 配列を用意して、合成数（素数でない数）を順番に消していくアルゴリズムです。2の倍数を消し、3の倍数を消し…と繰り返します。"
+  }
+];
+
 // ===== 進捗管理 =====
 
 function loadProgress() {
@@ -951,6 +1040,198 @@ async function sendChatMessage() {
   }
 }
 
+// ===== タブ切り替え =====
+
+function switchTab(tab) {
+  document.getElementById('tab-problems').classList.remove('active');
+  document.getElementById('tab-missions').classList.remove('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+
+  if (tab === 'problems') {
+    renderList();
+    showPage('list');
+  } else {
+    renderMissionList();
+    showPage('mission-list');
+  }
+}
+
+// ===== ミッション一覧の描画 =====
+
+function loadMissionProgress() {
+  const data = localStorage.getItem("cpp_mission_progress");
+  return data ? JSON.parse(data) : [];
+}
+
+function saveMissionProgress(id) {
+  const progress = loadMissionProgress();
+  if (!progress.includes(id)) {
+    progress.push(id);
+    localStorage.setItem("cpp_mission_progress", JSON.stringify(progress));
+  }
+}
+
+function isMissionCleared(id) {
+  return loadMissionProgress().includes(id);
+}
+
+function renderMissionList() {
+  const list = document.getElementById('mission-list');
+  list.innerHTML = '';
+
+  // ヘッダー
+  const header = document.createElement('div');
+  header.className = 'mission-list-header';
+  const cleared = loadMissionProgress().length;
+  header.innerHTML =
+    '<div class="mission-list-title">◆ MISSIONS</div>' +
+    '<div class="mission-list-sub">実践的なプログラムを自分で設計・実装するミッションです。</div>' +
+    '<div class="mission-progress-text">' + cleared + ' / ' + missions.length + ' MISSIONS CLEARED</div>';
+  list.appendChild(header);
+
+  missions.forEach(function(m) {
+    const cleared = isMissionCleared(m.id);
+    const card = document.createElement('div');
+    card.className = 'mission-card' + (cleared ? ' cleared' : '');
+
+    card.innerHTML =
+      '<div class="mission-card-top">' +
+        '<span class="mission-number">MISSION ' + String(m.id).padStart(2, '0') + '</span>' +
+        '<span class="rank-badge rank-' + m.rank.toLowerCase() + '">' + m.rank + '</span>' +
+      '</div>' +
+      '<div class="mission-card-title">' + m.title + '</div>' +
+      '<div class="mission-card-desc">' + m.description.substring(0, 60) + '...</div>' +
+      '<div class="mission-card-bottom">' +
+        '<span class="mission-req-count">要件 ' + m.requirements.length + ' 項目</span>' +
+        '<span class="mission-badge ' + (cleared ? '' : 'not-cleared') + '">' +
+          (cleared ? '✔ CLEARED' : '— PENDING') +
+        '</span>' +
+      '</div>';
+
+    card.addEventListener('click', function() {
+      renderMissionDetail(m.id);
+      showPage('mission-detail');
+    });
+
+    list.appendChild(card);
+  });
+}
+
+// ===== ミッション詳細の描画 =====
+
+function renderMissionDetail(id) {
+  const m = missions.find(function(x) { return x.id === id; });
+  const cleared = isMissionCleared(m.id);
+  const detail = document.getElementById('mission-detail-content');
+
+  const reqItems = m.requirements.map(function(r, i) {
+    return '<li>◆ ' + r + '</li>';
+  }).join('');
+
+  detail.innerHTML =
+    '<div class="mission-number-large">MISSION ' + String(m.id).padStart(2, '0') + '</div>' +
+    '<h2>' + m.title + '</h2>' +
+    '<span class="rank-badge rank-' + m.rank.toLowerCase() + ' rank-badge-lg" style="display:inline-block;margin-bottom:20px;">' + m.rank + '</span>' +
+
+    '<div class="section">' +
+      '<h3>ミッション概要</h3>' +
+      '<p>' + m.description + '</p>' +
+    '</div>' +
+
+    '<div class="section">' +
+      '<h3>要件</h3>' +
+      '<ul class="mission-requirements">' + reqItems + '</ul>' +
+    '</div>' +
+
+    '<div class="section">' +
+      '<h3>入出力例</h3>' +
+      '<pre><code>' + escapeHtml(m.sampleIO) + '</code></pre>' +
+    '</div>' +
+
+    '<div class="section">' +
+      '<button class="toggle-btn" onclick="toggleSection(\'mission-hint-' + m.id + '\')">💡 ヒントを見る</button>' +
+      '<div id="mission-hint-' + m.id + '" class="hidden toggle-content">' +
+        '<p>' + m.hint + '</p>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="section">' +
+      '<h3>コードエディタ</h3>' +
+      '<textarea id="code-editor" class="code-editor" placeholder="ここにC++コードを書いてください..."></textarea>' +
+      '<div class="editor-options">' +
+        '<label class="stdin-label">標準入力（cin用）：</label>' +
+        '<input id="stdin-input" class="stdin-input" type="text" placeholder="スペース区切りで入力">' +
+      '</div>' +
+      '<button class="run-btn" onclick="runCode()">▶ 実行する</button>' +
+      '<div id="output-area" class="hidden">' +
+        '<p class="output-label">実行結果：</p>' +
+        '<pre id="output-text"></pre>' +
+      '</div>' +
+      '<button class="ai-feedback-btn" onclick="getMissionAIFeedback(' + m.id + ')">🤖 AIにコードレビューしてもらう</button>' +
+      '<div id="ai-feedback-area" class="hidden">' +
+        '<p class="output-label">// AI REVIEW</p>' +
+        '<div id="ai-feedback-text" class="ai-feedback-text"></div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="section">' +
+      '<button ' +
+        'id="mission-clear-btn" ' +
+        'class="learn-btn master-btn ' + (cleared ? 'learned' : '') + '" ' +
+        'onclick="markMissionCleared(' + m.id + ')" ' +
+        (cleared ? 'disabled' : '') +
+      '>' +
+        (cleared ? '✔ MISSION CLEARED' : 'MISSION COMPLETE') +
+      '</button>' +
+    '</div>';
+}
+
+// ===== ミッションAIレビュー =====
+
+async function getMissionAIFeedback(missionId) {
+  const m = missions.find(function(x) { return x.id === missionId; });
+  const code = document.getElementById('code-editor').value.trim();
+  if (!code) { alert('コードを入力してください'); return; }
+
+  const btn = document.querySelector('.ai-feedback-btn');
+  const area = document.getElementById('ai-feedback-area');
+  const text = document.getElementById('ai-feedback-text');
+
+  btn.textContent = '🤖 AIがレビュー中...';
+  btn.disabled = true;
+  area.classList.add('hidden');
+
+  const system = 'あなたはC++プログラミングの初心者向けの優しい先輩エンジニアです。日本語で丁寧にコードレビューしてください。';
+  const reqText = m.requirements.map(function(r, i) { return (i+1) + '. ' + r; }).join('\n');
+  const userMsg =
+    'ミッション: ' + m.title + '\n\n' +
+    '要件:\n' + reqText + '\n\n' +
+    '提出コード:\n```cpp\n' + code + '\n```\n\n' +
+    '要件を満たしているか確認し、良い点・改善点・アドバイスを教えてください。';
+
+  try {
+    const reply = await askAI(system, userMsg);
+    area.classList.remove('hidden');
+    text.innerHTML = reply
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\n/g, '<br>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>');
+  } catch (e) {
+    area.classList.remove('hidden');
+    text.textContent = 'エラー: AIに接続できませんでした。';
+  }
+
+  btn.textContent = '🤖 AIにコードレビューしてもらう';
+  btn.disabled = false;
+}
+
+// ===== ミッションクリア =====
+
+function markMissionCleared(id) {
+  saveMissionProgress(id);
+  renderMissionDetail(id);
+}
+
 // ===== 学習済みにする =====
 
 function markLearned(id) {
@@ -964,6 +1245,11 @@ function markLearned(id) {
 document.getElementById("back-btn").addEventListener("click", function() {
   renderList();
   showPage("list");
+});
+
+document.getElementById("mission-back-btn").addEventListener("click", function() {
+  renderMissionList();
+  showPage("mission-list");
 });
 
 document.getElementById("site-title").addEventListener("click", function() {
