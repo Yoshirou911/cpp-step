@@ -1140,25 +1140,15 @@ function initAceEditor(initialCode) {
 
 function buildSkeleton(p) {
   // #include 行だけ抜き出してヒントにする（答えは含まない）
-  var includes = p.answer.split('
-')
+  var includes = p.answer.split('\n')
     .filter(function(l) { return l.trim().startsWith('#include'); })
-    .join('
-');
-  return includes +
-    '
-using namespace std;
-
-' +
-    'int main() {
-' +
-    '    // TODO: ここにコードを書いてください
-' +
-    '    
-' +
-    '    return 0;
-' +
-    '}';
+    .join('\n');
+  return includes
+    + '\nusing namespace std;\n\nint main() {\n'
+    + '    // TODO: ここにコードを書いてください\n'
+    + '    \n'
+    + '    return 0;\n'
+    + '}';
 }
 
 // onclick から引数なしで呼べるラッパー（クォートネスト問題を回避）
