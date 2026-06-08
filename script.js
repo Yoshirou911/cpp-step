@@ -1046,8 +1046,9 @@ function renderDetail(id) {
 
     '<div class="section">' +
       '<div class="editor-mode-bar">' +
-        '<button id="mode-scratch" class="mode-btn active" onclick="editorScratch()">✏ 一から書く</button>' +
-        '<button id="mode-fill"   class="mode-btn"        onclick="editorFill()">📝 穴埋めモード</button>' +
+        '<button id="mode-zero"    class="mode-btn"        onclick="editorZero()">⬜ ゼロから</button>' +
+        '<button id="mode-scratch" class="mode-btn active" onclick="editorScratch()">📋 テンプレート</button>' +
+        '<button id="mode-fill"   class="mode-btn"        onclick="editorFill()">📝 穴埋め</button>' +
       '</div>' +
       '<div id="code-editor" class="code-editor-ace"></div>' +
       '<div class="editor-options">' +
@@ -1152,8 +1153,9 @@ function buildSkeleton(p) {
 }
 
 // onclick から引数なしで呼べるラッパー（クォートネスト問題を回避）
-function editorScratch() { setEditorMode('scratch'); }
-function editorFill()    { setEditorMode('fill');    }
+function editorZero()    { setEditorMode('zero');    }  // 完全ゼロから
+function editorScratch() { setEditorMode('scratch'); }  // テンプレートから
+function editorFill()    { setEditorMode('fill');    }  // 穴埋め
 
 // ===== エディタモード切り替え =====
 
@@ -1163,22 +1165,29 @@ function setEditorMode(mode) {
 
   // コードが書かれていたら確認
   var current = aceEditor.getValue().trim();
-  var isDefault = current === ACE_STARTER.trim() || current === (p ? buildSkeleton(p).trim() : '');
-  if (!isDefault && current !== '') {
+  var isDefault = current === ''
+    || current === ACE_STARTER.trim()
+    || current === (p ? buildSkeleton(p).trim() : '');
+  if (!isDefault) {
     if (!confirm('現在のコードが消えます。よいですか？')) return;
   }
 
   currentEditorMode = mode;
 
-  var scratchBtn = document.getElementById('mode-scratch');
-  var fillBtn   = document.getElementById('mode-fill');
-  if (scratchBtn) scratchBtn.classList.toggle('active', mode === 'scratch');
-  if (fillBtn)   fillBtn.classList.toggle('active',   mode === 'fill');
+  // ボタンのactive状態を更新
+  ['mode-zero', 'mode-scratch', 'mode-fill'].forEach(function(id) {
+    var btn = document.getElementById(id);
+    if (btn) btn.classList.remove('active');
+  });
+  var activeBtn = document.getElementById('mode-' + mode);
+  if (activeBtn) activeBtn.classList.add('active');
 
-  if (mode === 'scratch') {
-    aceEditor.setValue(ACE_STARTER, -1);
+  if (mode === 'zero') {
+    aceEditor.setValue('', -1);            // 完全空白
+  } else if (mode === 'scratch') {
+    aceEditor.setValue(ACE_STARTER, -1);   // テンプレート
   } else {
-    aceEditor.setValue(p ? buildSkeleton(p) : ACE_STARTER, -1);
+    aceEditor.setValue(p ? buildSkeleton(p) : ACE_STARTER, -1);  // 穴埋め
   }
   aceEditor.focus();
 }
@@ -1508,8 +1517,9 @@ function renderMissionDetail(id) {
 
     '<div class="section">' +
       '<div class="editor-mode-bar">' +
-        '<button id="mode-scratch" class="mode-btn active" onclick="editorScratch()">✏ 一から書く</button>' +
-        '<button id="mode-fill"   class="mode-btn"        onclick="editorFill()">📝 穴埋めモード</button>' +
+        '<button id="mode-zero"    class="mode-btn"        onclick="editorZero()">⬜ ゼロから</button>' +
+        '<button id="mode-scratch" class="mode-btn active" onclick="editorScratch()">📋 テンプレート</button>' +
+        '<button id="mode-fill"   class="mode-btn"        onclick="editorFill()">📝 穴埋め</button>' +
       '</div>' +
       '<div id="code-editor" class="code-editor-ace"></div>' +
       '<div class="editor-options">' +

@@ -544,8 +544,9 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 /* ========== エディタモード切り替えバー ========== */
 .editor-mode-bar {
   display: flex;
-  gap: 6px;
+  gap: 5px;
   margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 
 .mode-btn {
