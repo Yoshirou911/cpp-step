@@ -23,13 +23,20 @@ body {
   background-color: var(--bg);
   color: var(--text);
   min-height: 100vh;
-
-  /* 未来都市の夜景（Unsplash） */
-  background-image: url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1920&q=80');
-  background-size: cover;
-  background-position: center top;
-  background-attachment: fixed;
 }
+
+/* 2層クロスフェード用の背景レイヤー */
+.bg-layer {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  transition: opacity 1.6s ease-in-out;
+  z-index: -2;
+}
+
+#bg-b { z-index: -3; }
 
 /* 暗いオーバーレイ＋オレンジ大気光＋ビネット */
 body::before {
@@ -37,12 +44,12 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 70% 50% at 0%   0%,   rgba(255,107,0,0.12) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 55% at 100% 100%, rgba(180,55,0,0.08)  0%, transparent 55%),
-    radial-gradient(ellipse 100% 100% at 50% 50%, transparent 25%, rgba(0,0,0,0.60) 100%),
-    rgba(6,4,2,0.78);
+    radial-gradient(ellipse 70% 50% at 0%   0%,   rgba(255,107,0,0.13) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 55% at 100% 100%, rgba(180,55,0,0.09)  0%, transparent 55%),
+    radial-gradient(ellipse 100% 100% at 50% 50%, transparent 22%, rgba(0,0,0,0.62) 100%),
+    rgba(6,4,2,0.76);
   pointer-events: none;
-  z-index: 0;
+  z-index: -1;
 }
 
 /* スキャンライン */

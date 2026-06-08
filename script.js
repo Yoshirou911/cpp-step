@@ -1496,3 +1496,67 @@ document.getElementById('chat-input').addEventListener('keydown', function(e) {
 
 renderList();
 showPage("list");
+
+// ===== 背景スライドショー =====
+(function() {
+  const BG_IMAGES = [
+    // 1. 夜の都市ボケ（現在のメイン）
+    'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1920&q=80',
+    // 2. 夜景・航空写真（シカゴ）
+    'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=1920&q=80',
+    // 3. 夜の都市スカイライン
+    'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1920&q=80',
+    // 4. 宇宙・星雲
+    'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?auto=format&fit=crop&w=1920&q=80',
+    // 5. ダーク・雨の夜
+    'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&w=1920&q=80',
+    // 6. 未来的なネオン夜景
+    'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?auto=format&fit=crop&w=1920&q=80',
+  ];
+
+  const layerA = document.getElementById('bg-a');
+  const layerB = document.getElementById('bg-b');
+  let idx = 0;
+  let useA = true; // 現在表示中のレイヤー
+
+  // 最初の1枚をセット（フェードなしで即表示）
+  layerA.style.backgroundImage = "url('" + BG_IMAGES[0] + "')";
+  layerA.style.opacity = '1';
+  layerB.style.opacity = '0';
+
+  function preload(url) {
+    var img = new Image();
+    img.src = url;
+  }
+
+  // 次の画像を先読み
+  preload(BG_IMAGES[1]);
+
+  function next() {
+    idx = (idx + 1) % BG_IMAGES.length;
+    var nextUrl = BG_IMAGES[idx];
+
+    // 先読み（次の次）
+    preload(BG_IMAGES[(idx + 1) % BG_IMAGES.length]);
+
+    if (useA) {
+      // A が前面 → B に次をセットして B をフェードイン、A をフェードアウト
+      layerB.style.backgroundImage = "url('" + nextUrl + "')";
+      layerB.style.zIndex = '-2';
+      layerA.style.zIndex = '-3';
+      layerB.style.opacity = '1';
+      layerA.style.opacity = '0';
+    } else {
+      // B が前面 → A に次をセットして A をフェードイン、B をフェードアウト
+      layerA.style.backgroundImage = "url('" + nextUrl + "')";
+      layerA.style.zIndex = '-2';
+      layerB.style.zIndex = '-3';
+      layerA.style.opacity = '1';
+      layerB.style.opacity = '0';
+    }
+    useA = !useA;
+  }
+
+  // 12秒ごとに切り替え
+  setInterval(next, 12000);
+})();
