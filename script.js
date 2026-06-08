@@ -911,8 +911,11 @@ function isLearned(id) {
 // ===== 画面切り替え =====
 
 function showPage(name) {
-  document.getElementById("page-list").classList.add("hidden");
-  document.getElementById("page-detail").classList.add("hidden");
+  // 全ページを非表示にしてから対象だけ表示
+  ["page-list", "page-detail", "page-guide",
+   "page-mission-list", "page-mission-detail"].forEach(function(id) {
+    document.getElementById(id).classList.add("hidden");
+  });
   document.getElementById("page-" + name).classList.remove("hidden");
 }
 
@@ -1043,8 +1046,8 @@ function renderDetail(id) {
 
     '<div class="section">' +
       '<div class="editor-mode-bar">' +
-        '<button id="mode-scratch" class="mode-btn active" onclick="setEditorMode(&apos;scratch&apos;)">✏ 一から書く</button>' +
-        '<button id="mode-fill"   class="mode-btn"        onclick="setEditorMode(&apos;fill&apos;)">📝 穴埋めモード</button>' +
+        '<button id="mode-scratch" class="mode-btn active" onclick="editorScratch()">✏ 一から書く</button>' +
+        '<button id="mode-fill"   class="mode-btn"        onclick="editorFill()">📝 穴埋めモード</button>' +
       '</div>' +
       '<div id="code-editor" class="code-editor-ace"></div>' +
       '<div class="editor-options">' +
@@ -1093,6 +1096,11 @@ var ACE_STARTER =
 '}\n';
 
 function initAceEditor(initialCode) {
+  // Ace が読み込まれていなければスキップ
+  if (typeof ace === 'undefined') {
+    console.warn('Ace Editor not loaded');
+    return;
+  }
   // CDN のベースパスを設定（テーマ・モードの遅延ロード用）
   ace.config.set('basePath', 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.5/');
 
@@ -1152,6 +1160,10 @@ using namespace std;
 ' +
     '}';
 }
+
+// onclick から引数なしで呼べるラッパー（クォートネスト問題を回避）
+function editorScratch() { setEditorMode('scratch'); }
+function editorFill()    { setEditorMode('fill');    }
 
 // ===== エディタモード切り替え =====
 
@@ -1506,8 +1518,8 @@ function renderMissionDetail(id) {
 
     '<div class="section">' +
       '<div class="editor-mode-bar">' +
-        '<button id="mode-scratch" class="mode-btn active" onclick="setEditorMode(&apos;scratch&apos;)">✏ 一から書く</button>' +
-        '<button id="mode-fill"   class="mode-btn"        onclick="setEditorMode(&apos;fill&apos;)">📝 穴埋めモード</button>' +
+        '<button id="mode-scratch" class="mode-btn active" onclick="editorScratch()">✏ 一から書く</button>' +
+        '<button id="mode-fill"   class="mode-btn"        onclick="editorFill()">📝 穴埋めモード</button>' +
       '</div>' +
       '<div id="code-editor" class="code-editor-ace"></div>' +
       '<div class="editor-options">' +
