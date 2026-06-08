@@ -328,6 +328,11 @@ function renderDetail(id) {
         '<p class="output-label">実行結果：</p>' +
         '<pre id="output-text"></pre>' +
       '</div>' +
+      '<button class="ai-feedback-btn" onclick="getAIFeedback(' + p.id + ')">🤖 AIにフィードバックをもらう</button>' +
+      '<div id="ai-feedback-area" class="hidden">' +
+        '<p class="output-label">// AI FEEDBACK</p>' +
+        '<div id="ai-feedback-text" class="ai-feedback-text"></div>' +
+      '</div>' +
     '</div>' +
 
     '<div class="section">' +
@@ -395,6 +400,102 @@ function markLearned(id) {
   updateProgressDisplay();
 }
 
+// ===== AI 共通リクエスト =====
+
+async function askAI(system, messages) {
+  const msgArray = Array.isArray(messages)
+    ? messages
+    : [{ role: 'user', content: messages }];
+
+  const res = await fetch('/api/ask', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ system: system, messages: msgArray })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data.reply;
+}
+
+// ===== コードフィードバック =====
+
+async function getAIFeedback(problemId) {
+  const p = problems.find(function(x) { return x.id === problemId; });
+  const code = document.getElementById('code-editor').value.trim();
+
+  if (!code) { alert('コードを入力してください'); return; }
+
+  const btn = document.querySelector('.ai-feedback-btn');
+  const area = document.getElementById('ai-feedback-area');
+  const text = document.getElementById('ai-feedback-text');
+
+  btn.textContent = '🤖 AIが分析中...';
+  btn.disabled = true;
+  area.classList.add('hidden');
+
+  const system = 'あなたはC++プログラミングの初心者向けの優しい家庭教師です。日本語で簡潔に答えてください。';
+  const userMsg = '問題：' + p.question + '\n\n提出コード：\n```cpp\n' + code + '\n```\n\n良い点・改善点・アドバイスを初心者向けに教えてください。';
+
+  try {
+    const reply = await askAI(system, userMsg);
+    area.classList.remove('hidden');
+    text.innerHTML = reply
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\n/g, '<br>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>');
+  } catch (e) {
+    area.classList.remove('hidden');
+    text.textContent = 'エラー: AIに接続できませんでした。';
+  }
+
+  btn.textContent = '🤖 AIにフィードバックをもらう';
+  btn.disabled = false;
+}
+
+// ===== チャットパネル =====
+
+var chatHistory = [];
+
+function addChatMessage(role, text, id) {
+  var messages = document.getElementById('chat-messages');
+  var el = document.createElement('div');
+  el.className = 'chat-msg chat-msg-' + role;
+  if (id) el.id = id;
+  el.innerHTML = text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\n/g, '<br>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>');
+  messages.appendChild(el);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+async function sendChatMessage() {
+  var input = document.getElementById('chat-input');
+  var message = input.value.trim();
+  if (!message) return;
+
+  addChatMessage('user', message);
+  chatHistory.push({ role: 'user', content: message });
+  input.value = '';
+
+  var typingId = 'typing-' + Date.now();
+  addChatMessage('ai', '...', typingId);
+
+  var system = 'あなたはC++プログラミングの初心者向けの優しい家庭教師です。日本語で答えてください。初心者が理解しやすい言葉で説明してください。';
+
+  try {
+    var reply = await askAI(system, chatHistory);
+    chatHistory.push({ role: 'assistant', content: reply });
+    var typingEl = document.getElementById(typingId);
+    if (typingEl) typingEl.remove();
+    addChatMessage('ai', reply);
+  } catch (e) {
+    var typingEl2 = document.getElementById(typingId);
+    if (typingEl2) typingEl2.remove();
+    addChatMessage('ai', 'エラー: AIに接続できませんでした。');
+  }
+}
+
 // ===== 初期化 =====
 
 document.getElementById("back-btn").addEventListener("click", function() {
@@ -409,3 +510,21 @@ document.getElementById("site-title").addEventListener("click", function() {
 
 renderList();
 showPage("list");
+
+// チャットパネルの開閉
+document.getElementById('chat-toggle').addEventListener('click', function() {
+  document.getElementById('chat-panel').classList.toggle('hidden');
+});
+
+document.getElementById('chat-close').addEventListener('click', function() {
+  document.getElementById('chat-panel').classList.add('hidden');
+});
+
+document.getElementById('chat-send').addEventListener('click', sendChatMessage);
+
+document.getElementById('chat-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChatMessage();
+  }
+});

@@ -28,6 +28,20 @@
     <div id="detail-content"></div>
   </div>
 
+  <!-- AI チャットパネル -->
+  <div id="chat-panel" class="hidden">
+    <div id="chat-header">
+      <span>// AI に質問する</span>
+      <button id="chat-close">✕</button>
+    </div>
+    <div id="chat-messages"></div>
+    <div id="chat-footer">
+      <textarea id="chat-input" placeholder="C++について何でも質問してください..."></textarea>
+      <button id="chat-send">送信</button>
+    </div>
+  </div>
+  <button id="chat-toggle">AI</button>
+
   <script src="script.js"></script>
 </body>
 </html>
