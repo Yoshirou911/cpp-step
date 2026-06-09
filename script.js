@@ -2116,7 +2116,11 @@ function initAceEditor(initialCode) {
 // ===== 穴埋めスケルトン生成 =====
 
 function buildSkeleton(p) {
-  // #include 行だけ抜き出してヒントにする（答えは含まない）
+  // Python の場合
+  if (currentLanguage === 'python') {
+    return '# ここにコードを書いてください\n';
+  }
+  // C++ の場合：#include 行だけ抜き出してヒントにする（答えは含まない）
   var includes = p.answer.split('\n')
     .filter(function(l) { return l.trim().startsWith('#include'); })
     .join('\n');
