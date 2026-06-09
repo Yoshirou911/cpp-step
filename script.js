@@ -290,6 +290,60 @@ var _currentAuthTab = 'login';
 var _progressCache = null;
 var _missionProgressCache = null;
 
+// ===== バッジ定義 =====
+var BADGES = [
+  // 問題クリア数
+  { id: 'first_step',    name: 'FIRST STEP',     desc: '初めての問題をクリア',                    tier: 'bronze',   check: function(s) { return s.total >= 1;  } },
+  { id: 'code_runner',   name: 'CODE RUNNER',    desc: '合計10問クリア',                          tier: 'silver',   check: function(s) { return s.total >= 10; } },
+  { id: 'striker',       name: 'STRIKER',        desc: '合計30問クリア',                          tier: 'gold',     check: function(s) { return s.total >= 30; } },
+  { id: 'veteran',       name: 'VETERAN',        desc: '合計60問クリア',                          tier: 'platinum', check: function(s) { return s.total >= 60; } },
+  { id: 'full_clear',    name: 'FULL CLEAR',     desc: '全90問クリア',                            tier: 'master',   check: function(s) { return s.total >= 90; } },
+  // 言語マスター
+  { id: 'cpp_master',    name: 'C++ MASTER',     desc: 'C++ 全30問クリア',                        tier: 'diamond',  check: function(s) { return s.cpp >= 30;    } },
+  { id: 'py_master',     name: 'PYTHON MASTER',  desc: 'Python 全30問クリア',                     tier: 'diamond',  check: function(s) { return s.python >= 30; } },
+  { id: 'js_master',     name: 'JS MASTER',      desc: 'JavaScript 全30問クリア',                 tier: 'diamond',  check: function(s) { return s.js >= 30;     } },
+  // ミッション
+  { id: 'first_mission', name: 'MISSION START',  desc: '初ミッションクリア',                      tier: 'silver',   check: function(s) { return s.totalMissions >= 1; } },
+  { id: 'mission_all',   name: 'MISSION MASTER', desc: 'いずれかの言語で全ミッションクリア',       tier: 'master',   check: function(s) { return s.cppM >= 6 || s.pyM >= 6 || s.jsM >= 6; } },
+  // 多言語
+  { id: 'bilingual',     name: 'BILINGUAL',      desc: '2言語以上でクリア達成',                   tier: 'gold',     check: function(s) { return [s.cpp, s.python, s.js].filter(function(n){return n>0;}).length >= 2; } },
+  { id: 'trilingual',    name: 'TRILINGUAL',     desc: '3言語すべてでクリア達成',                 tier: 'platinum', check: function(s) { return s.cpp > 0 && s.python > 0 && s.js > 0; } },
+];
+
+// 全言語の進捗を localStorage から集計（言語切替不要）
+function getProfileStats() {
+  function getP(lang) {
+    var d = localStorage.getItem(lang + '_progress');
+    return d ? JSON.parse(d) : [];
+  }
+  function getM(lang) {
+    var d = localStorage.getItem(lang + '_mission_progress');
+    return d ? JSON.parse(d) : [];
+  }
+  var cpp    = getP('cpp').length;
+  var python = getP('python').length;
+  var js     = getP('javascript').length;
+  var cppM   = getM('cpp').length;
+  var pyM    = getM('python').length;
+  var jsM    = getM('javascript').length;
+  return {
+    cpp: cpp, python: python, js: js,
+    cppM: cppM, pyM: pyM, jsM: jsM,
+    total: cpp + python + js,
+    totalMissions: cppM + pyM + jsM
+  };
+}
+
+// 総クリア数からランクを計算
+function getProfileRank(total) {
+  if (total >= 90) return { name: 'MASTER',   color: '#C040FF' };
+  if (total >= 60) return { name: 'PLATINUM', color: '#00C8B4' };
+  if (total >= 30) return { name: 'GOLD',     color: '#EFC050' };
+  if (total >= 10) return { name: 'SILVER',   color: '#B8C8D8' };
+  if (total >=  1) return { name: 'BRONZE',   color: '#C47A2F' };
+  return                   { name: 'ROOKIE',  color: '#9B9B9B' };
+}
+
 // ===== 言語データ =====
 
 var LANGUAGE_GROUPS = [
@@ -533,6 +587,9 @@ function restoreState(state) {
     setActiveTab('missions');
     renderMissionDetail(state.id);
     showPage('mission-detail');
+  } else if (state.page === 'profile') {
+    renderProfile();
+    showPage('profile');
   }
 }
 
@@ -2935,7 +2992,7 @@ async function syncProgressFromSupabase() {
 function showPage(name) {
   // 全ページを非表示にしてから対象だけ表示
   ["page-lang", "page-list", "page-detail", "page-guide",
-   "page-mission-list", "page-mission-detail"].forEach(function(id) {
+   "page-mission-list", "page-mission-detail", "page-profile"].forEach(function(id) {
     document.getElementById(id).classList.add("hidden");
   });
   document.getElementById("page-" + name).classList.remove("hidden");
@@ -3814,6 +3871,108 @@ function toggleLearned(id) {
   renderList();
 }
 
+// ===== プロフィールページ =====
+
+function openProfile() {
+  playUIClick();
+  history.pushState({ page: 'profile', lang: currentLanguage }, '');
+  renderProfile();
+  showPage('profile');
+}
+
+function renderProfile() {
+  var stats  = getProfileStats();
+  var rank   = getProfileRank(stats.total);
+  var earned = BADGES.filter(function(b) { return b.check(stats); });
+  var locked = BADGES.filter(function(b) { return !b.check(stats); });
+
+  var avatarLetter = currentUser ? currentUser.email.charAt(0).toUpperCase() : 'G';
+  var displayName  = currentUser ? currentUser.email : 'GUEST';
+
+  var tierColors = {
+    bronze:   '#C47A2F',
+    silver:   '#B8C8D8',
+    gold:     '#EFC050',
+    platinum: '#00C8B4',
+    diamond:  '#5588FF',
+    master:   '#C040FF'
+  };
+
+  function badgeHTML(b, isEarned) {
+    var col     = isEarned ? (tierColors[b.tier] || '#FF6B00') : '#2a2018';
+    var hexBg   = isEarned ? col : '#161210';
+    var nameCol = isEarned ? col : '#3a3028';
+    var descCol = isEarned ? 'rgba(237,224,200,0.42)' : '#2a2018';
+    var tierTxt = isEarned ? 'rgba(7,6,4,0.82)' : '#2a2018';
+    return (
+      '<div class="badge-card' + (isEarned ? ' badge-earned' : ' badge-locked') + '"' +
+          ' style="--badge-color:' + col + '" title="' + b.desc + '">' +
+        '<div class="badge-hex" style="background:' + hexBg + '">' +
+          '<span class="badge-tier-lbl" style="color:' + tierTxt + '">' + b.tier.toUpperCase() + '</span>' +
+        '</div>' +
+        '<div class="badge-name" style="color:' + nameCol + '">' + b.name + '</div>' +
+        '<div class="badge-desc" style="color:' + descCol + '">' + b.desc + '</div>' +
+      '</div>'
+    );
+  }
+
+  var pct = {
+    cpp:    Math.min(100, (stats.cpp    / 30 * 100)),
+    python: Math.min(100, (stats.python / 30 * 100)),
+    js:     Math.min(100, (stats.js     / 30 * 100))
+  };
+
+  var content = document.getElementById('profile-content');
+  content.innerHTML =
+
+    // ─── ヒーローセクション ───
+    '<div class="profile-hero" style="--rank-color:' + rank.color + '">' +
+      '<div class="profile-avatar" style="--rank-color:' + rank.color + '">' + avatarLetter + '</div>' +
+      '<div class="profile-hero-info">' +
+        '<div class="profile-email">' + displayName + '</div>' +
+        '<div class="profile-rank-badge" style="color:' + rank.color + ';border-color:' + rank.color + ';box-shadow:0 0 12px ' + rank.color + '33">' +
+          '◆ ' + rank.name + ' ◆' +
+        '</div>' +
+        '<div class="profile-total">' + stats.total + '<span> / 90 CLEARED</span></div>' +
+        '<div class="profile-mission-total">' + stats.totalMissions + ' / 18 MISSIONS</div>' +
+      '</div>' +
+    '</div>' +
+
+    // ─── 言語スタッツ ───
+    '<div class="profile-section">' +
+      '<div class="profile-section-title">// LANGUAGE STATS</div>' +
+      '<div class="profile-stats-grid">' +
+        _statCardHTML('C++',        '#00599C', stats.cpp,    pct.cpp,    stats.cppM) +
+        _statCardHTML('Python',     '#3776AB', stats.python, pct.python, stats.pyM) +
+        _statCardHTML('JavaScript', '#F0C040', stats.js,     pct.js,     stats.jsM) +
+      '</div>' +
+    '</div>' +
+
+    // ─── バッジ ───
+    '<div class="profile-section">' +
+      '<div class="profile-section-title">// BADGES ' +
+        '<span class="badge-count-tag">' + earned.length + ' / ' + BADGES.length + ' 解除</span>' +
+      '</div>' +
+      '<div class="badge-grid">' +
+        earned.map(function(b) { return badgeHTML(b, true);  }).join('') +
+        locked.map(function(b) { return badgeHTML(b, false); }).join('') +
+      '</div>' +
+    '</div>';
+}
+
+function _statCardHTML(lang, color, count, pct, missions) {
+  return (
+    '<div class="profile-stat-card">' +
+      '<div class="stat-lang" style="color:' + color + '">' + lang + '</div>' +
+      '<div class="stat-num">' + count + '<span class="stat-denom"> / 30</span></div>' +
+      '<div class="stat-bar-wrap">' +
+        '<div class="stat-bar" style="width:' + pct + '%;background:' + color + '"></div>' +
+      '</div>' +
+      '<div class="stat-mission">' + missions + ' / 6 ミッション</div>' +
+    '</div>'
+  );
+}
+
 // ===== 認証モーダル UI =====
 
 function openAuthModal() {
@@ -3957,6 +4116,11 @@ document.getElementById("back-btn").addEventListener("click", function() {
 });
 
 document.getElementById("mission-back-btn").addEventListener("click", function() {
+  playGoBack();
+  history.back();
+});
+
+document.getElementById("profile-back-btn").addEventListener("click", function() {
   playGoBack();
   history.back();
 });

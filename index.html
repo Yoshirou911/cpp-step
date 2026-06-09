@@ -30,6 +30,7 @@
         <button id="auth-btn" onclick="openAuthModal()">◆ LOGIN</button>
         <div id="user-info" class="hidden">
           <span id="user-email-display"></span>
+          <button id="profile-btn" onclick="openProfile()">PROFILE</button>
           <button id="logout-btn" onclick="authSignOut()">LOGOUT</button>
         </div>
       </div>
@@ -77,6 +78,12 @@
   <div id="page-mission-detail" class="hidden">
     <button id="mission-back-btn">← ミッション一覧に戻る</button>
     <div id="mission-detail-content"></div>
+  </div>
+
+  <!-- プロフィールページ -->
+  <div id="page-profile" class="hidden">
+    <button id="profile-back-btn">← 戻る</button>
+    <div id="profile-content"></div>
   </div>
 
   <!-- AI チャットパネル -->
