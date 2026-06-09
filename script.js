@@ -1802,7 +1802,7 @@ function getMissionProgressKey() {
 }
 
 function getCompiler() {
-  if (currentLanguage === 'python') return 'cpython-3.12.0';
+  if (currentLanguage === 'python') return 'cpython-3.12.7';
   return 'gcc-head';
 }
 
