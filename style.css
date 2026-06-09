@@ -2211,6 +2211,209 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   font-family: 'Barlow Condensed', sans-serif;
 }
 
+/* ========== ヘッダー Lv バッジ ========== */
+.lv-badge-header {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  color: #9B9B9B;
+  border: 1px solid rgba(155,155,155,0.28);
+  padding: 3px 10px;
+  cursor: pointer;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  transition: color 0.3s, border-color 0.3s, text-shadow 0.3s;
+  white-space: nowrap;
+}
+.lv-badge-header:hover {
+  opacity: 0.85;
+  text-shadow: 0 0 10px currentColor;
+}
+
+/* ========== レベルアップオーバーレイ ========== */
+#levelup-effect {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 850;
+}
+#levelup-effect.hidden { display: none !important; }
+
+.levelup-box {
+  text-align: center;
+  animation: levelupAnim 2.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.levelup-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.45em;
+  color: var(--orange);
+  margin-bottom: 10px;
+  text-shadow: 0 0 20px rgba(255,107,0,0.7);
+}
+
+.levelup-num-wrap {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 6.5rem;
+  font-weight: 900;
+  color: var(--lv-color, var(--bright));
+  line-height: 1;
+  text-shadow:
+    0 0 30px var(--lv-color, rgba(255,107,0,0.6)),
+    0 0 80px var(--lv-color, rgba(255,107,0,0.3));
+  letter-spacing: -0.02em;
+}
+
+.levelup-title-text {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.32em;
+  color: var(--lv-color, rgba(255,107,0,0.8));
+  margin-top: 8px;
+  text-shadow: 0 0 14px var(--lv-color, rgba(255,107,0,0.5));
+}
+
+@keyframes levelupAnim {
+  0%   { opacity: 0; transform: scale(0.45) translateY(20px); filter: blur(8px); }
+  14%  { opacity: 1; transform: scale(1.06);                  filter: blur(0); }
+  28%  { transform: scale(1.0); }
+  70%  { opacity: 1; transform: scale(1.0); }
+  100% { opacity: 0; transform: scale(1.08) translateY(-28px); }
+}
+
+/* ========== EXP・レベルセクション（プロフィール） ========== */
+.exp-section { }
+
+.level-display {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: linear-gradient(135deg, rgba(0,0,0,0.0) 0%, rgba(14,12,9,0.6) 100%);
+  border: 1px solid var(--lv-color, rgba(255,107,0,0.18));
+  border-left: 3px solid var(--lv-color, #FF6B00);
+  padding: 20px 24px;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  box-shadow: 0 0 24px rgba(0,0,0,0.4), inset 0 0 30px rgba(0,0,0,0.3);
+}
+
+/* ヘキサゴン型レベル表示 */
+.level-hex {
+  flex-shrink: 0;
+  width: 88px;
+  height: 88px;
+  clip-path: polygon(50% 0%, 95% 26%, 95% 74%, 50% 100%, 5% 74%, 5% 26%);
+  background: var(--lv-color, #FF6B00);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 0 20px var(--lv-color, rgba(255,107,0,0.4));
+}
+
+.level-lv-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: rgba(7,6,4,0.75);
+  letter-spacing: 0.05em;
+  line-height: 1;
+  margin-bottom: 1px;
+}
+
+.level-num-big {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: rgba(7,6,4,0.88);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+/* レベル右側情報 */
+.level-right {
+  flex: 1;
+  min-width: 0;
+}
+
+.level-title-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.80rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  margin-bottom: 10px;
+  text-shadow: 0 0 12px currentColor;
+}
+
+/* EXP バー */
+.exp-bar-track {
+  height: 8px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.exp-bar-fill {
+  height: 100%;
+  max-width: 100%;
+  min-width: 0;
+  transition: width 1.0s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 0 8px currentColor;
+}
+
+.exp-bar-pct {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.54rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.exp-numbers {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: rgba(237,224,200,0.55);
+  margin-bottom: 4px;
+  letter-spacing: 0.04em;
+}
+.exp-slash { color: rgba(237,224,200,0.25); }
+
+.exp-total-row {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(160,144,112,0.45);
+  margin-bottom: 8px;
+}
+.exp-total-row b {
+  color: rgba(237,224,200,0.55);
+  font-weight: 700;
+}
+
+/* EXP 内訳 */
+.exp-breakdown {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.exp-src {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.60rem;
+  color: rgba(160,144,112,0.42);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
 /* ── ローディング ── */
 .profile-loading {
   font-family: 'Share Tech Mono', monospace;
@@ -2323,8 +2526,17 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
     gap: 16px;
     padding: 20px 20px;
   }
+  .level-display {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .level-hex { width: 72px; height: 72px; }
+  .level-num-big { font-size: 2rem; }
+  .exp-breakdown { gap: 8px; }
   .profile-stats-grid { grid-template-columns: 1fr; }
   .streak-grid        { grid-template-columns: 1fr; }
   .badge-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
   .profile-total { font-size: 2rem; }
+  .levelup-num-wrap { font-size: 4.8rem; }
 }

@@ -27,6 +27,7 @@
       </div>
       <div id="auth-area">
         <button id="sound-btn" onclick="toggleSound()" title="サウンドON/OFF">🔊</button>
+        <span id="lv-badge" class="lv-badge-header" onclick="openProfile()" title="プロフィールを開く">Lv.1</span>
         <button id="auth-btn" onclick="openAuthModal()">◆ LOGIN</button>
         <div id="user-info" class="hidden">
           <span id="user-email-display"></span>
@@ -99,6 +100,15 @@
     </div>
   </div>
   <button id="chat-toggle">AI</button>
+
+  <!-- レベルアップオーバーレイ -->
+  <div id="levelup-effect" class="hidden">
+    <div class="levelup-box">
+      <div class="levelup-label">◆ LEVEL UP ◆</div>
+      <div class="levelup-num-wrap">Lv.<span class="levelup-num">0</span></div>
+      <div class="levelup-title-text"></div>
+    </div>
+  </div>
 
   <!-- クリアエフェクトオーバーレイ -->
   <div id="clear-effect" class="hidden">

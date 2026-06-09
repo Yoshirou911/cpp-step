@@ -390,7 +390,8 @@ function recordLoginDay() {
   var today = new Date().toISOString().slice(0, 10);
   // localStorage に記録
   var local = JSON.parse(localStorage.getItem('login_days') || '[]');
-  if (local.indexOf(today) === -1) {
+  var isNew = local.indexOf(today) === -1;
+  if (isNew) {
     local.push(today);
     localStorage.setItem('login_days', JSON.stringify(local));
   }
@@ -401,6 +402,7 @@ function recordLoginDay() {
       login_date: today
     }).then(function() {}).catch(function() {});
   }
+  if (isNew) checkLevelUp(); // 新規ログイン日なら EXP を加算・判定
 }
 
 async function getLoginStreak() {
@@ -430,6 +432,171 @@ function getProfileRank(total) {
   if (total >= 10) return { name: 'SILVER',   color: '#B8C8D8' };
   if (total >=  1) return { name: 'BRONZE',   color: '#C47A2F' };
   return                   { name: 'ROOKIE',  color: '#9B9B9B' };
+}
+
+// ===== EXP・レベルシステム =====
+
+// 問題ランク別 EXP
+var RANK_EXP = {
+  rookie: 15, bronze: 25, silver: 40, gold: 60,
+  platinum: 85, diamond: 120, master: 160, legend: 500
+};
+// ミッションランク別 EXP
+var MISSION_EXP = {
+  rookie: 50, bronze: 80, silver: 130, gold: 200,
+  platinum: 280, diamond: 380, master: 500
+};
+var LOGIN_EXP = 20; // ユニークログイン1日あたり
+
+// 全進捗から合計EXP＋内訳を計算（localStorage のみ、同期）
+function calculateEXP() {
+  var problemExp = 0;
+  var missionExp = 0;
+
+  // 問題クリア EXP（3言語 × 全問題）
+  [
+    { key: 'cpp',        get: function() { return problems; } },
+    { key: 'python',     get: function() { return pythonProblems; } },
+    { key: 'javascript', get: function() { return javascriptProblems; } }
+  ].forEach(function(lang) {
+    var prog = JSON.parse(localStorage.getItem(lang.key + '_progress') || '[]');
+    lang.get().forEach(function(p) {
+      if (prog.indexOf(p.id) !== -1) {
+        problemExp += RANK_EXP[p.rank.toLowerCase()] || 15;
+      }
+    });
+  });
+
+  // ミッションクリア EXP（3言語 × 全ミッション）
+  [
+    { key: 'cpp',        get: function() { return missions; } },
+    { key: 'python',     get: function() { return pythonMissions; } },
+    { key: 'javascript', get: function() { return javascriptMissions; } }
+  ].forEach(function(lang) {
+    var prog = JSON.parse(localStorage.getItem(lang.key + '_mission_progress') || '[]');
+    lang.get().forEach(function(m) {
+      if (prog.indexOf(m.id) !== -1) {
+        missionExp += MISSION_EXP[m.rank.toLowerCase()] || 80;
+      }
+    });
+  });
+
+  // ログイン EXP
+  var loginDays = JSON.parse(localStorage.getItem('login_days') || '[]');
+  var loginExp  = loginDays.length * LOGIN_EXP;
+
+  return {
+    total:   problemExp + missionExp + loginExp,
+    problem: problemExp,
+    mission: missionExp,
+    login:   loginExp
+  };
+}
+
+// Lv N に到達するために必要な累計 EXP  ← Lv N→N+1 に N×150 EXP
+function totalExpForLevel(n) {
+  return 75 * n * (n - 1); // = sum_{i=1}^{n-1} 150i = 150·n(n-1)/2
+}
+
+// 次のレベルまでに必要な EXP
+function expToNextLevel(n) { return n * 150; }
+
+// 現在の EXP からレベルを算出
+function calcLevel(exp) {
+  if (exp <= 0) return 1;
+  var lv = 1;
+  while (totalExpForLevel(lv + 1) <= exp) lv++;
+  return lv;
+}
+
+// レベルから称号文字列を返す
+function getLevelTitle(lv) {
+  if (lv >= 100) return 'CODE GOD';
+  if (lv >= 75)  return 'LEGEND';
+  if (lv >= 50)  return 'MASTER DEVELOPER';
+  if (lv >= 40)  return 'TECH LEAD';
+  if (lv >= 30)  return 'ARCHITECT';
+  if (lv >= 20)  return 'SENIOR ENGINEER';
+  if (lv >= 15)  return 'ENGINEER';
+  if (lv >= 10)  return 'DEVELOPER';
+  if (lv >= 6)   return 'PROGRAMMER';
+  if (lv >= 3)   return 'CADET';
+  return 'TRAINEE';
+}
+
+// レベルからテーマカラーを返す
+function getLevelColor(lv) {
+  if (lv >= 75)  return '#FF2244'; // LEGEND (赤)
+  if (lv >= 50)  return '#C040FF'; // MASTER (紫)
+  if (lv >= 40)  return '#FF6B00'; // TECH LEAD (オレンジ)
+  if (lv >= 30)  return '#EFC050'; // ARCHITECT (ゴールド)
+  if (lv >= 20)  return '#00C8B4'; // SENIOR (プラチナ)
+  if (lv >= 15)  return '#5588FF'; // ENGINEER (ダイヤ)
+  if (lv >= 10)  return '#3776AB'; // DEVELOPER (ブルー)
+  if (lv >= 6)   return '#00E676'; // PROGRAMMER (グリーン)
+  if (lv >= 3)   return '#B8C8D8'; // CADET (シルバー)
+  return '#9B9B9B';                // TRAINEE (グレー)
+}
+
+// ヘッダーの Lv.XX バッジを更新
+function updateLevelBadge() {
+  try {
+    var expData = calculateEXP();
+    var lv = calcLevel(expData.total);
+    var el = document.getElementById('lv-badge');
+    if (el) {
+      el.textContent = 'Lv.' + lv;
+      el.style.color       = getLevelColor(lv);
+      el.style.borderColor = getLevelColor(lv) + '55';
+    }
+  } catch(e) {}
+}
+
+// レベルアップ効果音（上昇アルペジオ + 低域打音）
+function playLevelUpSound() {
+  if (!_soundEnabled) return;
+  try {
+    var ctx = getAudioCtx(), t = ctx.currentTime;
+    _tone(523.25, t,       0.13, 'sine',     0.20); // C5
+    _tone(659.25, t+0.09,  0.13, 'sine',     0.20); // E5
+    _tone(783.99, t+0.18,  0.13, 'sine',     0.20); // G5
+    _tone(1046.5, t+0.28,  0.45, 'sine',     0.24); // C6
+    _tone(1318.5, t+0.42,  0.60, 'sine',     0.17); // E6
+    _tone(1568.0, t+0.58,  0.75, 'sine',     0.12); // G6（余韻）
+    _tone(65,     t,       0.22, 'triangle', 0.28); // 低音ドラム
+    _tone(65,     t+0.28,  0.28, 'triangle', 0.20);
+  } catch(e) {}
+}
+
+// レベルアップオーバーレイを表示
+function showLevelUpEffect(lv) {
+  var el = document.getElementById('levelup-effect');
+  if (!el) return;
+  el.querySelector('.levelup-num').textContent    = lv;
+  el.querySelector('.levelup-title-text').textContent = getLevelTitle(lv);
+  el.style.setProperty('--lv-color', getLevelColor(lv));
+  el.classList.remove('hidden');
+  setTimeout(function() { el.classList.add('hidden'); }, 2800);
+  // コンフェッティ
+  if (window.confetti) {
+    confetti({ particleCount: 80, spread: 70, origin: { x: 0.5, y: 0.35 },
+      colors: ['#FF6B00', '#FFD700', getLevelColor(lv), '#ffffff'] });
+  }
+}
+
+// レベルアップ判定（セーブのたびに呼ぶ）
+function checkLevelUp() {
+  try {
+    var expData  = calculateEXP();
+    var newLv    = calcLevel(expData.total);
+    var prevLv   = parseInt(localStorage.getItem('user_level') || '0');
+    localStorage.setItem('user_level', String(newLv));
+    updateLevelBadge();
+    if (prevLv > 0 && newLv > prevLv) {
+      playLevelUpSound();
+      showLevelUpEffect(newLv);
+    }
+  } catch(e) {}
 }
 
 // ===== 言語データ =====
@@ -3107,6 +3274,7 @@ function saveProgress(id) {
       problem_id: id
     }).then(function() {}).catch(function() {});
   }
+  checkLevelUp(); // EXP・レベルアップ判定
 }
 
 function removeProgress(id) {
@@ -3795,6 +3963,7 @@ function saveMissionProgress(id) {
       mission_id: id
     }).then(function() {}).catch(function() {});
   }
+  checkLevelUp(); // EXP・レベルアップ判定
 }
 
 function removeMissionProgress(id) {
@@ -4063,6 +4232,16 @@ async function renderProfile() {
   stats.bestStreak    = streak.best;
   stats.totalDays     = streak.total;
 
+  // EXP・レベル計算
+  var expData    = calculateEXP();
+  var totalExp   = expData.total;
+  var level      = calcLevel(totalExp);
+  var lvColor    = getLevelColor(level);
+  var lvTitle    = getLevelTitle(level);
+  var expCurrent = totalExp - totalExpForLevel(level);    // 現レベル内の進捗EXP
+  var expNeed    = expToNextLevel(level);                 // 次レベルまで必要EXP
+  var expPct     = Math.min(100, Math.round(expCurrent / expNeed * 100));
+
   var rank   = getProfileRank(stats.total);
   var earned = BADGES.filter(function(b) { return b.check(stats); });
   var locked = BADGES.filter(function(b) { return !b.check(stats); });
@@ -4123,6 +4302,34 @@ async function renderProfile() {
         '</div>' +
         '<div class="profile-total">' + stats.total + '<span> / 90 CLEARED</span></div>' +
         '<div class="profile-mission-total">' + stats.totalMissions + ' / 18 MISSIONS</div>' +
+      '</div>' +
+    '</div>' +
+
+    // ─── EXP・レベル ───
+    '<div class="profile-section exp-section">' +
+      '<div class="profile-section-title">// LEVEL & EXP</div>' +
+      '<div class="level-display" style="--lv-color:' + lvColor + '">' +
+        '<div class="level-hex">' +
+          '<span class="level-lv-label">Lv.</span>' +
+          '<span class="level-num-big">' + level + '</span>' +
+        '</div>' +
+        '<div class="level-right">' +
+          '<div class="level-title-label" style="color:' + lvColor + '">' + lvTitle + '</div>' +
+          '<div class="exp-bar-track">' +
+            '<div class="exp-bar-fill" style="width:' + expPct + '%;background:' + lvColor + '"></div>' +
+            '<div class="exp-bar-pct" style="color:' + lvColor + '">' + expPct + '%</div>' +
+          '</div>' +
+          '<div class="exp-numbers">' +
+            expCurrent.toLocaleString() + ' <span class="exp-slash">/ </span>' +
+            expNeed.toLocaleString() + ' EXP  →  <span style="color:' + lvColor + '">Lv.' + (level + 1) + '</span>' +
+          '</div>' +
+          '<div class="exp-total-row">Total: <b>' + totalExp.toLocaleString() + ' EXP</b></div>' +
+          '<div class="exp-breakdown">' +
+            '<span class="exp-src">📘 問題 +' + expData.problem.toLocaleString() + '</span>' +
+            '<span class="exp-src">🎯 ミッション +' + expData.mission.toLocaleString() + '</span>' +
+            '<span class="exp-src">📅 ログイン +' + expData.login.toLocaleString() + '</span>' +
+          '</div>' +
+        '</div>' +
       '</div>' +
     '</div>' +
 
@@ -4373,6 +4580,9 @@ showPage("lang");
 
 // ゲスト時もローカルにログイン日を記録
 recordLoginDay();
+
+// ヘッダーの Lv バッジを初期化（データ配列定義後なので安全）
+setTimeout(updateLevelBadge, 0);
 
 // サウンドボタン初期状態
 (function() {
