@@ -2120,14 +2120,13 @@ function initAceEditor(initialCode) {
 
 function buildSkeleton(p) {
   if (currentLanguage === 'python') {
-    // 値だけ空欄にして骨格を見せる
+    // 文字列リテラル（f文字列以外）と数値だけ空欄にして骨格を見せる
     var skeleton = p.answer.trim()
-      .replace(/"[^"]*"/g, '"________"')
-      .replace(/'[^']*'/g, "'________'")
+      .replace(/(?<![fF])"[^"]*"/g, '"________"')
       .replace(/\b\d+(\.\d+)?\b/g, '____');
-    return '# 穴を埋めてコードを完成させてください\n' + skeleton + '\n';
+    return skeleton + '\n';
   }
-  // C++：ロジック行の値だけ空欄にして骨格を見せる
+  // C++：ロジック行の文字列と数値だけ空欄にして骨格を見せる
   var allLines = p.answer.split('\n');
   var includes = allLines
     .filter(function(l) { return l.trim().startsWith('#include'); })
@@ -2142,7 +2141,6 @@ function buildSkeleton(p) {
   }).join('\n');
   return includes
     + '\nusing namespace std;\n\nint main() {\n'
-    + '    // 穴を埋めてコードを完成させてください\n'
     + (blankedLogic ? blankedLogic + '\n' : '    \n')
     + '    return 0;\n'
     + '}';
