@@ -1893,26 +1893,33 @@ function renderList() {
 
   unitOrder.forEach(function(unitName) {
     // 単元ヘッダー
+    var unitProblems = units[unitName];
+    var clearedCount = unitProblems.filter(function(p) { return isLearned(p.id); }).length;
+    var topRank = unitProblems[unitProblems.length - 1].rank.toLowerCase();
     var header = document.createElement("div");
     header.className = "unit-header";
-    header.textContent = unitName;
+    header.innerHTML =
+      '<span class="unit-header-name">' + unitName + '</span>' +
+      '<span class="unit-header-meta">' +
+        '<span class="unit-header-count rank-' + topRank + '">' + clearedCount + ' / ' + unitProblems.length + '</span>' +
+      '</span>';
     list.appendChild(header);
 
     // 問題カード
     units[unitName].forEach(function(p) {
       var learned = isLearned(p.id);
       var card = document.createElement("div");
-      card.className = "problem-card" + (learned ? " learned" : "");
+      card.className = "problem-card rank-card-" + p.rank.toLowerCase() + (learned ? " learned" : "");
 
       card.innerHTML =
         '<div class="card-left">' +
-          '<span class="problem-id">#' + p.id + '</span>' +
+          '<span class="card-num">' + String(p.id).padStart(2, '0') + '</span>' +
           '<span class="problem-title">' + p.title + '</span>' +
         '</div>' +
         '<div class="card-right">' +
           '<span class="rank-badge rank-' + p.rank.toLowerCase() + '">' + p.rank + '</span>' +
           '<span class="badge ' + (learned ? "" : "not-learned") + '">' +
-            (learned ? "✔ CLEAR" : "—") +
+            (learned ? "✔" : "—") +
           '</span>' +
         '</div>';
 

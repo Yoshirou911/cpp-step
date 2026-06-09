@@ -271,48 +271,68 @@ header::after {
   text-shadow: 0 0 10px rgba(192,64,255,0.7), 0 0 20px rgba(192,64,255,0.3);
 }
 
-/* ========== 単元ヘッダー ========== */
+/* ========== 単元ヘッダー（APEX ロールタブ風） ========== */
 .unit-header {
-  font-size: 0.63rem;
-  font-weight: 800;
-  color: rgba(255,107,0,0.40);
-  letter-spacing: 0.30em;
-  text-transform: uppercase;
-  padding: 24px 6px 10px;
-  margin-bottom: 6px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  padding: 8px 16px 8px 14px;
+  margin: 28px 0 8px;
+  background: linear-gradient(90deg, rgba(255,107,0,0.10) 0%, rgba(255,107,0,0.03) 60%, transparent 100%);
+  border-left: 3px solid var(--orange);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  position: relative;
 }
 
-.unit-header::before {
+.unit-header:first-child { margin-top: 8px; }
+
+.unit-header::after {
   content: '';
-  flex: 1;
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, rgba(255,107,0,0.18), transparent);
-  display: block;
-  order: 999;
+  background: linear-gradient(90deg, rgba(255,107,0,0.25), transparent 70%);
 }
 
-.unit-header:first-child { padding-top: 6px; }
+.unit-header-name {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--bright);
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+}
 
-/* ========== 問題カード ========== */
+.unit-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.unit-header-count {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 8px currentColor;
+}
+
+/* ========== 問題カード（APEX キャラカード風） ========== */
 .problem-card {
-  background: rgba(10,7,4,0.55);
+  background: rgba(10,7,4,0.60);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,107,0,0.10);
-  border-left: 2px solid rgba(255,107,0,0.22);
-  padding: 14px 22px 14px 18px;
-  margin-bottom: 5px;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-left: 3px solid rgba(255,107,0,0.25);
+  padding: 11px 18px 11px 14px;
+  margin-bottom: 4px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
-  clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
 }
 
 /* 走査ライン */
@@ -320,31 +340,38 @@ header::after {
   content: '';
   position: absolute;
   top: 0; left: -100%;
-  width: 60%;
+  width: 50%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,107,0,0.05), transparent);
-  transition: left 0.5s ease;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+  transition: left 0.45s ease;
 }
-
 .problem-card:hover::after { left: 160%; }
 
-.problem-card:hover {
-  background: rgba(255,120,20,0.055);
-  border-left-color: var(--orange);
-  border-top-color: rgba(255,107,0,0.18);
-  box-shadow:
-    4px 0 0 rgba(255,107,0,0.08),
-    0 4px 28px rgba(0,0,0,0.35),
-    inset 0 0 60px rgba(255,107,0,0.025);
-  transform: translateX(7px);
-}
+/* ランク別左ボーダー色 */
+.rank-card-rookie  { border-left-color: rgba(155,155,155,0.5); }
+.rank-card-bronze  { border-left-color: rgba(196,122,47,0.5); }
+.rank-card-silver  { border-left-color: rgba(184,200,216,0.5); }
+.rank-card-gold    { border-left-color: rgba(239,192,80,0.5); }
+.rank-card-platinum{ border-left-color: rgba(0,200,180,0.5); }
+.rank-card-diamond { border-left-color: rgba(85,136,255,0.5); }
+.rank-card-master  { border-left-color: rgba(192,64,255,0.5); }
+
+/* ホバー：ランク色でグロー */
+.rank-card-rookie:hover  { border-left-color:#9B9B9B; background:rgba(155,155,155,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(155,155,155,0.15); transform:translateX(5px); }
+.rank-card-bronze:hover  { border-left-color:#C47A2F; background:rgba(196,122,47,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(196,122,47,0.18); transform:translateX(5px); }
+.rank-card-silver:hover  { border-left-color:#B8C8D8; background:rgba(184,200,216,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(184,200,216,0.18); transform:translateX(5px); }
+.rank-card-gold:hover    { border-left-color:#EFC050; background:rgba(239,192,80,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(239,192,80,0.18); transform:translateX(5px); }
+.rank-card-platinum:hover{ border-left-color:#00C8B4; background:rgba(0,200,180,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(0,200,180,0.18); transform:translateX(5px); }
+.rank-card-diamond:hover { border-left-color:#5588FF; background:rgba(85,136,255,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(85,136,255,0.18); transform:translateX(5px); }
+.rank-card-master:hover  { border-left-color:#C040FF; background:rgba(192,64,255,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(192,64,255,0.22); transform:translateX(5px); }
 
 .problem-card.learned {
-  border-left-color: rgba(0,230,118,0.45);
+  border-left-color: rgba(0,230,118,0.5) !important;
 }
-
 .problem-card.learned:hover {
-  border-left-color: var(--green);
+  border-left-color: var(--green) !important;
+  background: rgba(0,230,118,0.05) !important;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(0,230,118,0.18) !important;
 }
 
 .card-left {
@@ -359,13 +386,18 @@ header::after {
   gap: 12px;
 }
 
-.problem-id {
-  color: rgba(255,107,0,0.35);
-  font-size: 0.76rem;
-  font-weight: 700;
-  min-width: 28px;
+.card-num {
   font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--dim);
+  min-width: 26px;
   letter-spacing: 0.04em;
+  text-align: center;
+  padding: 2px 0;
+  border-right: 1px solid rgba(255,107,0,0.12);
+  margin-right: 4px;
+  padding-right: 12px;
 }
 
 .problem-title {
