@@ -1,0 +1,355 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#070604"/>
+      <stop offset="60%" stop-color="#0a0805"/>
+      <stop offset="100%" stop-color="#0e0c09"/>
+    </linearGradient>
+    <filter id="oglow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softglow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <clipPath id="panelClip">
+      <rect x="738" y="48" width="418" height="534"/>
+    </clipPath>
+  </defs>
+
+  <!-- ═══ BACKGROUND ═══ -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Subtle dot grid (left area) -->
+  <pattern id="dots" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
+    <circle cx="16" cy="16" r="1" fill="rgba(255,107,0,0.06)"/>
+  </pattern>
+  <rect x="0" y="0" width="720" height="630" fill="url(#dots)"/>
+
+  <!-- Left orange accent bar -->
+  <rect x="0" y="0" width="6" height="630" fill="#FF6B00"/>
+  <rect x="0" y="0" width="6" height="630" fill="#FF6B00" filter="url(#softglow)" opacity="0.6"/>
+
+  <!-- Top & bottom thin lines -->
+  <rect x="0" y="0"   width="1200" height="2" fill="rgba(255,107,0,0.18)"/>
+  <rect x="0" y="628" width="1200" height="2" fill="rgba(255,107,0,0.12)"/>
+
+  <!-- Diagonal separator between left/right -->
+  <line x1="720" y1="0" x2="680" y2="630" stroke="rgba(255,107,0,0.08)" stroke-width="1"/>
+
+  <!-- ═══ LEFT COLUMN ═══ -->
+
+  <!-- Pre-label -->
+  <text x="60" y="88"
+    font-family="'Courier New', Courier, monospace"
+    font-size="17"
+    fill="rgba(255,107,0,0.48)"
+    letter-spacing="5">◆ FREE PROGRAMMING TRAINING ◆</text>
+
+  <!-- CODE -->
+  <text x="52" y="248"
+    font-family="'Arial Black', Impact, 'Helvetica Neue', Arial, sans-serif"
+    font-size="175"
+    font-weight="900"
+    fill="#EDE0C8"
+    letter-spacing="8">CODE</text>
+
+  <!-- STEP with glow -->
+  <text x="52" y="418"
+    font-family="'Arial Black', Impact, 'Helvetica Neue', Arial, sans-serif"
+    font-size="175"
+    font-weight="900"
+    fill="#FF6B00"
+    letter-spacing="8"
+    filter="url(#oglow)">STEP</text>
+
+  <!-- Divider -->
+  <rect x="60" y="443" width="590" height="1" fill="rgba(255,107,0,0.20)"/>
+
+  <!-- Japanese tagline -->
+  <text x="62" y="480"
+    font-family="'Hiragino Kaku Gothic ProN', 'Noto Sans CJK JP', 'Yu Gothic', 'Meiryo', 'Arial', sans-serif"
+    font-size="30"
+    font-weight="700"
+    fill="rgba(237,224,200,0.72)"
+    letter-spacing="3">コードで、レベルアップしろ。</text>
+
+  <!-- Languages -->
+  <text x="62" y="527"
+    font-family="'Courier New', Courier, monospace"
+    font-size="23"
+    fill="rgba(160,144,112,0.52)"
+    letter-spacing="2">C++   ·   Python   ·   JavaScript</text>
+
+  <!-- Stats row -->
+  <text x="62" y="587"
+    font-family="'Courier New', Courier, monospace"
+    font-size="19"
+    fill="rgba(255,107,0,0.58)"
+    letter-spacing="2">90問 ◆ 18ミッション ◆ 3言語 ◆ 完全無料</text>
+
+  <!-- URL -->
+  <text x="62" y="616"
+    font-family="'Courier New', Courier, monospace"
+    font-size="14"
+    fill="rgba(160,144,112,0.28)"
+    letter-spacing="1">cpp-step.vercel.app</text>
+
+  <!-- ═══ RIGHT PANEL ═══ -->
+
+  <!-- Panel background -->
+  <rect x="738" y="48" width="418" height="534"
+    fill="rgba(12,10,7,0.92)"
+    stroke="rgba(255,107,0,0.20)"
+    stroke-width="1"/>
+
+  <!-- Panel header bar -->
+  <rect x="738" y="48" width="418" height="42" fill="rgba(255,107,0,0.07)"/>
+  <rect x="738" y="89" width="418" height="1" fill="rgba(255,107,0,0.14)"/>
+  <text x="758" y="74"
+    font-family="'Courier New', monospace"
+    font-size="14"
+    fill="rgba(255,107,0,0.65)"
+    letter-spacing="4">// PROFILE</text>
+  <text x="1138" y="74"
+    font-family="'Courier New', monospace"
+    font-size="15"
+    fill="rgba(255,107,0,0.55)"
+    text-anchor="end"
+    letter-spacing="1">Lv.20</text>
+
+  <!-- Avatar circle -->
+  <circle cx="795" cy="145" r="30" fill="rgba(255,107,0,0.12)" stroke="#FF6B00" stroke-width="1.5"/>
+  <text x="795" y="155"
+    font-family="'Arial Black', Impact, sans-serif"
+    font-size="26"
+    font-weight="900"
+    fill="#FF6B00"
+    text-anchor="middle">Y</text>
+
+  <!-- Name & rank -->
+  <text x="836" y="130"
+    font-family="'Courier New', monospace"
+    font-size="12"
+    fill="rgba(237,224,200,0.55)"
+    letter-spacing="1">user@example.com</text>
+  <text x="836" y="150"
+    font-family="'Courier New', monospace"
+    font-size="13"
+    fill="#EFC050"
+    font-weight="700"
+    letter-spacing="3">◆ VETERAN ◆</text>
+  <text x="836" y="168"
+    font-family="'Courier New', monospace"
+    font-size="12"
+    fill="rgba(160,144,112,0.45)"
+    letter-spacing="1">42 / 90 CLEARED</text>
+
+  <!-- Section divider -->
+  <rect x="752" y="188" width="390" height="1" fill="rgba(255,107,0,0.10)"/>
+
+  <!-- EXP / Level -->
+  <text x="758" y="210"
+    font-family="'Courier New', monospace"
+    font-size="11"
+    fill="rgba(160,144,112,0.45)"
+    letter-spacing="3">SENIOR ENGINEER  —  Lv.20</text>
+  <!-- EXP bar track -->
+  <rect x="758" y="218" width="388" height="6" fill="rgba(255,107,0,0.07)"/>
+  <!-- EXP bar fill (64%) -->
+  <rect x="758" y="218" width="249" height="6" fill="#FF6B00"/>
+  <text x="1148" y="228"
+    font-family="'Courier New', monospace"
+    font-size="11"
+    fill="rgba(255,107,0,0.60)"
+    text-anchor="end">64%</text>
+
+  <!-- Section divider -->
+  <rect x="752" y="242" width="390" height="1" fill="rgba(255,107,0,0.10)"/>
+
+  <!-- Language stats label -->
+  <text x="758" y="262"
+    font-family="'Courier New', monospace"
+    font-size="11"
+    fill="rgba(160,144,112,0.38)"
+    letter-spacing="3">// LANGUAGE STATS</text>
+
+  <!-- C++ row -->
+  <text x="758" y="289"
+    font-family="'Courier New', monospace"
+    font-size="14"
+    font-weight="700"
+    fill="#00599C"
+    letter-spacing="1">C++</text>
+  <rect x="802" y="278" width="260" height="7" fill="rgba(0,89,156,0.10)"/>
+  <rect x="802" y="278" width="217" height="7" fill="rgba(0,89,156,0.72)"/>
+  <text x="1144" y="289"
+    font-family="'Courier New', monospace"
+    font-size="12"
+    fill="rgba(0,89,156,0.80)"
+    text-anchor="end">25/30</text>
+
+  <!-- Python row -->
+  <text x="758" y="318"
+    font-family="'Courier New', monospace"
+    font-size="14"
+    font-weight="700"
+    fill="#3776AB"
+    letter-spacing="1">Python</text>
+  <rect x="822" y="307" width="240" height="7" fill="rgba(55,118,171,0.10)"/>
+  <rect x="822" y="307" width="176" height="7" fill="rgba(55,118,171,0.72)"/>
+  <text x="1144" y="318"
+    font-family="'Courier New', monospace"
+    font-size="12"
+    fill="rgba(55,118,171,0.80)"
+    text-anchor="end">22/30</text>
+
+  <!-- JavaScript row -->
+  <text x="758" y="347"
+    font-family="'Courier New', monospace"
+    font-size="14"
+    font-weight="700"
+    fill="#C8A030"
+    letter-spacing="1">JavaScript</text>
+  <rect x="858" y="336" width="204" height="7" fill="rgba(200,160,48,0.10)"/>
+  <rect x="858" y="336" width="102" height="7" fill="rgba(200,160,48,0.72)"/>
+  <text x="1144" y="347"
+    font-family="'Courier New', monospace"
+    font-size="12"
+    fill="rgba(200,160,48,0.80)"
+    text-anchor="end">15/30</text>
+
+  <!-- Section divider -->
+  <rect x="752" y="363" width="390" height="1" fill="rgba(255,107,0,0.10)"/>
+
+  <!-- Badges label -->
+  <text x="758" y="382"
+    font-family="'Courier New', monospace"
+    font-size="11"
+    fill="rgba(160,144,112,0.38)"
+    letter-spacing="3">// BADGES  8 / 19 解除</text>
+
+  <!-- Badge chips -->
+  <rect x="758" y="392" width="84" height="22" fill="rgba(196,122,47,0.12)" stroke="rgba(196,122,47,0.32)" stroke-width="1"/>
+  <text x="800" y="407"
+    font-family="'Courier New', monospace"
+    font-size="9"
+    fill="#C47A2F"
+    text-anchor="middle"
+    letter-spacing="1">FIRST STEP</text>
+
+  <rect x="850" y="392" width="80" height="22" fill="rgba(184,200,216,0.12)" stroke="rgba(184,200,216,0.32)" stroke-width="1"/>
+  <text x="890" y="407"
+    font-family="'Courier New', monospace"
+    font-size="9"
+    fill="#B8C8D8"
+    text-anchor="middle"
+    letter-spacing="1">3D STREAK</text>
+
+  <rect x="938" y="392" width="84" height="22" fill="rgba(239,192,80,0.12)" stroke="rgba(239,192,80,0.32)" stroke-width="1"/>
+  <text x="980" y="407"
+    font-family="'Courier New', monospace"
+    font-size="9"
+    fill="#EFC050"
+    text-anchor="middle"
+    letter-spacing="1">BILINGUAL</text>
+
+  <rect x="1030" y="392" width="96" height="22" fill="rgba(0,200,180,0.12)" stroke="rgba(0,200,180,0.32)" stroke-width="1"/>
+  <text x="1078" y="407"
+    font-family="'Courier New', monospace"
+    font-size="9"
+    fill="#00C8B4"
+    text-anchor="middle"
+    letter-spacing="1">TRILINGUAL</text>
+
+  <!-- Section divider -->
+  <rect x="752" y="425" width="390" height="1" fill="rgba(255,107,0,0.10)"/>
+
+  <!-- Streak & study time -->
+  <text x="758" y="450"
+    font-family="'Courier New', Courier, monospace"
+    font-size="13"
+    fill="rgba(237,224,200,0.58)"
+    letter-spacing="1">🔥  7日連続ログイン中</text>
+  <text x="758" y="474"
+    font-family="'Courier New', Courier, monospace"
+    font-size="13"
+    fill="rgba(237,224,200,0.58)"
+    letter-spacing="1">📅  総学習時間  3h 42m</text>
+
+  <!-- Section divider -->
+  <rect x="752" y="492" width="390" height="1" fill="rgba(255,107,0,0.10)"/>
+
+  <!-- Activity heatmap (mini) -->
+  <text x="758" y="510"
+    font-family="'Courier New', monospace"
+    font-size="11"
+    fill="rgba(160,144,112,0.38)"
+    letter-spacing="3">// ACTIVITY</text>
+
+  <!-- Mini heatmap cells (5×7 = 35 days, 2 rows shown) -->
+  <!-- Row 1: week columns (each 10px wide, 2px gap) -->
+  <rect x="758" y="520" width="9" height="9" fill="rgba(255,107,0,0.07)" rx="1"/>
+  <rect x="769" y="520" width="9" height="9" fill="rgba(255,107,0,0.25)" rx="1"/>
+  <rect x="780" y="520" width="9" height="9" fill="rgba(255,107,0,0.07)" rx="1"/>
+  <rect x="791" y="520" width="9" height="9" fill="rgba(255,107,0,0.52)" rx="1"/>
+  <rect x="802" y="520" width="9" height="9" fill="rgba(255,107,0,0.07)" rx="1"/>
+  <rect x="813" y="520" width="9" height="9" fill="rgba(255,107,0,0.78)" rx="1"/>
+  <rect x="824" y="520" width="9" height="9" fill="rgba(255,107,0,1.00)" rx="1"/>
+  <rect x="835" y="520" width="9" height="9" fill="rgba(255,107,0,0.25)" rx="1"/>
+  <rect x="846" y="520" width="9" height="9" fill="rgba(255,107,0,0.07)" rx="1"/>
+  <rect x="857" y="520" width="9" height="9" fill="rgba(255,107,0,0.52)" rx="1"/>
+  <rect x="868" y="520" width="9" height="9" fill="rgba(255,107,0,0.25)" rx="1"/>
+  <rect x="879" y="520" width="9" height="9" fill="rgba(255,107,0,0.78)" rx="1"/>
+  <rect x="890" y="520" width="9" height="9" fill="rgba(255,107,0,0.07)" rx="1"/>
+  <rect x="901" y="520" width="9" height="9" fill="rgba(255,107,0,0.07)" rx="1"/>
+  <rect x="912" y="520" width="9" height="9" fill="rgba(255,107,0,0.52)" rx="1"/>
+  <rect x="923" y="520" width="9" height="9" fill="rgba(255,107,0,1.00)" rx="1"/>
+  <rect x="934" y="520" width="9" height="9" fill="rgba(255,107,0,0.78)" rx="1"/>
+  <rect x="945" y="520" width="9" height="9" fill="rgba(255,107,0,0.07)" rx="1"/>
+  <rect x="956" y="520" width="9" height="9" fill="rgba(255,107,0,0.25)" rx="1"/>
+  <rect x="967" y="520" width="9" height="9" fill="rgba(255,107,0,0.52)" rx="1"/>
+  <!-- Row 2 -->
+  <rect x="758" y="531" width="9" height="9" fill="rgba(255,107,0,0.25)" rx="1"/>
+  <rect x="769" y="531" width="9" height="9" fill="rgba(255,107,0,0.07)" rx="1"/>
+  <rect x="780" y="531" width="9" height="9" fill="rgba(255,107,0,0.52)" rx="1"/>
+  <rect x="791" y="531" width="9" height="9" fill="rgba(255,107,0,0.25)" rx="1"/>
+  <rect x="802" y="531" width="9" height="9" fill="rgba(255,107,0,1.00)" rx="1"/>
+  <rect x="813" y="531" width="9" height="9" fill="rgba(255,107,0,0.07)" rx="1"/>
+  <rect x="824" y="531" width="9" height="9" fill="rgba(255,107,0,0.52)" rx="1"/>
+  <rect x="835" y="531" width="9" height="9" fill="rgba(255,107,0,0.78)" rx="1"/>
+  <rect x="846" y="531" width="9" height="9" fill="rgba(255,107,0,0.25)" rx="1"/>
+  <rect x="857" y="531" width="9" height="9" fill="rgba(255,107,0,0.07)" rx="1"/>
+  <rect x="868" y="531" width="9" height="9" fill="rgba(255,107,0,0.78)" rx="1"/>
+  <rect x="879" y="531" width="9" height="9" fill="rgba(255,107,0,0.52)" rx="1"/>
+  <rect x="890" y="531" width="9" height="9" fill="rgba(255,107,0,0.07)" rx="1"/>
+  <rect x="901" y="531" width="9" height="9" fill="rgba(255,107,0,1.00)" rx="1"/>
+  <rect x="912" y="531" width="9" height="9" fill="rgba(255,107,0,0.25)" rx="1"/>
+  <rect x="923" y="531" width="9" height="9" fill="rgba(255,107,0,0.07)" rx="1"/>
+  <rect x="934" y="531" width="9" height="9" fill="rgba(255,107,0,0.52)" rx="1"/>
+  <rect x="945" y="531" width="9" height="9" fill="rgba(255,107,0,0.78)" rx="1"/>
+  <rect x="956" y="531" width="9" height="9" fill="rgba(255,107,0,0.25)" rx="1"/>
+  <rect x="967" y="531" width="9" height="9" fill="rgba(255,107,0,1.00)" rx="1"/>
+
+  <!-- Panel bottom URL -->
+  <rect x="738" y="569" width="418" height="1" fill="rgba(255,107,0,0.10)"/>
+  <text x="752" y="591"
+    font-family="'Courier New', monospace"
+    font-size="12"
+    fill="rgba(255,107,0,0.35)"
+    letter-spacing="2">cpp-step.vercel.app</text>
+  <text x="1138" y="591"
+    font-family="'Courier New', monospace"
+    font-size="11"
+    fill="rgba(160,144,112,0.25)"
+    text-anchor="end"
+    letter-spacing="1">FREE · NO INSTALL</text>
+</svg>

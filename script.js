@@ -900,10 +900,12 @@ async function sendPasswordReset() {
       redirectTo: window.location.origin + '/'
     });
     if (result.error) throw result.error;
-    sucEl.textContent = 'パスワードリセットメールを送信しました。受信ボックスをご確認ください。';
+    sucEl.innerHTML =
+      'パスワードリセットメールを送信しました ✓<br>' +
+      '<span style="font-size:0.65rem;color:rgba(160,144,112,0.55)">受信ボックス・迷惑メールフォルダを確認してください</span>';
     sucEl.classList.remove('hidden');
   } catch(e) {
-    errEl.textContent = '送信エラー: ' + (e.message || '不明なエラー');
+    errEl.textContent = translateAuthError(e.message || '不明なエラー');
     errEl.classList.remove('hidden');
   }
 
@@ -4671,6 +4673,31 @@ function _statCardHTML(lang, color, count, pct, missions) {
 
 // ===== 認証モーダル UI =====
 
+// Supabase エラーメッセージを日本語に変換
+function translateAuthError(msg) {
+  if (!msg) return '不明なエラーが発生しました';
+  if (msg.includes('Invalid login credentials') || msg.includes('invalid_credentials'))
+    return 'メールアドレスまたはパスワードが正しくありません';
+  if (msg.includes('Email not confirmed'))
+    return 'メールアドレスの確認が完了していません。届いた確認メールのリンクをクリックしてください。';
+  if (msg.includes('User already registered') || msg.includes('already been registered'))
+    return 'このメールアドレスは既に登録されています。ログインタブからお試しください。';
+  if (msg.includes('Password should be at least'))
+    return 'パスワードは6文字以上で入力してください';
+  if (msg.includes('Unable to validate email') || msg.includes('invalid email'))
+    return '有効なメールアドレスを入力してください';
+  if (msg.includes('Email rate limit') || msg.includes('over_email_send_rate_limit'))
+    return 'メール送信の上限に達しました。しばらく待ってから再試行してください';
+  if (msg.includes('signup disabled'))
+    return '現在アカウント登録は受け付けていません';
+  if (msg.includes('network') || msg.includes('fetch'))
+    return 'ネットワークエラー。インターネット接続を確認してください';
+  return msg; // 翻訳なし → そのまま表示
+}
+
+// 確認待ちメールアドレスを保持（再送用）
+var _pendingConfirmEmail = null;
+
 function openAuthModal() {
   playUIClick();
   document.getElementById('auth-modal').classList.remove('hidden');
@@ -4686,6 +4713,7 @@ function closeAuthModal() {
   document.getElementById('auth-password').value = '';
   var fpBtn = document.getElementById('forgot-pw-btn');
   if (fpBtn) { fpBtn.disabled = false; fpBtn.textContent = 'パスワードを忘れた方'; }
+  _pendingConfirmEmail = null;
 }
 
 function switchAuthTab(tab) {
@@ -4732,19 +4760,41 @@ async function submitAuth() {
   btn.textContent = _currentAuthTab === 'login' ? 'LOGIN' : 'SIGN UP';
 
   if (result.error) {
-    errEl.textContent = result.error.message;
+    errEl.textContent = translateAuthError(result.error.message);
     errEl.classList.remove('hidden');
     return;
   }
 
   // サインアップ後にメール確認が必要な場合
   if (_currentAuthTab === 'signup' && result.data && result.data.user && !result.data.session) {
-    sucEl.textContent = '確認メールを送信しました。受信ボックスをご確認ください。';
+    _pendingConfirmEmail = email;
+    sucEl.innerHTML =
+      '確認メールを送信しました。受信ボックスをご確認ください。<br>' +
+      '<button class="auth-text-link" style="margin-top:6px;display:inline-block" ' +
+        'onclick="resendConfirmEmail()">メールが届かない場合は再送する</button>';
     sucEl.classList.remove('hidden');
     return;
   }
 
   closeAuthModal();
+}
+
+// 確認メール再送
+async function resendConfirmEmail() {
+  if (!_pendingConfirmEmail || !_supabase) return;
+  var sucEl = document.getElementById('auth-success');
+  var errEl = document.getElementById('auth-error');
+  errEl.classList.add('hidden');
+
+  try {
+    var result = await _supabase.auth.resend({ type: 'signup', email: _pendingConfirmEmail });
+    if (result.error) throw result.error;
+    sucEl.innerHTML = '確認メールを再送しました ✓<br>' +
+      '<span style="font-size:0.65rem;color:rgba(160,144,112,0.55)">迷惑メールフォルダも確認してください</span>';
+  } catch(e) {
+    errEl.textContent = translateAuthError(e.message || '再送に失敗しました');
+    errEl.classList.remove('hidden');
+  }
 }
 
 async function authSignOut() {
