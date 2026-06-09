@@ -18,7 +18,7 @@ var LANGUAGE_GROUPS = [
     desc: '少し複雑だが実用的なアプリが作れる',
     langs: [
       {
-        id: 'javascript', name: 'JavaScript', color: '#F0C040', problems: 0, available: false,
+        id: 'javascript', name: 'JavaScript', color: '#F0C040', problems: 30, available: true,
         uses: ['Webフロントエンド', 'ブラウザゲーム', 'Node.js サーバー']
       },
       {
@@ -1801,6 +1801,681 @@ const missions = [
   }
 ];
 
+// ===== JavaScript 問題データ =====
+
+const javascriptProblems = [
+
+  // UNIT 01
+  {
+    id: 1, unit: "UNIT 01  ◆  基礎・出力", rank: "ROOKIE",
+    title: "Hello World",
+    question: "「Hello, World!」と画面に出力するプログラムを書いてください。",
+    hint: "console.log() を使って出力します。",
+    answer: `console.log("Hello, World!");`,
+    explanation: "console.log() はJavaScriptの基本的な出力関数です。文字列はダブルクォートまたはシングルクォートで囲みます。"
+  },
+  {
+    id: 2, unit: "UNIT 01  ◆  基礎・出力", rank: "ROOKIE",
+    title: "コメントの書き方",
+    question: "// による1行コメントと /* */ による複数行コメントを両方含むプログラムを書き、「Hello」と出力してください。",
+    hint: "// は1行コメント、/* ～ */ は複数行コメントです。",
+    answer:
+`// これは1行コメントです
+/*
+これは複数行コメントです
+*/
+console.log("Hello");`,
+    explanation: "// より右はすべてコメントです。/* */ で囲むと複数行コメントになります。"
+  },
+  {
+    id: 3, unit: "UNIT 01  ◆  基礎・出力", rank: "ROOKIE",
+    title: "let と const",
+    question: "const で name に \"Taro\" を、let で age に 20 を代入して、両方を出力してください。",
+    hint: "const は再代入不可、let は再代入可能な変数宣言です。",
+    answer:
+`const name = "Taro";
+let age = 20;
+console.log(name);
+console.log(age);`,
+    explanation: "const は定数（値を変えられない）、let は変数（値を変えられる）です。現代のJavaScriptでは var より const/let を使います。"
+  },
+  {
+    id: 4, unit: "UNIT 01  ◆  基礎・出力", rank: "BRONZE",
+    title: "テンプレートリテラル",
+    question: "name に \"Taro\"、age に 20 を代入し、テンプレートリテラルを使って「Taroは20歳です」と出力してください。",
+    hint: "バッククォート ` で囲み、${変数名} で値を埋め込みます。",
+    answer:
+`const name = "Taro";
+const age = 20;
+console.log(`${name}は${age}歳です`);`,
+    explanation: "テンプレートリテラルはバッククォートで囲み、${} の中に変数や式を書けます。"
+  },
+  {
+    id: 5, unit: "UNIT 01  ◆  基礎・出力", rank: "BRONZE",
+    title: "データ型と型変換",
+    question: "文字列 \"42\" を Number() で数値に変換して 8 を足した結果と、変換前後の型を typeof で出力してください。",
+    hint: "Number() で文字列を数値に変換できます。typeof で型を確認できます。",
+    answer:
+`const str = "42";
+const num = Number(str);
+console.log(typeof str);
+console.log(typeof num);
+console.log(num + 8);`,
+    explanation: "Number()で文字列→数値変換ができます。typeof演算子で型を確認できます。"
+  },
+
+  // UNIT 02
+  {
+    id: 6, unit: "UNIT 02  ◆  演算と条件分岐", rank: "ROOKIE",
+    title: "四則演算・剰余・べき乗",
+    question: "a = 17、b = 5 として、a+b, a-b, a*b, a/b, a%b, a**2 をそれぞれ出力してください。",
+    hint: "% は剰余、** はべき乗です。",
+    answer:
+`const a = 17;
+const b = 5;
+console.log(a + b);
+console.log(a - b);
+console.log(a * b);
+console.log(a / b);
+console.log(a % b);
+console.log(a ** 2);`,
+    explanation: "% は余り（17%5=2）、** はべき乗（17**2=289）です。/ は常に小数を返します（17/5=3.4）。"
+  },
+  {
+    id: 7, unit: "UNIT 02  ◆  演算と条件分岐", rank: "ROOKIE",
+    title: "if / else",
+    question: "score = 75 として、60以上なら「合格」、未満なら「不合格」と出力してください。",
+    hint: "if (条件) { } else { } の形で書きます。",
+    answer:
+`const score = 75;
+if (score >= 60) {
+    console.log("合格");
+} else {
+    console.log("不合格");
+}`,
+    explanation: "if文は条件が true のときのみブロックを実行します。else は条件が false のときに実行されます。"
+  },
+  {
+    id: 8, unit: "UNIT 02  ◆  演算と条件分岐", rank: "BRONZE",
+    title: "三項演算子",
+    question: "x = -5 として、正の数なら「正」、そうでなければ「非正」を result に代入して出力してください。",
+    hint: "条件 ? 値A : 値B の形で書きます。",
+    answer:
+`const x = -5;
+const result = x > 0 ? "正" : "非正";
+console.log(result);`,
+    explanation: "三項演算子は 条件 ? trueの値 : falseの値 です。if-elseを1行で書けます。"
+  },
+  {
+    id: 9, unit: "UNIT 02  ◆  演算と条件分岐", rank: "BRONZE",
+    title: "switch文",
+    question: "day = 3 として、1→「月曜」2→「火曜」3→「水曜」それ以外→「その他」と出力するswitch文を書いてください。",
+    hint: "switch (変数) { case 値: ... break; } の形で書きます。",
+    answer:
+`const day = 3;
+switch (day) {
+    case 1: console.log("月曜"); break;
+    case 2: console.log("火曜"); break;
+    case 3: console.log("水曜"); break;
+    default: console.log("その他");
+}`,
+    explanation: "switch文は一つの値に対して複数の条件を書けます。break を忘れると次の case も実行されます。"
+  },
+  {
+    id: 10, unit: "UNIT 02  ◆  演算と条件分岐", rank: "BRONZE",
+    title: "論理演算子",
+    question: "age = 20 として、18以上かつ65未満なら「現役世代」、それ以外なら「対象外」と出力してください。",
+    hint: "&& は「かつ」、|| は「または」、! は「でない」です。",
+    answer:
+`const age = 20;
+if (age >= 18 && age < 65) {
+    console.log("現役世代");
+} else {
+    console.log("対象外");
+}`,
+    explanation: "&& は両方 true のとき true、|| はどちらか true のとき true です。"
+  },
+
+  // UNIT 03
+  {
+    id: 11, unit: "UNIT 03  ◆  ループ", rank: "ROOKIE",
+    title: "for ループ",
+    question: "1 から 10 までの数を1行ずつ出力してください。",
+    hint: "for (let i = 1; i <= 10; i++) の形で書きます。",
+    answer:
+`for (let i = 1; i <= 10; i++) {
+    console.log(i);
+}`,
+    explanation: "for文は 初期化; 条件; 更新 の3つの部分で構成されます。i++ は i = i + 1 の省略形です。"
+  },
+  {
+    id: 12, unit: "UNIT 03  ◆  ループ", rank: "BRONZE",
+    title: "while ループ",
+    question: "1 から始めて 2 倍ずつ増やし、100 を超えるまで値を出力してください。",
+    hint: "while (n <= 100) の形で書きます。",
+    answer:
+`let n = 1;
+while (n <= 100) {
+    console.log(n);
+    n *= 2;
+}`,
+    explanation: "while文は条件が true の間繰り返します。n *= 2 は n = n * 2 の省略形です。"
+  },
+  {
+    id: 13, unit: "UNIT 03  ◆  ループ", rank: "BRONZE",
+    title: "break と continue",
+    question: "1 から 20 までループして、3の倍数はスキップし、13 に達したらループを終了し、それ以外は出力してください。",
+    hint: "3の倍数は continue、13は break を使います。",
+    answer:
+`for (let i = 1; i <= 20; i++) {
+    if (i === 13) break;
+    if (i % 3 === 0) continue;
+    console.log(i);
+}`,
+    explanation: "break はループを即終了、continue は今回の処理をスキップして次へ進みます。"
+  },
+  {
+    id: 14, unit: "UNIT 03  ◆  ループ", rank: "BRONZE",
+    title: "for...of",
+    question: "fruits = [\"apple\", \"banana\", \"cherry\"] を for...of で繰り返し、各要素を出力してください。",
+    hint: "for (const item of 配列) { } の形で書きます。",
+    answer:
+`const fruits = ["apple", "banana", "cherry"];
+for (const fruit of fruits) {
+    console.log(fruit);
+}`,
+    explanation: "for...of は配列などのイテラブルを要素ごとに繰り返します。インデックスが不要な場合に便利です。"
+  },
+  {
+    id: 15, unit: "UNIT 03  ◆  ループ", rank: "SILVER",
+    title: "forEach メソッド",
+    question: "numbers = [1, 2, 3, 4, 5] の各要素の2乗を forEach を使って出力してください。",
+    hint: "配列.forEach(n => { }) の形で書きます。",
+    answer:
+`const numbers = [1, 2, 3, 4, 5];
+numbers.forEach(n => {
+    console.log(n ** 2);
+});`,
+    explanation: "forEach はコールバック関数を各要素に対して呼び出します。アロー関数 => を使うとシンプルに書けます。"
+  },
+
+  // UNIT 04
+  {
+    id: 16, unit: "UNIT 04  ◆  関数", rank: "BRONZE",
+    title: "関数定義",
+    question: "2つの数を受け取り合計を返す関数 add を定義して、add(3, 7) の結果を出力してください。",
+    hint: "function 関数名(引数) { return 値; } の形で定義します。",
+    answer:
+`function add(a, b) {
+    return a + b;
+}
+console.log(add(3, 7));`,
+    explanation: "function キーワードで関数を定義します。return で値を返します。定義した関数は何度でも呼び出せます。"
+  },
+  {
+    id: 17, unit: "UNIT 04  ◆  関数", rank: "BRONZE",
+    title: "アロー関数",
+    question: "2つの数を受け取り大きい方を返す関数 max をアロー関数で定義して、max(4, 9) の結果を出力してください。",
+    hint: "const 関数名 = (a, b) => 式 と書けます。",
+    answer:
+`const max = (a, b) => a > b ? a : b;
+console.log(max(4, 9));`,
+    explanation: "アロー関数は => を使った短い関数定義です。本体が1行の式なら {} と return を省略できます。"
+  },
+  {
+    id: 18, unit: "UNIT 04  ◆  関数", rank: "SILVER",
+    title: "デフォルト引数",
+    question: "名前を受け取り「こんにちは、〇〇！」と返す greet 関数を作り、引数なしのとき「ゲスト」になるようにしてください。",
+    hint: "function greet(name = \"ゲスト\") の形でデフォルト値を設定できます。",
+    answer:
+`function greet(name = "ゲスト") {
+    return "こんにちは、" + name + "！";
+}
+console.log(greet("Taro"));
+console.log(greet());`,
+    explanation: "デフォルト引数は引数が渡されなかった場合に使われる値です。= で指定します。"
+  },
+  {
+    id: 19, unit: "UNIT 04  ◆  関数", rank: "SILVER",
+    title: "レスト引数（...）",
+    question: "任意の数の引数をすべて合計する sum 関数を作り、sum(1, 2, 3, 4, 5) の結果を出力してください。",
+    hint: "function sum(...args) で可変長引数を配列として受け取れます。",
+    answer:
+`function sum(...args) {
+    return args.reduce((total, n) => total + n, 0);
+}
+console.log(sum(1, 2, 3, 4, 5));`,
+    explanation: "...args（レスト引数）で任意の数の引数を配列として受け取れます。reduce() で合計を求めています。"
+  },
+  {
+    id: 20, unit: "UNIT 04  ◆  関数", rank: "GOLD",
+    title: "クロージャ",
+    question: "makeCounter() を呼ぶと呼ぶたびに1ずつ増えるカウント関数を返す関数を作り、counter() を3回呼んで出力してください。",
+    hint: "関数の中で変数を持ち、それを参照する関数を return します。",
+    answer:
+`function makeCounter() {
+    let count = 0;
+    return function() {
+        count++;
+        return count;
+    };
+}
+const counter = makeCounter();
+console.log(counter());
+console.log(counter());
+console.log(counter());`,
+    explanation: "クロージャは外側の関数の変数を参照し続ける関数です。count は外からアクセスできませんが、返された関数からは参照できます。"
+  },
+
+  // UNIT 05
+  {
+    id: 21, unit: "UNIT 05  ◆  配列とオブジェクト", rank: "BRONZE",
+    title: "配列の基本操作",
+    question: "[10, 20, 30] を作り push で 40 を追加、先頭要素・末尾要素・長さを出力してください。",
+    hint: "push() で末尾に追加、[0] で先頭、[length-1] で末尾を取得できます。",
+    answer:
+`const nums = [10, 20, 30];
+nums.push(40);
+console.log(nums[0]);
+console.log(nums[nums.length - 1]);
+console.log(nums.length);`,
+    explanation: "配列は [] で作ります。push() は末尾に追加。length プロパティで要素数を取得できます。"
+  },
+  {
+    id: 22, unit: "UNIT 05  ◆  配列とオブジェクト", rank: "SILVER",
+    title: "map と filter",
+    question: "[1, 2, 3, 4, 5] から偶数だけ取り出し、それぞれを2乗した配列を作って出力してください。",
+    hint: "filter() で条件を満たす要素を取り出し、map() で変換します。",
+    answer:
+`const nums = [1, 2, 3, 4, 5];
+const result = nums.filter(n => n % 2 === 0).map(n => n ** 2);
+console.log(result);`,
+    explanation: "filter() は条件が true の要素だけを残した新配列を返します。map() は各要素を変換した新配列を返します。"
+  },
+  {
+    id: 23, unit: "UNIT 05  ◆  配列とオブジェクト", rank: "BRONZE",
+    title: "オブジェクトの基本",
+    question: "name, age, language プロパティを持つオブジェクト person を作り、各プロパティを出力してください。",
+    hint: "const obj = { キー: 値 } の形で作ります。obj.キー でアクセスできます。",
+    answer:
+`const person = {
+    name: "Taro",
+    age: 20,
+    language: "JavaScript"
+};
+console.log(person.name);
+console.log(person.age);
+console.log(person.language);`,
+    explanation: "オブジェクトはキーと値のペアを持つデータ構造です。ドット記法 obj.key でアクセスできます。"
+  },
+  {
+    id: 24, unit: "UNIT 05  ◆  配列とオブジェクト", rank: "SILVER",
+    title: "分割代入",
+    question: "{ name: \"Taro\", age: 20, city: \"Tokyo\" } から name と city だけ分割代入で取り出して出力してください。",
+    hint: "const { キー1, キー2 } = オブジェクト の形で書きます。",
+    answer:
+`const person = { name: "Taro", age: 20, city: "Tokyo" };
+const { name, city } = person;
+console.log(name);
+console.log(city);`,
+    explanation: "分割代入はオブジェクトや配列から複数の値を一度に取り出せます。"
+  },
+  {
+    id: 25, unit: "UNIT 05  ◆  配列とオブジェクト", rank: "SILVER",
+    title: "スプレッド構文",
+    question: "[1, 2, 3] と [4, 5, 6] をスプレッド構文で結合した配列を作り出力してください。",
+    hint: "[...配列1, ...配列2] の形で展開して結合できます。",
+    answer:
+`const a = [1, 2, 3];
+const b = [4, 5, 6];
+const combined = [...a, ...b];
+console.log(combined);`,
+    explanation: "スプレッド構文 ... は配列やオブジェクトを展開します。配列の結合・コピーなどに使います。"
+  },
+
+  // UNIT 06
+  {
+    id: 26, unit: "UNIT 06  ◆  クラスとエラー処理", rank: "SILVER",
+    title: "クラスの定義",
+    question: "name と age を持つ Person クラスを定義し、「Taroは20歳です」と出力する greet() メソッドを追加してください。",
+    hint: "class Person { constructor(name, age) { } greet() { } } の形で定義します。",
+    answer:
+`class Person {
+    constructor(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+    greet() {
+        console.log(this.name + "は" + this.age + "歳です");
+    }
+}
+const p = new Person("Taro", 20);
+p.greet();`,
+    explanation: "class で設計図を定義します。constructor は new で呼ばれる初期化メソッドです。this はインスタンス自身を指します。"
+  },
+  {
+    id: 27, unit: "UNIT 06  ◆  クラスとエラー処理", rank: "GOLD",
+    title: "クラスの継承",
+    question: "Person クラスを継承した Student クラスを作り、grade プロパティを追加して「Taro (20歳) - 3年生」と出力してください。",
+    hint: "class Student extends Person { constructor() { super(); } } の形で継承します。",
+    answer:
+`class Person {
+    constructor(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+}
+class Student extends Person {
+    constructor(name, age, grade) {
+        super(name, age);
+        this.grade = grade;
+    }
+    greet() {
+        console.log(this.name + " (" + this.age + "歳) - " + this.grade + "年生");
+    }
+}
+const s = new Student("Taro", 20, 3);
+s.greet();`,
+    explanation: "extends で継承します。super() は親クラスのコンストラクタを呼び出します。"
+  },
+  {
+    id: 28, unit: "UNIT 06  ◆  クラスとエラー処理", rank: "GOLD",
+    title: "try / catch",
+    question: "0 で割ったときに「エラー: 0で割れません」と出力する divide 関数を作り、divide(10, 0) を呼んでください。",
+    hint: "throw new Error('メッセージ') でエラーを投げ、try { } catch (e) { } でキャッチします。",
+    answer:
+`function divide(a, b) {
+    if (b === 0) throw new Error("0で割れません");
+    return a / b;
+}
+try {
+    console.log(divide(10, 0));
+} catch (e) {
+    console.log("エラー: " + e.message);
+}`,
+    explanation: "throw でエラーを発生させ、try...catch でキャッチします。e.message でエラーメッセージを取得できます。"
+  },
+  {
+    id: 29, unit: "UNIT 06  ◆  クラスとエラー処理", rank: "GOLD",
+    title: "配列の reduce",
+    question: "[85, 92, 78, 96, 88] の合計・平均・最大値を reduce と Math.max を使って求めて出力してください。",
+    hint: "reduce((acc, n) => acc + n, 0) で合計、Math.max(...配列) で最大値を求めます。",
+    answer:
+`const scores = [85, 92, 78, 96, 88];
+const sum = scores.reduce((acc, n) => acc + n, 0);
+const avg = sum / scores.length;
+const max = Math.max(...scores);
+console.log("合計: " + sum);
+console.log("平均: " + avg);
+console.log("最大: " + max);`,
+    explanation: "reduce() は配列を一つの値にまとめます。Math.max(...配列) はスプレッド構文で配列を展開して最大値を求めます。"
+  },
+  {
+    id: 30, unit: "UNIT 06  ◆  クラスとエラー処理", rank: "PLATINUM",
+    title: "実践：成績管理クラス",
+    question: "名前と点数配列を受け取る GradeBook クラスを作り、average() で平均点、max() で最高点を返すメソッドを実装してください。",
+    hint: "reduce() で合計、Math.max(...this.scores) で最高点を求めます。",
+    answer:
+`class GradeBook {
+    constructor(name, scores) {
+        this.name = name;
+        this.scores = scores;
+    }
+    average() {
+        const sum = this.scores.reduce((acc, s) => acc + s, 0);
+        return sum / this.scores.length;
+    }
+    max() {
+        return Math.max(...this.scores);
+    }
+}
+const gb = new GradeBook("Taro", [85, 92, 78, 96, 88]);
+console.log(gb.average());
+console.log(gb.max());`,
+    explanation: "reduce() で合計を求め配列長で割って平均を計算します。Math.max(...配列) でスプレッド構文を使い最高点を求めます。"
+  },
+];
+
+// ===== JavaScript ミッションデータ =====
+
+const javascriptMissions = [
+  {
+    id: 1, rank: "ROOKIE",
+    title: "BMI計算ツール",
+    description: "身長(cm)と体重(kg)からBMIを計算し、判定を表示するプログラムを作ってください。",
+    requirements: [
+      "BMI = 体重(kg) ÷ (身長(m))²",
+      "toFixed(2) で小数点2桁表示",
+      "18.5未満→「痩せ」、25未満→「普通」、25以上→「肥満」"
+    ],
+    hint: "身長をcmからmに変換（÷100）してから計算します。",
+    answer:
+`const height = 170;
+const weight = 65;
+const h = height / 100;
+const bmi = weight / (h * h);
+console.log("BMI: " + bmi.toFixed(2));
+if (bmi < 18.5) console.log("痩せ");
+else if (bmi < 25) console.log("普通");
+else console.log("肥満");`
+  },
+  {
+    id: 2, rank: "ROOKIE",
+    title: "FizzBuzz",
+    description: "1から100まで出力。3の倍数はFizz、5の倍数はBuzz、両方はFizzBuzz。",
+    requirements: [
+      "1〜100のループ",
+      "15の倍数→FizzBuzz（先に判定）",
+      "3の倍数→Fizz",
+      "5の倍数→Buzz"
+    ],
+    hint: "15の倍数の判定を先に行ってください。",
+    answer:
+`for (let i = 1; i <= 100; i++) {
+    if (i % 15 === 0) console.log("FizzBuzz");
+    else if (i % 3 === 0) console.log("Fizz");
+    else if (i % 5 === 0) console.log("Buzz");
+    else console.log(i);
+}`
+  },
+  {
+    id: 3, rank: "BRONZE",
+    title: "配列の統計計算",
+    description: "数値配列から合計・平均・最大・最小を求めるプログラムを作ってください。",
+    requirements: [
+      "合計を求める（reduce使用）",
+      "平均を小数点2桁で表示",
+      "最大値・最小値を求める（Math.max/min使用）"
+    ],
+    hint: "reduce() で合計、Math.max(...arr) で最大値を求めます。",
+    answer:
+`const nums = [15, 42, 7, 89, 23, 56, 34, 71, 12, 48];
+const sum = nums.reduce((acc, n) => acc + n, 0);
+const avg = sum / nums.length;
+console.log("合計: " + sum);
+console.log("平均: " + avg.toFixed(2));
+console.log("最大: " + Math.max(...nums));
+console.log("最小: " + Math.min(...nums));`
+  },
+  {
+    id: 4, rank: "BRONZE",
+    title: "シンプルToDoリスト",
+    description: "配列でタスクを管理する関数群を実装してください。",
+    requirements: [
+      "add(task) でタスクを追加",
+      "remove(task) でタスクを削除",
+      "list() で番号付き一覧を表示"
+    ],
+    hint: "push() で追加、indexOf() と splice() で削除します。",
+    answer:
+`const todos = [];
+function add(task) { todos.push(task); }
+function remove(task) {
+    const idx = todos.indexOf(task);
+    if (idx !== -1) todos.splice(idx, 1);
+}
+function list() {
+    todos.forEach((t, i) => console.log((i + 1) + ". " + t));
+}
+add("買い物"); add("勉強"); add("運動");
+list();
+remove("勉強");
+console.log("--- 削除後 ---");
+list();`
+  },
+  {
+    id: 5, rank: "SILVER",
+    title: "Counterクラス",
+    description: "カウンターオブジェクトをクラスで実装してください。",
+    requirements: [
+      "increment() で+1",
+      "decrement() で-1",
+      "reset() で0に戻す",
+      "getCount() で現在値を返す"
+    ],
+    hint: "コンストラクタで count = 0 を初期化します。",
+    answer:
+`class Counter {
+    constructor() { this.count = 0; }
+    increment() { this.count++; }
+    decrement() { this.count--; }
+    reset() { this.count = 0; }
+    getCount() { return this.count; }
+}
+const c = new Counter();
+c.increment(); c.increment(); c.increment();
+console.log(c.getCount());
+c.decrement();
+console.log(c.getCount());
+c.reset();
+console.log(c.getCount());`
+  },
+  {
+    id: 6, rank: "GOLD",
+    title: "テキスト解析",
+    description: "文章の単語数・最長単語・最頻出単語を求めるプログラムを作ってください。",
+    requirements: [
+      "単語数を数える",
+      "最も長い単語を見つける",
+      "最も多く出現する単語を見つける"
+    ],
+    hint: "split(' ') で単語分割、reduce でオブジェクト集計します。",
+    answer:
+`const text = "the quick brown fox jumps over the lazy dog the fox";
+const words = text.split(" ");
+console.log("単語数: " + words.length);
+const longest = words.reduce((a, b) => a.length >= b.length ? a : b);
+console.log("最長: " + longest);
+const freq = words.reduce((acc, w) => {
+    acc[w] = (acc[w] || 0) + 1;
+    return acc;
+}, {});
+const top = Object.entries(freq).sort((a, b) => b[1] - a[1])[0];
+console.log("最頻出: " + top[0] + " (" + top[1] + "回)");`
+  }
+];
+
+// ===== JavaScript 単元ガイドデータ =====
+
+const javascriptUnitGuides = [
+  {
+    unit: "UNIT 01", title: "基礎・出力",
+    summary: "console.log()で出力し、let/constで変数を扱う。テンプレートリテラルで文字列を組み立てる。",
+    points: [
+      "console.log() で画面に出力",
+      "const は再代入不可、let は再代入可能",
+      "テンプレートリテラル: バッククォート + ${} で変数を埋め込む",
+      "typeof で型を確認できる"
+    ],
+    words: [
+      { term: "console.log()", desc: "コンソールに値を出力する関数" },
+      { term: "const", desc: "再代入できない定数を宣言するキーワード" },
+      { term: "let", desc: "再代入できる変数を宣言するキーワード" },
+      { term: "テンプレートリテラル", desc: "バッククォートで囲み ${} で変数を埋め込める文字列" }
+    ]
+  },
+  {
+    unit: "UNIT 02", title: "演算と条件分岐",
+    summary: "算術演算子と比較演算子を使い、if/else・switch・三項演算子で条件分岐を行う。",
+    points: [
+      "=== は厳密等価（型も一致）。== より === を使うのが原則",
+      "三項演算子: 条件 ? trueの値 : falseの値",
+      "switch文: 一つの変数に対して複数の値を比較",
+      "&&, ||, ! で論理演算"
+    ],
+    words: [
+      { term: "===", desc: "値と型が両方一致するか比較する厳密等価演算子" },
+      { term: "三項演算子", desc: "条件 ? A : B の形で1行のif-else" },
+      { term: "switch", desc: "一つの変数に対して複数の値を比較する構文" },
+      { term: "&&", desc: "論理AND。両方trueのときtrue" }
+    ]
+  },
+  {
+    unit: "UNIT 03", title: "ループ",
+    summary: "for・while・for...of・forEachで繰り返し処理を行う。",
+    points: [
+      "for (let i = 0; i < n; i++) が基本のカウンタループ",
+      "for...of で配列の各要素を順番に取り出す",
+      "forEach() はコールバックを各要素に適用",
+      "break でループ終了、continue で次へスキップ"
+    ],
+    words: [
+      { term: "for...of", desc: "配列などのイテラブルを要素ごとに繰り返す構文" },
+      { term: "forEach()", desc: "配列の各要素にコールバック関数を実行するメソッド" },
+      { term: "break", desc: "ループを即座に終了させる命令" },
+      { term: "continue", desc: "今の繰り返しをスキップして次に進む命令" }
+    ]
+  },
+  {
+    unit: "UNIT 04", title: "関数",
+    summary: "functionとアロー関数で関数を定義。デフォルト引数・レスト引数・クロージャを学ぶ。",
+    points: [
+      "function キーワードで通常の関数を定義",
+      "アロー関数 => で短く書ける。1行なら {} と return 省略可",
+      "デフォルト引数: function f(x = 0) で省略時の値を設定",
+      "クロージャ: 外の変数を記憶し続ける関数"
+    ],
+    words: [
+      { term: "アロー関数", desc: "=> を使った短い関数の書き方。(a, b) => a + b など" },
+      { term: "デフォルト引数", desc: "関数の引数に省略時のデフォルト値を設定する機能" },
+      { term: "レスト引数", desc: "...args で可変長の引数を配列として受け取る機能" },
+      { term: "クロージャ", desc: "外側の関数の変数を参照し続ける内側の関数" }
+    ]
+  },
+  {
+    unit: "UNIT 05", title: "配列とオブジェクト",
+    summary: "配列メソッド(map/filter/reduce)とオブジェクト操作、分割代入・スプレッド構文を学ぶ。",
+    points: [
+      "map(): 各要素を変換した新配列を返す",
+      "filter(): 条件を満たす要素だけの新配列を返す",
+      "reduce(): 配列を一つの値にまとめる",
+      "分割代入: const { name } = obj でプロパティを取り出す"
+    ],
+    words: [
+      { term: "map()", desc: "配列の各要素を変換した新配列を返すメソッド" },
+      { term: "filter()", desc: "条件に合う要素だけを残した新配列を返すメソッド" },
+      { term: "reduce()", desc: "配列を一つの値（合計など）にまとめるメソッド" },
+      { term: "分割代入", desc: "オブジェクトや配列から値を取り出す簡潔な構文" }
+    ]
+  },
+  {
+    unit: "UNIT 06", title: "クラスとエラー処理",
+    summary: "classでオブジェクト指向プログラミング、try/catchでエラー処理を学ぶ。",
+    points: [
+      "class と constructor でオブジェクトの設計図を作る",
+      "extends で継承、super() で親クラスのコンストラクタを呼ぶ",
+      "try/catch でエラーをキャッチして安全に処理",
+      "throw new Error() でエラーを意図的に発生させる"
+    ],
+    words: [
+      { term: "class", desc: "オブジェクトの設計図（ひな型）を定義するキーワード" },
+      { term: "extends", desc: "クラスを継承するキーワード。親のプロパティとメソッドを引き継ぐ" },
+      { term: "try/catch", desc: "エラーが起きそうなコードをtryで囲み、catchで処理する構文" },
+      { term: "throw", desc: "エラーを意図的に発生させる命令" }
+    ]
+  }
+];
+
 // ===== 言語別データ取得ヘルパー =====
 
 function getProblems() {
@@ -2123,6 +2798,13 @@ function buildSkeleton(p) {
     // Python：コードそのまま、文字列リテラル(f文字列除く)と数値だけ空欄
     var skeleton = p.answer.trim()
       .replace(/(?<![fF])"[^"]*"/g, '"________"')
+      .replace(/\b\d+(\.\d+)?\b/g, '____');
+    return skeleton + '\n';
+  }
+  if (currentLanguage === 'javascript') {
+    // JavaScript：テンプレートリテラル以外の文字列と数値を空欄
+    var skeleton = p.answer.trim()
+      .replace(/"[^"]*"/g, '"________"')
       .replace(/\b\d+(\.\d+)?\b/g, '____');
     return skeleton + '\n';
   }
