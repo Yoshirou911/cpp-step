@@ -368,7 +368,9 @@ var BADGES = [
   { id: 'legend_js',     name: 'JS LEGEND',      desc: 'JavaScript 超難問クリア',                 tier: 'legend',   check: function(s) { return s.legendJs;     } },
   { id: 'ruby_master',   name: 'RUBY MASTER',    desc: 'Ruby 全30問クリア',                       tier: 'diamond',  check: function(s) { return s.ruby >= 30;   } },
   { id: 'legend_ruby',   name: 'RUBY LEGEND',    desc: 'Ruby 超難問クリア',                       tier: 'legend',   check: function(s) { return s.legendRuby;   } },
-  { id: 'true_legend',   name: 'TRUE LEGEND',    desc: '全言語の超難問クリア',                    tier: 'legend',   check: function(s) { return s.legendCpp && s.legendPython && s.legendJs && s.legendRuby; } },
+  { id: 'ts_master',     name: 'TS MASTER',      desc: 'TypeScript 全30問クリア',                 tier: 'diamond',  check: function(s) { return s.ts >= 30;     } },
+  { id: 'legend_ts',     name: 'TS LEGEND',      desc: 'TypeScript 超難問クリア',                 tier: 'legend',   check: function(s) { return s.legendTs;     } },
+  { id: 'true_legend',   name: 'TRUE LEGEND',    desc: '全言語の超難問クリア',                    tier: 'legend',   check: function(s) { return s.legendCpp && s.legendPython && s.legendJs && s.legendRuby && s.legendTs; } },
 ];
 
 // 全言語の進捗を localStorage から集計（言語切替不要）
@@ -384,24 +386,28 @@ function getProfileStats() {
   var cppArr    = getP('cpp');
   var pythonArr = getP('python');
   var jsArr     = getP('javascript');
-  var rubyArr   = getP('ruby');
+  var rubyArr = getP('ruby');
+  var tsArr   = getP('typescript');
   var cpp    = cppArr.length;
   var python = pythonArr.length;
   var js     = jsArr.length;
   var ruby   = rubyArr.length;
+  var ts     = tsArr.length;
   var cppM   = getM('cpp').length;
   var pyM    = getM('python').length;
   var jsM    = getM('javascript').length;
   var rubyM  = getM('ruby').length;
+  var tsM    = getM('typescript').length;
   return {
-    cpp: cpp, python: python, js: js, ruby: ruby,
-    cppM: cppM, pyM: pyM, jsM: jsM, rubyM: rubyM,
-    total: cpp + python + js + ruby,
-    totalMissions: cppM + pyM + jsM + rubyM,
+    cpp: cpp, python: python, js: js, ruby: ruby, ts: ts,
+    cppM: cppM, pyM: pyM, jsM: jsM, rubyM: rubyM, tsM: tsM,
+    total: cpp + python + js + ruby + ts,
+    totalMissions: cppM + pyM + jsM + rubyM + tsM,
     legendCpp:    cppArr.indexOf(31)    !== -1,
     legendPython: pythonArr.indexOf(31) !== -1,
     legendJs:     jsArr.indexOf(31)     !== -1,
     legendRuby:   rubyArr.indexOf(30)   !== -1,
+    legendTs:     tsArr.indexOf(30)     !== -1,
     // ストリークは非同期で後から上書きするため初期値0
     currentStreak: 0,
     bestStreak:    0,
@@ -689,7 +695,7 @@ var LANGUAGE_GROUPS = [
     desc: '型システムやOOP(オブジェクト指向)を本格的に学ぶ',
     langs: [
       {
-        id: 'typescript', name: 'TypeScript', color: '#3178C6', problems: 0, available: false,
+        id: 'typescript', name: 'TypeScript', color: '#3178C6', problems: 30, available: true,
         uses: ['大規模Webアプリ', '型安全なフロントエンド', 'フレームワーク開発']
       },
       {
@@ -4201,12 +4207,767 @@ const rubyUnitGuides = [
   }
 ];
 
+// ===== TypeScript データ =====
+
+const typescriptProblems = [
+  // UNIT 01 基礎出力 ROOKIE
+  { id:1, unit:"UNIT 01  ◆  基礎出力と型", rank:"ROOKIE",
+    title:"Hello World",
+    question:"\"Hello, World!\" と画面に出力するプログラムを書いてください。",
+    hint:"console.log() を使います。TypeScriptはJavaScriptと同じ出力メソッドが使えます。",
+    answer:`console.log("Hello, World!");`,
+    expected:"Hello, World!",
+    explanation:"TypeScriptはJavaScriptのスーパーセットです。console.log()でブラウザやNode.jsに出力できます。"
+  },
+  { id:2, unit:"UNIT 01  ◆  基礎出力と型", rank:"ROOKIE",
+    title:"型アノテーション",
+    question:"name に string 型、age に number 型のアノテーションをつけて変数を宣言し、それぞれ出力してください。name は \"TypeScript\"、age は 10 とします。",
+    hint:"let 変数名: 型 = 値; の形で型アノテーションを書きます。",
+    answer:
+`let name: string = "TypeScript";
+let age: number = 10;
+console.log(name);
+console.log(age);`,
+    expected:"TypeScript\n10",
+    explanation:"型アノテーションは変数の右に : 型名 と書きます。string、number、boolean が基本の型です。"
+  },
+  { id:3, unit:"UNIT 01  ◆  基礎出力と型", rank:"ROOKIE",
+    title:"基本型一覧",
+    question:"string型の greeting、number型の score、boolean型の isActive を宣言して、それぞれ出力してください。値は \"Hello\"、95、true とします。",
+    hint:"boolean 型は true か false を格納できます。",
+    answer:
+`let greeting: string = "Hello";
+let score: number = 95;
+let isActive: boolean = true;
+console.log(greeting);
+console.log(score);
+console.log(isActive);`,
+    expected:"Hello\n95\ntrue",
+    explanation:"TypeScriptの基本型: string（文字列）、number（数値）、boolean（真偽値）。型を明示することで誤った代入をコンパイル時に検出できます。"
+  },
+  // UNIT 02 関数と型 BRONZE
+  { id:4, unit:"UNIT 02  ◆  関数と型", rank:"BRONZE",
+    title:"型付き関数",
+    question:"引数 name: string を受け取り \"Hello, [name]!\" を返す関数 greet を定義し、\"TypeScript\" で呼び出して出力してください。戻り値の型アノテーションも書くこと。",
+    hint:"function 関数名(引数: 型): 戻り値の型 { } の形で書きます。",
+    answer:
+`function greet(name: string): string {
+  return \`Hello, \${name}!\`;
+}
+console.log(greet("TypeScript"));`,
+    expected:"Hello, TypeScript!",
+    explanation:"引数と戻り値に型を付けることで、誤った型の値を渡すとコンパイルエラーになります。"
+  },
+  { id:5, unit:"UNIT 02  ◆  関数と型", rank:"BRONZE",
+    title:"オプショナル引数",
+    question:"name: string と greeting?: string を受け取る greet 関数を定義してください。greeting が省略されたら \"Hello\" を使います。greet(\"Taro\") と greet(\"Hanako\", \"Hi\") を出力してください。",
+    hint:"? をつけた引数はオプショナルです。|| でデフォルト値を設定できます。",
+    answer:
+`function greet(name: string, greeting?: string): string {
+  const g = greeting || "Hello";
+  return \`\${g}, \${name}!\`;
+}
+console.log(greet("Taro"));
+console.log(greet("Hanako", "Hi"));`,
+    expected:"Hello, Taro!\nHi, Hanako!",
+    explanation:"? をつけた引数は省略できます。省略された場合は undefined になります。"
+  },
+  { id:6, unit:"UNIT 02  ◆  関数と型", rank:"BRONZE",
+    title:"アロー関数",
+    question:"2つの number を受け取って足し算の結果を返すアロー関数 add を定義し、add(3, 4) を出力してください。",
+    hint:"const 変数名 = (引数: 型): 戻り値の型 => 式; の形で書きます。",
+    answer:
+`const add = (a: number, b: number): number => a + b;
+console.log(add(3, 4));`,
+    expected:"7",
+    explanation:"アロー関数は簡潔に関数を書けます。1行の場合 {} と return を省略できます。"
+  },
+  { id:7, unit:"UNIT 02  ◆  関数と型", rank:"BRONZE",
+    title:"デフォルト引数",
+    question:"base: number と exp: number = 2 を受け取って base の exp 乗を返す power 関数を定義し、power(3) と power(2, 10) を出力してください。",
+    hint:"Math.pow(base, exp) を使えます。",
+    answer:
+`function power(base: number, exp: number = 2): number {
+  return Math.pow(base, exp);
+}
+console.log(power(3));
+console.log(power(2, 10));`,
+    expected:"9\n1024",
+    explanation:"デフォルト引数を設定すると省略可能になります。TypeScriptはデフォルト引数から型を推論できます。"
+  },
+  { id:8, unit:"UNIT 02  ◆  関数と型", rank:"BRONZE",
+    title:"型推論",
+    question:"let x = 42; と let msg = \"hello\"; を宣言し、それぞれの型を typeof で確認して出力してください。",
+    hint:"typeof 変数名 で変数の型を文字列として取得できます。",
+    answer:
+`let x = 42;
+let msg = "hello";
+console.log(typeof x);
+console.log(typeof msg);`,
+    expected:"number\nstring",
+    explanation:"TypeScriptは初期値から型を推論します（型推論）。明示的に書かなくても型チェックが働きます。"
+  },
+  // UNIT 03 配列とタプル SILVER
+  { id:9, unit:"UNIT 03  ◆  配列とタプル", rank:"SILVER",
+    title:"型付き配列",
+    question:"number[] 型の配列 scores を [85, 92, 78, 96] で作り、map で各スコアに +5 した新しい配列を出力してください。",
+    hint:"配列型は 型名[] または Array<型名> で書きます。",
+    answer:
+`const scores: number[] = [85, 92, 78, 96];
+const boosted = scores.map(s => s + 5);
+console.log(boosted);`,
+    expected:"[ 90, 97, 83, 101 ]",
+    explanation:"number[] は数値の配列型です。JavaScriptの配列メソッドはそのまま使えます。"
+  },
+  { id:10, unit:"UNIT 03  ◆  配列とタプル", rank:"SILVER",
+    title:"タプル",
+    question:"[string, number] 型のタプル person を [\"Taro\", 20] で作り、0番目と1番目をそれぞれ出力してください。",
+    hint:"タプルは [型1, 型2] の形で各位置の型を固定した配列です。",
+    answer:
+`const person: [string, number] = ["Taro", 20];
+console.log(person[0]);
+console.log(person[1]);`,
+    expected:"Taro\n20",
+    explanation:"タプルは各インデックスの型が決まった配列です。固定長で型安全な複数値の受け渡しに使います。"
+  },
+  { id:11, unit:"UNIT 03  ◆  配列とタプル", rank:"SILVER",
+    title:"readonly 配列",
+    question:"readonly number[] 型の定数 PRIMES を [2, 3, 5, 7, 11] で作り、filter で5より大きい要素だけ出力してください。",
+    hint:"readonly をつけると変更不可能な配列になります。",
+    answer:
+`const PRIMES: readonly number[] = [2, 3, 5, 7, 11];
+console.log(PRIMES.filter(n => n > 5));`,
+    expected:"[ 7, 11 ]",
+    explanation:"readonly をつけると push や pop などの変更操作がコンパイルエラーになります。意図しない変更を防げます。"
+  },
+  { id:12, unit:"UNIT 03  ◆  配列とタプル", rank:"SILVER",
+    title:"ユニオン型配列",
+    question:"(string | number)[] 型の配列 mixed を ['hello', 42, 'world', 100] で作り、filter で number 型のみ取り出して出力してください。",
+    hint:"typeof x === 'number' で型の絞り込みができます。",
+    answer:
+`const mixed: (string | number)[] = ['hello', 42, 'world', 100];
+const nums = mixed.filter((x): x is number => typeof x === 'number');
+console.log(nums);`,
+    expected:"[ 42, 100 ]",
+    explanation:"ユニオン型 string | number は「文字列か数値」のどちらかを表します。型ガードで絞り込みができます。"
+  },
+  // UNIT 04 インターフェース SILVER/GOLD
+  { id:13, unit:"UNIT 04  ◆  インターフェース", rank:"SILVER",
+    title:"interfaceの定義",
+    question:"name: string と age: number を持つ Person インターフェースを定義し、Taro(20歳) のオブジェクトを作って name と age を出力してください。",
+    hint:"interface 名前 { プロパティ: 型; } の形で定義します。",
+    answer:
+`interface Person {
+  name: string;
+  age: number;
+}
+const taro: Person = { name: "Taro", age: 20 };
+console.log(taro.name);
+console.log(taro.age);`,
+    expected:"Taro\n20",
+    explanation:"インターフェースはオブジェクトの形（プロパティと型）を定義します。型チェックの基準になります。"
+  },
+  { id:14, unit:"UNIT 04  ◆  インターフェース", rank:"SILVER",
+    title:"オプショナルプロパティ",
+    question:"name: string、age: number、email?: string を持つ User インターフェースを定義し、email なしと email ありのオブジェクトを作って email ?? \"なし\" で出力してください。",
+    hint:"? をつけたプロパティは省略可能です。?? は null/undefined のときの代替値を指定します。",
+    answer:
+`interface User {
+  name: string;
+  age: number;
+  email?: string;
+}
+const u1: User = { name: "Taro", age: 20 };
+const u2: User = { name: "Hanako", age: 25, email: "h@example.com" };
+console.log(u1.email ?? "なし");
+console.log(u2.email ?? "なし");`,
+    expected:"なし\nh@example.com",
+    explanation:"? でオプショナルプロパティを定義します。??(Nullish Coalescing)はnull/undefinedのときに右の値を返します。"
+  },
+  { id:15, unit:"UNIT 04  ◆  インターフェース", rank:"GOLD",
+    title:"インターフェースの継承",
+    question:"id: number と createdAt: string を持つ Base インターフェースを定義し、それを extends した Post インターフェース（title: string, body: string を追加）を定義して、オブジェクトを作り title と createdAt を出力してください。",
+    hint:"interface 子 extends 親 { } で継承できます。",
+    answer:
+`interface Base {
+  id: number;
+  createdAt: string;
+}
+interface Post extends Base {
+  title: string;
+  body: string;
+}
+const post: Post = { id: 1, createdAt: "2025-01-01", title: "Hello", body: "World" };
+console.log(post.title);
+console.log(post.createdAt);`,
+    expected:"Hello\n2025-01-01",
+    explanation:"extends で既存インターフェースを継承し、新しいプロパティを追加できます。"
+  },
+  { id:16, unit:"UNIT 04  ◆  インターフェース", rank:"GOLD",
+    title:"関数型インターフェース",
+    question:"(x: number, y: number) => number 型の Calc インターフェースを定義し、add と multiply の実装を作って結果を出力してください（3+4、3×4）。",
+    hint:"interface に直接関数シグネチャを書けます。",
+    answer:
+`interface Calc {
+  (x: number, y: number): number;
+}
+const add: Calc = (x, y) => x + y;
+const multiply: Calc = (x, y) => x * y;
+console.log(add(3, 4));
+console.log(multiply(3, 4));`,
+    expected:"7\n12",
+    explanation:"インターフェースで関数の型も定義できます。実装側は型推論が働くため引数の型を省略できます。"
+  },
+  // UNIT 05 型エイリアスとユニオン GOLD/PLATINUM
+  { id:17, unit:"UNIT 05  ◆  型エイリアスとユニオン", rank:"GOLD",
+    title:"type エイリアス",
+    question:"type Point = { x: number; y: number } を定義し、Point 型の変数を作り x と y を出力してください（x:3, y:4）。",
+    hint:"type 名前 = { ... } で型エイリアスを定義します。interface と似ていますが合成方法が異なります。",
+    answer:
+`type Point = { x: number; y: number };
+const p: Point = { x: 3, y: 4 };
+console.log(p.x);
+console.log(p.y);`,
+    expected:"3\n4",
+    explanation:"type エイリアスはあらゆる型に名前をつけられます。プリミティブ型、ユニオン型、交差型にも使えます。"
+  },
+  { id:18, unit:"UNIT 05  ◆  型エイリアスとユニオン", rank:"GOLD",
+    title:"ユニオン型",
+    question:"type Status = 'active' | 'inactive' | 'pending' を定義し、Status 型の変数を 'active' に設定して出力してください。次に 'active' かどうかを判定して出力してください。",
+    hint:"文字列リテラル型を | で結合するとユニオン型になります。",
+    answer:
+`type Status = 'active' | 'inactive' | 'pending';
+const status: Status = 'active';
+console.log(status);
+console.log(status === 'active' ? "有効" : "無効");`,
+    expected:"active\n有効",
+    explanation:"リテラル型のユニオンはenum的な使い方ができます。指定した値以外を代入するとコンパイルエラーになります。"
+  },
+  { id:19, unit:"UNIT 05  ◆  型エイリアスとユニオン", rank:"PLATINUM",
+    title:"交差型（Intersection）",
+    question:"type A = { name: string } と type B = { age: number } を定義し、type C = A & B で交差型を作って { name: \"Taro\", age: 20 } のオブジェクトの name と age を出力してください。",
+    hint:"& で複数の型を合成した交差型を作れます。",
+    answer:
+`type A = { name: string };
+type B = { age: number };
+type C = A & B;
+const c: C = { name: "Taro", age: 20 };
+console.log(c.name);
+console.log(c.age);`,
+    expected:"Taro\n20",
+    explanation:"交差型 A & B は「A かつ B」の型です。両方のプロパティを持つオブジェクト型になります。"
+  },
+  // UNIT 06 クラス PLATINUM/DIAMOND
+  { id:20, unit:"UNIT 06  ◆  クラス", rank:"PLATINUM",
+    title:"クラスの定義",
+    question:"Animal クラスを定義してください。name: string のプロパティ（コンストラクタで初期化）と speak(): string メソッド（\"[name] says hello\" を返す）を持ちます。new Animal(\"Dog\").speak() を出力してください。",
+    hint:"class 名 { constructor(public プロパティ: 型) {} } の形で簡潔に書けます。",
+    answer:
+`class Animal {
+  constructor(public name: string) {}
+  speak(): string {
+    return \`\${this.name} says hello\`;
+  }
+}
+console.log(new Animal("Dog").speak());`,
+    expected:"Dog says hello",
+    explanation:"constructorの引数に public をつけると自動的にプロパティが作成されます（省略記法）。"
+  },
+  { id:21, unit:"UNIT 06  ◆  クラス", rank:"PLATINUM",
+    title:"アクセス修飾子",
+    question:"BankAccount クラスを定義してください。private balance: number（初期値0）、deposit(amount: number) で残高追加、getBalance() で残高を返す。deposit(1000)して getBalance() を出力してください。",
+    hint:"private にすると外部からアクセスできなくなります。",
+    answer:
+`class BankAccount {
+  private balance: number = 0;
+  deposit(amount: number): void {
+    this.balance += amount;
+  }
+  getBalance(): number {
+    return this.balance;
+  }
+}
+const acc = new BankAccount();
+acc.deposit(1000);
+console.log(acc.getBalance());`,
+    expected:"1000",
+    explanation:"private はクラス外からのアクセスを禁止します。protected は継承クラスからはアクセス可能です。"
+  },
+  { id:22, unit:"UNIT 06  ◆  クラス", rank:"DIAMOND",
+    title:"継承とオーバーライド",
+    question:"speak() で \"animal\" を返す Animal クラスと、それを継承して speak() を \"woof\" にオーバーライドする Dog クラスを作り、Dog の speak() を出力してください。",
+    hint:"extends で継承し、メソッドを上書きするとオーバーライドになります。",
+    answer:
+`class Animal {
+  speak(): string { return "animal"; }
+}
+class Dog extends Animal {
+  speak(): string { return "woof"; }
+}
+const dog = new Dog();
+console.log(dog.speak());`,
+    expected:"woof",
+    explanation:"TypeScriptのクラスは1つの親クラスを extends で継承できます。同名のメソッドを定義するとオーバーライドになります。"
+  },
+  { id:23, unit:"UNIT 06  ◆  クラス", rank:"DIAMOND",
+    title:"implements（インターフェース実装）",
+    question:"greet(): string メソッドを持つ Greeter インターフェースを定義し、それを implements した JapaneseGreeter クラス（\"こんにちは\" を返す）を作って出力してください。",
+    hint:"class クラス名 implements インターフェース名 { } の形で実装します。",
+    answer:
+`interface Greeter {
+  greet(): string;
+}
+class JapaneseGreeter implements Greeter {
+  greet(): string {
+    return "こんにちは";
+  }
+}
+const g = new JapaneseGreeter();
+console.log(g.greet());`,
+    expected:"こんにちは",
+    explanation:"implements でインターフェースを実装することを宣言します。必要なメソッドが揃っていないとエラーになります。"
+  },
+  // UNIT 07 ジェネリクス DIAMOND/MASTER
+  { id:24, unit:"UNIT 07  ◆  ジェネリクス", rank:"DIAMOND",
+    title:"ジェネリック関数",
+    question:"任意の型 T の配列を受け取り最初の要素を返すジェネリック関数 first<T>(arr: T[]): T を定義し、数値配列と文字列配列で呼び出して出力してください。",
+    hint:"function 名<T>(引数: T[]): T { } の形でジェネリクスを使います。",
+    answer:
+`function first<T>(arr: T[]): T {
+  return arr[0];
+}
+console.log(first([10, 20, 30]));
+console.log(first(["a", "b", "c"]));`,
+    expected:"10\na",
+    explanation:"ジェネリクスは型をパラメータとして受け取る仕組みです。型安全性を保ちながら汎用的なコードが書けます。"
+  },
+  { id:25, unit:"UNIT 07  ◆  ジェネリクス", rank:"DIAMOND",
+    title:"ジェネリッククラス",
+    question:"ジェネリッククラス Stack<T> を定義してください。push(item: T)、pop(): T | undefined、get size(): number を実装し、数値スタックで動作確認してください。",
+    hint:"class Stack<T> { private items: T[] = []; } の形で書きます。",
+    answer:
+`class Stack<T> {
+  private items: T[] = [];
+  push(item: T): void { this.items.push(item); }
+  pop(): T | undefined { return this.items.pop(); }
+  get size(): number { return this.items.length; }
+}
+const s = new Stack<number>();
+s.push(1); s.push(2); s.push(3);
+console.log(s.pop());
+console.log(s.size);`,
+    expected:"3\n2",
+    explanation:"クラスにもジェネリクスを使えます。Stack<number> のように型引数を指定して使います。"
+  },
+  { id:26, unit:"UNIT 07  ◆  ジェネリクス", rank:"MASTER",
+    title:"制約付きジェネリクス",
+    question:"length プロパティを持つ型 T に制約した getLength<T extends { length: number }>(val: T): number 関数を定義し、文字列と配列で呼び出して出力してください。",
+    hint:"extends で型に制約を付けられます。",
+    answer:
+`function getLength<T extends { length: number }>(val: T): number {
+  return val.length;
+}
+console.log(getLength("hello"));
+console.log(getLength([1, 2, 3, 4]));`,
+    expected:"5\n4",
+    explanation:"extends で型パラメータに制約を付けられます。{ length: number } を持つ型であれば何でも受け取れます。"
+  },
+  // UNIT 08 高度な型 MASTER/LEGEND
+  { id:27, unit:"UNIT 08  ◆  高度な型", rank:"MASTER",
+    title:"Mapped Types",
+    question:"type Readonly<T> = { readonly [K in keyof T]: T[K] } を使って Person型（name: string, age: number）の全プロパティを readonly にした型を作り、オブジェクトを作成してプロパティを出力してください。",
+    hint:"組み込みの Readonly<T> ユーティリティ型を使えます。",
+    answer:
+`interface Person {
+  name: string;
+  age: number;
+}
+const p: Readonly<Person> = { name: "Taro", age: 20 };
+console.log(p.name);
+console.log(p.age);`,
+    expected:"Taro\n20",
+    explanation:"Readonly<T> は全プロパティを readonly にするユーティリティ型です。Partial<T>、Required<T>、Pick<T,K>なども用意されています。"
+  },
+  { id:28, unit:"UNIT 08  ◆  高度な型", rank:"MASTER",
+    title:"条件型",
+    question:"type IsString<T> = T extends string ? 'yes' : 'no' を定義し、IsString<string> と IsString<number> を出力してください（型を変数に入れて出力する必要はなく、型チェックが通ることを確認する形でOK）。型レベルで判定した結果を実行時に文字列として出力してください。",
+    hint:"条件型は T extends U ? X : Y の形で書きます。",
+    answer:
+`type IsString<T> = T extends string ? 'yes' : 'no';
+const a: IsString<string> = 'yes';
+const b: IsString<number> = 'no';
+console.log(a);
+console.log(b);`,
+    expected:"yes\nno",
+    explanation:"条件型は型レベルのif文です。T extends U ? X : Y で「TがUを拡張するならX、そうでなければY」の型になります。"
+  },
+  { id:29, unit:"UNIT 08  ◆  高度な型", rank:"MASTER",
+    title:"Template Literal Types",
+    question:"type EventName<T extends string> = \\`on\\${Capitalize<T>}\\` を定義し、EventName<'click'> と EventName<'change'> 型の変数を作って出力してください。",
+    hint:"テンプレートリテラル型はバッククォートで文字列型を組み合わせます。",
+    answer:
+`type EventName<T extends string> = \`on\${Capitalize<T>}\`;
+const a: EventName<'click'> = 'onClick';
+const b: EventName<'change'> = 'onChange';
+console.log(a);
+console.log(b);`,
+    expected:"onClick\nonChange",
+    explanation:"テンプレートリテラル型で文字列型を動的に生成できます。Capitalize はTypeScriptの組み込みユーティリティ型です。"
+  },
+  { id:30, unit:"UNIT 08  ◆  高度な型", rank:"LEGEND",
+    title:"型レベルの再帰 DeepReadonly",
+    question:"type DeepReadonly<T> = { readonly [K in keyof T]: T[K] extends object ? DeepReadonly<T[K]> : T[K] } を定義し、ネストされたオブジェクト型を DeepReadonly にして、プロパティを2段階出力してください。",
+    hint:"再帰的な型定義は T[K] extends object かどうかで分岐します。",
+    answer:
+`type DeepReadonly<T> = {
+  readonly [K in keyof T]: T[K] extends object ? DeepReadonly<T[K]> : T[K];
+};
+interface Config {
+  server: { host: string; port: number };
+  debug: boolean;
+}
+const cfg: DeepReadonly<Config> = {
+  server: { host: "localhost", port: 3000 },
+  debug: false,
+};
+console.log(cfg.server.host);
+console.log(cfg.server.port);`,
+    expected:"localhost\n3000",
+    explanation:"再帰的な型定義で深くネストされたオブジェクトにも型制約を適用できます。これはTypeScriptの型システムの強力な機能の一つです。"
+  },
+];
+
+const typescriptMissions = [
+  {
+    id: 1, rank: "BRONZE",
+    title: "型安全なFizzBuzz",
+    description: "FizzBuzzをTypeScriptの型安全な方法で実装する。戻り値の型を明示すること。",
+    requirements: [
+      "fizzBuzz(n: number): string 関数を定義",
+      "3の倍数なら 'Fizz'、5の倍数なら 'Buzz'、両方なら 'FizzBuzz'",
+      "それ以外は数字を文字列で返す",
+      "1から20まで出力する"
+    ],
+    hint: "戻り値型を string に指定します。数値を文字列化するには String(n) や n.toString() を使います。",
+    answer:
+`function fizzBuzz(n: number): string {
+  if (n % 15 === 0) return 'FizzBuzz';
+  if (n % 3 === 0) return 'Fizz';
+  if (n % 5 === 0) return 'Buzz';
+  return String(n);
+}
+for (let i = 1; i <= 20; i++) {
+  console.log(fizzBuzz(i));
+}`
+  },
+  {
+    id: 2, rank: "BRONZE",
+    title: "型付き電話帳",
+    description: "インターフェースを使った型安全な電話帳を実装する。",
+    requirements: [
+      "Contact インターフェース（name: string, phone: string, email?: string）を定義",
+      "Contact[] 型の配列を3件以上で初期化",
+      "名前で検索する find 関数を型付きで実装",
+      "見つかった場合は情報を、見つからない場合は 'Not found' を出力"
+    ],
+    hint: "Array.find() を使います。見つからない場合は undefined が返るので undefined チェックが必要です。",
+    answer:
+`interface Contact {
+  name: string;
+  phone: string;
+  email?: string;
+}
+const contacts: Contact[] = [
+  { name: "Taro", phone: "090-1111-2222", email: "taro@example.com" },
+  { name: "Hanako", phone: "080-3333-4444" },
+  { name: "Ken", phone: "070-5555-6666", email: "ken@example.com" },
+];
+function findContact(name: string): string {
+  const c = contacts.find(c => c.name === name);
+  if (!c) return 'Not found';
+  return \`\${c.name}: \${c.phone}\${c.email ? ' / ' + c.email : ''}\`;
+}
+console.log(findContact("Taro"));
+console.log(findContact("Alice"));`
+  },
+  {
+    id: 3, rank: "SILVER",
+    title: "ジェネリックなキャッシュ",
+    description: "ジェネリクスを使った型安全なキャッシュクラスを実装する。",
+    requirements: [
+      "Cache<T> クラスを定義",
+      "set(key: string, value: T, ttl?: number) でキャッシュを設定",
+      "get(key: string): T | undefined でキャッシュを取得",
+      "has(key: string): boolean でキャッシュの存在確認",
+      "文字列と数値でそれぞれ動作確認"
+    ],
+    hint: "内部で Map<string, T> を使います。",
+    answer:
+`class Cache<T> {
+  private store = new Map<string, T>();
+  set(key: string, value: T): void {
+    this.store.set(key, value);
+  }
+  get(key: string): T | undefined {
+    return this.store.get(key);
+  }
+  has(key: string): boolean {
+    return this.store.has(key);
+  }
+}
+const strCache = new Cache<string>();
+strCache.set("greeting", "Hello");
+console.log(strCache.get("greeting"));
+console.log(strCache.has("greeting"));
+console.log(strCache.has("farewell"));`
+  },
+  {
+    id: 4, rank: "SILVER",
+    title: "判別可能なユニオン",
+    description: "判別可能なユニオン型を使ったイベント処理システムを実装する。",
+    requirements: [
+      "type ClickEvent = { type: 'click'; x: number; y: number } を定義",
+      "type KeyEvent = { type: 'key'; key: string } を定義",
+      "type AppEvent = ClickEvent | KeyEvent のユニオン型を定義",
+      "AppEvent を受け取り適切な情報を出力する handleEvent 関数を実装",
+      "両方のイベントタイプで動作確認"
+    ],
+    hint: "switch(event.type) で判別できます。TypeScriptはそれぞれのcaseで型を絞り込みます。",
+    answer:
+`type ClickEvent = { type: 'click'; x: number; y: number };
+type KeyEvent   = { type: 'key'; key: string };
+type AppEvent   = ClickEvent | KeyEvent;
+
+function handleEvent(e: AppEvent): void {
+  switch (e.type) {
+    case 'click':
+      console.log(\`クリック: (\${e.x}, \${e.y})\`);
+      break;
+    case 'key':
+      console.log(\`キー入力: \${e.key}\`);
+      break;
+  }
+}
+handleEvent({ type: 'click', x: 100, y: 200 });
+handleEvent({ type: 'key', key: 'Enter' });`
+  },
+  {
+    id: 5, rank: "GOLD",
+    title: "型安全なビルダーパターン",
+    description: "TypeScriptのジェネリクスを使って型安全なビルダーパターンを実装する。",
+    requirements: [
+      "QueryBuilder<T> クラスを定義（T はレコードの型）",
+      "select(...fields: (keyof T)[]) でフィールドを選択",
+      "where(field: keyof T, value: T[keyof T]) で条件を追加",
+      "build() でクエリ文字列を返す",
+      "User型（id, name, email）で動作確認"
+    ],
+    hint: "keyof T で型のキー一覧を取得できます。T[keyof T] で値の型になります。",
+    answer:
+`interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+class QueryBuilder<T> {
+  private fields: string[] = [];
+  private conditions: string[] = [];
+  select(...f: (keyof T)[]): this {
+    this.fields = f as string[];
+    return this;
+  }
+  where(field: keyof T, value: T[keyof T]): this {
+    this.conditions.push(\`\${String(field)} = '\${value}'\`);
+    return this;
+  }
+  build(): string {
+    const sel = this.fields.length ? this.fields.join(', ') : '*';
+    const where = this.conditions.length ? ' WHERE ' + this.conditions.join(' AND ') : '';
+    return \`SELECT \${sel}\${where}\`;
+  }
+}
+const q = new QueryBuilder<User>()
+  .select('id', 'name')
+  .where('email', 'taro@example.com')
+  .build();
+console.log(q);`
+  },
+  {
+    id: 6, rank: "GOLD",
+    title: "型安全なイベントエミッター",
+    description: "TypeScriptの型システムを使ってイベント名と引数が型安全なEventEmitterを実装する。",
+    requirements: [
+      "EventMap インターフェース（click: { x: number, y: number }, load: { url: string }）を定義",
+      "TypedEmitter<T extends Record<string, unknown>> クラスを定義",
+      "on<K extends keyof T>(event: K, handler: (data: T[K]) => void) でリスナー登録",
+      "emit<K extends keyof T>(event: K, data: T[K]) でイベント発火",
+      "両方のイベントで動作確認"
+    ],
+    hint: "Map<string, Function[]> でリスナーを管理します。",
+    answer:
+`interface EventMap {
+  click: { x: number; y: number };
+  load:  { url: string };
+}
+class TypedEmitter<T extends Record<string, unknown>> {
+  private handlers = new Map<string, ((d: unknown) => void)[]>();
+  on<K extends keyof T>(event: K, handler: (data: T[K]) => void): void {
+    const key = String(event);
+    const arr = this.handlers.get(key) || [];
+    arr.push(handler as (d: unknown) => void);
+    this.handlers.set(key, arr);
+  }
+  emit<K extends keyof T>(event: K, data: T[K]): void {
+    const arr = this.handlers.get(String(event)) || [];
+    arr.forEach(h => h(data));
+  }
+}
+const emitter = new TypedEmitter<EventMap>();
+emitter.on('click', ({ x, y }) => console.log(\`クリック: \${x}, \${y}\`));
+emitter.on('load',  ({ url })   => console.log(\`ロード: \${url}\`));
+emitter.emit('click', { x: 100, y: 200 });
+emitter.emit('load',  { url: 'https://example.com' });`
+  },
+];
+
+const typescriptUnitGuides = [
+  {
+    id: "ts-unit01",
+    unit: "UNIT 01", title: "基礎出力と型",
+    summary: "TypeScriptの型アノテーションの基本を学ぶ。",
+    points: [
+      "TypeScriptはJavaScriptに静的型付けを追加した言語",
+      "変数に : 型名 でアノテーションを付ける",
+      "基本型: string、number、boolean、null、undefined",
+      "型推論: 初期値から型を自動判定"
+    ],
+    words: [
+      { term: "型アノテーション", desc: "変数や引数に型を明示する記法（: 型名）" },
+      { term: "型推論", desc: "TypeScriptが自動的に型を判定する機能" },
+      { term: "静的型付け", desc: "コンパイル時に型をチェックする仕組み" }
+    ]
+  },
+  {
+    id: "ts-unit02",
+    unit: "UNIT 02", title: "関数と型",
+    summary: "引数・戻り値の型付け、アロー関数、オプショナル・デフォルト引数を学ぶ。",
+    points: [
+      "引数と戻り値に型アノテーションを書く",
+      "? でオプショナル引数（省略可能）",
+      "= でデフォルト値を設定",
+      "アロー関数で簡潔に書ける"
+    ],
+    words: [
+      { term: "オプショナル引数", desc: "? をつけると省略可能な引数になる" },
+      { term: "void", desc: "何も返さない関数の戻り値型" },
+      { term: "アロー関数", desc: "=> で書く簡潔な関数記法" }
+    ]
+  },
+  {
+    id: "ts-unit03",
+    unit: "UNIT 03", title: "配列とタプル",
+    summary: "型付き配列、タプル、readonly、ユニオン型配列を学ぶ。",
+    points: [
+      "型名[] で型付き配列を宣言",
+      "タプルは各インデックスの型が固定された配列",
+      "readonly で変更不可能な配列",
+      "型ガードで型を絞り込める"
+    ],
+    words: [
+      { term: "タプル", desc: "各インデックスの型を固定した固定長配列" },
+      { term: "readonly", desc: "変更を禁止する修飾子" },
+      { term: "型ガード", desc: "型を絞り込む条件チェック（typeof、instanceof）" }
+    ]
+  },
+  {
+    id: "ts-unit04",
+    unit: "UNIT 04", title: "インターフェース",
+    summary: "オブジェクトの形を定義するインターフェースを学ぶ。",
+    points: [
+      "interface でオブジェクトの形を定義",
+      "? でオプショナルプロパティ",
+      "extends で継承",
+      "関数型も定義できる"
+    ],
+    words: [
+      { term: "interface", desc: "オブジェクトの型を定義するキーワード" },
+      { term: "extends", desc: "インターフェースを継承するキーワード" },
+      { term: "??", desc: "null/undefinedのとき右の値を返す演算子" }
+    ]
+  },
+  {
+    id: "ts-unit05",
+    unit: "UNIT 05", title: "型エイリアスとユニオン",
+    summary: "type エイリアス、ユニオン型（|）、交差型（&）を学ぶ。",
+    points: [
+      "type で型に名前をつける",
+      "| でユニオン型（どれか一つ）",
+      "& で交差型（全部を満たす）",
+      "リテラル型でenum的な使い方"
+    ],
+    words: [
+      { term: "type エイリアス", desc: "型に名前をつける宣言（type Name = ...）" },
+      { term: "ユニオン型", desc: "A | B 「AまたはB」のどちらかの型" },
+      { term: "交差型", desc: "A & B 「AかつB」両方の型を満たす" }
+    ]
+  },
+  {
+    id: "ts-unit06",
+    unit: "UNIT 06", title: "クラス",
+    summary: "クラス定義、アクセス修飾子、継承、インターフェース実装を学ぶ。",
+    points: [
+      "constructorの引数にpublicをつけると自動でプロパティ生成",
+      "public / private / protected でアクセスを制御",
+      "extends で継承、implements でインターフェース実装",
+      "TypeScriptのクラスはJavaScriptのclassとほぼ同じ"
+    ],
+    words: [
+      { term: "public", desc: "どこからでもアクセス可能（デフォルト）" },
+      { term: "private", desc: "クラス内からのみアクセス可能" },
+      { term: "implements", desc: "インターフェースを実装することを宣言" }
+    ]
+  },
+  {
+    id: "ts-unit07",
+    unit: "UNIT 07", title: "ジェネリクス",
+    summary: "型パラメータを使った汎用的なコードの書き方を学ぶ。",
+    points: [
+      "<T> で型パラメータを宣言",
+      "関数・クラス・インターフェースに使える",
+      "extends で型パラメータに制約を付ける",
+      "呼び出し時に型引数を指定（または推論）"
+    ],
+    words: [
+      { term: "ジェネリクス", desc: "型をパラメータとして受け取る機能" },
+      { term: "型パラメータ", desc: "<T>で宣言する型の変数" },
+      { term: "型制約", desc: "T extends U で型パラメータの範囲を制限" }
+    ]
+  },
+  {
+    id: "ts-unit08",
+    unit: "UNIT 08", title: "高度な型",
+    summary: "Mapped Types、条件型、テンプレートリテラル型、再帰型を学ぶ。",
+    points: [
+      "Readonly<T>、Partial<T>などユーティリティ型",
+      "T extends U ? X : Y 条件型",
+      "テンプレートリテラル型で文字列型を組み合わせ",
+      "再帰的な型定義も可能"
+    ],
+    words: [
+      { term: "Mapped Types", desc: "既存型の全プロパティを変換する型" },
+      { term: "条件型", desc: "T extends U ? X : Y 型レベルのif" },
+      { term: "keyof", desc: "型のキー一覧をユニオン型として取得" }
+    ]
+  }
+];
+
 // ===== 言語別データ取得ヘルパー =====
 
 function getProblems() {
   if (currentLanguage === 'python') return pythonProblems;
   if (currentLanguage === 'javascript') return javascriptProblems;
   if (currentLanguage === 'ruby') return rubyProblems;
+  if (currentLanguage === 'typescript') return typescriptProblems;
   return problems;
 }
 
@@ -4214,6 +4975,7 @@ function getMissions() {
   if (currentLanguage === 'python') return pythonMissions;
   if (currentLanguage === 'javascript') return javascriptMissions;
   if (currentLanguage === 'ruby') return rubyMissions;
+  if (currentLanguage === 'typescript') return typescriptMissions;
   return missions;
 }
 
@@ -4221,6 +4983,7 @@ function getUnitGuides() {
   if (currentLanguage === 'python') return pythonUnitGuides;
   if (currentLanguage === 'javascript') return javascriptUnitGuides;
   if (currentLanguage === 'ruby') return rubyUnitGuides;
+  if (currentLanguage === 'typescript') return typescriptUnitGuides;
   return unitGuides;
 }
 
@@ -4236,6 +4999,7 @@ function getCompiler() {
   if (currentLanguage === 'python') return 'cpython-3.12.7';
   if (currentLanguage === 'javascript') return 'nodejs-head';
   if (currentLanguage === 'ruby') return 'ruby-3.4.9';
+  if (currentLanguage === 'typescript') return 'typescript-5.6.2';
   return 'gcc-head';
 }
 
@@ -4243,6 +5007,7 @@ function getAceMode() {
   if (currentLanguage === 'python') return 'ace/mode/python';
   if (currentLanguage === 'javascript') return 'ace/mode/javascript';
   if (currentLanguage === 'ruby') return 'ace/mode/ruby';
+  if (currentLanguage === 'typescript') return 'ace/mode/typescript';
   return 'ace/mode/c_cpp';
 }
 
@@ -4260,6 +5025,10 @@ function getStarterCode() {
     if (p) return '# [問題] ' + p.question + '\n\n';
     return '# ここにコードを書いてください\n';
   }
+  if (currentLanguage === 'typescript') {
+    if (p) return '// [問題] ' + p.question + '\n\n';
+    return '// ここにコードを書いてください\n';
+  }
   if (p) return '// [問題] ' + p.question + '\n' + ACE_STARTER;
   return ACE_STARTER;
 }
@@ -4268,6 +5037,7 @@ function getLangName() {
   if (currentLanguage === 'python') return 'Python';
   if (currentLanguage === 'javascript') return 'JavaScript';
   if (currentLanguage === 'ruby') return 'Ruby';
+  if (currentLanguage === 'typescript') return 'TypeScript';
   return 'C++';
 }
 
@@ -5484,6 +6254,7 @@ async function renderProfile() {
   var pyStartDate    = localStorage.getItem('python_started_at');
   var jsStartDate    = localStorage.getItem('javascript_started_at');
   var rubyStartDate  = localStorage.getItem('ruby_started_at');
+  var tsStartDate    = localStorage.getItem('typescript_started_at');
   var totalStudySec  = getTotalStudyTime();
 
   function _daysAgo(ds) {
@@ -5520,8 +6291,8 @@ async function renderProfile() {
         '<div class="profile-rank-badge" style="color:' + rank.color + ';border-color:' + rank.color + ';box-shadow:0 0 12px ' + rank.color + '33">' +
           '◆ ' + rank.name + ' ◆' +
         '</div>' +
-        '<div class="profile-total">' + stats.total + '<span> / 120 CLEARED</span></div>' +
-        '<div class="profile-mission-total">' + stats.totalMissions + ' / 24 MISSIONS</div>' +
+        '<div class="profile-total">' + stats.total + '<span> / 150 CLEARED</span></div>' +
+        '<div class="profile-mission-total">' + stats.totalMissions + ' / 30 MISSIONS</div>' +
       '</div>' +
     '</div>' +
     (currentUserIsAdmin
@@ -5576,6 +6347,7 @@ async function renderProfile() {
         _langStartItem('Python',     '#3776AB', pyStartDate) +
         _langStartItem('JavaScript', '#F0C040', jsStartDate) +
         _langStartItem('Ruby',       '#CC342D', rubyStartDate) +
+        _langStartItem('TypeScript', '#3178C6', tsStartDate) +
       '</div>' +
     '</div>' +
 
