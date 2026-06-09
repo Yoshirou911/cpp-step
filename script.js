@@ -703,6 +703,48 @@ var LANGUAGE_GROUPS = [
 
 var currentLanguage = null;
 
+// ===== 学習タイマー & スタート日記録 =====
+
+var _studyTimerStart = null;
+var _studyTimerDate  = null;
+
+function startStudyTimer() {
+  _studyTimerStart = Date.now();
+  _studyTimerDate  = new Date().toISOString().slice(0, 10);
+}
+
+function stopStudyTimer() {
+  if (!_studyTimerStart) return;
+  var elapsed = Math.round((Date.now() - _studyTimerStart) / 1000);
+  _studyTimerStart = null;
+  // 3秒未満（誤操作）や3時間超（放置）は除外
+  if (elapsed < 3 || elapsed > 10800) return;
+  var date = _studyTimerDate || new Date().toISOString().slice(0, 10);
+  var log  = JSON.parse(localStorage.getItem('study_log') || '{}');
+  log[date] = (log[date] || 0) + elapsed;
+  localStorage.setItem('study_log', JSON.stringify(log));
+}
+
+function recordLanguageStart(langId) {
+  var key = langId + '_started_at';
+  if (!localStorage.getItem(key)) {
+    localStorage.setItem(key, new Date().toISOString().slice(0, 10));
+  }
+}
+
+function getTotalStudyTime() {
+  var log = JSON.parse(localStorage.getItem('study_log') || '{}');
+  return Object.keys(log).reduce(function(sum, k) { return sum + (log[k] || 0); }, 0);
+}
+
+function formatStudyTime(sec) {
+  if (sec < 60) return sec + 's';
+  var h = Math.floor(sec / 3600);
+  var m = Math.floor((sec % 3600) / 60);
+  if (h > 0) return h + 'h ' + m + 'm';
+  return m + 'min';
+}
+
 // ===== 言語選択ページの描画 =====
 
 function renderLangSelect() {
@@ -794,6 +836,7 @@ function setActiveTab(tab) {
 
 function selectLanguage(langId) {
   playLangSelect();
+  recordLanguageStart(langId);
   currentLanguage = langId;
   _progressCache = null;
   _missionProgressCache = null;
@@ -3328,6 +3371,8 @@ async function syncProgressFromSupabase() {
 // ===== 画面切り替え =====
 
 function showPage(name) {
+  // 問題/ミッション詳細を離れるときに学習タイマーを保存
+  stopStudyTimer();
   // 全ページを非表示にしてから対象だけ表示
   ["page-lang", "page-list", "page-detail", "page-guide",
    "page-mission-list", "page-mission-detail", "page-profile"].forEach(function(id) {
@@ -3340,6 +3385,10 @@ function showPage(name) {
     document.getElementById('nav-tabs').classList.add('hidden');
     document.getElementById('progress-text').classList.add('hidden');
     document.getElementById('progress-bar-wrap').classList.add('hidden');
+  }
+  // 問題・ミッション詳細では学習タイマーを開始
+  if (name === 'detail' || name === 'mission-detail') {
+    startStudyTimer();
   }
 }
 
@@ -4210,6 +4259,104 @@ function toggleLearned(id) {
   renderList();
 }
 
+// ===== アクティビティヒートマップ =====
+
+function buildHeatmapHTML() {
+  var log   = JSON.parse(localStorage.getItem('study_log') || '{}');
+  var today = new Date();
+  today.setHours(12, 0, 0, 0);
+
+  // 52週前の月曜日から開始
+  var startDate = new Date(today);
+  startDate.setDate(startDate.getDate() - 7 * 52);
+  var dow = startDate.getDay();
+  startDate.setDate(startDate.getDate() - (dow === 0 ? 6 : dow - 1));
+
+  // 週カラムを構築
+  var weeks = [];
+  var cur   = new Date(startDate);
+  while (cur <= today) {
+    var week = [];
+    for (var d = 0; d < 7; d++) {
+      if (cur <= today) {
+        var ds   = cur.toISOString().slice(0, 10);
+        var sec  = log[ds] || 0;
+        var lv   = sec >= 3600 ? 4 : sec >= 1800 ? 3 : sec >= 900 ? 2 : sec >= 60 ? 1 : 0;
+        var mins = sec > 0 ? Math.round(sec / 60) : 0;
+        var tstr = mins >= 60
+          ? Math.floor(mins / 60) + 'h' + (mins % 60 > 0 ? ' ' + (mins % 60) + 'm' : '')
+          : mins > 0 ? mins + 'min' : '';
+        week.push({ date: ds, lv: lv, title: ds + (tstr ? ': ' + tstr : '') });
+      } else {
+        week.push(null);
+      }
+      cur.setDate(cur.getDate() + 1);
+    }
+    weeks.push(week);
+  }
+
+  // 月ラベル（月が変わる最初の週のインデックス）
+  var MONTHS   = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var monthLbls = [];
+  var lastMonth = -1;
+  weeks.forEach(function(wk, wi) {
+    if (wk[0]) {
+      var m = parseInt(wk[0].date.slice(5, 7)) - 1;
+      if (m !== lastMonth) { monthLbls.push({ wi: wi, label: MONTHS[m] }); lastMonth = m; }
+    }
+  });
+
+  var DAY_LBLS = ['Mon', '', 'Wed', '', 'Fri', '', ''];
+  var STEP     = 13; // 11px + 2px gap
+  var DAY_W    = 26; // day-label column width
+
+  var html = '<div class="heatmap-outer">';
+
+  // 月ラベル行
+  html += '<div class="heatmap-months-row">';
+  monthLbls.forEach(function(m) {
+    var left = DAY_W + 4 + m.wi * STEP;
+    html += '<span class="heatmap-month-lbl" style="left:' + left + 'px">' + m.label + '</span>';
+  });
+  html += '</div>';
+
+  // 本体（曜日ラベル + 週グリッド）
+  html += '<div class="heatmap-body">';
+
+  // 曜日列
+  html += '<div class="heatmap-day-col">';
+  DAY_LBLS.forEach(function(lb) {
+    html += '<div class="heatmap-day-lbl">' + lb + '</div>';
+  });
+  html += '</div>';
+
+  // 週グリッド
+  html += '<div class="heatmap-weeks">';
+  weeks.forEach(function(wk) {
+    html += '<div class="heatmap-week">';
+    wk.forEach(function(day) {
+      if (!day) {
+        html += '<div class="heatmap-cell hm-empty"></div>';
+      } else {
+        html += '<div class="heatmap-cell hm-lv' + day.lv + '" title="' + day.title + '"></div>';
+      }
+    });
+    html += '</div>';
+  });
+  html += '</div></div>'; // weeks + body
+
+  // 凡例
+  html += '<div class="heatmap-legend">';
+  html += '<span class="hm-legend-lbl">少</span>';
+  [0, 1, 2, 3, 4].forEach(function(lv) {
+    html += '<div class="heatmap-cell hm-lv' + lv + '"></div>';
+  });
+  html += '<span class="hm-legend-lbl">多</span></div>';
+
+  html += '</div>'; // outer
+  return html;
+}
+
 // ===== プロフィールページ =====
 
 function openProfile() {
@@ -4290,6 +4437,36 @@ async function renderProfile() {
   var localDays = JSON.parse(localStorage.getItem('login_days') || '[]');
   var loggedInToday = localDays.indexOf(todayStr) !== -1;
 
+  // ─── ジャーニー・アクティビティデータ ───
+  var allLoginDays   = localDays.slice().sort();
+  var firstLoginDate = allLoginDays.length > 0 ? allLoginDays[0] : null;
+  var cppStartDate   = localStorage.getItem('cpp_started_at');
+  var pyStartDate    = localStorage.getItem('python_started_at');
+  var jsStartDate    = localStorage.getItem('javascript_started_at');
+  var totalStudySec  = getTotalStudyTime();
+
+  function _daysAgo(ds) {
+    if (!ds) return '';
+    var diff = Math.round((Date.parse(todayStr) - Date.parse(ds)) / 86400000);
+    if (diff === 0) return '今日';
+    return diff + '日前';
+  }
+  function _fmtDate(ds) {
+    return ds ? ds.replace(/-/g, '/') : '—';
+  }
+  function _langStartItem(name, color, ds) {
+    var dateStr = ds ? _fmtDate(ds) : '未開始';
+    var ago     = ds ? '(' + _daysAgo(ds) + ')' : '';
+    return (
+      '<div class="lang-start-item">' +
+        '<div class="lang-start-dot" style="background:' + color + '"></div>' +
+        '<span class="lang-start-name">' + name + '</span>' +
+        '<span class="lang-start-date">' + dateStr + '</span>' +
+        (ago ? '<span class="lang-start-ago">' + ago + '</span>' : '') +
+      '</div>'
+    );
+  }
+
   content.innerHTML =
 
     // ─── ヒーローセクション ───
@@ -4330,6 +4507,28 @@ async function renderProfile() {
             '<span class="exp-src">📅 ログイン +' + expData.login.toLocaleString() + '</span>' +
           '</div>' +
         '</div>' +
+      '</div>' +
+    '</div>' +
+
+    // ─── アクティビティ ───
+    '<div class="profile-section">' +
+      '<div class="profile-section-title">// ACTIVITY</div>' +
+      '<div class="activity-top-row">' +
+        '<div class="act-stat-card">' +
+          '<div class="act-stat-label">総学習時間</div>' +
+          '<div class="act-stat-value">' + (totalStudySec >= 60 ? formatStudyTime(totalStudySec) : totalStudySec > 0 ? totalStudySec + 's' : '—') + '</div>' +
+        '</div>' +
+        '<div class="act-stat-card">' +
+          '<div class="act-stat-label">学習開始日</div>' +
+          '<div class="act-stat-value">' + _fmtDate(firstLoginDate) + '</div>' +
+          (firstLoginDate ? '<div class="act-stat-sub">' + _daysAgo(firstLoginDate) + '</div>' : '') +
+        '</div>' +
+      '</div>' +
+      buildHeatmapHTML() +
+      '<div class="lang-start-list">' +
+        _langStartItem('C++',        '#00599C', cppStartDate) +
+        _langStartItem('Python',     '#3776AB', pyStartDate)  +
+        _langStartItem('JavaScript', '#F0C040', jsStartDate)  +
       '</div>' +
     '</div>' +
 
@@ -4583,6 +4782,19 @@ recordLoginDay();
 
 // ヘッダーの Lv バッジを初期化（データ配列定義後なので安全）
 setTimeout(updateLevelBadge, 0);
+
+// タブ切替・ページ離脱時に学習タイマーを保存
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) {
+    stopStudyTimer();
+  } else {
+    // タブに戻ったとき、問題/ミッション詳細ページなら再計測開始
+    var onDetail  = !document.getElementById('page-detail').classList.contains('hidden');
+    var onMission = !document.getElementById('page-mission-detail').classList.contains('hidden');
+    if (onDetail || onMission) startStudyTimer();
+  }
+});
+window.addEventListener('beforeunload', stopStudyTimer);
 
 // サウンドボタン初期状態
 (function() {

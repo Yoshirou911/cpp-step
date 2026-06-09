@@ -2539,4 +2539,189 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   .badge-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
   .profile-total { font-size: 2rem; }
   .levelup-num-wrap { font-size: 4.8rem; }
+  .activity-top-row { flex-direction: column; }
+}
+
+/* ──────────────────────────────────────────
+   ACTIVITY セクション
+────────────────────────────────────────── */
+
+.activity-top-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.act-stat-card {
+  flex: 1;
+  min-width: 140px;
+  background: rgba(14,12,9,0.85);
+  border: 1px solid rgba(255,107,0,0.10);
+  padding: 14px 18px;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+}
+
+.act-stat-label {
+  font-size: 0.60rem;
+  letter-spacing: 0.16em;
+  color: rgba(160,144,112,0.45);
+  font-family: 'Share Tech Mono', monospace;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.act-stat-value {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--bright);
+  font-family: 'Barlow Condensed', sans-serif;
+  line-height: 1;
+  letter-spacing: 0.03em;
+}
+
+.act-stat-sub {
+  font-size: 0.62rem;
+  color: rgba(160,144,112,0.35);
+  font-family: 'Share Tech Mono', monospace;
+  margin-top: 4px;
+}
+
+/* ── 言語開始日リスト ── */
+.lang-start-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.lang-start-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.72rem;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.lang-start-dot {
+  width: 8px;
+  height: 8px;
+  clip-path: polygon(50% 0%, 95% 26%, 95% 74%, 50% 100%, 5% 74%, 5% 26%);
+  flex-shrink: 0;
+}
+
+.lang-start-name {
+  color: rgba(237,224,200,0.60);
+  min-width: 100px;
+}
+
+.lang-start-date {
+  color: rgba(160,144,112,0.55);
+}
+
+.lang-start-ago {
+  color: rgba(160,144,112,0.30);
+  font-size: 0.63rem;
+}
+
+/* ──────────────────────────────────────────
+   ACTIVITY ヒートマップ カレンダー
+────────────────────────────────────────── */
+
+.heatmap-outer {
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+  /* スクロールバーを細く */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,107,0,0.20) transparent;
+}
+.heatmap-outer::-webkit-scrollbar { height: 4px; }
+.heatmap-outer::-webkit-scrollbar-track { background: transparent; }
+.heatmap-outer::-webkit-scrollbar-thumb { background: rgba(255,107,0,0.20); border-radius: 2px; }
+
+.heatmap-months-row {
+  position: relative;
+  height: 16px;
+  margin-bottom: 4px;
+  /* day-label幅と同じ分だけ左にスペース */
+}
+
+.heatmap-month-lbl {
+  position: absolute;
+  font-size: 0.57rem;
+  letter-spacing: 0.06em;
+  color: rgba(160,144,112,0.38);
+  font-family: 'Share Tech Mono', monospace;
+  white-space: nowrap;
+  top: 0;
+}
+
+.heatmap-body {
+  display: flex;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.heatmap-day-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+  width: 26px;
+  margin-top: 0;
+}
+
+.heatmap-day-lbl {
+  height: 11px;
+  font-size: 0.52rem;
+  color: rgba(160,144,112,0.35);
+  font-family: 'Share Tech Mono', monospace;
+  line-height: 11px;
+  text-align: right;
+}
+
+.heatmap-weeks {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.heatmap-week {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* 各セル */
+.heatmap-cell {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  cursor: default;
+  transition: opacity 0.15s;
+}
+.heatmap-cell:hover { opacity: 0.80; }
+
+.hm-empty { background: transparent; }
+.hm-lv0   { background: rgba(255,107,0,0.07); }
+.hm-lv1   { background: rgba(255,107,0,0.25); }
+.hm-lv2   { background: rgba(255,107,0,0.52); }
+.hm-lv3   { background: rgba(255,107,0,0.78); }
+.hm-lv4   { background: #FF6B00; box-shadow: 0 0 5px rgba(255,107,0,0.55); }
+
+/* 凡例 */
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 8px;
+  padding-left: 30px;
+}
+
+.hm-legend-lbl {
+  font-size: 0.55rem;
+  color: rgba(160,144,112,0.35);
+  font-family: 'Share Tech Mono', monospace;
+  margin: 0 3px;
 }
