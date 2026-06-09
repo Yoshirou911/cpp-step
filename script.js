@@ -370,7 +370,9 @@ var BADGES = [
   { id: 'legend_ruby',   name: 'RUBY LEGEND',    desc: 'Ruby 超難問クリア',                       tier: 'legend',   check: function(s) { return s.legendRuby;   } },
   { id: 'ts_master',     name: 'TS MASTER',      desc: 'TypeScript 全30問クリア',                 tier: 'diamond',  check: function(s) { return s.ts >= 30;     } },
   { id: 'legend_ts',     name: 'TS LEGEND',      desc: 'TypeScript 超難問クリア',                 tier: 'legend',   check: function(s) { return s.legendTs;     } },
-  { id: 'true_legend',   name: 'TRUE LEGEND',    desc: '全言語の超難問クリア',                    tier: 'legend',   check: function(s) { return s.legendCpp && s.legendPython && s.legendJs && s.legendRuby && s.legendTs; } },
+  { id: 'kotlin_master', name: 'KOTLIN MASTER',  desc: 'Kotlin 全30問クリア',                     tier: 'diamond',  check: function(s) { return s.kotlin >= 30; } },
+  { id: 'legend_kotlin', name: 'KOTLIN LEGEND',  desc: 'Kotlin 超難問クリア',                     tier: 'legend',   check: function(s) { return s.legendKotlin; } },
+  { id: 'true_legend',   name: 'TRUE LEGEND',    desc: '全言語の超難問クリア',                    tier: 'legend',   check: function(s) { return s.legendCpp && s.legendPython && s.legendJs && s.legendRuby && s.legendTs && s.legendKotlin; } },
 ];
 
 // 全言語の進捗を localStorage から集計（言語切替不要）
@@ -388,26 +390,30 @@ function getProfileStats() {
   var jsArr     = getP('javascript');
   var rubyArr = getP('ruby');
   var tsArr   = getP('typescript');
+  var kotlinArr = getP('kotlin');
   var cpp    = cppArr.length;
   var python = pythonArr.length;
   var js     = jsArr.length;
   var ruby   = rubyArr.length;
   var ts     = tsArr.length;
+  var kotlin = kotlinArr.length;
   var cppM   = getM('cpp').length;
   var pyM    = getM('python').length;
   var jsM    = getM('javascript').length;
   var rubyM  = getM('ruby').length;
   var tsM    = getM('typescript').length;
+  var kotlinM = getM('kotlin').length;
   return {
-    cpp: cpp, python: python, js: js, ruby: ruby, ts: ts,
-    cppM: cppM, pyM: pyM, jsM: jsM, rubyM: rubyM, tsM: tsM,
-    total: cpp + python + js + ruby + ts,
-    totalMissions: cppM + pyM + jsM + rubyM + tsM,
+    cpp: cpp, python: python, js: js, ruby: ruby, ts: ts, kotlin: kotlin,
+    cppM: cppM, pyM: pyM, jsM: jsM, rubyM: rubyM, tsM: tsM, kotlinM: kotlinM,
+    total: cpp + python + js + ruby + ts + kotlin,
+    totalMissions: cppM + pyM + jsM + rubyM + tsM + kotlinM,
     legendCpp:    cppArr.indexOf(31)    !== -1,
     legendPython: pythonArr.indexOf(31) !== -1,
     legendJs:     jsArr.indexOf(31)     !== -1,
     legendRuby:   rubyArr.indexOf(30)   !== -1,
     legendTs:     tsArr.indexOf(30)     !== -1,
+    legendKotlin: kotlinArr.indexOf(30) !== -1,
     // ストリークは非同期で後から上書きするため初期値0
     currentStreak: 0,
     bestStreak:    0,
@@ -699,7 +705,7 @@ var LANGUAGE_GROUPS = [
         uses: ['大規模Webアプリ', '型安全なフロントエンド', 'フレームワーク開発']
       },
       {
-        id: 'kotlin', name: 'Kotlin', color: '#7F52FF', problems: 0, available: false,
+        id: 'kotlin', name: 'Kotlin', color: '#7F52FF', problems: 30, available: true,
         uses: ['Androidアプリ', 'サーバーサイド', 'Spring Boot']
       },
       {
@@ -4961,6 +4967,541 @@ const typescriptUnitGuides = [
   }
 ];
 
+// ===== Kotlin データ =====
+
+const kotlinProblems = [
+  // UNIT 01 基礎出力と変数 ROOKIE
+  { id:1, unit:"UNIT 01  ◆  基礎出力と変数", rank:"ROOKIE",
+    title:"Hello World",
+    question:"\"Hello, World!\" と画面に出力するプログラムを書いてください。",
+    hint:"println() 関数を使います。Kotlinのメイン関数は fun main() {} です。",
+    answer:`fun main() {\n    println("Hello, World!")\n}`,
+    expected:"Hello, World!",
+    explanation:"Kotlinのエントリーポイントは fun main() です。println() は出力後に改行します。"
+  },
+  { id:2, unit:"UNIT 01  ◆  基礎出力と変数", rank:"ROOKIE",
+    title:"val と var",
+    question:"val で不変の name = \"Kotlin\" を、var で可変の version = 2 を宣言し、version を 3 に変更してそれぞれ出力してください。",
+    hint:"val は再代入不可、var は再代入可能です。",
+    answer:`fun main() {\n    val name = "Kotlin"\n    var version = 2\n    version = 3\n    println(name)\n    println(version)\n}`,
+    expected:"Kotlin\n3",
+    explanation:"val は immutable（変更不可）、var は mutable（変更可）の変数宣言です。基本的には val を使い、必要なときだけ var を使います。"
+  },
+  { id:3, unit:"UNIT 01  ◆  基礎出力と変数", rank:"ROOKIE",
+    title:"文字列テンプレート",
+    question:"name = \"Kotlin\" と version = 2.1 を宣言し、\"Hello, Kotlin!\" と \"Version: 2.1\" を文字列テンプレートで出力してください。",
+    hint:"\"$変数名\" または \"${式}\" で変数や式を文字列に埋め込めます。",
+    answer:`fun main() {\n    val name = "Kotlin"\n    val version = 2.1\n    println("Hello, \$name!")\n    println("Version: \$version")\n}`,
+    expected:"Hello, Kotlin!\nVersion: 2.1",
+    explanation:"$ で変数を、${} で式を文字列に埋め込める文字列テンプレートはKotlinの便利な機能です。"
+  },
+  // UNIT 02 型と制御フロー BRONZE
+  { id:4, unit:"UNIT 02  ◆  型と制御フロー", rank:"BRONZE",
+    title:"基本型",
+    question:"Int型の n=42、Double型の d=3.14、String型の s=\"Hello\"、Boolean型の b=true を宣言してそれぞれ出力してください。",
+    hint:"Kotlinの型名は大文字始まりです（Int、Double、String、Boolean）。",
+    answer:`fun main() {\n    val n: Int = 42\n    val d: Double = 3.14\n    val s: String = "Hello"\n    val b: Boolean = true\n    println(n)\n    println(d)\n    println(s)\n    println(b)\n}`,
+    expected:"42\n3.14\nHello\ntrue",
+    explanation:"Kotlinの基本型はすべてオブジェクトです。型推論により多くの場合型アノテーションは省略できます。"
+  },
+  { id:5, unit:"UNIT 02  ◆  型と制御フロー", rank:"BRONZE",
+    title:"null安全",
+    question:"String? 型の name を null で宣言し、\"名前なし\" を ?: で出力してください。次に name を \"Kotlin\" に変えて length を ?. で出力してください。",
+    hint:"?: はElvis演算子、?. はsafe call演算子です。",
+    answer:`fun main() {\n    var name: String? = null\n    println(name ?: "名前なし")\n    name = "Kotlin"\n    println(name?.length)\n}`,
+    expected:"名前なし\n6",
+    explanation:"Kotlinはnull安全な言語です。? 付き型のみnullを格納できます。?. はnullのとき処理をスキップし、?: はnullのときの代替値を指定します。"
+  },
+  { id:6, unit:"UNIT 02  ◆  型と制御フロー", rank:"BRONZE",
+    title:"if式",
+    question:"x = 15 として、x が 10 より大きければ \"big\"、そうでなければ \"small\" を if 式を使って変数に代入して出力してください。",
+    hint:"Kotlinの if は式（値を返す）として使えます。",
+    answer:`fun main() {\n    val x = 15\n    val result = if (x > 10) "big" else "small"\n    println(result)\n}`,
+    expected:"big",
+    explanation:"Kotlinの if は式として使えます。三項演算子がない代わりに if-else が値を返します。"
+  },
+  { id:7, unit:"UNIT 02  ◆  型と制御フロー", rank:"BRONZE",
+    title:"when式",
+    question:"score = 75 として、80以上なら \"A\"、60以上なら \"B\"、それ以外は \"C\" を when 式で変数に代入して出力してください。",
+    hint:"when { 条件 -> 値 } の形で書きます。",
+    answer:`fun main() {\n    val score = 75\n    val grade = when {\n        score >= 80 -> "A"\n        score >= 60 -> "B"\n        else -> "C"\n    }\n    println(grade)\n}`,
+    expected:"B",
+    explanation:"when はKotlinの多分岐式です。switch文より強力で、条件式、型チェックなど様々なパターンで使えます。"
+  },
+  { id:8, unit:"UNIT 02  ◆  型と制御フロー", rank:"BRONZE",
+    title:"for ループと範囲",
+    question:"1..5 の範囲を for でループして各値を出力してください。",
+    hint:"for (i in 1..5) の形で書きます。",
+    answer:`fun main() {\n    for (i in 1..5) {\n        println(i)\n    }\n}`,
+    expected:"1\n2\n3\n4\n5",
+    explanation:".. で範囲（Range）を作れます。1..5 は1から5まで（両端含む）です。downTo で降順、step でステップ数を指定できます。"
+  },
+  // UNIT 03 関数 SILVER
+  { id:9, unit:"UNIT 03  ◆  関数", rank:"SILVER",
+    title:"関数と単一式関数",
+    question:"2つの Int を受け取り合計を返す add 関数を通常形式と単一式形式の2通りで定義し、add(3, 4) を出力してください。",
+    hint:"fun 名前(引数: 型): 戻り値型 = 式 の形で単一式関数を書けます。",
+    answer:`fun add(a: Int, b: Int): Int = a + b\n\nfun main() {\n    println(add(3, 4))\n}`,
+    expected:"7",
+    explanation:"単一式関数は { return 式 } を = 式 と書けます。戻り値型は推論できる場合省略可能です。"
+  },
+  { id:10, unit:"UNIT 03  ◆  関数", rank:"SILVER",
+    title:"デフォルト引数と名前付き引数",
+    question:"name: String と greeting: String = \"Hello\" を受け取る greet 関数を定義し、greet(\"Taro\") と greet(\"Hanako\", greeting = \"Hi\") を出力してください。",
+    hint:"引数 = 値 でデフォルト値を設定します。呼び出し時に名前付き引数が使えます。",
+    answer:`fun greet(name: String, greeting: String = "Hello"): String = "\$greeting, \$name!"\n\nfun main() {\n    println(greet("Taro"))\n    println(greet("Hanako", greeting = "Hi"))\n}`,
+    expected:"Hello, Taro!\nHi, Hanako!",
+    explanation:"デフォルト引数でオーバーロードを減らせます。名前付き引数で可読性が上がり、引数の順番を変えて渡すこともできます。"
+  },
+  { id:11, unit:"UNIT 03  ◆  関数", rank:"SILVER",
+    title:"拡張関数",
+    question:"String に shout() 拡張関数を追加してください。shout() は文字列を大文字にして末尾に \"!!!\" を付けて返します。\"hello\".shout() を出力してください。",
+    hint:"fun 型名.関数名(): 戻り値型 = ... の形で拡張関数を定義します。",
+    answer:`fun String.shout(): String = this.uppercase() + "!!!"\n\nfun main() {\n    println("hello".shout())\n}`,
+    expected:"HELLO!!!",
+    explanation:"拡張関数はクラスを変更せずにメソッドを追加できます。既存クラスへの機能追加に便利です。"
+  },
+  { id:12, unit:"UNIT 03  ◆  関数", rank:"SILVER",
+    title:"vararg（可変長引数）",
+    question:"可変長の Int を受け取り合計を返す sum 関数を vararg を使って定義し、sum(1, 2, 3, 4, 5) を出力してください。",
+    hint:"vararg numbers: Int で複数の引数をまとめて受け取れます。",
+    answer:`fun sum(vararg numbers: Int): Int = numbers.sum()\n\nfun main() {\n    println(sum(1, 2, 3, 4, 5))\n}`,
+    expected:"15",
+    explanation:"vararg で可変長引数を受け取れます。関数内では配列として扱えます。* でスプレッド演算子として配列を展開して渡すこともできます。"
+  },
+  { id:13, unit:"UNIT 03  ◆  関数", rank:"SILVER",
+    title:"ラムダ式の基礎",
+    question:"(Int) -> Int 型のラムダ double を { n -> n * 2 } で定義して double(5) を出力し、listOf(1,2,3) を forEach で出力してください。",
+    hint:"val 変数名: (型) -> 戻り値型 = { 引数 -> 式 } の形で書きます。",
+    answer:`fun main() {\n    val double: (Int) -> Int = { n -> n * 2 }\n    println(double(5))\n    listOf(1, 2, 3).forEach { println(it) }\n}`,
+    expected:"10\n1\n2\n3",
+    explanation:"ラムダ式はKotlinの関数型プログラミングの基本です。引数が1つのときは it で参照できます。"
+  },
+  // UNIT 04 コレクション GOLD
+  { id:14, unit:"UNIT 04  ◆  コレクション", rank:"GOLD",
+    title:"listOf と基本操作",
+    question:"listOf(3, 1, 4, 1, 5, 9) を sorted() で並べ替えた結果、size、contains(5) を出力してください。",
+    hint:"sorted() は新しいリストを返します。",
+    answer:`fun main() {\n    val nums = listOf(3, 1, 4, 1, 5, 9)\n    println(nums.sorted())\n    println(nums.size)\n    println(nums.contains(5))\n}`,
+    expected:"[1, 1, 3, 4, 5, 9]\n6\ntrue",
+    explanation:"listOf は不変リストを作ります。変更可能なリストは mutableListOf() です。sorted() は昇順ソートした新しいリストを返します。"
+  },
+  { id:15, unit:"UNIT 04  ◆  コレクション", rank:"GOLD",
+    title:"map と filter",
+    question:"listOf(1,2,3,4,5) から filter で偶数のみ、map で各要素の2乗を取り出してそれぞれ出力してください。",
+    hint:"filter { 条件 } と map { 変換 } を使います。",
+    answer:`fun main() {\n    val nums = listOf(1, 2, 3, 4, 5)\n    println(nums.filter { it % 2 == 0 })\n    println(nums.map { it * it })\n}`,
+    expected:"[2, 4]\n[1, 4, 9, 16, 25]",
+    explanation:"filter は条件に合う要素、map は変換した要素を集めた新しいリストを返します。メソッドチェーンで組み合わせられます。"
+  },
+  { id:16, unit:"UNIT 04  ◆  コレクション", rank:"GOLD",
+    title:"sum と fold",
+    question:"listOf(1,2,3,4,5) の合計を sum()、積を fold(1) { acc, n -> acc * n } で計算して出力してください。",
+    hint:"fold(初期値) { 累計, 要素 -> 演算 } の形で書きます。",
+    answer:`fun main() {\n    val nums = listOf(1, 2, 3, 4, 5)\n    println(nums.sum())\n    println(nums.fold(1) { acc, n -> acc * n })\n}`,
+    expected:"15\n120",
+    explanation:"sum() は合計を返します。fold は初期値から始めて各要素を畳み込みます。reduce は初期値なし版です。"
+  },
+  { id:17, unit:"UNIT 04  ◆  コレクション", rank:"GOLD",
+    title:"mapOf",
+    question:"mapOf(\"Taro\" to 85, \"Hanako\" to 92, \"Ken\" to 78) を forEach で \"名前: 点数\" の形式で出力してください。",
+    hint:"forEach { (key, value) -> ... } の形で分割できます。",
+    answer:`fun main() {\n    val scores = mapOf("Taro" to 85, "Hanako" to 92, "Ken" to 78)\n    scores.forEach { (name, score) -> println("\$name: \$score") }\n}`,
+    expected:"Taro: 85\nHanako: 92\nKen: 78",
+    explanation:"mapOf で不変のMapを作れます。to で infix記法のPairを作ります。forEach のラムダで分割代入が使えます。"
+  },
+  { id:18, unit:"UNIT 04  ◆  コレクション", rank:"GOLD",
+    title:"クラスとコンストラクタ",
+    question:"name: String と age: Int を持つ Person クラスを定義し、introduce() メソッドで \"私はTaro、20歳です\" と出力してください。",
+    hint:"class クラス名(val プロパティ: 型) でプライマリコンストラクタを定義できます。",
+    answer:`class Person(val name: String, val age: Int) {\n    fun introduce(): String = "私は\${name}、\${age}歳です"\n}\n\nfun main() {\n    val p = Person("Taro", 20)\n    println(p.introduce())\n}`,
+    expected:"私はTaro、20歳です",
+    explanation:"プライマリコンストラクタの引数に val/var をつけると自動的にプロパティになります。"
+  },
+  { id:19, unit:"UNIT 04  ◆  コレクション", rank:"GOLD",
+    title:"data class",
+    question:"data class Point(val x: Int, val y: Int) を定義し、Point(3,4) を作成して出力し、copy(y=10) で複製して出力してください。",
+    hint:"data class は toString、equals、copy などを自動生成します。",
+    answer:`data class Point(val x: Int, val y: Int)\n\nfun main() {\n    val p1 = Point(3, 4)\n    val p2 = p1.copy(y = 10)\n    println(p1)\n    println(p2)\n}`,
+    expected:"Point(x=3, y=4)\nPoint(x=3, y=10)",
+    explanation:"data class はtoString、equals、hashCode、copy、componentN を自動生成します。値オブジェクトに最適です。"
+  },
+  // UNIT 05 継承とインターフェース PLATINUM
+  { id:20, unit:"UNIT 05  ◆  継承とインターフェース", rank:"PLATINUM",
+    title:"継承（open class）",
+    question:"open class Animal(val name: String) と sound(): String を定義し、Dog クラスで sound() を \"Woof\" にオーバーライドして \"Rex: Woof\" と出力してください。",
+    hint:"Kotlinのクラスはデフォルトで final です。継承を許可するには open が必要です。",
+    answer:`open class Animal(val name: String) {\n    open fun sound(): String = "..."\n}\n\nclass Dog(name: String) : Animal(name) {\n    override fun sound(): String = "Woof"\n}\n\nfun main() {\n    val d = Dog("Rex")\n    println("\${d.name}: \${d.sound()}")\n}`,
+    expected:"Rex: Woof",
+    explanation:"Kotlinのクラスはデフォルトで継承不可（final）です。open をつけることで継承・オーバーライドが可能になります。"
+  },
+  { id:21, unit:"UNIT 05  ◆  継承とインターフェース", rank:"PLATINUM",
+    title:"abstract class",
+    question:"abstract class Shape と abstract fun area(): Double を定義し、Circle(r: Double) で area() を実装（π×r²）して、Circle(5.0).area() を小数点2桁で出力してください。",
+    hint:"String.format(\"%.2f\", 値) で小数点桁数を指定できます。",
+    answer:`abstract class Shape {\n    abstract fun area(): Double\n}\n\nclass Circle(val r: Double) : Shape() {\n    override fun area(): Double = Math.PI * r * r\n}\n\nfun main() {\n    val c = Circle(5.0)\n    println(String.format("%.2f", c.area()))\n}`,
+    expected:"78.54",
+    explanation:"abstract class は直接インスタンス化できません。abstract メソッドはサブクラスで必ず実装が必要です。"
+  },
+  { id:22, unit:"UNIT 05  ◆  継承とインターフェース", rank:"PLATINUM",
+    title:"interface の実装",
+    question:"greet(): String を持つ Greeter インターフェースを定義し、JapaneseGreeter で \"こんにちは\" を返すよう実装して出力してください。",
+    hint:"class クラス名 : インターフェース名 の形で実装します。",
+    answer:`interface Greeter {\n    fun greet(): String\n}\n\nclass JapaneseGreeter : Greeter {\n    override fun greet(): String = "こんにちは"\n}\n\nfun main() {\n    val g: Greeter = JapaneseGreeter()\n    println(g.greet())\n}`,
+    expected:"こんにちは",
+    explanation:"Kotlinのインターフェースはデフォルト実装を持てます。クラスは複数のインターフェースを実装できます。"
+  },
+  { id:23, unit:"UNIT 05  ◆  継承とインターフェース", rank:"PLATINUM",
+    title:"companion object",
+    question:"Counter クラスに companion object を追加し、increment() と getCount() を実装してください。increment() を3回呼んで getCount() を出力してください。",
+    hint:"companion object はクラスに紐づくシングルトンです。クラス名.メソッド名() で呼べます。",
+    answer:`class Counter {\n    companion object {\n        private var count = 0\n        fun increment() = ++count\n        fun getCount() = count\n    }\n}\n\nfun main() {\n    Counter.increment()\n    Counter.increment()\n    Counter.increment()\n    println(Counter.getCount())\n}`,
+    expected:"3",
+    explanation:"companion object はJavaのstaticに相当します。ファクトリーメソッドや定数の定義によく使われます。"
+  },
+  // UNIT 06 シールドクラスと型システム DIAMOND
+  { id:24, unit:"UNIT 06  ◆  シールドクラスと型システム", rank:"DIAMOND",
+    title:"enum class",
+    question:"NORTH、SOUTH、EAST、WEST を持つ Direction enum class を定義し、NORTH の名前と ordinal を出力してください。",
+    hint:"enum の各値は name と ordinal プロパティを持ちます。",
+    answer:`enum class Direction {\n    NORTH, SOUTH, EAST, WEST\n}\n\nfun main() {\n    val d = Direction.NORTH\n    println(d)\n    println(d.ordinal)\n}`,
+    expected:"NORTH\n0",
+    explanation:"enum class で列挙型を定義します。name は名前文字列、ordinal は0始まりの序数です。when 式と組み合わせると強力です。"
+  },
+  { id:25, unit:"UNIT 06  ◆  シールドクラスと型システム", rank:"DIAMOND",
+    title:"sealed class",
+    question:"sealed class Result と data class Success(val data: String)、data class Failure(val msg: String) を定義し、handle(r: Result) 関数で when を使って分岐、Success と Failure それぞれを出力してください。",
+    hint:"is でシールドクラスのサブクラスを判定します。",
+    answer:`sealed class Result\ndata class Success(val data: String) : Result()\ndata class Failure(val msg: String) : Result()\n\nfun handle(r: Result): String = when (r) {\n    is Success -> "成功: \${r.data}"\n    is Failure -> "失敗: \${r.msg}"\n}\n\nfun main() {\n    println(handle(Success("OK")))\n    println(handle(Failure("Not Found")))\n}`,
+    expected:"成功: OK\n失敗: Not Found",
+    explanation:"sealed class は限られたサブクラスしか持てないクラスです。when との組み合わせでelse不要になり、全パターン網羅をコンパイル時に確認できます。"
+  },
+  { id:26, unit:"UNIT 06  ◆  シールドクラスと型システム", rank:"DIAMOND",
+    title:"ジェネリクス",
+    question:"ジェネリッククラス Box<T>(val value: T) を定義して get(): T を実装し、Box(42).get() と Box(\"Hello\").get() を出力してください。",
+    hint:"class クラス名<T>(val value: T) の形で型パラメータを宣言します。",
+    answer:`class Box<T>(val value: T) {\n    fun get(): T = value\n}\n\nfun main() {\n    val intBox = Box(42)\n    val strBox = Box("Hello")\n    println(intBox.get())\n    println(strBox.get())\n}`,
+    expected:"42\nHello",
+    explanation:"ジェネリクスで型安全な汎用クラスを作れます。呼び出し時に型引数を推論できる場合は省略可能です。"
+  },
+  { id:27, unit:"UNIT 06  ◆  シールドクラスと型システム", rank:"DIAMOND",
+    title:"object（シングルトン）",
+    question:"object Logger を定義し、log(msg: String) でリストに追加、printAll() で全メッセージを出力するメソッドを実装してください。\"Start\"、\"Processing\"、\"Done\" をログに追加して出力してください。",
+    hint:"object キーワードで直接シングルトンオブジェクトを作れます。",
+    answer:`object Logger {\n    private val logs = mutableListOf<String>()\n    fun log(msg: String) { logs.add(msg) }\n    fun printAll() { logs.forEach { println(it) } }\n}\n\nfun main() {\n    Logger.log("Start")\n    Logger.log("Processing")\n    Logger.log("Done")\n    Logger.printAll()\n}`,
+    expected:"Start\nProcessing\nDone",
+    explanation:"object でシングルトンを簡潔に定義できます。クラスのインスタンス化なしに直接使えます。"
+  },
+  // UNIT 07 高度なKotlin MASTER/LEGEND
+  { id:28, unit:"UNIT 07  ◆  高度なKotlin", rank:"MASTER",
+    title:"演算子オーバーロード",
+    question:"data class Vector(val x: Int, val y: Int) を定義し、operator fun plus で加算、operator fun times で整数倍を実装してください。Vector(1,2) + Vector(3,4) と Vector(1,2) * 3 を出力してください。",
+    hint:"operator fun plus(other: Vector) でベクトル加算を定義します。",
+    answer:`data class Vector(val x: Int, val y: Int) {\n    operator fun plus(other: Vector) = Vector(x + other.x, y + other.y)\n    operator fun times(n: Int) = Vector(x * n, y * n)\n}\n\nfun main() {\n    val v1 = Vector(1, 2)\n    val v2 = Vector(3, 4)\n    println(v1 + v2)\n    println(v1 * 3)\n}`,
+    expected:"Vector(x=4, y=6)\nVector(x=3, y=6)",
+    explanation:"operator キーワードで演算子をオーバーロードできます。data classと組み合わせると自動的に見やすいtoStringも生成されます。"
+  },
+  { id:29, unit:"UNIT 07  ◆  高度なKotlin", rank:"MASTER",
+    title:"by lazy（委譲プロパティ）",
+    question:"connection プロパティを by lazy で定義した DatabaseConnection クラスを作ってください。lazy内で \"接続中...\" を出力し \"Connected to DB\" を返します。オブジェクト作成後、connection を2回アクセスして出力してください。",
+    hint:"val prop: 型 by lazy { 計算 } の形で遅延初期化できます。",
+    answer:`class DatabaseConnection {\n    val connection: String by lazy {\n        println("接続中...")\n        "Connected to DB"\n    }\n}\n\nfun main() {\n    val db = DatabaseConnection()\n    println("オブジェクト作成")\n    println(db.connection)\n    println(db.connection)\n}`,
+    expected:"オブジェクト作成\n接続中...\nConnected to DB\nConnected to DB",
+    explanation:"by lazy で遅延初期化ができます。初回アクセス時にのみ計算され、以降はキャッシュされた値を返します。スレッドセーフです。"
+  },
+  { id:30, unit:"UNIT 07  ◆  高度なKotlin", rank:"LEGEND",
+    title:"DSL（型安全なビルダー）",
+    question:"HtmlBuilder クラスと html { } 関数を使ったDSLを実装してください。tag(name, content) でHTMLタグを追加し、html { tag(\"h1\", \"Kotlin DSL\"); tag(\"p\", \"型安全\"); tag(\"p\", \"Lambda with Receiver\") } の結果を出力してください。",
+    hint:"fun html(block: HtmlBuilder.() -> Unit): String は「レシーバー付きラムダ」を使ったDSLパターンです。",
+    answer:`class HtmlBuilder {\n    private val tags = mutableListOf<String>()\n    fun tag(name: String, content: String) {\n        tags.add("<\$name>\$content</\$name>")\n    }\n    fun build() = tags.joinToString("\\n")\n}\n\nfun html(block: HtmlBuilder.() -> Unit): String {\n    val builder = HtmlBuilder()\n    builder.block()\n    return builder.build()\n}\n\nfun main() {\n    val page = html {\n        tag("h1", "Kotlin DSL")\n        tag("p", "型安全")\n        tag("p", "Lambda with Receiver")\n    }\n    println(page)\n}`,
+    expected:"<h1>Kotlin DSL</h1>\n<p>型安全</p>\n<p>Lambda with Receiver</p>",
+    explanation:"レシーバー付きラムダ（T.() -> Unit）はDSL構築の核心です。ブロック内でレシーバーのメソッドを直接呼べます。Kotlin の Jetpack Compose や Ktor などもこのパターンを多用します。"
+  },
+];
+
+const kotlinMissions = [
+  {
+    id: 1, rank: "BRONZE",
+    title: "型安全FizzBuzz",
+    description: "when式を使ったKotlinらしいFizzBuzzを実装する。",
+    requirements: [
+      "fizzBuzz(n: Int): String 関数を定義",
+      "when { 条件 -> 値 } の形で実装",
+      "1から20まで出力"
+    ],
+    hint: "n % 15 == 0 の判定を最初に行います。",
+    answer:
+`fun fizzBuzz(n: Int): String = when {
+    n % 15 == 0 -> "FizzBuzz"
+    n % 3 == 0 -> "Fizz"
+    n % 5 == 0 -> "Buzz"
+    else -> n.toString()
+}
+
+fun main() {
+    (1..20).forEach { println(fizzBuzz(it)) }
+}`
+  },
+  {
+    id: 2, rank: "BRONZE",
+    title: "コレクション集計",
+    description: "Kotlinのコレクション関数を使って成績の統計を計算する。",
+    requirements: [
+      "scores = listOf(75, 88, 92, 60, 71) を使う",
+      "average() で平均（小数点1桁）を出力",
+      "max() で最高点を出力",
+      "count { it >= 70 } で合格者数を出力"
+    ],
+    hint: "\"%.1f\".format(avg) で小数点1桁のフォーマットができます。",
+    answer:
+`fun main() {
+    val scores = listOf(75, 88, 92, 60, 71)
+    val avg = scores.average()
+    val max = scores.max()
+    val passing = scores.count { it >= 70 }
+    println("平均: ${"%.1f".format(avg)}")
+    println("最高: $max")
+    println("合格者: $passing")
+}`
+  },
+  {
+    id: 3, rank: "SILVER",
+    title: "data classで図書管理",
+    description: "data classとコレクション操作を組み合わせて図書管理システムを作る。",
+    requirements: [
+      "data class Book(val title: String, val author: String, val year: Int) を定義",
+      "3冊以上のリストを作成",
+      "sortedByDescending { it.year } で新しい順に出力",
+      "find で特定著者の本を検索して出力"
+    ],
+    hint: "?.title ?: \"見つかりません\" でnull安全に処理できます。",
+    answer:
+`data class Book(val title: String, val author: String, val year: Int)
+
+fun main() {
+    val books = listOf(
+        Book("Kotlin in Action", "Dmitry", 2017),
+        Book("Clean Code", "Robert", 2008),
+        Book("Effective Kotlin", "Marcin", 2021)
+    )
+    println("=== 新しい順 ===")
+    books.sortedByDescending { it.year }.forEach { println("\${it.title} (\${it.year})") }
+    println("=== 著者検索 ===")
+    val found = books.find { it.author == "Robert" }
+    println(found?.title ?: "見つかりません")
+}`
+  },
+  {
+    id: 4, rank: "SILVER",
+    title: "sealed classで式ツリー",
+    description: "sealed classとwhenの再帰的な組み合わせで数式を評価する。",
+    requirements: [
+      "sealed class Expr を定義",
+      "Num(value: Double)、Add(left, right)、Mul(left, right) サブクラスを定義",
+      "eval(expr: Expr): Double を再帰的に実装",
+      "(2 + 3) * 4 を表す式ツリーを作って評価して出力"
+    ],
+    hint: "eval を再帰呼び出しします。when (expr) { is Num -> ... } の形で分岐します。",
+    answer:
+`sealed class Expr
+data class Num(val value: Double) : Expr()
+data class Add(val left: Expr, val right: Expr) : Expr()
+data class Mul(val left: Expr, val right: Expr) : Expr()
+
+fun eval(expr: Expr): Double = when (expr) {
+    is Num -> expr.value
+    is Add -> eval(expr.left) + eval(expr.right)
+    is Mul -> eval(expr.left) * eval(expr.right)
+}
+
+fun main() {
+    val expr = Mul(Add(Num(2.0), Num(3.0)), Num(4.0))
+    println(eval(expr))
+}`
+  },
+  {
+    id: 5, rank: "GOLD",
+    title: "ジェネリックなスタック",
+    description: "ジェネリクスを使った型安全なスタックを実装する。",
+    requirements: [
+      "class Stack<T> を定義",
+      "push(item: T)、pop(): T?、peek(): T?、size プロパティ、isEmpty() を実装",
+      "Stack<Int> で3つpushして動作確認",
+      "peek、pop、size を順に出力"
+    ],
+    hint: "mutableListOf<T>() で内部リストを管理します。",
+    answer:
+`class Stack<T> {
+    private val items = mutableListOf<T>()
+    fun push(item: T) { items.add(item) }
+    fun pop(): T? = if (items.isEmpty()) null else items.removeAt(items.lastIndex)
+    fun peek(): T? = items.lastOrNull()
+    val size get() = items.size
+    fun isEmpty() = items.isEmpty()
+}
+
+fun main() {
+    val stack = Stack<Int>()
+    stack.push(10); stack.push(20); stack.push(30)
+    println("サイズ: \${stack.size}")
+    println("top: \${stack.peek()}")
+    println("pop: \${stack.pop()}")
+    println("pop: \${stack.pop()}")
+    println("サイズ: \${stack.size}")
+}`
+  },
+  {
+    id: 6, rank: "GOLD",
+    title: "型安全なHTMLビルダー",
+    description: "レシーバー付きラムダを使ったKotlin DSLでHTMLを構築する。",
+    requirements: [
+      "HtmlBuilder クラスを定義（tag メソッドと build メソッド）",
+      "fun html(block: HtmlBuilder.() -> Unit): String 関数を定義",
+      "h1、p×2 の3タグを持つHTMLを構築して出力",
+      "タグは <name>content</name> 形式"
+    ],
+    hint: "builder.block() でレシーバー付きラムダを実行します。",
+    answer:
+`class HtmlBuilder {
+    private val tags = mutableListOf<String>()
+    fun tag(name: String, content: String) {
+        tags.add("<\$name>\$content</\$name>")
+    }
+    fun build() = tags.joinToString("\n")
+}
+
+fun html(block: HtmlBuilder.() -> Unit): String {
+    val b = HtmlBuilder()
+    b.block()
+    return b.build()
+}
+
+fun main() {
+    val page = html {
+        tag("h1", "Kotlin DSL")
+        tag("p", "型安全な構築")
+        tag("p", "Lambda with Receiver")
+    }
+    println(page)
+}`
+  },
+];
+
+const kotlinUnitGuides = [
+  {
+    id: "kotlin-unit01",
+    unit: "UNIT 01", title: "基礎出力と変数",
+    summary: "Kotlinのエントリーポイント、val/var、文字列テンプレートを学ぶ。",
+    points: [
+      "エントリーポイントは fun main() {}",
+      "val は不変、var は可変",
+      "文字列テンプレートで $変数 や ${式} を埋め込める",
+      "型推論により多くの場合型アノテーションは省略可能"
+    ],
+    words: [
+      { term: "val", desc: "再代入不可の変数（immutable）" },
+      { term: "var", desc: "再代入可能の変数（mutable）" },
+      { term: "println()", desc: "改行付きで出力する関数" }
+    ]
+  },
+  {
+    id: "kotlin-unit02",
+    unit: "UNIT 02", title: "型と制御フロー",
+    summary: "基本型、null安全、if/when式、forループを学ぶ。",
+    points: [
+      "基本型は Int、Double、String、Boolean（大文字始まり）",
+      "? 付き型のみnullを格納できる",
+      "if と when は式として値を返せる",
+      "1..5 で範囲を作れる"
+    ],
+    words: [
+      { term: "?.", desc: "safe call: nullなら処理をスキップする演算子" },
+      { term: "?:", desc: "Elvis演算子: nullなら右の値を使う" },
+      { term: "when", desc: "多分岐式。switchより強力" }
+    ]
+  },
+  {
+    id: "kotlin-unit03",
+    unit: "UNIT 03", title: "関数",
+    summary: "関数定義、拡張関数、vararg、ラムダ式を学ぶ。",
+    points: [
+      "単一式関数は = で簡潔に書ける",
+      "デフォルト引数と名前付き引数でオーバーロードを減らす",
+      "拡張関数で既存クラスにメソッドを追加",
+      "ラムダ式は (型) -> 戻り値型 の関数型オブジェクト"
+    ],
+    words: [
+      { term: "拡張関数", desc: "既存クラスを継承せずにメソッドを追加する機能" },
+      { term: "vararg", desc: "可変長引数。複数の値を受け取れる" },
+      { term: "it", desc: "ラムダ式で引数が1つのときの省略記法" }
+    ]
+  },
+  {
+    id: "kotlin-unit04",
+    unit: "UNIT 04", title: "コレクション",
+    summary: "listOf、map/filter、fold、mapOf などの コレクション操作を学ぶ。",
+    points: [
+      "listOf は不変、mutableListOf は可変",
+      "filter/map/fold でFunctional styleに処理",
+      "mapOf で不変のMapを作成",
+      "to で infix記法のPairを作れる"
+    ],
+    words: [
+      { term: "filter", desc: "条件に合う要素のみを集めた新しいリストを返す" },
+      { term: "map", desc: "各要素を変換した新しいリストを返す" },
+      { term: "fold", desc: "初期値から各要素を畳み込む" }
+    ]
+  },
+  {
+    id: "kotlin-unit05",
+    unit: "UNIT 05", title: "継承とインターフェース",
+    summary: "open class、data class、abstract、interface、companion objectを学ぶ。",
+    points: [
+      "クラスはデフォルトfinal。open で継承を許可",
+      "data class はtoString/equals/copy を自動生成",
+      "interface はデフォルト実装を持てる",
+      "companion object はJavaのstaticに相当"
+    ],
+    words: [
+      { term: "open", desc: "継承・オーバーライドを許可するキーワード" },
+      { term: "data class", desc: "値オブジェクト向けに便利メソッドを自動生成するクラス" },
+      { term: "companion object", desc: "クラスに属するシングルトンオブジェクト" }
+    ]
+  },
+  {
+    id: "kotlin-unit06",
+    unit: "UNIT 06", title: "シールドクラスと型システム",
+    summary: "enum class、sealed class、ジェネリクス、object を学ぶ。",
+    points: [
+      "enum class で列挙型を定義",
+      "sealed class + when で全パターン網羅をコンパイル時確認",
+      "ジェネリクスで型安全な汎用クラスを作成",
+      "object でシングルトンを簡潔に定義"
+    ],
+    words: [
+      { term: "sealed class", desc: "限られたサブクラスしか持てないクラス" },
+      { term: "is", desc: "型チェックと自動キャストを行う演算子" },
+      { term: "object", desc: "直接シングルトンインスタンスを定義するキーワード" }
+    ]
+  },
+  {
+    id: "kotlin-unit07",
+    unit: "UNIT 07", title: "高度なKotlin",
+    summary: "演算子オーバーロード、委譲プロパティ、DSLパターンを学ぶ。",
+    points: [
+      "operator fun で演算子をオーバーロード",
+      "by lazy で遅延初期化（初回アクセス時のみ計算）",
+      "レシーバー付きラムダ（T.() -> Unit）でDSLを構築",
+      "Jetpack Compose / Ktor などがこのパターンを多用"
+    ],
+    words: [
+      { term: "operator", desc: "演算子オーバーロードを宣言するキーワード" },
+      { term: "by lazy", desc: "初回アクセス時に初期化する委譲プロパティ" },
+      { term: "レシーバー付きラムダ", desc: "ラムダ内でレシーバーのメソッドを直接呼べる関数型" }
+    ]
+  }
+];
+
 // ===== 言語別データ取得ヘルパー =====
 
 function getProblems() {
@@ -4968,6 +5509,7 @@ function getProblems() {
   if (currentLanguage === 'javascript') return javascriptProblems;
   if (currentLanguage === 'ruby') return rubyProblems;
   if (currentLanguage === 'typescript') return typescriptProblems;
+  if (currentLanguage === 'kotlin') return kotlinProblems;
   return problems;
 }
 
@@ -4976,6 +5518,7 @@ function getMissions() {
   if (currentLanguage === 'javascript') return javascriptMissions;
   if (currentLanguage === 'ruby') return rubyMissions;
   if (currentLanguage === 'typescript') return typescriptMissions;
+  if (currentLanguage === 'kotlin') return kotlinMissions;
   return missions;
 }
 
@@ -4984,6 +5527,7 @@ function getUnitGuides() {
   if (currentLanguage === 'javascript') return javascriptUnitGuides;
   if (currentLanguage === 'ruby') return rubyUnitGuides;
   if (currentLanguage === 'typescript') return typescriptUnitGuides;
+  if (currentLanguage === 'kotlin') return kotlinUnitGuides;
   return unitGuides;
 }
 
@@ -5000,6 +5544,7 @@ function getCompiler() {
   if (currentLanguage === 'javascript') return 'nodejs-head';
   if (currentLanguage === 'ruby') return 'ruby-3.4.9';
   if (currentLanguage === 'typescript') return 'typescript-5.6.2';
+  if (currentLanguage === 'kotlin') return 'kotlin';
   return 'gcc-head';
 }
 
@@ -5008,6 +5553,7 @@ function getAceMode() {
   if (currentLanguage === 'javascript') return 'ace/mode/javascript';
   if (currentLanguage === 'ruby') return 'ace/mode/ruby';
   if (currentLanguage === 'typescript') return 'ace/mode/typescript';
+  if (currentLanguage === 'kotlin') return 'ace/mode/kotlin';
   return 'ace/mode/c_cpp';
 }
 
@@ -5029,6 +5575,10 @@ function getStarterCode() {
     if (p) return '// [問題] ' + p.question + '\n\n';
     return '// ここにコードを書いてください\n';
   }
+  if (currentLanguage === 'kotlin') {
+    if (p) return '// [問題] ' + p.question + '\n\nfun main() {\n    \n}\n';
+    return 'fun main() {\n    \n}\n';
+  }
   if (p) return '// [問題] ' + p.question + '\n' + ACE_STARTER;
   return ACE_STARTER;
 }
@@ -5038,6 +5588,7 @@ function getLangName() {
   if (currentLanguage === 'javascript') return 'JavaScript';
   if (currentLanguage === 'ruby') return 'Ruby';
   if (currentLanguage === 'typescript') return 'TypeScript';
+  if (currentLanguage === 'kotlin') return 'Kotlin';
   return 'C++';
 }
 
@@ -5489,16 +6040,22 @@ async function runCode() {
     const controller = new AbortController();
     const _timeout   = setTimeout(function() { controller.abort(); }, 20000);
 
-    const res = await fetch("https://wandbox.org/api/compile.json", {
+    var _isKotlin  = currentLanguage === 'kotlin';
+    var _fetchUrl  = _isKotlin ? '/api/run-kotlin' : 'https://wandbox.org/api/compile.json';
+    var _fetchBody = _isKotlin
+      ? JSON.stringify({ code: code })
+      : JSON.stringify({ code: code, compiler: getCompiler(), stdin: stdin });
+
+    const res = await fetch(_fetchUrl, {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ code: code, compiler: getCompiler(), stdin: stdin }),
+      body:    _fetchBody,
       signal:  controller.signal
     });
     clearTimeout(_timeout);
 
     if (!res.ok) {
-      throw new Error('HTTP ' + res.status + ' — Wandbox APIエラー');
+      throw new Error('HTTP ' + res.status + (_isKotlin ? ' — Kotlin APIエラー' : ' — Wandbox APIエラー'));
     }
 
     const data = await res.json();
@@ -6255,6 +6812,7 @@ async function renderProfile() {
   var jsStartDate    = localStorage.getItem('javascript_started_at');
   var rubyStartDate  = localStorage.getItem('ruby_started_at');
   var tsStartDate    = localStorage.getItem('typescript_started_at');
+  var kotlinStartDate = localStorage.getItem('kotlin_started_at');
   var totalStudySec  = getTotalStudyTime();
 
   function _daysAgo(ds) {
@@ -6291,8 +6849,8 @@ async function renderProfile() {
         '<div class="profile-rank-badge" style="color:' + rank.color + ';border-color:' + rank.color + ';box-shadow:0 0 12px ' + rank.color + '33">' +
           '◆ ' + rank.name + ' ◆' +
         '</div>' +
-        '<div class="profile-total">' + stats.total + '<span> / 150 CLEARED</span></div>' +
-        '<div class="profile-mission-total">' + stats.totalMissions + ' / 30 MISSIONS</div>' +
+        '<div class="profile-total">' + stats.total + '<span> / 180 CLEARED</span></div>' +
+        '<div class="profile-mission-total">' + stats.totalMissions + ' / 36 MISSIONS</div>' +
       '</div>' +
     '</div>' +
     (currentUserIsAdmin
@@ -6348,6 +6906,7 @@ async function renderProfile() {
         _langStartItem('JavaScript', '#F0C040', jsStartDate) +
         _langStartItem('Ruby',       '#CC342D', rubyStartDate) +
         _langStartItem('TypeScript', '#3178C6', tsStartDate) +
+        _langStartItem('Kotlin',     '#7F52FF', kotlinStartDate) +
       '</div>' +
     '</div>' +
 
