@@ -3095,3 +3095,267 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   font-family: 'Share Tech Mono', monospace;
   margin: 0 3px;
 }
+
+/* ─────────────────────────────────────────────────────────
+   プレミアムロック（問題カード・ミッションカード）
+   ────────────────────────────────────────────────────── */
+.premium-locked-card {
+  opacity: 0.55;
+  filter: saturate(0.3);
+  cursor: pointer;
+  position: relative;
+}
+.premium-locked-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    135deg,
+    transparent,
+    transparent 8px,
+    rgba(0,0,0,0.07) 8px,
+    rgba(0,0,0,0.07) 10px
+  );
+  border-radius: inherit;
+  pointer-events: none;
+}
+.premium-locked-card:hover {
+  opacity: 0.75;
+  filter: saturate(0.5);
+  transform: translateY(-1px);
+}
+.premium-lock-icon {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+.premium-mission-badge {
+  background: linear-gradient(90deg, #b8860b, #ffd700);
+  color: #111;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* ─────────────────────────────────────────────────────────
+   プレミアムモーダル
+   ────────────────────────────────────────────────────── */
+.premium-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(6px);
+  z-index: 9000;
+}
+.premium-box {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9001;
+  background: linear-gradient(160deg, #18140e 0%, #0c0904 100%);
+  border: 1px solid rgba(255,107,0,0.35);
+  border-radius: 16px;
+  padding: 36px 32px 28px;
+  width: min(420px, 90vw);
+  text-align: center;
+  box-shadow: 0 0 60px rgba(255,107,0,0.15), 0 20px 60px rgba(0,0,0,0.6);
+}
+.premium-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.35);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.premium-close-btn:hover { color: rgba(255,255,255,0.7); }
+.premium-icon-wrap {
+  margin-bottom: 10px;
+}
+.premium-icon {
+  font-size: 2.2rem;
+  background: linear-gradient(135deg, #ff6b00, #ffd700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 12px rgba(255,107,0,0.6));
+}
+.premium-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  background: linear-gradient(90deg, #ff6b00, #ffd700, #ff6b00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.premium-subtitle {
+  font-size: 0.82rem;
+  color: rgba(200,180,140,0.75);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+.premium-locked-notice {
+  background: rgba(255,107,0,0.08);
+  border: 1px solid rgba(255,107,0,0.2);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.78rem;
+  color: rgba(255,200,120,0.8);
+  margin-bottom: 18px;
+}
+.premium-features {
+  text-align: left;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+}
+.premium-feature {
+  font-size: 0.82rem;
+  color: rgba(220,200,160,0.9);
+  padding: 4px 0;
+  line-height: 1.5;
+}
+.premium-price-row {
+  margin-bottom: 18px;
+}
+.premium-price-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #ff6b00;
+  text-shadow: 0 0 20px rgba(255,107,0,0.5);
+}
+.premium-price-period {
+  font-size: 1rem;
+  color: rgba(200,180,140,0.7);
+}
+.premium-price-annual {
+  display: block;
+  font-size: 0.72rem;
+  color: rgba(160,140,100,0.6);
+  margin-top: 2px;
+}
+.premium-checkout-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(90deg, #ff6b00, #ff8c00);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 20px rgba(255,107,0,0.4);
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+}
+.premium-checkout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(255,107,0,0.55);
+}
+.premium-checkout-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+.premium-skip-btn {
+  width: 100%;
+  padding: 10px;
+  background: none;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: rgba(160,144,112,0.6);
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: border-color 0.2s, color 0.2s;
+}
+.premium-skip-btn:hover {
+  border-color: rgba(255,255,255,0.2);
+  color: rgba(180,160,120,0.8);
+}
+.premium-cancel-note {
+  font-size: 0.68rem;
+  color: rgba(120,100,70,0.5);
+  margin: 0;
+}
+
+/* ─────────────────────────────────────────────────────────
+   広告スロット（無料ユーザー）
+   ────────────────────────────────────────────────────── */
+.ad-slot {
+  border: 1px dashed rgba(255,107,0,0.12);
+  border-radius: 8px;
+  background: rgba(255,107,0,0.03);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.ad-banner { height: 72px; }
+.ad-leaderboard { height: 90px; }
+.ad-placeholder-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 100%;
+  padding: 0 16px;
+}
+.ad-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  color: rgba(255,107,0,0.3);
+  border: 1px solid rgba(255,107,0,0.2);
+  border-radius: 3px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+.ad-text {
+  font-size: 0.7rem;
+  color: rgba(120,100,70,0.35);
+}
+
+/* ─────────────────────────────────────────────────────────
+   決済完了トースト
+   ────────────────────────────────────────────────────── */
+.premium-success-toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #1a1200, #2a1800);
+  border: 1px solid rgba(255,165,0,0.45);
+  border-radius: 10px;
+  color: #ffd700;
+  font-size: 0.88rem;
+  padding: 12px 24px;
+  z-index: 9999;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  animation: toast-in 0.3s ease;
+  white-space: nowrap;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* モバイル対応 */
+@media (max-width: 480px) {
+  .premium-box { padding: 28px 20px 22px; }
+  .premium-title { font-size: 1.25rem; }
+  .premium-price-num { font-size: 1.8rem; }
+  .premium-success-toast { font-size: 0.78rem; padding: 10px 16px; white-space: normal; max-width: 90vw; text-align: center; }
+}

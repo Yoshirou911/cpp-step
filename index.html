@@ -318,6 +318,45 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.5/ace.min.js"></script>
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- プレミアムモーダル -->
+  <div id="premium-modal" class="hidden">
+    <div class="premium-overlay" onclick="closePremiumModal()"></div>
+    <div class="premium-box">
+      <button class="premium-close-btn" onclick="closePremiumModal()">✕</button>
+
+      <div class="premium-icon-wrap">
+        <span class="premium-icon">◆</span>
+      </div>
+      <div class="premium-title">CODE STEP PLUS</div>
+      <div class="premium-subtitle">全レベルの問題・ミッションを解放して<br>本格的なプログラミング力を身に付けよう</div>
+
+      <div class="premium-locked-notice">
+        🔒 この問題・ミッションはPLUS限定です
+      </div>
+
+      <div class="premium-features">
+        <div class="premium-feature">✓&nbsp; SILVER〜LEGEND 全問題アクセス（60問以上）</div>
+        <div class="premium-feature">✓&nbsp; 全ミッション（SILVER / GOLD 難易度）</div>
+        <div class="premium-feature">✓&nbsp; 広告非表示</div>
+        <div class="premium-feature">✓&nbsp; プロフィールに ◆ PLUS バッジ表示</div>
+      </div>
+
+      <div class="premium-price-row">
+        <span class="premium-price-num">¥480</span>
+        <span class="premium-price-period"> / 月</span>
+        <span class="premium-price-annual">（年払い ¥4,800 でお得）</span>
+      </div>
+
+      <button id="checkout-btn" class="premium-checkout-btn" onclick="startCheckout()">
+        ▶ 今すぐアップグレード
+      </button>
+      <button class="premium-skip-btn" onclick="closePremiumModal()">
+        無料のまま続ける
+      </button>
+      <p class="premium-cancel-note">いつでもキャンセル可能 · 自動更新あり</p>
+    </div>
+  </div>
+
   <!-- コンフェッティ -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script src="script.js"></script>

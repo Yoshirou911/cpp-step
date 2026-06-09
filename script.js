@@ -285,6 +285,8 @@ try {
 } catch(e) {}
 
 var currentUser = null;
+var currentUserIsPremium = false;
+var PREMIUM_RANKS = ['SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND'];
 var _currentAuthTab = 'login';
 // 進捗のインメモリキャッシュ（言語切替時にリセット）
 var _progressCache = null;
@@ -850,6 +852,84 @@ function selectLanguage(langId) {
   if (currentUser && _supabase) {
     syncProgressFromSupabase();
     syncMissionProgressFromSupabase();
+  }
+}
+
+// ===== プレミアム機能 =====
+
+function isPremiumRequired(rank) {
+  return PREMIUM_RANKS.indexOf((rank || '').toUpperCase()) !== -1;
+}
+
+async function fetchUserProfile() {
+  if (!currentUser || !_supabase) { currentUserIsPremium = false; updateAdDisplay(); return; }
+  try {
+    var result = await _supabase
+      .from('user_profiles')
+      .select('is_premium')
+      .eq('user_id', currentUser.id)
+      .maybeSingle();
+    if (result.data) {
+      currentUserIsPremium = !!result.data.is_premium;
+    } else {
+      // プロフィールが存在しなければ作成
+      await _supabase.from('user_profiles').upsert({
+        user_id: currentUser.id,
+        is_premium: false
+      });
+      currentUserIsPremium = false;
+    }
+  } catch(e) { currentUserIsPremium = false; }
+  updateAdDisplay();
+  if (currentLanguage) { renderList(); renderMissionList(); }
+}
+
+function updateAdDisplay() {
+  var ads = document.querySelectorAll('.ad-slot');
+  ads.forEach(function(ad) {
+    if (currentUserIsPremium) {
+      ad.style.display = 'none';
+    } else {
+      ad.style.display = '';
+    }
+  });
+}
+
+function openPremiumModal() {
+  document.getElementById('premium-modal').classList.remove('hidden');
+}
+
+function closePremiumModal() {
+  document.getElementById('premium-modal').classList.add('hidden');
+}
+
+async function startCheckout() {
+  // 未ログインなら先にログインモーダルへ
+  if (!currentUser) {
+    closePremiumModal();
+    openAuthModal();
+    return;
+  }
+  var btn = document.getElementById('checkout-btn');
+  var orig = btn.textContent;
+  btn.textContent = '処理中...';
+  btn.disabled = true;
+  try {
+    var res = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: currentUser.email, userId: currentUser.id })
+    });
+    var data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error(data.error || '決済の開始に失敗しました');
+    }
+  } catch(e) {
+    alert('エラー: ' + e.message);
+    btn.textContent = orig;
+    btn.disabled = false;
   }
 }
 
@@ -3469,6 +3549,18 @@ function renderList() {
   const list = document.getElementById("problem-list");
   list.innerHTML = "";
 
+  // 無料ユーザー向け広告スロット
+  if (!currentUserIsPremium) {
+    var adTop = document.createElement('div');
+    adTop.className = 'ad-slot ad-banner';
+    adTop.innerHTML =
+      '<div class="ad-placeholder-inner">' +
+        '<span class="ad-label">PR</span>' +
+        '<span class="ad-text">Google AdSenseコードをここに貼り付けます</span>' +
+      '</div>';
+    list.appendChild(adTop);
+  }
+
   // 単元ごとにグループ化
   var units = {};
   var unitOrder = [];
@@ -3497,8 +3589,11 @@ function renderList() {
     // 問題カード
     units[unitName].forEach(function(p) {
       var learned = isLearned(p.id);
+      var isLocked = isPremiumRequired(p.rank) && !currentUserIsPremium;
       var card = document.createElement("div");
-      card.className = "problem-card rank-card-" + p.rank.toLowerCase() + (learned ? " learned" : "");
+      card.className = "problem-card rank-card-" + p.rank.toLowerCase() +
+        (learned ? " learned" : "") +
+        (isLocked ? " premium-locked-card" : "");
 
       card.innerHTML =
         '<div class="card-left">' +
@@ -3507,20 +3602,28 @@ function renderList() {
         '</div>' +
         '<div class="card-right">' +
           '<span class="rank-badge rank-' + p.rank.toLowerCase() + '">' + p.rank + '</span>' +
-          '<span class="badge ' + (learned ? "" : "not-learned") + '">' +
-            (learned ? "✔" : "—") +
-          '</span>' +
+          (isLocked
+            ? '<span class="premium-lock-icon">🔒</span>'
+            : '<span class="badge ' + (learned ? "" : "not-learned") + '">' +
+                (learned ? "✔" : "—") +
+              '</span>'
+          ) +
         '</div>';
 
-      card.addEventListener("click", function() {
-        playItemSelect();
-        history.pushState({ page: 'detail', lang: currentLanguage, id: p.id }, '');
-        renderDetail(p.id);
-        showPage("detail");
-      });
+      if (isLocked) {
+        card.addEventListener("click", function() { openPremiumModal(); });
+      } else {
+        card.addEventListener("click", function() {
+          playItemSelect();
+          history.pushState({ page: 'detail', lang: currentLanguage, id: p.id }, '');
+          renderDetail(p.id);
+          showPage("detail");
+        });
+      }
 
       list.appendChild(card);
     });
+
   });
 
   updateProgressDisplay();
@@ -4152,31 +4255,52 @@ function renderMissionList() {
     '<div class="mission-progress-text">' + cleared + ' / ' + getMissions().length + ' MISSIONS CLEARED</div>';
   list.appendChild(header);
 
+  // 無料ユーザー向け広告スロット（ミッション一覧上部）
+  if (!currentUserIsPremium) {
+    var mAdTop = document.createElement('div');
+    mAdTop.className = 'ad-slot ad-banner';
+    mAdTop.innerHTML =
+      '<div class="ad-placeholder-inner">' +
+        '<span class="ad-label">PR</span>' +
+        '<span class="ad-text">Google AdSenseコードをここに貼り付けます</span>' +
+      '</div>';
+    list.appendChild(mAdTop);
+  }
+
   getMissions().forEach(function(m) {
     const cleared = isMissionCleared(m.id);
+    const isLocked = isPremiumRequired(m.rank) && !currentUserIsPremium;
     const card = document.createElement('div');
-    card.className = 'mission-card' + (cleared ? ' cleared' : '');
+    card.className = 'mission-card' + (cleared ? ' cleared' : '') + (isLocked ? ' premium-locked-card' : '');
 
     card.innerHTML =
       '<div class="mission-card-top">' +
         '<span class="mission-number">MISSION ' + String(m.id).padStart(2, '0') + '</span>' +
         '<span class="rank-badge rank-' + m.rank.toLowerCase() + '">' + m.rank + '</span>' +
+        (isLocked ? '<span class="premium-lock-icon">🔒</span>' : '') +
       '</div>' +
       '<div class="mission-card-title">' + m.title + '</div>' +
       '<div class="mission-card-desc">' + m.description.substring(0, 60) + '...</div>' +
       '<div class="mission-card-bottom">' +
         '<span class="mission-req-count">要件 ' + m.requirements.length + ' 項目</span>' +
-        '<span class="mission-badge ' + (cleared ? '' : 'not-cleared') + '">' +
-          (cleared ? '✔ CLEARED' : '— PENDING') +
-        '</span>' +
+        (isLocked
+          ? '<span class="mission-badge premium-mission-badge">◆ PLUS限定</span>'
+          : '<span class="mission-badge ' + (cleared ? '' : 'not-cleared') + '">' +
+              (cleared ? '✔ CLEARED' : '— PENDING') +
+            '</span>'
+        ) +
       '</div>';
 
-    card.addEventListener('click', function() {
-      playItemSelect();
-      history.pushState({ page: 'mission-detail', lang: currentLanguage, id: m.id }, '');
-      renderMissionDetail(m.id);
-      showPage('mission-detail');
-    });
+    if (isLocked) {
+      card.addEventListener('click', function() { openPremiumModal(); });
+    } else {
+      card.addEventListener('click', function() {
+        playItemSelect();
+        history.pushState({ page: 'mission-detail', lang: currentLanguage, id: m.id }, '');
+        renderMissionDetail(m.id);
+        showPage('mission-detail');
+      });
+    }
 
     list.appendChild(card);
   });
@@ -4833,6 +4957,10 @@ async function initAuth() {
     updateAuthUI();
     if (currentUser) {
       recordLoginDay(); // ログイン日を記録
+      fetchUserProfile(); // プレミアム状態を取得
+    } else {
+      currentUserIsPremium = false;
+      updateAdDisplay();
     }
     if (currentUser && currentLanguage) {
       await syncProgressFromSupabase();
@@ -4850,12 +4978,29 @@ async function initAuth() {
   if (sessionResult.data && sessionResult.data.session) {
     currentUser = sessionResult.data.session.user;
     recordLoginDay(); // ページロード時にも記録
+    fetchUserProfile(); // プレミアム状態を取得
     updateAuthUI();
     if (currentLanguage) {
       await syncProgressFromSupabase();
       await syncMissionProgressFromSupabase();
       updateProgressDisplay();
       renderList();
+    }
+  }
+
+  // Stripe 決済完了リダイレクト処理
+  var urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('premium') === '1') {
+    window.history.replaceState({}, '', window.location.pathname);
+    if (currentUser) {
+      setTimeout(function() {
+        fetchUserProfile();
+        var msg = document.createElement('div');
+        msg.className = 'premium-success-toast';
+        msg.textContent = '🎉 CODE STEP PLUS へようこそ！全コンテンツが解放されました';
+        document.body.appendChild(msg);
+        setTimeout(function() { msg.remove(); }, 4000);
+      }, 1500);
     }
   }
 }
