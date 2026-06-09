@@ -4190,7 +4190,7 @@ function getMissionProgressKey() {
 function getCompiler() {
   if (currentLanguage === 'python') return 'cpython-3.12.7';
   if (currentLanguage === 'javascript') return 'nodejs-head';
-  if (currentLanguage === 'ruby') return 'ruby-head';
+  if (currentLanguage === 'ruby') return 'ruby-3.4.9';
   return 'gcc-head';
 }
 
