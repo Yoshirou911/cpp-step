@@ -1344,3 +1344,92 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   background: rgba(255,107,0,0.28);
   color: #fff;
 }
+
+/* ========== 言語選択ページ ========== */
+#page-lang {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.lang-page-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.lang-page-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--orange);
+  text-shadow: 0 0 24px rgba(255,107,0,0.4);
+  margin-bottom: 8px;
+}
+
+.lang-page-sub {
+  font-size: 1rem;
+  color: var(--dim);
+  letter-spacing: 0.06em;
+}
+
+.lang-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.lang-card {
+  background: var(--panel);
+  border: 1px solid rgba(255,107,0,0.12);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.lang-available {
+  cursor: pointer;
+}
+
+.lang-available:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255,107,0,0.45);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(255,107,0,0.15);
+}
+
+.lang-coming {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.lang-card-bar {
+  height: 4px;
+  width: 100%;
+}
+
+.lang-card-body {
+  padding: 20px 18px 18px;
+}
+
+.lang-card-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--bright);
+  margin-bottom: 8px;
+}
+
+.lang-card-status {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--dim);
+  letter-spacing: 0.08em;
+}
+
+.lang-status-open {
+  color: var(--orange);
+}

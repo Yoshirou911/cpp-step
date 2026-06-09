@@ -1,4 +1,74 @@
-﻿// ===== 問題データ =====
+﻿// ===== 言語データ =====
+
+var LANGUAGES = [
+  { id: 'cpp',        name: 'C++',        color: '#00599C', problems: 30, available: true  },
+  { id: 'python',     name: 'Python',     color: '#3776AB', problems: 0,  available: false },
+  { id: 'javascript', name: 'JavaScript', color: '#F7DF1E', problems: 0,  available: false },
+  { id: 'java',       name: 'Java',       color: '#ED8B00', problems: 0,  available: false },
+  { id: 'c',          name: 'C',          color: '#A8B9CC', problems: 0,  available: false },
+  { id: 'csharp',     name: 'C#',         color: '#9B4F96', problems: 0,  available: false },
+  { id: 'go',         name: 'Go',         color: '#00ADD8', problems: 0,  available: false },
+  { id: 'rust',       name: 'Rust',       color: '#CE412B', problems: 0,  available: false },
+  { id: 'swift',      name: 'Swift',      color: '#FA7343', problems: 0,  available: false },
+  { id: 'kotlin',     name: 'Kotlin',     color: '#7F52FF', problems: 0,  available: false },
+  { id: 'typescript', name: 'TypeScript', color: '#3178C6', problems: 0,  available: false },
+  { id: 'ruby',       name: 'Ruby',       color: '#CC342D', problems: 0,  available: false },
+];
+
+var currentLanguage = null;
+
+// ===== 言語選択ページの描画 =====
+
+function renderLangSelect() {
+  var content = document.getElementById('lang-content');
+  content.innerHTML =
+    '<div class="lang-page-header">' +
+      '<div class="lang-page-title">◆ SELECT LANGUAGE</div>' +
+      '<div class="lang-page-sub">学習する言語を選択してください</div>' +
+    '</div>' +
+    '<div class="lang-grid" id="lang-grid"></div>';
+
+  var grid = document.getElementById('lang-grid');
+
+  LANGUAGES.forEach(function(lang) {
+    var card = document.createElement('div');
+    card.className = 'lang-card' + (lang.available ? ' lang-available' : ' lang-coming');
+
+    card.innerHTML =
+      '<div class="lang-card-bar" style="background:' + lang.color + '"></div>' +
+      '<div class="lang-card-body">' +
+        '<div class="lang-card-name">' + lang.name + '</div>' +
+        '<div class="lang-card-status' + (lang.available ? ' lang-status-open' : '') + '">' +
+          (lang.available ? lang.problems + ' PROBLEMS' : 'COMING SOON') +
+        '</div>' +
+      '</div>';
+
+    if (lang.available) {
+      card.addEventListener('click', function() { selectLanguage(lang.id); });
+    }
+
+    grid.appendChild(card);
+  });
+}
+
+// ===== 言語選択 =====
+
+function selectLanguage(langId) {
+  currentLanguage = langId;
+  document.getElementById('nav-tabs').classList.remove('hidden');
+  document.getElementById('progress-text').classList.remove('hidden');
+  document.getElementById('progress-bar-wrap').classList.remove('hidden');
+
+  document.getElementById('tab-problems').classList.add('active');
+  document.getElementById('tab-missions').classList.remove('active');
+  document.getElementById('tab-guide').classList.remove('active');
+
+  renderList();
+  updateProgressDisplay();
+  showPage('list');
+}
+
+// ===== 問題データ =====
 
 const problems = [
 
@@ -912,11 +982,18 @@ function isLearned(id) {
 
 function showPage(name) {
   // 全ページを非表示にしてから対象だけ表示
-  ["page-list", "page-detail", "page-guide",
+  ["page-lang", "page-list", "page-detail", "page-guide",
    "page-mission-list", "page-mission-detail"].forEach(function(id) {
     document.getElementById(id).classList.add("hidden");
   });
   document.getElementById("page-" + name).classList.remove("hidden");
+
+  // 言語選択画面ではナビとプログレスを隠す
+  if (name === 'lang') {
+    document.getElementById('nav-tabs').classList.add('hidden');
+    document.getElementById('progress-text').classList.add('hidden');
+    document.getElementById('progress-bar-wrap').classList.add('hidden');
+  }
 }
 
 // ===== 進捗バーの更新 =====
@@ -1629,8 +1706,9 @@ document.getElementById("mission-back-btn").addEventListener("click", function()
 });
 
 document.getElementById("site-title").addEventListener("click", function() {
-  renderList();
-  showPage("list");
+  currentLanguage = null;
+  renderLangSelect();
+  showPage("lang");
 });
 
 document.getElementById('chat-toggle').addEventListener('click', function() {
@@ -1650,8 +1728,8 @@ document.getElementById('chat-input').addEventListener('keydown', function(e) {
   }
 });
 
-renderList();
-showPage("list");
+renderLangSelect();
+showPage("lang");
 
 // ===== 背景スライドショー =====
 (function() {

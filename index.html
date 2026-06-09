@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>C++ STEP</title>
+  <title>CODE STEP</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,22 +13,27 @@
   <div id="bg-b" class="bg-layer"></div>
 
   <header>
-    <h1 id="site-title">C++ STEP</h1>
-    <p id="progress-text">0 / 30 問 クリア</p>
-    <div id="progress-bar-wrap">
+    <h1 id="site-title">CODE STEP</h1>
+    <p id="progress-text" class="hidden">0 / 30 問 クリア</p>
+    <div id="progress-bar-wrap" class="hidden">
       <div id="progress-bar"></div>
     </div>
   </header>
 
   <!-- タブナビゲーション -->
-  <div id="nav-tabs">
+  <div id="nav-tabs" class="hidden">
     <button class="nav-tab active" id="tab-problems" onclick="switchTab('problems')">◆ PROBLEMS</button>
     <button class="nav-tab" id="tab-missions" onclick="switchTab('missions')">◆ MISSIONS</button>
     <button class="nav-tab" id="tab-guide" onclick="switchTab('guide')">◆ GUIDE</button>
   </div>
 
+  <!-- 言語選択ページ -->
+  <div id="page-lang">
+    <div id="lang-content"></div>
+  </div>
+
   <!-- 問題一覧ページ -->
-  <div id="page-list">
+  <div id="page-list" class="hidden">
     <div id="problem-list"></div>
   </div>
 
@@ -62,7 +67,7 @@
     </div>
     <div id="chat-messages"></div>
     <div id="chat-footer">
-      <textarea id="chat-input" placeholder="C++について何でも質問してください..."></textarea>
+      <textarea id="chat-input" placeholder="プログラミングについて何でも質問してください..."></textarea>
       <button id="chat-send">送信</button>
     </div>
   </div>
