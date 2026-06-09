@@ -1369,7 +1369,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 
 .lang-page-sub {
   font-size: 1rem;
-  color: var(--dim);
+  color: var(--text);
   letter-spacing: 0.06em;
 }
 
@@ -1401,12 +1401,12 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 }
 
 .lang-coming {
-  opacity: 0.45;
+  opacity: 0.65;
   cursor: default;
 }
 
 .lang-card-bar {
-  height: 4px;
+  height: 5px;
   width: 100%;
 }
 
@@ -1426,7 +1426,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 .lang-card-status {
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.75rem;
-  color: var(--dim);
+  color: var(--text);
   letter-spacing: 0.08em;
 }
 
@@ -1442,10 +1442,10 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 .lang-section-header {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: 14px;
   margin-bottom: 14px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255,107,0,0.12);
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,107,0,0.22);
 }
 
 .lang-section-label {
@@ -1457,18 +1457,18 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 }
 
 .lang-section-desc {
-  font-size: 0.82rem;
-  color: var(--dim);
+  font-size: 0.85rem;
+  color: var(--text);
   letter-spacing: 0.04em;
 }
 
 /* ========== ランク表示・用途タグ ========== */
 .lang-section-rank {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   font-weight: 800;
   letter-spacing: 0.14em;
-  text-shadow: 0 0 12px currentColor;
+  text-shadow: 0 0 14px currentColor;
 }
 
 .lang-card-top {
@@ -1486,17 +1486,18 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 
 .lang-use-tag {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 0.68rem;
-  color: var(--dim);
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,107,0,0.1);
+  font-size: 0.72rem;
+  color: var(--text);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,107,0,0.18);
   border-radius: 3px;
-  padding: 2px 7px;
+  padding: 3px 8px;
   letter-spacing: 0.03em;
   white-space: nowrap;
 }
 
 .lang-available:hover .lang-use-tag {
-  border-color: rgba(255,107,0,0.25);
-  color: var(--text);
+  border-color: rgba(255,107,0,0.35);
+  color: var(--bright);
+  background: rgba(255,107,0,0.08);
 }
