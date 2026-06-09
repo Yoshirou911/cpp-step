@@ -347,17 +347,17 @@ var BADGES = [
   { id: 'code_runner',   name: 'CODE RUNNER',    desc: '合計10問クリア',                          tier: 'silver',   check: function(s) { return s.total >= 10; } },
   { id: 'striker',       name: 'STRIKER',        desc: '合計30問クリア',                          tier: 'gold',     check: function(s) { return s.total >= 30; } },
   { id: 'veteran',       name: 'VETERAN',        desc: '合計60問クリア',                          tier: 'platinum', check: function(s) { return s.total >= 60; } },
-  { id: 'full_clear',    name: 'FULL CLEAR',     desc: '全90問クリア',                            tier: 'master',   check: function(s) { return s.total >= 90; } },
+  { id: 'full_clear',    name: 'FULL CLEAR',     desc: '合計90問クリア達成',                      tier: 'master',   check: function(s) { return s.total >= 90; } },
   // 言語マスター
-  { id: 'cpp_master',    name: 'C++ MASTER',     desc: 'C++ 全30問クリア',                        tier: 'diamond',  check: function(s) { return s.cpp >= 30;    } },
-  { id: 'py_master',     name: 'PYTHON MASTER',  desc: 'Python 全30問クリア',                     tier: 'diamond',  check: function(s) { return s.python >= 30; } },
-  { id: 'js_master',     name: 'JS MASTER',      desc: 'JavaScript 全30問クリア',                 tier: 'diamond',  check: function(s) { return s.js >= 30;     } },
+  { id: 'cpp_master',    name: 'C++ MASTER',     desc: 'C++ 30問クリア',                          tier: 'diamond',  check: function(s) { return s.cpp >= 30;    } },
+  { id: 'py_master',     name: 'PYTHON MASTER',  desc: 'Python 30問クリア',                       tier: 'diamond',  check: function(s) { return s.python >= 30; } },
+  { id: 'js_master',     name: 'JS MASTER',      desc: 'JavaScript 30問クリア',                   tier: 'diamond',  check: function(s) { return s.js >= 30;     } },
   // ミッション
   { id: 'first_mission', name: 'MISSION START',  desc: '初ミッションクリア',                      tier: 'silver',   check: function(s) { return s.totalMissions >= 1; } },
-  { id: 'mission_all',   name: 'MISSION MASTER', desc: 'いずれかの言語で全ミッションクリア',       tier: 'master',   check: function(s) { return s.cppM >= 6 || s.pyM >= 6 || s.jsM >= 6; } },
+  { id: 'mission_all',   name: 'MISSION MASTER', desc: 'いずれかの言語で全ミッションクリア',       tier: 'master',   check: function(s) { return s.cppM >= 6 || s.pyM >= 6 || s.jsM >= 6 || s.rubyM >= 6 || s.tsM >= 6 || s.kotlinM >= 6; } },
   // 多言語
-  { id: 'bilingual',     name: 'BILINGUAL',      desc: '2言語以上でクリア達成',                   tier: 'gold',     check: function(s) { return [s.cpp, s.python, s.js].filter(function(n){return n>0;}).length >= 2; } },
-  { id: 'trilingual',    name: 'TRILINGUAL',     desc: '3言語すべてでクリア達成',                 tier: 'platinum', check: function(s) { return s.cpp > 0 && s.python > 0 && s.js > 0; } },
+  { id: 'bilingual',     name: 'BILINGUAL',      desc: '2言語以上でクリア達成',                   tier: 'gold',     check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin].filter(function(n){return n>0;}).length >= 2; } },
+  { id: 'trilingual',    name: 'TRILINGUAL',     desc: '3言語以上でクリア達成',                   tier: 'platinum', check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin].filter(function(n){return n>0;}).length >= 3; } },
   // ストリーク
   { id: 'streak_3',      name: '3 DAY STREAK',   desc: '3日連続ログイン',                         tier: 'silver',   check: function(s) { return s.currentStreak >= 3;  } },
   { id: 'streak_7',      name: 'WEEKLY',         desc: '7日連続ログイン',                         tier: 'gold',     check: function(s) { return s.currentStreak >= 7;  } },
@@ -520,11 +520,14 @@ function calculateEXP() {
   var problemExp = 0;
   var missionExp = 0;
 
-  // 問題クリア EXP（3言語 × 全問題）
+  // 問題クリア EXP（全6言語）
   [
     { key: 'cpp',        get: function() { return problems; } },
     { key: 'python',     get: function() { return pythonProblems; } },
-    { key: 'javascript', get: function() { return javascriptProblems; } }
+    { key: 'javascript', get: function() { return javascriptProblems; } },
+    { key: 'ruby',       get: function() { return rubyProblems; } },
+    { key: 'typescript', get: function() { return typescriptProblems; } },
+    { key: 'kotlin',     get: function() { return kotlinProblems; } }
   ].forEach(function(lang) {
     var prog = JSON.parse(localStorage.getItem(lang.key + '_progress') || '[]');
     lang.get().forEach(function(p) {
@@ -534,11 +537,14 @@ function calculateEXP() {
     });
   });
 
-  // ミッションクリア EXP（3言語 × 全ミッション）
+  // ミッションクリア EXP（全6言語）
   [
     { key: 'cpp',        get: function() { return missions; } },
     { key: 'python',     get: function() { return pythonMissions; } },
-    { key: 'javascript', get: function() { return javascriptMissions; } }
+    { key: 'javascript', get: function() { return javascriptMissions; } },
+    { key: 'ruby',       get: function() { return rubyMissions; } },
+    { key: 'typescript', get: function() { return typescriptMissions; } },
+    { key: 'kotlin',     get: function() { return kotlinMissions; } }
   ].forEach(function(lang) {
     var prog = JSON.parse(localStorage.getItem(lang.key + '_mission_progress') || '[]');
     lang.get().forEach(function(m) {
@@ -675,7 +681,7 @@ var LANGUAGE_GROUPS = [
     desc: '文法がシンプルで誰でも始めやすい',
     langs: [
       {
-        id: 'python', name: 'Python', color: '#3776AB', problems: 30, available: true,
+        id: 'python', name: 'Python', color: '#3776AB', problems: 31, available: true,
         uses: ['AI・機械学習', 'データ分析', 'Web開発', '自動化スクリプト']
       },
     ]
@@ -686,7 +692,7 @@ var LANGUAGE_GROUPS = [
     desc: '少し複雑だが実用的なアプリが作れる',
     langs: [
       {
-        id: 'javascript', name: 'JavaScript', color: '#F0C040', problems: 30, available: true,
+        id: 'javascript', name: 'JavaScript', color: '#F0C040', problems: 31, available: true,
         uses: ['Webフロントエンド', 'ブラウザゲーム', 'Node.js サーバー']
       },
       {
@@ -750,7 +756,7 @@ var LANGUAGE_GROUPS = [
     desc: '高速・高機能。習得難度は高いが強力',
     langs: [
       {
-        id: 'cpp', name: 'C++', color: '#00599C', problems: 30, available: true,
+        id: 'cpp', name: 'C++', color: '#00599C', problems: 31, available: true,
         uses: ['ゲームエンジン (Unreal)', 'OS・ブラウザ開発', '競技プログラミング', '高速数値計算']
       },
     ]
@@ -6037,10 +6043,9 @@ async function runCode() {
   if (judgeArea) judgeArea.classList.add("hidden");
 
   try {
-    const controller = new AbortController();
-    const _timeout   = setTimeout(function() { controller.abort(); }, 20000);
-
     var _isKotlin  = currentLanguage === 'kotlin';
+    const controller = new AbortController();
+    const _timeout   = setTimeout(function() { controller.abort(); }, _isKotlin ? 30000 : 20000);
     var _fetchUrl  = _isKotlin ? '/api/run-kotlin' : 'https://wandbox.org/api/compile.json';
     var _fetchBody = _isKotlin
       ? JSON.stringify({ code: code })
@@ -6055,7 +6060,10 @@ async function runCode() {
     clearTimeout(_timeout);
 
     if (!res.ok) {
-      throw new Error('HTTP ' + res.status + (_isKotlin ? ' — Kotlin APIエラー' : ' — Wandbox APIエラー'));
+      var _errBody = {};
+      try { _errBody = await res.json(); } catch(e) {}
+      var _errMsg = _errBody.error || ('HTTP ' + res.status + (_isKotlin ? ' — Kotlin APIエラー' : ' — Wandbox APIエラー'));
+      throw new Error(_errMsg);
     }
 
     const data = await res.json();
@@ -6085,7 +6093,8 @@ async function runCode() {
   } catch (e) {
     outputArea.classList.remove("hidden");
     if (e.name === 'AbortError') {
-      outputText.textContent = "⏱ タイムアウト（20秒）: 無限ループや長時間処理が含まれていないか確認してください。";
+      var _timeoutSec = currentLanguage === 'kotlin' ? '30秒' : '20秒';
+      outputText.textContent = "⏱ タイムアウト（" + _timeoutSec + "）: 無限ループや長時間処理が含まれていないか確認してください。" + (currentLanguage === 'kotlin' ? "\n（Kotlinは初回コンパイルに時間がかかる場合があります）" : "");
     } else {
       outputText.textContent = "⚠ 実行エラー: Wandbox APIに接続できませんでした。\nインターネット接続を確認するか、しばらく待ってから再試行してください。\n詳細: " + e.message;
     }
@@ -6794,9 +6803,12 @@ async function renderProfile() {
   }
 
   var pct = {
-    cpp:    Math.min(100, stats.cpp    / 30 * 100),
-    python: Math.min(100, stats.python / 30 * 100),
-    js:     Math.min(100, stats.js     / 30 * 100)
+    cpp:    Math.min(100, stats.cpp    / 31 * 100),
+    python: Math.min(100, stats.python / 31 * 100),
+    js:     Math.min(100, stats.js     / 31 * 100),
+    ruby:   Math.min(100, stats.ruby   / 30 * 100),
+    ts:     Math.min(100, stats.ts     / 30 * 100),
+    kotlin: Math.min(100, stats.kotlin / 30 * 100)
   };
 
   // ストリーク状態の判定（今日ログイン済みかどうか）
@@ -6849,7 +6861,7 @@ async function renderProfile() {
         '<div class="profile-rank-badge" style="color:' + rank.color + ';border-color:' + rank.color + ';box-shadow:0 0 12px ' + rank.color + '33">' +
           '◆ ' + rank.name + ' ◆' +
         '</div>' +
-        '<div class="profile-total">' + stats.total + '<span> / 180 CLEARED</span></div>' +
+        '<div class="profile-total">' + stats.total + '<span> / 183 CLEARED</span></div>' +
         '<div class="profile-mission-total">' + stats.totalMissions + ' / 36 MISSIONS</div>' +
       '</div>' +
     '</div>' +
@@ -6939,9 +6951,12 @@ async function renderProfile() {
     '<div class="profile-section">' +
       '<div class="profile-section-title">// LANGUAGE STATS</div>' +
       '<div class="profile-stats-grid">' +
-        _statCardHTML('C++',        '#00599C', stats.cpp,    pct.cpp,    stats.cppM) +
-        _statCardHTML('Python',     '#3776AB', stats.python, pct.python, stats.pyM) +
-        _statCardHTML('JavaScript', '#F0C040', stats.js,     pct.js,     stats.jsM) +
+        _statCardHTML('C++',        '#00599C', stats.cpp,    pct.cpp,    stats.cppM,    31) +
+        _statCardHTML('Python',     '#3776AB', stats.python, pct.python, stats.pyM,     31) +
+        _statCardHTML('JavaScript', '#F0C040', stats.js,     pct.js,     stats.jsM,     31) +
+        _statCardHTML('Ruby',       '#CC342D', stats.ruby,   pct.ruby,   stats.rubyM,   30) +
+        _statCardHTML('TypeScript', '#3178C6', stats.ts,     pct.ts,     stats.tsM,     30) +
+        _statCardHTML('Kotlin',     '#7F52FF', stats.kotlin, pct.kotlin, stats.kotlinM, 30) +
       '</div>' +
     '</div>' +
 
@@ -6957,11 +6972,12 @@ async function renderProfile() {
     '</div>';
 }
 
-function _statCardHTML(lang, color, count, pct, missions) {
+function _statCardHTML(lang, color, count, pct, missions, max) {
+  var maxProblems = max || 30;
   return (
     '<div class="profile-stat-card">' +
       '<div class="stat-lang" style="color:' + color + '">' + lang + '</div>' +
-      '<div class="stat-num">' + count + '<span class="stat-denom"> / 30</span></div>' +
+      '<div class="stat-num">' + count + '<span class="stat-denom"> / ' + maxProblems + '</span></div>' +
       '<div class="stat-bar-wrap">' +
         '<div class="stat-bar" style="width:' + pct + '%;background:' + color + '"></div>' +
       '</div>' +
