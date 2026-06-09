@@ -2248,6 +2248,7 @@ const javascriptMissions = [
       "toFixed(2) で小数点2桁表示",
       "18.5未満→「痩せ」、25未満→「普通」、25以上→「肥満」"
     ],
+    sampleIO: `height = 170, weight = 65\nBMI: 22.49\n普通`,
     hint: "身長をcmからmに変換（÷100）してから計算します。",
     answer:
 `const height = 170;
@@ -2269,6 +2270,7 @@ else console.log("肥満");`
       "3の倍数→Fizz",
       "5の倍数→Buzz"
     ],
+    sampleIO: `1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz\n...`,
     hint: "15の倍数の判定を先に行ってください。",
     answer:
 `for (let i = 1; i <= 100; i++) {
@@ -2287,6 +2289,7 @@ else console.log("肥満");`
       "平均を小数点2桁で表示",
       "最大値・最小値を求める（Math.max/min使用）"
     ],
+    sampleIO: `合計: 397\n平均: 39.70\n最大: 89\n最小: 7`,
     hint: "reduce() で合計、Math.max(...arr) で最大値を求めます。",
     answer:
 `const nums = [15, 42, 7, 89, 23, 56, 34, 71, 12, 48];
@@ -2306,6 +2309,7 @@ console.log("最小: " + Math.min(...nums));`
       "remove(task) でタスクを削除",
       "list() で番号付き一覧を表示"
     ],
+    sampleIO: `1. 買い物\n2. 勉強\n3. 運動\n--- 削除後 ---\n1. 買い物\n2. 運動`,
     hint: "push() で追加、indexOf() と splice() で削除します。",
     answer:
 `const todos = [];
@@ -2333,6 +2337,7 @@ list();`
       "reset() で0に戻す",
       "getCount() で現在値を返す"
     ],
+    sampleIO: `3\n2\n0`,
     hint: "コンストラクタで count = 0 を初期化します。",
     answer:
 `class Counter {
@@ -2359,6 +2364,7 @@ console.log(c.getCount());`
       "最も長い単語を見つける",
       "最も多く出現する単語を見つける"
     ],
+    sampleIO: `単語数: 10\n最長: jumps\n最頻出: the (3回)`,
     hint: "split(' ') で単語分割、reduce でオブジェクト集計します。",
     answer:
 `const text = "the quick brown fox jumps over the lazy dog the fox";
@@ -2379,6 +2385,7 @@ console.log("最頻出: " + top[0] + " (" + top[1] + "回)");`
 
 const javascriptUnitGuides = [
   {
+    id: "js-unit01",
     unit: "UNIT 01", title: "基礎・出力",
     summary: "console.log()で出力し、let/constで変数を扱う。テンプレートリテラルで文字列を組み立てる。",
     points: [
@@ -2395,6 +2402,7 @@ const javascriptUnitGuides = [
     ]
   },
   {
+    id: "js-unit02",
     unit: "UNIT 02", title: "演算と条件分岐",
     summary: "算術演算子と比較演算子を使い、if/else・switch・三項演算子で条件分岐を行う。",
     points: [
@@ -2411,6 +2419,7 @@ const javascriptUnitGuides = [
     ]
   },
   {
+    id: "js-unit03",
     unit: "UNIT 03", title: "ループ",
     summary: "for・while・for...of・forEachで繰り返し処理を行う。",
     points: [
@@ -2427,6 +2436,7 @@ const javascriptUnitGuides = [
     ]
   },
   {
+    id: "js-unit04",
     unit: "UNIT 04", title: "関数",
     summary: "functionとアロー関数で関数を定義。デフォルト引数・レスト引数・クロージャを学ぶ。",
     points: [
@@ -2443,6 +2453,7 @@ const javascriptUnitGuides = [
     ]
   },
   {
+    id: "js-unit05",
     unit: "UNIT 05", title: "配列とオブジェクト",
     summary: "配列メソッド(map/filter/reduce)とオブジェクト操作、分割代入・スプレッド構文を学ぶ。",
     points: [
@@ -2459,6 +2470,7 @@ const javascriptUnitGuides = [
     ]
   },
   {
+    id: "js-unit06",
     unit: "UNIT 06", title: "クラスとエラー処理",
     summary: "classでオブジェクト指向プログラミング、try/catchでエラー処理を学ぶ。",
     points: [
@@ -2479,15 +2491,21 @@ const javascriptUnitGuides = [
 // ===== 言語別データ取得ヘルパー =====
 
 function getProblems() {
-  return currentLanguage === 'python' ? pythonProblems : problems;
+  if (currentLanguage === 'python') return pythonProblems;
+  if (currentLanguage === 'javascript') return javascriptProblems;
+  return problems;
 }
 
 function getMissions() {
-  return currentLanguage === 'python' ? pythonMissions : missions;
+  if (currentLanguage === 'python') return pythonMissions;
+  if (currentLanguage === 'javascript') return javascriptMissions;
+  return missions;
 }
 
 function getUnitGuides() {
-  return currentLanguage === 'python' ? pythonUnitGuides : unitGuides;
+  if (currentLanguage === 'python') return pythonUnitGuides;
+  if (currentLanguage === 'javascript') return javascriptUnitGuides;
+  return unitGuides;
 }
 
 function getProgressKey() {
@@ -2500,11 +2518,13 @@ function getMissionProgressKey() {
 
 function getCompiler() {
   if (currentLanguage === 'python') return 'cpython-3.12.7';
+  if (currentLanguage === 'javascript') return 'node-head';
   return 'gcc-head';
 }
 
 function getAceMode() {
   if (currentLanguage === 'python') return 'ace/mode/python';
+  if (currentLanguage === 'javascript') return 'ace/mode/javascript';
   return 'ace/mode/c_cpp';
 }
 
@@ -2513,6 +2533,10 @@ function getStarterCode() {
   if (currentLanguage === 'python') {
     if (p) return '# [問題] ' + p.question + '\n\n';
     return '# ここにコードを書いてください\n';
+  }
+  if (currentLanguage === 'javascript') {
+    if (p) return '// [問題] ' + p.question + '\n\n';
+    return '// ここにコードを書いてください\n';
   }
   if (p) return '// [問題] ' + p.question + '\n' + ACE_STARTER;
   return ACE_STARTER;
@@ -2930,7 +2954,7 @@ async function askAI(system, messages) {
 // ===== コードフィードバック =====
 
 async function getAIFeedback(problemId) {
-  const p = problems.find(function(x) { return x.id === problemId; });
+  const p = getProblems().find(function(x) { return x.id === problemId; });
   const code = aceEditor ? aceEditor.getValue().trim() : '';
   if (!code) { alert('コードを入力してください'); return; }
 
@@ -3182,10 +3206,11 @@ function renderMissionDetail(id) {
       '<ul class="mission-requirements">' + reqItems + '</ul>' +
     '</div>' +
 
-    '<div class="section">' +
-      '<h3>入出力例</h3>' +
-      '<pre><code>' + escapeHtml(m.sampleIO) + '</code></pre>' +
-    '</div>' +
+    (m.sampleIO ?
+      '<div class="section">' +
+        '<h3>入出力例</h3>' +
+        '<pre><code>' + escapeHtml(m.sampleIO) + '</code></pre>' +
+      '</div>' : '') +
 
     '<div class="section">' +
       '<button class="toggle-btn" onclick="toggleSection(\'mission-hint-' + m.id + '\')">💡 ヒントを見る</button>' +
@@ -3193,6 +3218,14 @@ function renderMissionDetail(id) {
         '<p>' + m.hint + '</p>' +
       '</div>' +
     '</div>' +
+
+    (m.answer ?
+      '<div class="section">' +
+        '<button class="toggle-btn" onclick="toggleSection(\'mission-answer-' + m.id + '\')">📋 解答例を見る</button>' +
+        '<div id="mission-answer-' + m.id + '" class="hidden toggle-content">' +
+          '<pre><code>' + escapeHtml(m.answer) + '</code></pre>' +
+        '</div>' +
+      '</div>' : '') +
 
     '<div class="section">' +
       '<div class="editor-mode-bar">' +
@@ -3234,7 +3267,7 @@ function renderMissionDetail(id) {
 // ===== ミッションAIレビュー =====
 
 async function getMissionAIFeedback(missionId) {
-  const m = missions.find(function(x) { return x.id === missionId; });
+  const m = getMissions().find(function(x) { return x.id === missionId; });
   const code = aceEditor ? aceEditor.getValue().trim() : '';
   if (!code) { alert('コードを入力してください'); return; }
 
