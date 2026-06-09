@@ -70,6 +70,104 @@ function toggleSound() {
   btn.classList.toggle('muted', !_soundEnabled);
 }
 
+// ===== APEX ライク UI サウンド =====
+
+// 汎用UIクリック（ボタン類・モーダル）
+function playUIClick() {
+  if (!_soundEnabled) return;
+  try {
+    var ctx = getAudioCtx(), t = ctx.currentTime;
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = 'square';
+    o.frequency.setValueAtTime(2000, t);
+    o.frequency.exponentialRampToValueAtTime(1500, t + 0.04);
+    g.gain.setValueAtTime(0.06, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+    o.start(t); o.stop(t + 0.055);
+  } catch(e) {}
+}
+
+// 問題・ミッションカード選択（上昇スイープ＋ハイピング）
+function playItemSelect() {
+  if (!_soundEnabled) return;
+  try {
+    var ctx = getAudioCtx(), t = ctx.currentTime;
+    var o1 = ctx.createOscillator(), g1 = ctx.createGain();
+    o1.connect(g1); g1.connect(ctx.destination);
+    o1.type = 'square';
+    o1.frequency.setValueAtTime(1100, t);
+    o1.frequency.exponentialRampToValueAtTime(1750, t + 0.055);
+    g1.gain.setValueAtTime(0.09, t);
+    g1.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+    o1.start(t); o1.stop(t + 0.075);
+    // 後追いハイピング
+    var o2 = ctx.createOscillator(), g2 = ctx.createGain();
+    o2.connect(g2); g2.connect(ctx.destination);
+    o2.type = 'sine';
+    o2.frequency.setValueAtTime(2700, t + 0.05);
+    g2.gain.setValueAtTime(0.055, t + 0.05);
+    g2.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+    o2.start(t + 0.05); o2.stop(t + 0.145);
+  } catch(e) {}
+}
+
+// タブ切替（上昇ブリップ）
+function playNavTab() {
+  if (!_soundEnabled) return;
+  try {
+    var ctx = getAudioCtx(), t = ctx.currentTime;
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = 'square';
+    o.frequency.setValueAtTime(1500, t);
+    o.frequency.linearRampToValueAtTime(2200, t + 0.04);
+    g.gain.setValueAtTime(0.065, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.065);
+    o.start(t); o.stop(t + 0.07);
+  } catch(e) {}
+}
+
+// 戻るボタン（下降スイープ）
+function playGoBack() {
+  if (!_soundEnabled) return;
+  try {
+    var ctx = getAudioCtx(), t = ctx.currentTime;
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = 'square';
+    o.frequency.setValueAtTime(1700, t);
+    o.frequency.exponentialRampToValueAtTime(850, t + 0.075);
+    g.gain.setValueAtTime(0.065, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+    o.start(t); o.stop(t + 0.095);
+  } catch(e) {}
+}
+
+// 言語選択（2段階、一番大きめ）
+function playLangSelect() {
+  if (!_soundEnabled) return;
+  try {
+    var ctx = getAudioCtx(), t = ctx.currentTime;
+    var o1 = ctx.createOscillator(), g1 = ctx.createGain();
+    o1.connect(g1); g1.connect(ctx.destination);
+    o1.type = 'square';
+    o1.frequency.setValueAtTime(780, t);
+    o1.frequency.exponentialRampToValueAtTime(1450, t + 0.06);
+    g1.gain.setValueAtTime(0.10, t);
+    g1.gain.exponentialRampToValueAtTime(0.001, t + 0.085);
+    o1.start(t); o1.stop(t + 0.09);
+    var o2 = ctx.createOscillator(), g2 = ctx.createGain();
+    o2.connect(g2); g2.connect(ctx.destination);
+    o2.type = 'sine';
+    o2.frequency.setValueAtTime(2000, t + 0.075);
+    o2.frequency.linearRampToValueAtTime(2500, t + 0.115);
+    g2.gain.setValueAtTime(0.07, t + 0.075);
+    g2.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    o2.start(t + 0.075); o2.stop(t + 0.185);
+  } catch(e) {}
+}
+
 // ===== ビジュアルエフェクト =====
 
 function showClearEffect() {
@@ -338,6 +436,7 @@ function setActiveTab(tab) {
 }
 
 function selectLanguage(langId) {
+  playLangSelect();
   currentLanguage = langId;
   _progressCache = null;
   _missionProgressCache = null;
@@ -2859,6 +2958,7 @@ function renderList() {
         '</div>';
 
       card.addEventListener("click", function() {
+        playItemSelect();
         history.pushState({ page: 'detail', lang: currentLanguage, id: p.id }, '');
         renderDetail(p.id);
         showPage("detail");
@@ -3062,9 +3162,9 @@ function buildSkeleton(p) {
 }
 
 // onclick から引数なしで呼べるラッパー（クォートネスト問題を回避）
-function editorZero()    { setEditorMode('zero');    }  // 完全ゼロから
-function editorScratch() { setEditorMode('scratch'); }  // テンプレートから
-function editorFill()    { setEditorMode('fill');    }  // 穴埋め
+function editorZero()    { playUIClick(); setEditorMode('zero');    }
+function editorScratch() { playUIClick(); setEditorMode('scratch'); }
+function editorFill()    { playUIClick(); setEditorMode('fill');    }
 
 // ===== エディタモード切り替え =====
 
@@ -3316,6 +3416,7 @@ async function sendChatMessage() {
 // ===== タブ切り替え =====
 
 function switchTab(tab) {
+  playNavTab();
   setActiveTab(tab);
   if (tab === 'problems') {
     history.pushState({ page: 'list', lang: currentLanguage, tab: 'problems' }, '');
@@ -3497,6 +3598,7 @@ function renderMissionList() {
       '</div>';
 
     card.addEventListener('click', function() {
+      playItemSelect();
       history.pushState({ page: 'mission-detail', lang: currentLanguage, id: m.id }, '');
       renderMissionDetail(m.id);
       showPage('mission-detail');
@@ -3665,11 +3767,13 @@ function toggleLearned(id) {
 // ===== 認証モーダル UI =====
 
 function openAuthModal() {
+  playUIClick();
   document.getElementById('auth-modal').classList.remove('hidden');
   setTimeout(function() { document.getElementById('auth-email').focus(); }, 50);
 }
 
 function closeAuthModal() {
+  playGoBack();
   document.getElementById('auth-modal').classList.add('hidden');
   document.getElementById('auth-error').classList.add('hidden');
   document.getElementById('auth-success').classList.add('hidden');
@@ -3798,14 +3902,17 @@ async function initAuth() {
 // ===== 初期化 =====
 
 document.getElementById("back-btn").addEventListener("click", function() {
+  playGoBack();
   history.back();
 });
 
 document.getElementById("mission-back-btn").addEventListener("click", function() {
+  playGoBack();
   history.back();
 });
 
 document.getElementById("site-title").addEventListener("click", function() {
+  playGoBack();
   history.pushState({ page: 'lang' }, '');
   currentLanguage = null;
   renderLangSelect();
