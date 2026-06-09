@@ -2825,7 +2825,7 @@ function getMissionProgressKey() {
 
 function getCompiler() {
   if (currentLanguage === 'python') return 'cpython-3.12.7';
-  if (currentLanguage === 'javascript') return 'node-head';
+  if (currentLanguage === 'javascript') return 'nodejs-head';
   return 'gcc-head';
 }
 
@@ -2851,6 +2851,7 @@ function getStarterCode() {
 
 function getLangName() {
   if (currentLanguage === 'python') return 'Python';
+  if (currentLanguage === 'javascript') return 'JavaScript';
   return 'C++';
 }
 
@@ -3335,33 +3336,34 @@ async function startAutoJudge(problemId, output) {
 
 // 判定結果を表示し、正解ならクリア処理
 function showJudgeResult(problemId, passed, byAI) {
-  const judgeArea = document.getElementById("judge-area");
-  if (!judgeArea) return;
+  // ページ遷移済みなら何もしない
+  if (document.getElementById("judge-area") === null) return;
 
   if (passed) {
-    var label = byAI ? 'AI判定: 正解！' : '正解！';
-    judgeArea.innerHTML = '<div class="judge-pass">✓ ' + label + ' クリアしました！</div>';
-    judgeArea.classList.remove("hidden");
     if (!isLearned(problemId)) {
-      // エフェクト・サウンド付きでクリア
+      // 進捗を保存
       saveProgress(problemId);
+      // エフェクト・サウンド
       playClearSound();
       showClearEffect();
-      // クリアボタン表示を更新
-      var learnBtn = document.getElementById("learn-btn");
-      if (!learnBtn) {
-        // manual-clear-hint → learned ボタンに差し替え
-        var hint = document.querySelector(".manual-clear-hint");
-        if (hint) {
-          hint.outerHTML = '<button id="learn-btn" class="learn-btn learned" onclick="toggleLearned(' + problemId + ')">✔ CLEARED  ／  クリックで取り消す</button>';
-        }
-      }
+      // renderDetail で画面を完全リフレッシュ（ボタン・ラベルを確実に更新）
+      renderDetail(problemId);
       updateProgressDisplay();
       renderList();
     }
+    // judge-area はrenderDetailで再生成されるので再取得
+    var ja = document.getElementById("judge-area");
+    if (ja) {
+      var label = byAI ? 'AI判定: 正解！' : '正解！';
+      ja.innerHTML = '<div class="judge-pass">✓ ' + label + ' クリアしました！</div>';
+      ja.classList.remove("hidden");
+    }
   } else {
-    judgeArea.innerHTML = '<div class="judge-fail">✗ まだ違います。出力を確認してもう一度試してみましょう。</div>';
-    judgeArea.classList.remove("hidden");
+    var judgeArea = document.getElementById("judge-area");
+    if (judgeArea) {
+      judgeArea.innerHTML = '<div class="judge-fail">✗ まだ違います。出力を確認してもう一度試してみましょう。</div>';
+      judgeArea.classList.remove("hidden");
+    }
   }
 }
 
