@@ -1844,10 +1844,10 @@ console.log(age);`,
     title: "テンプレートリテラル",
     question: "name に \"Taro\"、age に 20 を代入し、テンプレートリテラルを使って「Taroは20歳です」と出力してください。",
     hint: "バッククォート ` で囲み、${変数名} で値を埋め込みます。",
-    answer:
-`const name = "Taro";
-const age = 20;
-console.log(`${name}は${age}歳です`);`,
+    answer: 'const name = "Taro";\nconst age = 20;\nconsole.log(`${name}は${age}歳です`);',
+
+
+
     explanation: "テンプレートリテラルはバッククォートで囲み、${} の中に変数や式を書けます。"
   },
   {
