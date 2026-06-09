@@ -1,4 +1,131 @@
-﻿// ===== Supabase 設定 =====
+﻿// ===== PWA: Service Worker 登録 =====
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').catch(function() {});
+  });
+}
+
+// ===== サウンドエンジン =====
+var _audioCtx   = null;
+var _soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+
+function getAudioCtx() {
+  if (!_audioCtx) {
+    _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (_audioCtx.state === 'suspended') _audioCtx.resume();
+  return _audioCtx;
+}
+
+function _tone(freq, t0, dur, type, vol) {
+  var ctx  = getAudioCtx();
+  var osc  = ctx.createOscillator();
+  var gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.type = type || 'sine';
+  osc.frequency.setValueAtTime(freq, t0);
+  gain.gain.setValueAtTime(vol || 0.22, t0);
+  gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+  osc.start(t0);
+  osc.stop(t0 + dur + 0.01);
+}
+
+// 問題クリア音：明るい上昇アルペジオ
+function playClearSound() {
+  if (!_soundEnabled) return;
+  try {
+    var ctx = getAudioCtx();
+    var now = ctx.currentTime;
+    _tone(523.25, now,       0.18, 'sine',     0.22); // C5
+    _tone(659.25, now + 0.10, 0.18, 'sine',    0.22); // E5
+    _tone(783.99, now + 0.20, 0.18, 'sine',    0.22); // G5
+    _tone(1046.5, now + 0.30, 0.45, 'sine',    0.28); // C6
+    _tone(1318.5, now + 0.42, 0.55, 'sine',    0.18); // E6（余韻）
+  } catch(e) {}
+}
+
+// ミッションクリア音：ファンファーレ
+function playMissionClearSound() {
+  if (!_soundEnabled) return;
+  try {
+    var ctx = getAudioCtx();
+    var now = ctx.currentTime;
+    _tone(392.0,  now,        0.12, 'square', 0.12);
+    _tone(523.25, now + 0.12, 0.12, 'square', 0.12);
+    _tone(659.25, now + 0.24, 0.12, 'square', 0.12);
+    _tone(783.99, now + 0.36, 0.55, 'square', 0.15);
+    _tone(1046.5, now + 0.50, 0.70, 'square', 0.18);
+    // ハーモニー
+    _tone(659.25, now + 0.36, 0.55, 'sine',   0.08);
+    _tone(783.99, now + 0.50, 0.70, 'sine',   0.10);
+  } catch(e) {}
+}
+
+function toggleSound() {
+  _soundEnabled = !_soundEnabled;
+  localStorage.setItem('soundEnabled', _soundEnabled);
+  var btn = document.getElementById('sound-btn');
+  btn.textContent  = _soundEnabled ? '🔊' : '🔇';
+  btn.classList.toggle('muted', !_soundEnabled);
+}
+
+// ===== ビジュアルエフェクト =====
+
+function showClearEffect() {
+  // コンフェッティ
+  if (window.confetti) {
+    confetti({
+      particleCount: 90,
+      spread: 65,
+      origin: { x: 0.5, y: 0.45 },
+      colors: ['#FF6B00', '#FFD700', '#FF9940', '#ffffff', '#ede0c8'],
+      scalar: 1.1
+    });
+  }
+  // テキストフラッシュ
+  var el = document.getElementById('clear-effect');
+  el.classList.remove('hidden');
+  // アニメーション終了後に非表示
+  setTimeout(function() { el.classList.add('hidden'); }, 1650);
+}
+
+function showMissionClearEffect() {
+  if (window.confetti) {
+    // 左から
+    confetti({
+      particleCount: 130,
+      angle: 60,
+      spread: 58,
+      origin: { x: 0, y: 0.65 },
+      colors: ['#FF6B00', '#FFD700', '#C040FF', '#5588FF', '#00E676', '#ffffff']
+    });
+    // 右から（少し遅らせ）
+    setTimeout(function() {
+      confetti({
+        particleCount: 130,
+        angle: 120,
+        spread: 58,
+        origin: { x: 1, y: 0.65 },
+        colors: ['#FF6B00', '#FFD700', '#C040FF', '#5588FF', '#00E676', '#ffffff']
+      });
+    }, 220);
+    // 中央からも
+    setTimeout(function() {
+      confetti({
+        particleCount: 60,
+        spread: 90,
+        origin: { x: 0.5, y: 0.4 },
+        colors: ['#FFD700', '#ffffff', '#FF6B00']
+      });
+    }, 440);
+  }
+  var el = document.getElementById('mission-clear-effect');
+  el.classList.remove('hidden');
+  setTimeout(function() { el.classList.add('hidden'); }, 2100);
+}
+
+// ===== Supabase 設定 =====
 // Supabase プロジェクト作成後、以下の2行を書き換えてください
 // https://supabase.com → Project Settings → API で確認できます
 var SUPABASE_URL      = 'https://mvebyobsjywbormbzgtv.supabase.co';
@@ -3434,6 +3561,8 @@ function toggleMissionCleared(id) {
     removeMissionProgress(id);
   } else {
     saveMissionProgress(id);
+    playMissionClearSound();
+    showMissionClearEffect();
   }
   renderMissionDetail(id);
   renderMissionList();
@@ -3446,6 +3575,8 @@ function toggleLearned(id) {
     removeProgress(id);
   } else {
     saveProgress(id);
+    playClearSound();
+    showClearEffect();
   }
   renderDetail(id);
   updateProgressDisplay();
@@ -3622,6 +3753,13 @@ document.getElementById('chat-input').addEventListener('keydown', function(e) {
 history.replaceState({ page: 'lang' }, '');
 renderLangSelect();
 showPage("lang");
+
+// サウンドボタン初期状態
+(function() {
+  var btn = document.getElementById('sound-btn');
+  btn.textContent = _soundEnabled ? '🔊' : '🔇';
+  btn.classList.toggle('muted', !_soundEnabled);
+})();
 
 // Supabase 認証を初期化（非同期）
 initAuth();

@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CODE STEP</title>
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FF6B00">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CODE STEP">
+  <link rel="apple-touch-icon" href="/icon.svg">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,6 +26,7 @@
         <div id="lang-badge" class="hidden"></div>
       </div>
       <div id="auth-area">
+        <button id="sound-btn" onclick="toggleSound()" title="サウンドON/OFF">🔊</button>
         <button id="auth-btn" onclick="openAuthModal()">◆ LOGIN</button>
         <div id="user-info" class="hidden">
           <span id="user-email-display"></span>
@@ -85,6 +93,14 @@
   </div>
   <button id="chat-toggle">AI</button>
 
+  <!-- クリアエフェクトオーバーレイ -->
+  <div id="clear-effect" class="hidden">
+    <div class="clear-effect-text">◆ CLEARED ◆</div>
+  </div>
+  <div id="mission-clear-effect" class="hidden">
+    <div class="clear-effect-text mission">◆ MISSION COMPLETE ◆</div>
+  </div>
+
   <!-- 認証モーダル -->
   <div id="auth-modal" class="hidden">
     <div id="auth-modal-overlay" onclick="closeAuthModal()"></div>
@@ -108,6 +124,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.5/ace.min.js"></script>
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- コンフェッティ -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
