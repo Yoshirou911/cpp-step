@@ -5265,7 +5265,7 @@ fun main() {
     val avg = scores.average()
     val max = scores.max()
     val passing = scores.count { it >= 70 }
-    println("平均: ${"%.1f".format(avg)}")
+    println("平均: \${"%.1f".format(avg)}")
     println("最高: $max")
     println("合格者: $passing")
 }`
