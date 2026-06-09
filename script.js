@@ -7,7 +7,7 @@ var LANGUAGE_GROUPS = [
     desc: '文法がシンプルで誰でも始めやすい',
     langs: [
       {
-        id: 'python', name: 'Python', color: '#3776AB', problems: 0, available: false,
+        id: 'python', name: 'Python', color: '#3776AB', problems: 30, available: true,
         uses: ['AI・機械学習', 'データ分析', 'Web開発', '自動化スクリプト']
       },
     ]
@@ -969,6 +969,681 @@ const unitGuides = [
   }
 ];
 
+// ===== Python 問題データ =====
+
+const pythonProblems = [
+
+  // ───────────── UNIT 01: 基礎入力・出力 ─────────────
+  {
+    id: 1, unit: "UNIT 01  ◆  基礎入力・出力", rank: "ROOKIE",
+    title: "Hello World",
+    question: "「Hello, World!」と画面に出力するプログラムを書いてください。",
+    hint: "print() 関数を使って出力します。",
+    answer:
+`print("Hello, World!")`,
+    explanation: "print() はPythonの基本的な出力関数です。括弧の中に文字列を書くと画面に表示されます。文字列はダブルクォート \" またはシングルクォート ' で囲みます。"
+  },
+  {
+    id: 2, unit: "UNIT 01  ◆  基礎入力・出力", rank: "ROOKIE",
+    title: "コメントの書き方",
+    question: "# を使った1行コメントと、''' を使った複数行コメントを両方含むプログラムを書き、「Hello」と出力してください。",
+    hint: "# は1行コメント、''' ～ ''' は複数行コメントです。",
+    answer:
+`# これは1行コメントです
+'''
+これは
+複数行コメントです
+'''
+print("Hello")`,
+    explanation: "# より右はすべてコメントとして無視されます。''' または \"\"\" で囲むと複数行コメントになります。コメントはメモとして書く説明文で、実行結果に影響しません。"
+  },
+  {
+    id: 3, unit: "UNIT 01  ◆  基礎入力・出力", rank: "BRONZE",
+    title: "変数と型",
+    question: "整数変数 age に 20 を、文字列変数 name に \"Taro\" を代入して、両方出力してください。",
+    hint: "Python は型宣言が不要です。変数名 = 値 で代入できます。",
+    answer:
+`age = 20
+name = "Taro"
+print(age)
+print(name)`,
+    explanation: "Pythonは型を書かずに変数を使えます（動的型付け）。= で値を代入するだけで変数が作られます。type(変数) で型を確認できます。"
+  },
+  {
+    id: 4, unit: "UNIT 01  ◆  基礎入力・出力", rank: "BRONZE",
+    title: "input() で入力を受け取る",
+    question: "キーボードから名前を入力してもらい、「こんにちは、〇〇さん！」と出力してください。",
+    hint: "name = input() で入力を受け取れます。文字列の結合は + か f文字列を使います。",
+    answer:
+`name = input()
+print("こんにちは、" + name + "さん！")`,
+    explanation: "input() はキーボードからの入力を文字列として受け取ります。input(\"メッセージ\") とするとプロンプト表示もできます。受け取った値は常に文字列型です。"
+  },
+  {
+    id: 5, unit: "UNIT 01  ◆  基礎入力・出力", rank: "BRONZE",
+    title: "f文字列",
+    question: "height に 172.5、name に \"Taro\" を代入し、f文字列を使って「Taroの身長は172.5cmです」と出力してください。",
+    hint: "f\"テキスト{変数名}テキスト\" の形で書きます。",
+    answer:
+`name = "Taro"
+height = 172.5
+print(f"{name}の身長は{height}cmです")`,
+    explanation: "f文字列（フォーマット文字列）は f\"\" または f'' で始める文字列です。{} の中に変数や式を書くと値が埋め込まれます。+ で文字列をつなぐより読みやすく書けます。"
+  },
+
+  // ───────────── UNIT 02: 演算と条件分岐 ─────────────
+  {
+    id: 6, unit: "UNIT 02  ◆  演算と条件分岐", rank: "BRONZE",
+    title: "四則演算・剰余・べき乗",
+    question: "a = 17、b = 5 として、a+b, a-b, a*b, a/b, a//b, a%b, a**2 をそれぞれ出力してください。",
+    hint: "// は整数除算、% は剰余、** はべき乗です。",
+    answer:
+`a = 17
+b = 5
+print(a + b)
+print(a - b)
+print(a * b)
+print(a / b)
+print(a // b)
+print(a % b)
+print(a ** 2)`,
+    explanation: "/ は小数の割り算（17/5=3.4）、// は整数除算（17//5=3）、% は余り（17%5=2）、** はべき乗（17**2=289）です。C++と違い / は常に小数を返します。"
+  },
+  {
+    id: 7, unit: "UNIT 02  ◆  演算と条件分岐", rank: "BRONZE",
+    title: "if文",
+    question: "score を入力して、60以上なら「合格」、未満なら「不合格」と出力してください。",
+    hint: "if 条件: の後はインデント（スペース4つ）で本文を書きます。",
+    answer:
+`score = int(input())
+if score >= 60:
+    print("合格")
+else:
+    print("不合格")`,
+    explanation: "Pythonはインデント（字下げ）でブロックを表します。{} ではなくインデントが必須です。if 条件: の後は必ずインデントを入れてください。"
+  },
+  {
+    id: 8, unit: "UNIT 02  ◆  演算と条件分岐", rank: "SILVER",
+    title: "elif / else",
+    question: "score を入力して、90以上→「S」、80以上→「A」、70以上→「B」、60以上→「C」、未満→「F」と出力してください。",
+    hint: "elif を使って複数の条件を順番に判定します。",
+    answer:
+`score = int(input())
+if score >= 90:
+    print("S")
+elif score >= 80:
+    print("A")
+elif score >= 70:
+    print("B")
+elif score >= 60:
+    print("C")
+else:
+    print("F")`,
+    explanation: "elif（else if）で複数の条件を順番に評価します。最初に True になった条件だけ実行されます。最後の else はどれにも当てはまらない場合の処理です。"
+  },
+  {
+    id: 9, unit: "UNIT 02  ◆  演算と条件分岐", rank: "SILVER",
+    title: "比較・論理演算子",
+    question: "age を入力して、13以上かつ18未満なら「中学生・高校生」、それ以外なら「対象外」と出力してください。",
+    hint: "and で条件を組み合わせます。Python では 13 <= age < 18 という書き方もできます。",
+    answer:
+`age = int(input())
+if age >= 13 and age < 18:
+    print("中学生・高校生")
+else:
+    print("対象外")`,
+    explanation: "and は両方 True のとき True、or はどちらか True のとき True、not は True/False を反転します。Pythonでは 13 <= age < 18 のような連続比較も書けます。"
+  },
+  {
+    id: 10, unit: "UNIT 02  ◆  演算と条件分岐", rank: "SILVER",
+    title: "三項演算子（条件式）",
+    question: "x を入力して、正の数なら「正」、そうでなければ「非正」を変数 result に代入して出力してください。三項演算子（条件式）を使ってください。",
+    hint: "result = 値A if 条件 else 値B の形で書きます。",
+    answer:
+`x = int(input())
+result = "正" if x > 0 else "非正"
+print(result)`,
+    explanation: "Pythonの三項演算子は 値A if 条件 else 値B の形です。条件が True なら値A、False なら値B が返ります。1行でif-elseを書けます。"
+  },
+
+  // ───────────── UNIT 03: ループ ─────────────
+  {
+    id: 11, unit: "UNIT 03  ◆  ループ", rank: "SILVER",
+    title: "for と range()",
+    question: "1 から 10 までの数を1行ずつ出力してください。",
+    hint: "for i in range(1, 11): のように書きます。range(start, stop) の stop は含まれません。",
+    answer:
+`for i in range(1, 11):
+    print(i)`,
+    explanation: "range(start, stop) は start 以上 stop 未満の整数列を生成します。range(n) は 0〜n-1 です。for 変数 in イテラブル: の形で反復できます。"
+  },
+  {
+    id: 12, unit: "UNIT 03  ◆  ループ", rank: "SILVER",
+    title: "while ループ",
+    question: "1 から始めて 2 倍ずつ増やし、100 を超えるまで値を出力してください。",
+    hint: "while n <= 100: のような条件でループします。",
+    answer:
+`n = 1
+while n <= 100:
+    print(n)
+    n *= 2`,
+    explanation: "while 条件: は条件が True の間繰り返します。n *= 2 は n = n * 2 の省略形です。無限ループを防ぐため、必ずループ内で条件が変化するようにしましょう。"
+  },
+  {
+    id: 13, unit: "UNIT 03  ◆  ループ", rank: "SILVER",
+    title: "break と continue",
+    question: "1 から 20 までループして、3 の倍数はスキップ、13 に達したらループを終了し、それ以外は出力してください。",
+    hint: "3の倍数は continue、13は break を使います。",
+    answer:
+`for i in range(1, 21):
+    if i == 13:
+        break
+    if i % 3 == 0:
+        continue
+    print(i)`,
+    explanation: "break はループを即座に終了します。continue は残りの処理をスキップして次のイテレーションへ進みます。両方とも for と while で使えます。"
+  },
+  {
+    id: 14, unit: "UNIT 03  ◆  ループ", rank: "GOLD",
+    title: "ネストループ（九九の表）",
+    question: "九九の表（1×1 から 9×9）を出力してください。各行はスペース区切りで表示してください。",
+    hint: "for i in range(1, 10): の中に for j in range(1, 10): を書きます。end=\" \" で改行なし出力できます。",
+    answer:
+`for i in range(1, 10):
+    for j in range(1, 10):
+        print(i * j, end=" ")
+    print()`,
+    explanation: "ループの中にループを書くことを「ネスト（入れ子）」と言います。print(値, end=\"\") は改行なしで出力します。print() だけで改行できます。"
+  },
+  {
+    id: 15, unit: "UNIT 03  ◆  ループ", rank: "GOLD",
+    title: "リスト内包表記",
+    question: "1 から 10 の二乗のリストを内包表記で作り、出力してください。",
+    hint: "[式 for 変数 in range()] の形で書きます。",
+    answer:
+`squares = [i**2 for i in range(1, 11)]
+print(squares)`,
+    explanation: "リスト内包表記は [式 for 変数 in イテラブル] の形でリストを1行で生成できます。条件もつけられます: [i for i in range(10) if i % 2 == 0]。Pythonらしい書き方です。"
+  },
+
+  // ───────────── UNIT 04: リストと辞書 ─────────────
+  {
+    id: 16, unit: "UNIT 04  ◆  リストと辞書", rank: "SILVER",
+    title: "リスト基本",
+    question: "[10, 20, 30, 40, 50] というリストを作り、1番目（インデックス0）と最後の要素を出力してください。また要素数も出力してください。",
+    hint: "リストは [] で作ります。インデックスは 0 から。[-1] で最後の要素を取れます。",
+    answer:
+`nums = [10, 20, 30, 40, 50]
+print(nums[0])
+print(nums[-1])
+print(len(nums))`,
+    explanation: "リストは [] で複数の値をまとめて管理できます。インデックスは 0 から始まり、[-1] は最後の要素を指します。len() で要素数を取得できます。"
+  },
+  {
+    id: 17, unit: "UNIT 04  ◆  リストと辞書", rank: "GOLD",
+    title: "リストのメソッド",
+    question: "空のリストを作り、1,2,3 を追加、末尾を削除、昇順ソートして出力してください。",
+    hint: "append(), pop(), sort() メソッドを使います。",
+    answer:
+`nums = []
+nums.append(1)
+nums.append(2)
+nums.append(3)
+nums.pop()
+nums.sort()
+print(nums)`,
+    explanation: "append() は末尾に追加、pop() は末尾を削除（返り値あり）、sort() は昇順ソート（破壊的）、sorted() は新しいリストを返します。reverse=True で降順にできます。"
+  },
+  {
+    id: 18, unit: "UNIT 04  ◆  リストと辞書", rank: "GOLD",
+    title: "タプルとセット",
+    question: "タプル (1, 2, 3) と セット {1, 2, 2, 3, 3} を作り、それぞれ出力してください。",
+    hint: "タプルは () 、セットは {} で作ります。セットは重複を除去します。",
+    answer:
+`t = (1, 2, 3)
+s = {1, 2, 2, 3, 3}
+print(t)
+print(s)`,
+    explanation: "タプル () は変更不可のリストです。セット {} は重複なし・順序なしのコレクションです。セットは集合演算（和集合・差集合など）が得意です。"
+  },
+  {
+    id: 19, unit: "UNIT 04  ◆  リストと辞書", rank: "GOLD",
+    title: "辞書 (dict)",
+    question: "名前→点数の辞書 {\"Alice\": 90, \"Bob\": 75, \"Carol\": 85} を作り、Bobの点数を出力し、Daveの点数 70 を追加して全員分を出力してください。",
+    hint: "dict[キー] で値を取得・追加できます。for k, v in dict.items(): で全要素を取れます。",
+    answer:
+`scores = {"Alice": 90, "Bob": 75, "Carol": 85}
+print(scores["Bob"])
+scores["Dave"] = 70
+for name, score in scores.items():
+    print(f"{name}: {score}")`,
+    explanation: "辞書はキーと値のペアを管理するデータ構造です。dict[キー] で値を取得・更新・追加できます。items() でキーと値のペアを取得、keys() でキー一覧、values() で値一覧を取れます。"
+  },
+  {
+    id: 20, unit: "UNIT 04  ◆  リストと辞書", rank: "GOLD",
+    title: "文字列操作",
+    question: "\"Hello, World!\" という文字列を大文字・小文字に変換し、\",\" で分割して最初の要素を出力してください。",
+    hint: "upper(), lower(), split() メソッドを使います。",
+    answer:
+`s = "Hello, World!"
+print(s.upper())
+print(s.lower())
+parts = s.split(",")
+print(parts[0])`,
+    explanation: "文字列には便利なメソッドがたくさんあります。upper()/lower()は大小変換、split(区切り文字)で分割、strip()で前後の空白除去、replace(before,after)で置換ができます。"
+  },
+
+  // ───────────── UNIT 05: 関数 ─────────────
+  {
+    id: 21, unit: "UNIT 05  ◆  関数", rank: "GOLD",
+    title: "def で関数定義",
+    question: "2つの整数を受け取り、大きい方を返す関数 max_val を定義して、3 と 7 で呼び出して結果を出力してください。",
+    hint: "def 関数名(引数): の形で定義します。return で値を返します。",
+    answer:
+`def max_val(a, b):
+    if a > b:
+        return a
+    else:
+        return b
+
+print(max_val(3, 7))`,
+    explanation: "def で関数を定義します。return で戻り値を指定します。Pythonの関数は型宣言が不要です。定義より前に呼び出すとエラーになります（C++と同様）。"
+  },
+  {
+    id: 22, unit: "UNIT 05  ◆  関数", rank: "PLATINUM",
+    title: "デフォルト引数",
+    question: "名前と挨拶文を受け取り「挨拶文、名前！」と返す greet 関数を作ってください。挨拶文のデフォルトは「こんにちは」にしてください。",
+    hint: "def greet(name, greeting=\"こんにちは\"): のように書きます。",
+    answer:
+`def greet(name, greeting="こんにちは"):
+    return f"{greeting}、{name}！"
+
+print(greet("Alice"))
+print(greet("Bob", "おはよう"))`,
+    explanation: "デフォルト引数は def func(引数=デフォルト値) で設定します。呼び出し時に省略するとデフォルト値が使われます。デフォルト引数は必ず最後に書く必要があります。"
+  },
+  {
+    id: 23, unit: "UNIT 05  ◆  関数", rank: "PLATINUM",
+    title: "*args と **kwargs",
+    question: "任意の数の整数を受け取り合計を返す sum_all 関数と、キーワード引数を全て出力する print_info 関数を書いてください。",
+    hint: "*args はタプルとして受け取ります。**kwargs は辞書として受け取ります。",
+    answer:
+`def sum_all(*args):
+    return sum(args)
+
+def print_info(**kwargs):
+    for key, value in kwargs.items():
+        print(f"{key}: {value}")
+
+print(sum_all(1, 2, 3, 4, 5))
+print_info(name="Alice", age=20, city="Tokyo")`,
+    explanation: "*args は任意の数の位置引数をタプルで受け取ります。**kwargs は任意の数のキーワード引数を辞書で受け取ります。両方使うこともできます。"
+  },
+  {
+    id: 24, unit: "UNIT 05  ◆  関数", rank: "PLATINUM",
+    title: "lambda 式",
+    question: "2数を掛け算する lambda 式を変数 multiply に代入して、3 と 4 の結果を出力してください。またリスト [(1,3),(2,1),(0,5)] を第2要素で降順ソートしてください。",
+    hint: "lambda 引数: 式 の形で書きます。sort のキーに使えます。",
+    answer:
+`multiply = lambda a, b: a * b
+print(multiply(3, 4))
+
+pairs = [(1, 3), (2, 1), (0, 5)]
+pairs.sort(key=lambda x: x[1], reverse=True)
+print(pairs)`,
+    explanation: "lambda は1行で書ける無名関数です。lambda 引数: 式 の形で定義します。sort の key や map/filter でよく使われます。複雑な処理は通常の def で書く方が読みやすいです。"
+  },
+  {
+    id: 25, unit: "UNIT 05  ◆  関数", rank: "DIAMOND",
+    title: "再帰関数",
+    question: "n の階乗（n!）を再帰で計算する factorial 関数を書いて、5! を出力してください。",
+    hint: "n == 0 のとき 1 を返す（ベースケース）。それ以外は n * factorial(n-1) を返します。",
+    answer:
+`def factorial(n):
+    if n == 0:
+        return 1
+    return n * factorial(n - 1)
+
+print(factorial(5))`,
+    explanation: "再帰は関数が自分自身を呼び出すテクニックです。必ず終了条件（ベースケース）が必要です。Pythonのデフォルトの再帰深度は約1000です。sys.setrecursionlimit() で変更できます。"
+  },
+
+  // ───────────── UNIT 06: クラスと例外 ─────────────
+  {
+    id: 26, unit: "UNIT 06  ◆  クラスと例外", rank: "DIAMOND",
+    title: "クラスと __init__",
+    question: "名前と年齢を持つ Person クラスを作り、「Alice, 20歳」と表示する introduce メソッドを追加して呼び出してください。",
+    hint: "class クラス名: で定義。__init__(self, ...) でコンストラクタを書きます。",
+    answer:
+`class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def introduce(self):
+        print(f"{self.name}, {self.age}歳")
+
+p = Person("Alice", 20)
+p.introduce()`,
+    explanation: "__init__ はインスタンス生成時に自動的に呼ばれるコンストラクタです。self は自分自身を指す引数で、全てのメソッドの第1引数に必要です。self.名前 でインスタンス変数を定義します。"
+  },
+  {
+    id: 27, unit: "UNIT 06  ◆  クラスと例外", rank: "DIAMOND",
+    title: "継承",
+    question: "Animal クラス（name属性、speak メソッドを持つ）を継承した Dog クラスを作り、speak をオーバーライドして「ワン！」と出力させてください。",
+    hint: "class Dog(Animal): で継承します。super().__init__() で親クラスの初期化を呼べます。",
+    answer:
+`class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def speak(self):
+        print(f"{self.name}が鳴きます")
+
+class Dog(Animal):
+    def speak(self):
+        print(f"{self.name}：ワン！")
+
+d = Dog("ポチ")
+d.speak()`,
+    explanation: "class 子クラス(親クラス): で継承します。親のメソッドと同名のメソッドを定義するとオーバーライド（上書き）できます。super() で親クラスのメソッドを呼び出せます。"
+  },
+  {
+    id: 28, unit: "UNIT 06  ◆  クラスと例外", rank: "DIAMOND",
+    title: "try / except / finally",
+    question: "0 での割り算と、文字列を int に変換するときのエラーを try/except で捕まえ、finally で「処理完了」と出力してください。",
+    hint: "except ZeroDivisionError: と except ValueError: のように例外の種類を指定できます。",
+    answer:
+`try:
+    x = int("abc")
+    result = 10 / 0
+except ValueError as e:
+    print(f"ValueError: {e}")
+except ZeroDivisionError as e:
+    print(f"ZeroDivisionError: {e}")
+finally:
+    print("処理完了")`,
+    explanation: "try ブロックでエラーが起きると except に飛びます。except 例外型 as e: で例外オブジェクトを受け取れます。finally は例外の有無に関わらず必ず実行されます。"
+  },
+  {
+    id: 29, unit: "UNIT 06  ◆  クラスと例外", rank: "MASTER",
+    title: "__str__ と特殊メソッド",
+    question: "x,y座標を持つ Point クラスを作り、print(p) で「Point(3, 4)」と表示されるよう __str__ を実装してください。また2点間のユークリッド距離を求める distance メソッドも追加してください。",
+    hint: "__str__(self) は print() で呼ばれます。距離は math.sqrt((x2-x1)**2 + (y2-y1)**2) です。",
+    answer:
+`import math
+
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __str__(self):
+        return f"Point({self.x}, {self.y})"
+
+    def distance(self, other):
+        return math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
+
+p1 = Point(3, 4)
+p2 = Point(0, 0)
+print(p1)
+print(p1.distance(p2))`,
+    explanation: "__str__ は str() や print() で呼ばれる特殊メソッドです。他にも __len__, __add__, __eq__ など多くの特殊メソッドがあります。import でモジュールを読み込めます。"
+  },
+  {
+    id: 30, unit: "UNIT 06  ◆  クラスと例外", rank: "MASTER",
+    title: "リスト操作の応用",
+    question: "1〜20のリストから偶数だけを内包表記で取り出し、各要素を2乗した新しいリストを作り、合計と平均を出力してください。",
+    hint: "内包表記で条件付きフィルタリングができます。sum() と len() を使います。",
+    answer:
+`nums = [i for i in range(1, 21) if i % 2 == 0]
+squared = [x**2 for x in nums]
+print(squared)
+print(f"合計: {sum(squared)}")
+print(f"平均: {sum(squared) / len(squared)}")`,
+    explanation: "リスト内包表記 [式 for 変数 in イテラブル if 条件] で条件付きリストを1行で作れます。sum() で合計、max()/min() で最大・最小値を取得できます。"
+  }
+];
+
+// ===== Python ミッションデータ =====
+
+const pythonMissions = [
+  {
+    id: 1, rank: "SILVER",
+    title: "BMI 計算ツール",
+    description: "身長（cm）と体重（kg）を入力してBMIを計算し、判定結果を表示するプログラムを作れ。",
+    requirements: [
+      "身長（cm）と体重（kg）を入力する",
+      "BMI = 体重(kg) / (身長(m))² を計算する",
+      "BMI 18.5未満 → 低体重、18.5〜25未満 → 普通体重、25〜30未満 → 肥満(1度)、30以上 → 肥満(2度以上)",
+      "BMIを小数点第1位まで表示する",
+      "身長・体重が0以下の場合はエラーメッセージを出す"
+    ],
+    sampleIO: `身長(cm): 170\n体重(kg): 65\nBMI: 22.5\n判定: 普通体重`,
+    hint: "身長をcmからmに変換（/100）してから計算します。f\"{bmi:.1f}\" で小数点1桁表示できます。"
+  },
+  {
+    id: 2, rank: "GOLD",
+    title: "FizzBuzz 拡張版",
+    description: "1 から N までの数を出力するプログラムを作れ。3の倍数は「Fizz」、5の倍数は「Buzz」、15の倍数は「FizzBuzz」と出力しろ。",
+    requirements: [
+      "N をユーザーが入力する",
+      "1〜N を順番に出力する",
+      "3の倍数 → Fizz",
+      "5の倍数 → Buzz",
+      "15の倍数 → FizzBuzz",
+      "N が 0 以下なら「無効な入力です」と出力する"
+    ],
+    sampleIO: `入力: 15\n1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz`,
+    hint: "15の倍数の判定を先に書かないと Fizz や Buzz が先に引っかかります。条件の順番に注意してください。"
+  },
+  {
+    id: 3, rank: "GOLD",
+    title: "数当てゲーム",
+    description: "コンピュータが 1〜100 のランダムな整数を選ぶ。プレイヤーが数を入力するたびに「もっと大きい」「もっと小さい」「正解！」を表示するゲームを作れ。",
+    requirements: [
+      "1〜100の乱数を生成する（random モジュールを使う）",
+      "ユーザーの入力が正解より小さければ「もっと大きい」",
+      "ユーザーの入力が正解より大きければ「もっと小さい」",
+      "正解したら「正解！ X回で当てました」と表示して終了",
+      "入力が 1〜100 の範囲外なら「範囲外です」と表示する"
+    ],
+    sampleIO: `入力: 50\nもっと大きい\n入力: 75\nもっと小さい\n入力: 62\n正解！ 3回で当てました`,
+    hint: "import random して random.randint(1, 100) で乱数を生成できます。while ループで正解するまで繰り返します。"
+  },
+  {
+    id: 4, rank: "PLATINUM",
+    title: "成績管理システム",
+    description: "複数の生徒の名前と点数を入力して管理するプログラムを作れ。合計・平均・最高・最低点を計算して出力しろ。",
+    requirements: [
+      "生徒数 N を入力する",
+      "各生徒の名前と点数を入力する",
+      "各生徒の点数と合否（60点以上で合格）を表示する",
+      "クラス全体の平均・最高点・最低点を表示する",
+      "辞書またはリストを使ってデータを管理する"
+    ],
+    sampleIO: `生徒数: 3\n名前: Alice 点数: 85\n名前: Bob 点数: 55\n名前: Carol 点数: 92\nAlice: 85点 合格\nBob: 55点 不合格\nCarol: 92点 合格\n平均: 77.3点\n最高: 92点\n最低: 55点`,
+    hint: "辞書のリスト [{\"name\": \"Alice\", \"score\": 85}, ...] で管理すると便利です。max() / min() に key を使えます。"
+  },
+  {
+    id: 5, rank: "DIAMOND",
+    title: "簡易 Todo アプリ",
+    description: "コマンドラインで動く Todo リスト管理アプリを作れ。追加・表示・削除ができること。",
+    requirements: [
+      "add タスク名 でタスクを追加する",
+      "list で現在のタスク一覧を番号付きで表示する",
+      "done 番号 で完了タスクを削除する",
+      "quit で終了する",
+      "存在しない番号が指定された場合はエラーメッセージを表示する"
+    ],
+    sampleIO: `> add 買い物\n追加しました: 買い物\n> add 勉強\n追加しました: 勉強\n> list\n1. 買い物\n2. 勉強\n> done 1\n完了: 買い物\n> quit`,
+    hint: "while True で無限ループ、input() でコマンドを受け取り、split() でコマンドと引数に分割します。リストのインデックスに注意してください。"
+  },
+  {
+    id: 6, rank: "MASTER",
+    title: "テキスト解析ツール",
+    description: "英語テキストを入力して単語の出現頻度を分析し、上位5単語を表示するプログラムを作れ。",
+    requirements: [
+      "テキストを入力する（複数行も可、空行で終了）",
+      "大文字小文字を統一する",
+      "句読点（.,!?）を除去する",
+      "各単語の出現回数をカウントする",
+      "出現回数の多い順に上位5単語とその回数を表示する"
+    ],
+    sampleIO: `テキスト入力（空行で終了）:\nthe quick brown fox jumps over the lazy dog the fox\n\n=== 出現頻度 上位5 ===\nthe: 3回\nfox: 2回\nquick: 1回\nbrown: 1回\njumps: 1回`,
+    hint: "split() で単語に分割、辞書で頻度をカウント、sorted() と key=lambda でソートできます。string.punctuation で句読点リストを使えます。"
+  }
+];
+
+// ===== Python 単元ガイドデータ =====
+
+const pythonUnitGuides = [
+  {
+    id: "py-unit01",
+    name: "UNIT 01  ◆  基礎入力・出力",
+    summary: "Pythonプログラムの基本構造を学びます。print() で出力、input() で入力、変数への代入、f文字列による文字列整形など、プログラムの基本要素を理解しましょう。",
+    points: [
+      "print() で画面に出力、input() でキーボードから入力を受け取る",
+      "変数は 変数名 = 値 で宣言と代入を同時に行う（型宣言不要）",
+      "# で1行コメント、''' または \"\"\" で複数行コメント",
+      "f\"{変数}\" で変数を文字列に埋め込めるf文字列が便利",
+      "int(), float(), str() で型変換ができる"
+    ],
+    words: [
+      { term: "print()", desc: "画面に値を出力する関数。print(a, b) で複数値をスペース区切り出力。end='' で改行なし。" },
+      { term: "input()", desc: "キーボードからの入力を文字列として受け取る関数。常に str 型を返す。" },
+      { term: "変数", desc: "値を入れておく入れ物。Python は型宣言不要。変数名 = 値 で作成できる。" },
+      { term: "int()", desc: "文字列や小数を整数に変換する関数。int(\"42\") → 42、int(3.9) → 3。" },
+      { term: "float()", desc: "整数や文字列を小数（浮動小数点数）に変換する関数。float(\"3.14\") → 3.14。" },
+      { term: "str()", desc: "整数や小数を文字列に変換する関数。str(42) → \"42\"。" },
+      { term: "f文字列", desc: "f\"テキスト{変数}\" の形で変数を文字列に埋め込む記法。{変数:.2f} で小数点以下2桁表示も可能。" },
+      { term: "コメント", desc: "# より右はコメント。''' または \"\"\" で囲むと複数行コメント。実行には影響しない。" },
+      { term: "型", desc: "データの種類。int（整数）、float（小数）、str（文字列）、bool（真偽値）など。" },
+      { term: "type()", desc: "変数の型を返す関数。type(x) で int や str などが返ってくる。" }
+    ]
+  },
+  {
+    id: "py-unit02",
+    name: "UNIT 02  ◆  演算と条件分岐",
+    summary: "計算の方法と条件によって処理を変える方法を学びます。Pythonは // で整数除算、** でべき乗ができるなどC++と少し異なる点があります。インデントによるブロック構造も重要です。",
+    points: [
+      "/ は常に小数を返す。整数除算は // を使う",
+      "** でべき乗（2**10 = 1024）",
+      "if/elif/else でブロックはインデント（スペース4つ）で表す",
+      "and, or, not で論理演算（&&, ||, ! の代わり）",
+      "値A if 条件 else 値B で三項演算子"
+    ],
+    words: [
+      { term: "/ (除算)", desc: "常に小数を返す。7/2 = 3.5。整数同士でも小数になる（C++と違う）。" },
+      { term: "// (整数除算)", desc: "割り算の商（小数切り捨て）。7//2 = 3。C++の / に近い動作。" },
+      { term: "% (剰余)", desc: "割り算の余り。17%5 = 2。偶数判定 n%2==0 などに使う。" },
+      { term: "** (べき乗)", desc: "2**10 = 1024。C++にはない演算子。math.pow() でも同様の計算ができる。" },
+      { term: "インデント", desc: "ブロックを表すための字下げ。通常スペース4つ。Pythonでは必須でありスタイルではなく文法。" },
+      { term: "if / elif / else", desc: "条件分岐の構文。elif は else if の省略形。インデントでブロックを表す。" },
+      { term: "and / or / not", desc: "論理演算子。and = 両方True、or = どちらかTrue、not = 反転。C++の &&, ||, ! に相当。" },
+      { term: "比較演算子", desc: "== (等しい), != (等しくない), <, >, <=, >= でTrue/Falseを返す。" },
+      { term: "三項演算子", desc: "値A if 条件 else 値B の形。C++の 条件 ? 値A : 値B に相当。" },
+      { term: "in 演算子", desc: "値がリストや文字列に含まれるか判定。if x in [1,2,3]: のように使う。" }
+    ]
+  },
+  {
+    id: "py-unit03",
+    name: "UNIT 03  ◆  ループ",
+    summary: "同じ処理を繰り返す「ループ」を学びます。Pythonの for 文はC++と大きく異なり、リストなどのイテラブルを直接操作できます。リスト内包表記というPython特有の便利な書き方も習得しましょう。",
+    points: [
+      "for 変数 in イテラブル: でリストや文字列の要素を順に処理できる",
+      "range(start, stop, step) で整数列を生成する",
+      "while 条件: は条件が True の間繰り返す",
+      "break でループ終了、continue で次へスキップ",
+      "[式 for 変数 in イテラブル if 条件] リスト内包表記でシンプルにリストを生成"
+    ],
+    words: [
+      { term: "for 文", desc: "for 変数 in イテラブル: の形。リスト・文字列・range などの要素を順番に処理する。" },
+      { term: "range()", desc: "整数列を生成する関数。range(5): 0〜4、range(1,6): 1〜5、range(0,10,2): 0,2,4,6,8。" },
+      { term: "while 文", desc: "while 条件: の形。条件が True の間繰り返す。条件を変化させないと無限ループになる。" },
+      { term: "break", desc: "ループを即座に終了する命令。for/while 両方で使える。" },
+      { term: "continue", desc: "現在のイテレーションの残りをスキップして次へ進む命令。" },
+      { term: "enumerate()", desc: "for i, v in enumerate(list): で添字と値を同時に取得できる便利関数。" },
+      { term: "zip()", desc: "複数のリストを同時にループできる。for a, b in zip(list1, list2): の形で使う。" },
+      { term: "リスト内包表記", desc: "[式 for 変数 in イテラブル] や [式 for 変数 in イテラブル if 条件] でリストを生成する。" },
+      { term: "pass", desc: "何もしない命令。空のブロックを作るときに使う（Pythonは空ブロックがエラーになるため）。" },
+      { term: "イテラブル", desc: "for 文で反復できるオブジェクトの総称。list, str, range, tuple, dict などがある。" }
+    ]
+  },
+  {
+    id: "py-unit04",
+    name: "UNIT 04  ◆  リストと辞書",
+    summary: "Pythonの主要なデータ構造を学びます。リスト・タプル・セット・辞書はそれぞれ異なる特徴を持ち、状況に応じて使い分けることが重要です。",
+    points: [
+      "リスト [] は順序あり・変更可能。append/pop/sort などメソッドが豊富",
+      "タプル () は順序あり・変更不可。イミュータブルなので辞書のキーにもなれる",
+      "セット {} は重複なし・順序なし。集合演算が得意",
+      "辞書 {} はキーと値のペア。キーは一意で、検索が高速",
+      "スライス list[start:stop:step] で部分列を取得できる"
+    ],
+    words: [
+      { term: "リスト", desc: "[] で作る順序ありの可変コレクション。異なる型の値も入れられる。C++のvectorに近い。" },
+      { term: "インデックス", desc: "0 から始まる要素番号。list[0] が最初、list[-1] が最後の要素。" },
+      { term: "スライス", desc: "list[start:stop:step] で部分列を取得。list[1:3] は index 1〜2 の要素。" },
+      { term: "append() / pop()", desc: "append(値) で末尾に追加、pop() で末尾を削除して返す。pop(i) で i番目を削除。" },
+      { term: "sort() / sorted()", desc: "sort() はリスト自体を並び替え（破壊的）。sorted() は新しいリストを返す（非破壊）。" },
+      { term: "タプル", desc: "() で作る変更不可のコレクション。関数の複数戻り値、辞書のキーとして使える。" },
+      { term: "セット", desc: "重複なし・順序なしのコレクション。集合演算（| 和集合、& 積集合、- 差集合）が使える。" },
+      { term: "辞書 (dict)", desc: "{キー: 値} で作るキーと値のペアの集合。キーで高速に値を検索できる。" },
+      { term: "items() / keys() / values()", desc: "辞書のキーと値のペア、キー一覧、値一覧をそれぞれ返すメソッド。" },
+      { term: "len()", desc: "リスト・文字列・辞書などの要素数・文字数を返す組み込み関数。" }
+    ]
+  },
+  {
+    id: "py-unit05",
+    name: "UNIT 05  ◆  関数",
+    summary: "処理をまとめて再利用できる「関数」を学びます。Pythonの関数はC++より柔軟で、デフォルト引数・可変長引数・ラムダ式など様々な機能があります。",
+    points: [
+      "def 関数名(引数): の形で定義し、return で戻り値を返す",
+      "デフォルト引数 def func(x, y=10): で引数を省略可能にできる",
+      "*args で可変長位置引数（タプル）、**kwargs で可変長キーワード引数（辞書）",
+      "lambda 引数: 式 で簡潔な無名関数を作れる",
+      "関数はオブジェクトなので変数に代入したり引数として渡したりできる"
+    ],
+    words: [
+      { term: "def", desc: "関数を定義するキーワード。def 関数名(引数): の形で書く。" },
+      { term: "return", desc: "関数から値を返す命令。return を書かない場合は None が返る。複数の値も返せる。" },
+      { term: "引数 / 仮引数", desc: "関数に渡す値。def func(a, b): の a, b が仮引数。呼び出し時に渡す値が実引数。" },
+      { term: "デフォルト引数", desc: "def func(x, y=10): のように省略可能な引数。呼び出し時に省略するとデフォルト値が使われる。" },
+      { term: "*args", desc: "可変長の位置引数をタプルとして受け取る。def func(*args): の形で使う。" },
+      { term: "**kwargs", desc: "可変長のキーワード引数を辞書として受け取る。def func(**kwargs): の形で使う。" },
+      { term: "lambda", desc: "lambda 引数: 式 で書ける無名関数。sort の key などに使う。複雑な処理は def で書く方がいい。" },
+      { term: "スコープ", desc: "変数の有効範囲。関数内の変数は外から見えない（ローカルスコープ）。" },
+      { term: "再帰", desc: "関数が自分自身を呼び出すこと。必ずベースケース（終了条件）が必要。" },
+      { term: "None", desc: "「何もない」を表す特殊な値。return のない関数はNoneを返す。C++のnullptrに近い。" }
+    ]
+  },
+  {
+    id: "py-unit06",
+    name: "UNIT 06  ◆  クラスと例外",
+    summary: "オブジェクト指向プログラミングの基本である「クラス」と、エラーを適切に処理する「例外処理」を学びます。大きなプログラムを整理・再利用するための重要な概念です。",
+    points: [
+      "class クラス名: でクラスを定義し、__init__(self, ...) で初期化する",
+      "self は自分自身（インスタンス）を指す引数。全メソッドの第1引数に必要",
+      "class 子(親): で継承。super() で親クラスのメソッドを呼べる",
+      "try/except でエラーを捕捉。finally は常に実行される",
+      "__str__, __len__, __add__ などの特殊メソッドでクラスの動作をカスタマイズできる"
+    ],
+    words: [
+      { term: "class", desc: "クラスを定義するキーワード。設計図のようなもので、インスタンスを生成できる。" },
+      { term: "__init__", desc: "コンストラクタ。インスタンス生成時に自動的に呼ばれる。self と初期化したい引数を取る。" },
+      { term: "self", desc: "インスタンス自身を指す引数。全メソッドの第1引数に書く必要がある。" },
+      { term: "インスタンス", desc: "クラスから作られた実体。p = Person(\"Alice\", 20) で Person クラスのインスタンスを作る。" },
+      { term: "継承", desc: "class 子クラス(親クラス): で親の機能を引き継ぐ。コードの再利用に使う。" },
+      { term: "super()", desc: "親クラスのメソッドを呼び出す関数。super().__init__() で親の初期化を行う。" },
+      { term: "オーバーライド", desc: "子クラスで親クラスと同名のメソッドを再定義すること。子クラスの方が優先される。" },
+      { term: "try / except", desc: "エラー（例外）が起きたときの処理を書く構文。except 例外型 as e: でエラー情報を取得。" },
+      { term: "finally", desc: "try/except の後に必ず実行される処理。ファイルのクローズなど後始末に使う。" },
+      { term: "__str__", desc: "print() や str() で呼ばれる特殊メソッド。クラスの文字列表現を定義できる。" }
+    ]
+  }
+];
+
 // ===== ミッションデータ =====
 
 const missions = [
@@ -1058,10 +1733,54 @@ const missions = [
   }
 ];
 
+// ===== 言語別データ取得ヘルパー =====
+
+function getProblems() {
+  return currentLanguage === 'python' ? pythonProblems : problems;
+}
+
+function getMissions() {
+  return currentLanguage === 'python' ? pythonMissions : missions;
+}
+
+function getUnitGuides() {
+  return currentLanguage === 'python' ? pythonUnitGuides : unitGuides;
+}
+
+function getProgressKey() {
+  return (currentLanguage || 'cpp') + '_progress';
+}
+
+function getMissionProgressKey() {
+  return (currentLanguage || 'cpp') + '_mission_progress';
+}
+
+function getCompiler() {
+  if (currentLanguage === 'python') return 'cpython-3.12.0';
+  return 'gcc-head';
+}
+
+function getAceMode() {
+  if (currentLanguage === 'python') return 'ace/mode/python';
+  return 'ace/mode/c_cpp';
+}
+
+function getStarterCode() {
+  if (currentLanguage === 'python') {
+    return '# ここにコードを書いてください\n';
+  }
+  return ACE_STARTER;
+}
+
+function getLangName() {
+  if (currentLanguage === 'python') return 'Python';
+  return 'C++';
+}
+
 // ===== 進捗管理 =====
 
 function loadProgress() {
-  const data = localStorage.getItem("cpp_progress");
+  const data = localStorage.getItem(getProgressKey());
   return data ? JSON.parse(data) : [];
 }
 
@@ -1069,13 +1788,13 @@ function saveProgress(id) {
   const progress = loadProgress();
   if (!progress.includes(id)) {
     progress.push(id);
-    localStorage.setItem("cpp_progress", JSON.stringify(progress));
+    localStorage.setItem(getProgressKey(), JSON.stringify(progress));
   }
 }
 
 function removeProgress(id) {
   const progress = loadProgress().filter(function(x) { return x !== id; });
-  localStorage.setItem("cpp_progress", JSON.stringify(progress));
+  localStorage.setItem(getProgressKey(), JSON.stringify(progress));
 }
 
 function isLearned(id) {
@@ -1104,7 +1823,7 @@ function showPage(name) {
 
 function updateProgressDisplay() {
   const count = loadProgress().length;
-  const total = problems.length;
+  const total = getProblems().length;
   document.getElementById("progress-text").textContent = count + " / " + total + " 問 クリア";
   document.getElementById("progress-bar").style.width = (count / total * 100) + "%";
 }
@@ -1118,7 +1837,7 @@ function renderList() {
   // 単元ごとにグループ化
   var units = {};
   var unitOrder = [];
-  problems.forEach(function(p) {
+  getProblems().forEach(function(p) {
     if (!units[p.unit]) {
       units[p.unit] = [];
       unitOrder.push(p.unit);
@@ -1182,7 +1901,7 @@ function escapeHtml(text) {
 // ===== 問題詳細の描画 =====
 
 function renderDetail(id) {
-  const p = problems.find(function(x) { return x.id === id; });
+  const p = getProblems().find(function(x) { return x.id === id; });
   const learned = isLearned(p.id);
 
   // 既存エディタのコードを保存してから破棄
@@ -1259,7 +1978,7 @@ function renderDetail(id) {
     '</div>';
 
   // Ace Editor を初期化（再描画のときはコードを引き継ぐ）
-  initAceEditor(savedCode !== null ? savedCode : ACE_STARTER);
+  initAceEditor(savedCode !== null ? savedCode : getStarterCode());
 }
 
 // ===== Ace Editor 初期化 =====
@@ -1291,11 +2010,11 @@ function initAceEditor(initialCode) {
   // ダークテーマ（Monokai）
   aceEditor.setTheme('ace/theme/monokai');
 
-  // C++ 構文ハイライト
-  aceEditor.session.setMode('ace/mode/c_cpp');
+  // 言語別構文ハイライト
+  aceEditor.session.setMode(getAceMode());
 
   // 初期コードをセット（カーソルを末尾へ）
-  aceEditor.setValue(initialCode !== undefined ? initialCode : ACE_STARTER, -1);
+  aceEditor.setValue(initialCode !== undefined ? initialCode : getStarterCode(), -1);
 
   aceEditor.setOptions({
     fontSize          : '14px',
@@ -1342,7 +2061,7 @@ function editorFill()    { setEditorMode('fill');    }  // 穴埋め
 
 function setEditorMode(mode) {
   if (!aceEditor) return;
-  var p = problems.find(function(x) { return x.id === currentProblemId; });
+  var p = getProblems().find(function(x) { return x.id === currentProblemId; });
 
   // コードが書かれていたら確認
   var current = aceEditor.getValue().trim();
@@ -1364,11 +2083,11 @@ function setEditorMode(mode) {
   if (activeBtn) activeBtn.classList.add('active');
 
   if (mode === 'zero') {
-    aceEditor.setValue('', -1);            // 完全空白
+    aceEditor.setValue('', -1);
   } else if (mode === 'scratch') {
-    aceEditor.setValue(ACE_STARTER, -1);   // テンプレート
+    aceEditor.setValue(getStarterCode(), -1);
   } else {
-    aceEditor.setValue(p ? buildSkeleton(p) : ACE_STARTER, -1);  // 穴埋め
+    aceEditor.setValue(p ? buildSkeleton(p) : getStarterCode(), -1);
   }
   aceEditor.focus();
 }
@@ -1392,7 +2111,7 @@ async function runCode() {
     const res = await fetch("https://wandbox.org/api/compile.json", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: code, compiler: "gcc-head", stdin: stdin })
+      body: JSON.stringify({ code: code, compiler: getCompiler(), stdin: stdin })
     });
     const data = await res.json();
     outputArea.classList.remove("hidden");
@@ -1445,8 +2164,9 @@ async function getAIFeedback(problemId) {
   btn.disabled = true;
   area.classList.add('hidden');
 
-  const system = 'あなたはC++プログラミングの初心者向けの優しい家庭教師です。日本語で簡潔に答えてください。';
-  const userMsg = '問題：' + p.question + '\n\n提出コード：\n```cpp\n' + code + '\n```\n\n良い点・改善点・アドバイスを初心者向けに教えてください。';
+  const lang = getLangName();
+  const system = 'あなたは' + lang + 'プログラミングの初心者向けの優しい家庭教師です。日本語で簡潔に答えてください。';
+  const userMsg = '問題：' + p.question + '\n\n提出コード：\n```' + (currentLanguage||'cpp') + '\n' + code + '\n```\n\n良い点・改善点・アドバイスを初心者向けに教えてください。';
 
   try {
     const reply = await askAI(system, userMsg);
@@ -1493,7 +2213,7 @@ async function sendChatMessage() {
   var typingId = 'typing-' + Date.now();
   addChatMessage('ai', '...', typingId);
 
-  var system = 'あなたはC++プログラミングの初心者向けの優しい家庭教師です。日本語で答えてください。初心者が理解しやすい言葉で説明してください。';
+  var system = 'あなたは' + getLangName() + 'プログラミングの初心者向けの優しい家庭教師です。日本語で答えてください。初心者が理解しやすい言葉で説明してください。';
 
   try {
     var reply = await askAI(system, chatHistory);
@@ -1542,7 +2262,7 @@ function renderGuide() {
     '<div class="guide-sub">単元の説明・重要ポイント・用語集をまとめています。</div>';
   content.appendChild(header);
 
-  unitGuides.forEach(function(unit) {
+  getUnitGuides().forEach(function(unit) {
     var section = document.createElement('div');
     section.className = 'guide-unit';
     section.id = 'guide-' + unit.id;
@@ -1591,7 +2311,7 @@ function toggleGuideUnit(id) {
 // ===== ミッション一覧の描画 =====
 
 function loadMissionProgress() {
-  const data = localStorage.getItem("cpp_mission_progress");
+  const data = localStorage.getItem(getMissionProgressKey());
   return data ? JSON.parse(data) : [];
 }
 
@@ -1599,13 +2319,13 @@ function saveMissionProgress(id) {
   const progress = loadMissionProgress();
   if (!progress.includes(id)) {
     progress.push(id);
-    localStorage.setItem("cpp_mission_progress", JSON.stringify(progress));
+    localStorage.setItem(getMissionProgressKey(), JSON.stringify(progress));
   }
 }
 
 function removeMissionProgress(id) {
   const progress = loadMissionProgress().filter(function(x) { return x !== id; });
-  localStorage.setItem("cpp_mission_progress", JSON.stringify(progress));
+  localStorage.setItem(getMissionProgressKey(), JSON.stringify(progress));
 }
 
 function isMissionCleared(id) {
@@ -1623,10 +2343,10 @@ function renderMissionList() {
   header.innerHTML =
     '<div class="mission-list-title">◆ MISSIONS</div>' +
     '<div class="mission-list-sub">実践的なプログラムを自分で設計・実装するミッションです。</div>' +
-    '<div class="mission-progress-text">' + cleared + ' / ' + missions.length + ' MISSIONS CLEARED</div>';
+    '<div class="mission-progress-text">' + cleared + ' / ' + getMissions().length + ' MISSIONS CLEARED</div>';
   list.appendChild(header);
 
-  missions.forEach(function(m) {
+  getMissions().forEach(function(m) {
     const cleared = isMissionCleared(m.id);
     const card = document.createElement('div');
     card.className = 'mission-card' + (cleared ? ' cleared' : '');
@@ -1657,7 +2377,7 @@ function renderMissionList() {
 // ===== ミッション詳細の描画 =====
 
 function renderMissionDetail(id) {
-  const m = missions.find(function(x) { return x.id === id; });
+  const m = getMissions().find(function(x) { return x.id === id; });
   const cleared = isMissionCleared(m.id);
   const detail = document.getElementById('mission-detail-content');
 
@@ -1730,7 +2450,7 @@ function renderMissionDetail(id) {
     '</div>';
 
   // Ace Editor を初期化
-  initAceEditor(savedCode !== null ? savedCode : ACE_STARTER);
+  initAceEditor(savedCode !== null ? savedCode : getStarterCode());
 }
 
 // ===== ミッションAIレビュー =====
@@ -1748,12 +2468,12 @@ async function getMissionAIFeedback(missionId) {
   btn.disabled = true;
   area.classList.add('hidden');
 
-  const system = 'あなたはC++プログラミングの初心者向けの優しい先輩エンジニアです。日本語で丁寧にコードレビューしてください。';
+  const system = 'あなたは' + getLangName() + 'プログラミングの初心者向けの優しい先輩エンジニアです。日本語で丁寧にコードレビューしてください。';
   const reqText = m.requirements.map(function(r, i) { return (i+1) + '. ' + r; }).join('\n');
   const userMsg =
     'ミッション: ' + m.title + '\n\n' +
     '要件:\n' + reqText + '\n\n' +
-    '提出コード:\n```cpp\n' + code + '\n```\n\n' +
+    '提出コード:\n```' + (currentLanguage||'cpp') + '\n' + code + '\n```\n\n' +
     '要件を満たしているか確認し、良い点・改善点・アドバイスを教えてください。';
 
   try {
