@@ -411,6 +411,7 @@ int main() {
     cout << "Hello, World!" << endl;
     return 0;
 }`,
+    expected: "Hello, World!",
     explanation: "cout は画面への出力に使います。<< で出力する内容をつなぎ、endl で改行します。#include <iostream> は入出力機能を使うためのおまじないです。"
   },
   {
@@ -430,6 +431,7 @@ int main() {
     cout << "Hello" << endl;
     return 0;
 }`,
+    expected: "Hello",
     explanation: "コメントはメモとして書く説明文です。プログラムの実行には影響しません。// は行末までがコメント、/* */ は囲んだ範囲がコメントになります。"
   },
   {
@@ -446,6 +448,7 @@ int main() {
     cout << age << endl;
     return 0;
 }`,
+    expected: "20",
     explanation: "int は整数（-2147483648 ～ 2147483647）を扱う型です。変数は「型 名前 = 値;」で宣言します。変数名は中身を入れる箱のイメージです。"
   },
   {
@@ -465,6 +468,7 @@ int main() {
     cout << name << endl;
     return 0;
 }`,
+    expected: "172.5\nTaro",
     explanation: "double は小数を扱う型です。string は文字列を扱う型で、ダブルクォートで囲みます。int/double/string はC++の基本的な3つの型です。"
   },
   {
@@ -521,6 +525,7 @@ int main() {
     cout << a / b << endl;
     return 0;
 }`,
+    expected: "13\n7\n30\n3",
     explanation: "int 同士の割り算は整数除算になります。10/3 は 3 になります（余りは切り捨て）。小数で割りたい場合は double 型を使います。"
   },
   {
@@ -1202,6 +1207,7 @@ const pythonProblems = [
     hint: "print() 関数を使って出力します。",
     answer:
 `print("Hello, World!")`,
+    expected: "Hello, World!",
     explanation: "print() はPythonの基本的な出力関数です。括弧の中に文字列を書くと画面に表示されます。文字列はダブルクォート \" またはシングルクォート ' で囲みます。"
   },
   {
@@ -1965,6 +1971,7 @@ const javascriptProblems = [
     question: "「Hello, World!」と画面に出力するプログラムを書いてください。",
     hint: "console.log() を使って出力します。",
     answer: `console.log("Hello, World!");`,
+    expected: "Hello, World!",
     explanation: "console.log() はJavaScriptの基本的な出力関数です。文字列はダブルクォートまたはシングルクォートで囲みます。"
   },
   {
@@ -2942,6 +2949,7 @@ function renderDetail(id) {
         '<p class="output-label">実行結果：</p>' +
         '<pre id="output-text"></pre>' +
       '</div>' +
+      '<div id="judge-area" class="hidden"></div>' +
       '<button class="ai-feedback-btn" onclick="getAIFeedback(' + p.id + ')">🤖 AIにフィードバックをもらう</button>' +
       '<div id="ai-feedback-area" class="hidden">' +
         '<p class="output-label">// AI FEEDBACK</p>' +
@@ -2950,13 +2958,10 @@ function renderDetail(id) {
     '</div>' +
 
     '<div class="section">' +
-      '<button ' +
-        'id="learn-btn" ' +
-        'class="learn-btn ' + (learned ? "learned" : "") + '" ' +
-        'onclick="toggleLearned(' + p.id + ')" ' +
-      '>' +
-        (learned ? "✔ CLEAR  ／  クリックで取り消す" : "MARK AS CLEAR") +
-      '</button>' +
+      (learned
+        ? '<button id="learn-btn" class="learn-btn learned" onclick="toggleLearned(' + p.id + ')">✔ CLEARED  ／  クリックで取り消す</button>'
+        : '<p class="manual-clear-hint">実行して自動判定されます ／ <button class="manual-clear-link" onclick="toggleLearned(' + p.id + ')">手動でクリア</button></p>'
+      ) +
     '</div>';
 
   // Ace Editor を初期化（再描画のときはコードを引き継ぐ）
@@ -3098,20 +3103,22 @@ function setEditorMode(mode) {
   aceEditor.focus();
 }
 
-// ===== コードを実行する（Wandbox API） =====
+// ===== コードを実行する（Wandbox API + 自動判定） =====
 
 async function runCode() {
   const code = aceEditor ? aceEditor.getValue().trim() : '';
   if (!code) { alert("コードを入力してください"); return; }
 
-  const btn = document.querySelector(".run-btn");
+  const btn        = document.querySelector(".run-btn");
   const outputArea = document.getElementById("output-area");
   const outputText = document.getElementById("output-text");
-  const stdin = document.getElementById("stdin-input").value;
+  const judgeArea  = document.getElementById("judge-area");
+  const stdin      = document.getElementById("stdin-input").value;
 
   btn.textContent = "実行中...";
   btn.disabled = true;
   outputArea.classList.add("hidden");
+  if (judgeArea) judgeArea.classList.add("hidden");
 
   try {
     const res = await fetch("https://wandbox.org/api/compile.json", {
@@ -3121,12 +3128,24 @@ async function runCode() {
     });
     const data = await res.json();
     outputArea.classList.remove("hidden");
+
     if (data.compiler_error) {
       outputText.textContent = "コンパイルエラー:\n" + data.compiler_error;
       outputText.className = "output-error";
     } else {
-      outputText.textContent = data.program_output || "(出力なし)";
+      const output = data.program_output || "";
+      outputText.textContent = output || "(出力なし)";
       outputText.className = "output-success";
+
+      // 出力がある＆まだクリアしていない → 自動判定
+      if (output && currentProblemId && !isLearned(currentProblemId)) {
+        startAutoJudge(currentProblemId, output);
+      } else if (isLearned(currentProblemId)) {
+        if (judgeArea) {
+          judgeArea.innerHTML = '<div class="judge-pass">✔ CLEARED</div>';
+          judgeArea.classList.remove("hidden");
+        }
+      }
     }
   } catch (e) {
     outputArea.classList.remove("hidden");
@@ -3136,6 +3155,66 @@ async function runCode() {
 
   btn.textContent = "▶ 実行する";
   btn.disabled = false;
+}
+
+// 自動判定を開始する
+async function startAutoJudge(problemId, output) {
+  const p         = getProblems().find(function(x) { return x.id === problemId; });
+  const judgeArea = document.getElementById("judge-area");
+  if (!p || !judgeArea) return;
+
+  // expected がある場合 → 即座に文字列比較
+  if (p.expected !== undefined) {
+    var passed = output.trim() === p.expected.trim();
+    showJudgeResult(problemId, passed, false);
+    return;
+  }
+
+  // AI 判定
+  judgeArea.innerHTML = '<div class="judge-pending">🤖 判定中...</div>';
+  judgeArea.classList.remove("hidden");
+
+  try {
+    var system = 'あなたはプログラミング問題の採点AIです。ユーザーの出力が問題の要件を満たしているか判断し、"PASS" か "FAIL" の1語だけ返してください。';
+    var msg    = '問題: ' + p.question + '\n正解コード:\n' + p.answer + '\nユーザーの実行出力:\n' + output;
+    var reply  = await askAI(system, msg);
+    var passed = reply.trim().toUpperCase().startsWith('PASS');
+    showJudgeResult(problemId, passed, true);
+  } catch(e) {
+    judgeArea.innerHTML = '<div class="judge-error">判定エラー ／ <button class="manual-clear-link" onclick="toggleLearned(' + problemId + ')">手動でクリア</button></div>';
+  }
+}
+
+// 判定結果を表示し、正解ならクリア処理
+function showJudgeResult(problemId, passed, byAI) {
+  const judgeArea = document.getElementById("judge-area");
+  if (!judgeArea) return;
+
+  if (passed) {
+    var label = byAI ? 'AI判定: 正解！' : '正解！';
+    judgeArea.innerHTML = '<div class="judge-pass">✓ ' + label + ' クリアしました！</div>';
+    judgeArea.classList.remove("hidden");
+    if (!isLearned(problemId)) {
+      // エフェクト・サウンド付きでクリア
+      saveProgress(problemId);
+      playClearSound();
+      showClearEffect();
+      // クリアボタン表示を更新
+      var learnBtn = document.getElementById("learn-btn");
+      if (!learnBtn) {
+        // manual-clear-hint → learned ボタンに差し替え
+        var hint = document.querySelector(".manual-clear-hint");
+        if (hint) {
+          hint.outerHTML = '<button id="learn-btn" class="learn-btn learned" onclick="toggleLearned(' + problemId + ')">✔ CLEARED  ／  クリックで取り消す</button>';
+        }
+      }
+      updateProgressDisplay();
+      renderList();
+    }
+  } else {
+    judgeArea.innerHTML = '<div class="judge-fail">✗ まだ違います。出力を確認してもう一度試してみましょう。</div>';
+    judgeArea.classList.remove("hidden");
+  }
 }
 
 // ===== AI 共通リクエスト =====
