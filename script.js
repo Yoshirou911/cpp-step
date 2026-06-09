@@ -1834,9 +1834,12 @@ function getAceMode() {
 }
 
 function getStarterCode() {
+  var p = getProblems().find(function(x) { return x.id === currentProblemId; });
   if (currentLanguage === 'python') {
+    if (p) return '# [問題] ' + p.question + '\n\n';
     return '# ここにコードを書いてください\n';
   }
+  if (p) return '// [問題] ' + p.question + '\n' + ACE_STARTER;
   return ACE_STARTER;
 }
 
@@ -2116,18 +2119,31 @@ function initAceEditor(initialCode) {
 // ===== 穴埋めスケルトン生成 =====
 
 function buildSkeleton(p) {
-  // Python の場合
   if (currentLanguage === 'python') {
-    return '# ここにコードを書いてください\n';
+    // 値だけ空欄にして骨格を見せる
+    var skeleton = p.answer.trim()
+      .replace(/"[^"]*"/g, '"________"')
+      .replace(/'[^']*'/g, "'________'")
+      .replace(/\b\d+(\.\d+)?\b/g, '____');
+    return '# 穴を埋めてコードを完成させてください\n' + skeleton + '\n';
   }
-  // C++ の場合：#include 行だけ抜き出してヒントにする（答えは含まない）
-  var includes = p.answer.split('\n')
+  // C++：ロジック行の値だけ空欄にして骨格を見せる
+  var allLines = p.answer.split('\n');
+  var includes = allLines
     .filter(function(l) { return l.trim().startsWith('#include'); })
     .join('\n');
+  var logicLines = allLines.filter(function(l) {
+    var t = l.trim();
+    return t !== '' && !t.startsWith('#include') && !t.startsWith('using namespace')
+        && t !== 'int main() {' && t !== '}' && t !== 'return 0;';
+  });
+  var blankedLogic = logicLines.map(function(l) {
+    return l.replace(/"[^"]*"/g, '"________"').replace(/\b\d+\b/g, '____');
+  }).join('\n');
   return includes
     + '\nusing namespace std;\n\nint main() {\n'
-    + '    // TODO: ここにコードを書いてください\n'
-    + '    \n'
+    + '    // 穴を埋めてコードを完成させてください\n'
+    + (blankedLogic ? blankedLogic + '\n' : '    \n')
     + '    return 0;\n'
     + '}';
 }
@@ -2147,6 +2163,8 @@ function setEditorMode(mode) {
   var current = aceEditor.getValue().trim();
   var isDefault = current === ''
     || current === ACE_STARTER.trim()
+    || current === getStarterCode().trim()
+    || current === '# ここにコードを書いてください'
     || current === (p ? buildSkeleton(p).trim() : '');
   if (!isDefault) {
     if (!confirm('現在のコードが消えます。よいですか？')) return;
