@@ -308,6 +308,15 @@ var BADGES = [
   // 多言語
   { id: 'bilingual',     name: 'BILINGUAL',      desc: '2言語以上でクリア達成',                   tier: 'gold',     check: function(s) { return [s.cpp, s.python, s.js].filter(function(n){return n>0;}).length >= 2; } },
   { id: 'trilingual',    name: 'TRILINGUAL',     desc: '3言語すべてでクリア達成',                 tier: 'platinum', check: function(s) { return s.cpp > 0 && s.python > 0 && s.js > 0; } },
+  // ストリーク
+  { id: 'streak_3',      name: '3 DAY STREAK',   desc: '3日連続ログイン',                         tier: 'silver',   check: function(s) { return s.currentStreak >= 3;  } },
+  { id: 'streak_7',      name: 'WEEKLY',         desc: '7日連続ログイン',                         tier: 'gold',     check: function(s) { return s.currentStreak >= 7;  } },
+  { id: 'streak_30',     name: 'MONTHLY',        desc: '30日連続ログイン',                        tier: 'platinum', check: function(s) { return s.currentStreak >= 30; } },
+  // LEGEND 超難問
+  { id: 'legend_cpp',    name: 'C++ LEGEND',     desc: 'C++ 超難問クリア',                        tier: 'legend',   check: function(s) { return s.legendCpp;    } },
+  { id: 'legend_py',     name: 'PYTHON LEGEND',  desc: 'Python 超難問クリア',                     tier: 'legend',   check: function(s) { return s.legendPython; } },
+  { id: 'legend_js',     name: 'JS LEGEND',      desc: 'JavaScript 超難問クリア',                 tier: 'legend',   check: function(s) { return s.legendJs;     } },
+  { id: 'true_legend',   name: 'TRUE LEGEND',    desc: '全言語の超難問クリア',                    tier: 'legend',   check: function(s) { return s.legendCpp && s.legendPython && s.legendJs; } },
 ];
 
 // 全言語の進捗を localStorage から集計（言語切替不要）
@@ -320,9 +329,12 @@ function getProfileStats() {
     var d = localStorage.getItem(lang + '_mission_progress');
     return d ? JSON.parse(d) : [];
   }
-  var cpp    = getP('cpp').length;
-  var python = getP('python').length;
-  var js     = getP('javascript').length;
+  var cppArr    = getP('cpp');
+  var pythonArr = getP('python');
+  var jsArr     = getP('javascript');
+  var cpp    = cppArr.length;
+  var python = pythonArr.length;
+  var js     = jsArr.length;
   var cppM   = getM('cpp').length;
   var pyM    = getM('python').length;
   var jsM    = getM('javascript').length;
@@ -330,8 +342,84 @@ function getProfileStats() {
     cpp: cpp, python: python, js: js,
     cppM: cppM, pyM: pyM, jsM: jsM,
     total: cpp + python + js,
-    totalMissions: cppM + pyM + jsM
+    totalMissions: cppM + pyM + jsM,
+    // LEGEND 超難問（id:31 がクリア済みかどうか）
+    legendCpp:    cppArr.indexOf(31)    !== -1,
+    legendPython: pythonArr.indexOf(31) !== -1,
+    legendJs:     jsArr.indexOf(31)     !== -1,
+    // ストリークは非同期で後から上書きするため初期値0
+    currentStreak: 0,
+    bestStreak:    0,
+    totalDays:     0
   };
+}
+
+// ===== ログインストリーク =====
+
+function calcStreak(dates) {
+  if (!dates || dates.length === 0) return { current: 0, best: 0, total: 0 };
+  // 降順ソート
+  var sorted = dates.slice().sort(function(a, b) { return b.localeCompare(a); });
+  var total  = sorted.length;
+  var todayStr     = new Date().toISOString().slice(0, 10);
+  var yesterdayStr = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+
+  // 現在のストリーク（今日か昨日ログインしていれば継続中）
+  var current = 0;
+  if (sorted[0] === todayStr || sorted[0] === yesterdayStr) {
+    current = 1;
+    for (var i = 1; i < sorted.length; i++) {
+      var diff = Math.round((Date.parse(sorted[i-1]) - Date.parse(sorted[i])) / 86400000);
+      if (diff === 1) { current++; } else { break; }
+    }
+  }
+
+  // 最長ストリーク
+  var best = 0;
+  var run  = 1;
+  for (var j = 1; j < sorted.length; j++) {
+    var d = Math.round((Date.parse(sorted[j-1]) - Date.parse(sorted[j])) / 86400000);
+    if (d === 1) { run++; } else { best = Math.max(best, run); run = 1; }
+  }
+  best = Math.max(best, run, current);
+
+  return { current: current, best: best, total: total };
+}
+
+function recordLoginDay() {
+  var today = new Date().toISOString().slice(0, 10);
+  // localStorage に記録
+  var local = JSON.parse(localStorage.getItem('login_days') || '[]');
+  if (local.indexOf(today) === -1) {
+    local.push(today);
+    localStorage.setItem('login_days', JSON.stringify(local));
+  }
+  // Supabase に記録（ログイン中のみ）
+  if (currentUser && _supabase) {
+    _supabase.from('login_days').upsert({
+      user_id: currentUser.id,
+      login_date: today
+    }).then(function() {}).catch(function() {});
+  }
+}
+
+async function getLoginStreak() {
+  var localDates = JSON.parse(localStorage.getItem('login_days') || '[]');
+  if (!currentUser || !_supabase) return calcStreak(localDates);
+  try {
+    var result = await _supabase
+      .from('login_days')
+      .select('login_date')
+      .eq('user_id', currentUser.id);
+    if (result.error) return calcStreak(localDates);
+    var remoteDates = (result.data || []).map(function(r) { return r.login_date; });
+    // ローカル ∪ リモート をマージ
+    var merged = remoteDates.slice();
+    localDates.forEach(function(d) { if (merged.indexOf(d) === -1) merged.push(d); });
+    return calcStreak(merged);
+  } catch(e) {
+    return calcStreak(localDates);
+  }
 }
 
 // 総クリア数からランクを計算
@@ -1240,6 +1328,35 @@ int main() {
     return 0;
 }`,
     explanation: "new でヒープメモリを動的に確保できます。使い終わったら必ず delete で解放します（メモリリーク防止）。delete 後は nullptr を代入するのが安全です。"
+  },
+
+  // ───────────── LEGEND: 超難問チャレンジ ─────────────
+  {
+    id: 31, unit: "LEGEND  ◆  超難問チャレンジ", rank: "LEGEND",
+    title: "テンプレートメタプログラミング",
+    question: "C++ テンプレートの再帰的特殊化（Template Metaprogramming）を使って、コンパイル時にフィボナッチ数列の第10項（F(10) = 55）を計算し、出力するプログラムを書いてください。（F(0)=0, F(1)=1, F(n)=F(n-1)+F(n-2)）",
+    hint: "template<int N> struct Fib { static const int value = ...; }; でテンプレートを定義します。template<> struct Fib<0> と Fib<1> でベースケースを特殊化します。main() では Fib<10>::value を出力します。",
+    answer:
+`#include <iostream>
+using namespace std;
+
+template<int N>
+struct Fib {
+    static const int value = Fib<N-1>::value + Fib<N-2>::value;
+};
+
+template<>
+struct Fib<0> { static const int value = 0; };
+
+template<>
+struct Fib<1> { static const int value = 1; };
+
+int main() {
+    cout << Fib<10>::value << endl;
+    return 0;
+}`,
+    expected: "55",
+    explanation: "テンプレートメタプログラミング（TMP）はコンパイル時に計算を行う高度な技法です。Fib<N>はFib<N-1>とFib<N-2>に依存し、コンパイラが再帰的に展開します。特殊化でベースケース(0,1)を定義することで無限展開を防ぎます。実行時のオーバーヘッドがゼロになる点が最大のメリットです。"
   }
 ];
 
@@ -1833,6 +1950,33 @@ print(squared)
 print(f"合計: {sum(squared)}")
 print(f"平均: {sum(squared) / len(squared)}")`,
     explanation: "リスト内包表記 [式 for 変数 in イテラブル if 条件] で条件付きリストを1行で作れます。sum() で合計、max()/min() で最大・最小値を取得できます。"
+  },
+
+  // ───────────── LEGEND: 超難問チャレンジ ─────────────
+  {
+    id: 31, unit: "LEGEND  ◆  超難問チャレンジ", rank: "LEGEND",
+    title: "メタクラスでSingleton実装",
+    question: "Pythonのメタクラス（type を継承したクラス）を使って Singleton パターンを実装してください。MySingleton クラスはインスタンスをいくつ作成しても常に同一オブジェクトを返す必要があります。a と b を作成して a is b が True になることを出力してください。",
+    hint: "class SingletonMeta(type): を定義し、__call__ メソッドをオーバーライドします。_instances 辞書でクラスとインスタンスを管理します。インスタンスが未作成の場合のみ super().__call__() を呼びます。",
+    answer:
+`class SingletonMeta(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super().__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+class MySingleton(metaclass=SingletonMeta):
+    pass
+
+
+a = MySingleton()
+b = MySingleton()
+print(a is b)`,
+    expected: "True",
+    explanation: "メタクラスはクラスのクラスです。type を継承することでクラス生成の振る舞いを制御できます。__call__ はクラスが呼ばれた（インスタンス化された）ときに実行されます。_instances 辞書でインスタンスを管理し、2回目以降は既存インスタンスを返すことでSingletonを実現します。"
   }
 ];
 
@@ -2598,6 +2742,32 @@ console.log(gb.average());
 console.log(gb.max());`,
     explanation: "reduce() で合計を求め配列長で割って平均を計算します。Math.max(...配列) でスプレッド構文を使い最高点を求めます。"
   },
+
+  // ───────────── LEGEND: 超難問チャレンジ ─────────────
+  {
+    id: 31, unit: "LEGEND  ◆  超難問チャレンジ", rank: "LEGEND",
+    title: "ProxyとReflectでプロパティ監視",
+    question: "ES6の Proxy と Reflect を使って、プロパティの get アクセスを自動的にログするオブジェクトを作成してください。obj.name = \"Alice\"; obj.age = 20; と設定した後、obj.name と obj.age にアクセスしたとき「GET: name」「GET: age」の順で出力されるようにしてください（set時は出力不要）。",
+    hint: "new Proxy(target, handler) でhandlerの get トラップを定義します。get(target, prop) の中で console.log し、Reflect.get(target, prop) で元の値を返します。setトラップも定義して Reflect.set() を返します。",
+    answer:
+`const handler = {
+    get(target, prop) {
+        console.log(\`GET: \${prop}\`);
+        return Reflect.get(target, prop);
+    },
+    set(target, prop, value) {
+        return Reflect.set(target, prop, value);
+    }
+};
+
+const obj = new Proxy({}, handler);
+obj.name = "Alice";
+obj.age = 20;
+obj.name;
+obj.age;`,
+    expected: "GET: name\nGET: age",
+    explanation: "Proxy はオブジェクトの操作に割り込むラッパーです。get トラップはプロパティ読み取り時、set トラップは書き込み時に呼ばれます。Reflect は Proxy トラップのデフォルト動作を提供するユーティリティです。この組み合わせで変更追跡・バリデーション・ログ記録が実装できます。"
+  }
 ];
 
 // ===== JavaScript ミッションデータ =====
@@ -3876,12 +4046,23 @@ function toggleLearned(id) {
 function openProfile() {
   playUIClick();
   history.pushState({ page: 'profile', lang: currentLanguage }, '');
-  renderProfile();
   showPage('profile');
+  renderProfile(); // async（fire-and-forget OK）
 }
 
-function renderProfile() {
+async function renderProfile() {
+  var content = document.getElementById('profile-content');
+  // まずスケルトンを表示して即座にページを見せる
+  content.innerHTML = '<div class="profile-loading">// LOADING...</div>';
+
+  // ストリークを非同期で取得
+  var streak = await getLoginStreak();
+
   var stats  = getProfileStats();
+  stats.currentStreak = streak.current;
+  stats.bestStreak    = streak.best;
+  stats.totalDays     = streak.total;
+
   var rank   = getProfileRank(stats.total);
   var earned = BADGES.filter(function(b) { return b.check(stats); });
   var locked = BADGES.filter(function(b) { return !b.check(stats); });
@@ -3895,17 +4076,20 @@ function renderProfile() {
     gold:     '#EFC050',
     platinum: '#00C8B4',
     diamond:  '#5588FF',
-    master:   '#C040FF'
+    master:   '#C040FF',
+    legend:   '#FF2244'
   };
 
   function badgeHTML(b, isEarned) {
-    var col     = isEarned ? (tierColors[b.tier] || '#FF6B00') : '#2a2018';
-    var hexBg   = isEarned ? col : '#161210';
-    var nameCol = isEarned ? col : '#3a3028';
-    var descCol = isEarned ? 'rgba(237,224,200,0.42)' : '#2a2018';
-    var tierTxt = isEarned ? 'rgba(7,6,4,0.82)' : '#2a2018';
+    var col      = isEarned ? (tierColors[b.tier] || '#FF6B00') : '#2a2018';
+    var hexBg    = isEarned ? col : '#161210';
+    var nameCol  = isEarned ? col : '#3a3028';
+    var descCol  = isEarned ? 'rgba(237,224,200,0.42)' : '#2a2018';
+    var tierTxt  = isEarned ? 'rgba(7,6,4,0.85)' : '#2a2018';
+    var isLegend = (b.tier === 'legend' && isEarned);
     return (
-      '<div class="badge-card' + (isEarned ? ' badge-earned' : ' badge-locked') + '"' +
+      '<div class="badge-card' + (isEarned ? ' badge-earned' : ' badge-locked') +
+          (isLegend ? ' badge-legend' : '') + '"' +
           ' style="--badge-color:' + col + '" title="' + b.desc + '">' +
         '<div class="badge-hex" style="background:' + hexBg + '">' +
           '<span class="badge-tier-lbl" style="color:' + tierTxt + '">' + b.tier.toUpperCase() + '</span>' +
@@ -3917,12 +4101,16 @@ function renderProfile() {
   }
 
   var pct = {
-    cpp:    Math.min(100, (stats.cpp    / 30 * 100)),
-    python: Math.min(100, (stats.python / 30 * 100)),
-    js:     Math.min(100, (stats.js     / 30 * 100))
+    cpp:    Math.min(100, stats.cpp    / 30 * 100),
+    python: Math.min(100, stats.python / 30 * 100),
+    js:     Math.min(100, stats.js     / 30 * 100)
   };
 
-  var content = document.getElementById('profile-content');
+  // ストリーク状態の判定（今日ログイン済みかどうか）
+  var todayStr = new Date().toISOString().slice(0, 10);
+  var localDays = JSON.parse(localStorage.getItem('login_days') || '[]');
+  var loggedInToday = localDays.indexOf(todayStr) !== -1;
+
   content.innerHTML =
 
     // ─── ヒーローセクション ───
@@ -3935,6 +4123,31 @@ function renderProfile() {
         '</div>' +
         '<div class="profile-total">' + stats.total + '<span> / 90 CLEARED</span></div>' +
         '<div class="profile-mission-total">' + stats.totalMissions + ' / 18 MISSIONS</div>' +
+      '</div>' +
+    '</div>' +
+
+    // ─── ログインストリーク ───
+    '<div class="profile-section">' +
+      '<div class="profile-section-title">// LOGIN STREAK</div>' +
+      '<div class="streak-grid">' +
+        '<div class="streak-card streak-current' + (loggedInToday ? ' streak-active' : '') + '">' +
+          '<div class="streak-icon">' + (loggedInToday ? '🔥' : '💤') + '</div>' +
+          '<div class="streak-num">' + streak.current + '</div>' +
+          '<div class="streak-label">CURRENT STREAK</div>' +
+          '<div class="streak-sub">' + (loggedInToday ? '今日ログイン済み ✓' : '今日まだログインしていません') + '</div>' +
+        '</div>' +
+        '<div class="streak-card">' +
+          '<div class="streak-icon">🏆</div>' +
+          '<div class="streak-num">' + streak.best + '</div>' +
+          '<div class="streak-label">BEST STREAK</div>' +
+          '<div class="streak-sub">最長連続記録（日）</div>' +
+        '</div>' +
+        '<div class="streak-card">' +
+          '<div class="streak-icon">📅</div>' +
+          '<div class="streak-num">' + streak.total + '</div>' +
+          '<div class="streak-label">TOTAL DAYS</div>' +
+          '<div class="streak-sub">累計ログイン日数</div>' +
+        '</div>' +
       '</div>' +
     '</div>' +
 
@@ -4083,6 +4296,9 @@ async function initAuth() {
     _progressCache = null;
     _missionProgressCache = null;
     updateAuthUI();
+    if (currentUser) {
+      recordLoginDay(); // ログイン日を記録
+    }
     if (currentUser && currentLanguage) {
       await syncProgressFromSupabase();
       await syncMissionProgressFromSupabase();
@@ -4098,6 +4314,7 @@ async function initAuth() {
   var sessionResult = await _supabase.auth.getSession();
   if (sessionResult.data && sessionResult.data.session) {
     currentUser = sessionResult.data.session.user;
+    recordLoginDay(); // ページロード時にも記録
     updateAuthUI();
     if (currentLanguage) {
       await syncProgressFromSupabase();
@@ -4153,6 +4370,9 @@ document.getElementById('chat-input').addEventListener('keydown', function(e) {
 history.replaceState({ page: 'lang' }, '');
 renderLangSelect();
 showPage("lang");
+
+// ゲスト時もローカルにログイン日を記録
+recordLoginDay();
 
 // サウンドボタン初期状態
 (function() {

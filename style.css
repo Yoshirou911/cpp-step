@@ -522,6 +522,15 @@ header::after {
   color: #C040FF;
   text-shadow: 0 0 10px rgba(192,64,255,0.7), 0 0 20px rgba(192,64,255,0.3);
 }
+.rank-legend   {
+  color: #FF2244;
+  text-shadow: 0 0 12px rgba(255,34,68,0.80), 0 0 24px rgba(255,34,68,0.35);
+  animation: legendBadgePulse 2.4s ease-in-out infinite;
+}
+@keyframes legendBadgePulse {
+  0%, 100% { text-shadow: 0 0 8px  rgba(255,34,68,0.60), 0 0 16px rgba(255,34,68,0.25); }
+  50%       { text-shadow: 0 0 18px rgba(255,34,68,0.95), 0 0 36px rgba(255,34,68,0.55); }
+}
 
 /* ========== 単元ヘッダー（APEX ロールタブ風） ========== */
 .unit-header {
@@ -607,6 +616,15 @@ header::after {
 .rank-card-platinum{ border-left-color: rgba(0,200,180,0.5); }
 .rank-card-diamond { border-left-color: rgba(85,136,255,0.5); }
 .rank-card-master  { border-left-color: rgba(192,64,255,0.5); }
+.rank-card-legend  {
+  border-left-color: rgba(255,34,68,0.70) !important;
+  background: linear-gradient(90deg, rgba(255,34,68,0.07) 0%, transparent 55%);
+  animation: legendCardPulse 2.8s ease-in-out infinite;
+}
+@keyframes legendCardPulse {
+  0%, 100% { box-shadow: -3px 0 12px rgba(255,34,68,0.20); }
+  50%       { box-shadow: -3px 0 22px rgba(255,34,68,0.50); }
+}
 
 /* ホバー：ランク色でグロー */
 .rank-card-rookie:hover  { border-left-color:#9B9B9B; background:rgba(155,155,155,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(155,155,155,0.15); transform:translateX(5px); }
@@ -616,6 +634,7 @@ header::after {
 .rank-card-platinum:hover{ border-left-color:#00C8B4; background:rgba(0,200,180,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(0,200,180,0.18); transform:translateX(5px); }
 .rank-card-diamond:hover { border-left-color:#5588FF; background:rgba(85,136,255,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(85,136,255,0.18); transform:translateX(5px); }
 .rank-card-master:hover  { border-left-color:#C040FF; background:rgba(192,64,255,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(192,64,255,0.22); transform:translateX(5px); }
+.rank-card-legend:hover  { border-left-color:#FF2244; background:rgba(255,34,68,0.12);  box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 18px rgba(255,34,68,0.40); transform:translateX(5px); }
 
 .problem-card.learned {
   border-left-color: rgba(0,230,118,0.5) !important;
@@ -2192,6 +2211,110 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   font-family: 'Barlow Condensed', sans-serif;
 }
 
+/* ── ローディング ── */
+.profile-loading {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  color: rgba(255,107,0,0.35);
+  letter-spacing: 0.3em;
+  padding: 60px 0;
+  text-align: center;
+  animation: loadingPulse 1.2s ease-in-out infinite;
+}
+@keyframes loadingPulse {
+  0%, 100% { opacity: 0.3; }
+  50%       { opacity: 1;   }
+}
+
+/* ── ストリークグリッド ── */
+.streak-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.streak-card {
+  background: rgba(14,12,9,0.80);
+  border: 1px solid rgba(255,107,0,0.10);
+  padding: 18px 16px;
+  text-align: center;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  transition: border-color 0.25s;
+}
+.streak-card.streak-current.streak-active {
+  border-color: rgba(255,107,0,0.40);
+  background: rgba(255,107,0,0.06);
+  box-shadow: 0 0 20px rgba(255,107,0,0.10);
+}
+
+.streak-icon {
+  font-size: 1.6rem;
+  margin-bottom: 6px;
+  line-height: 1;
+}
+
+.streak-num {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: var(--bright);
+  font-family: 'Barlow Condensed', sans-serif;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.streak-card.streak-current.streak-active .streak-num {
+  color: var(--orange);
+  text-shadow: 0 0 20px rgba(255,107,0,0.45);
+}
+
+.streak-label {
+  font-size: 0.60rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: rgba(160,144,112,0.55);
+  font-family: 'Share Tech Mono', monospace;
+  margin-bottom: 4px;
+}
+
+.streak-sub {
+  font-size: 0.58rem;
+  color: rgba(160,144,112,0.35);
+  font-family: 'Barlow Condensed', sans-serif;
+  line-height: 1.4;
+}
+.streak-card.streak-current.streak-active .streak-sub {
+  color: rgba(255,107,0,0.55);
+}
+
+/* ── LEGEND ランクバッジ ── */
+.rank-legend {
+  color: #FF2244 !important;
+  border-color: rgba(255,34,68,0.55) !important;
+  text-shadow: 0 0 10px rgba(255,34,68,0.6);
+}
+.rank-card-legend {
+  border-left: 3px solid rgba(255,34,68,0.70) !important;
+  background: linear-gradient(90deg, rgba(255,34,68,0.08) 0%, transparent 100%) !important;
+}
+.rank-card-legend:hover {
+  background: linear-gradient(90deg, rgba(255,34,68,0.14) 0%, transparent 100%) !important;
+}
+
+/* ── LEGEND バッジ（鼓動アニメーション） ── */
+.badge-legend {
+  animation: legendPulse 2.4s ease-in-out infinite;
+}
+@keyframes legendPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(255,34,68,0.30),  0 0 0 1px rgba(255,34,68,0.55); }
+  50%       { box-shadow: 0 0 22px rgba(255,34,68,0.65), 0 0 0 1px rgba(255,34,68,0.85); }
+}
+.badge-legend .badge-hex {
+  animation: legendHexPulse 2.4s ease-in-out infinite;
+}
+@keyframes legendHexPulse {
+  0%, 100% { filter: brightness(1.0); }
+  50%       { filter: brightness(1.35) drop-shadow(0 0 8px rgba(255,34,68,0.8)); }
+}
+
 /* ── レスポンシブ ── */
 @media (max-width: 520px) {
   .profile-hero {
@@ -2201,6 +2324,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
     padding: 20px 20px;
   }
   .profile-stats-grid { grid-template-columns: 1fr; }
+  .streak-grid        { grid-template-columns: 1fr; }
   .badge-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
   .profile-total { font-size: 2rem; }
 }
