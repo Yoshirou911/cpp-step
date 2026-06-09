@@ -321,7 +321,9 @@ var BADGES = [
   { id: 'legend_cpp',    name: 'C++ LEGEND',     desc: 'C++ 超難問クリア',                        tier: 'legend',   check: function(s) { return s.legendCpp;    } },
   { id: 'legend_py',     name: 'PYTHON LEGEND',  desc: 'Python 超難問クリア',                     tier: 'legend',   check: function(s) { return s.legendPython; } },
   { id: 'legend_js',     name: 'JS LEGEND',      desc: 'JavaScript 超難問クリア',                 tier: 'legend',   check: function(s) { return s.legendJs;     } },
-  { id: 'true_legend',   name: 'TRUE LEGEND',    desc: '全言語の超難問クリア',                    tier: 'legend',   check: function(s) { return s.legendCpp && s.legendPython && s.legendJs; } },
+  { id: 'ruby_master',   name: 'RUBY MASTER',    desc: 'Ruby 全30問クリア',                       tier: 'diamond',  check: function(s) { return s.ruby >= 30;   } },
+  { id: 'legend_ruby',   name: 'RUBY LEGEND',    desc: 'Ruby 超難問クリア',                       tier: 'legend',   check: function(s) { return s.legendRuby;   } },
+  { id: 'true_legend',   name: 'TRUE LEGEND',    desc: '全言語の超難問クリア',                    tier: 'legend',   check: function(s) { return s.legendCpp && s.legendPython && s.legendJs && s.legendRuby; } },
 ];
 
 // 全言語の進捗を localStorage から集計（言語切替不要）
@@ -337,21 +339,24 @@ function getProfileStats() {
   var cppArr    = getP('cpp');
   var pythonArr = getP('python');
   var jsArr     = getP('javascript');
+  var rubyArr   = getP('ruby');
   var cpp    = cppArr.length;
   var python = pythonArr.length;
   var js     = jsArr.length;
+  var ruby   = rubyArr.length;
   var cppM   = getM('cpp').length;
   var pyM    = getM('python').length;
   var jsM    = getM('javascript').length;
+  var rubyM  = getM('ruby').length;
   return {
-    cpp: cpp, python: python, js: js,
-    cppM: cppM, pyM: pyM, jsM: jsM,
-    total: cpp + python + js,
-    totalMissions: cppM + pyM + jsM,
-    // LEGEND 超難問（id:31 がクリア済みかどうか）
+    cpp: cpp, python: python, js: js, ruby: ruby,
+    cppM: cppM, pyM: pyM, jsM: jsM, rubyM: rubyM,
+    total: cpp + python + js + ruby,
+    totalMissions: cppM + pyM + jsM + rubyM,
     legendCpp:    cppArr.indexOf(31)    !== -1,
     legendPython: pythonArr.indexOf(31) !== -1,
     legendJs:     jsArr.indexOf(31)     !== -1,
+    legendRuby:   rubyArr.indexOf(30)   !== -1,
     // ストリークは非同期で後から上書きするため初期値0
     currentStreak: 0,
     bestStreak:    0,
@@ -628,7 +633,7 @@ var LANGUAGE_GROUPS = [
         uses: ['Webフロントエンド', 'ブラウザゲーム', 'Node.js サーバー']
       },
       {
-        id: 'ruby', name: 'Ruby', color: '#CC342D', problems: 0, available: false,
+        id: 'ruby', name: 'Ruby', color: '#CC342D', problems: 30, available: true,
         uses: ['Web開発 (Rails)', 'スクリプト自動化', 'プロトタイプ開発']
       },
     ]
@@ -3458,23 +3463,719 @@ const javascriptUnitGuides = [
   }
 ];
 
+// ===== Ruby データ =====
+
+const rubyProblems = [
+  // UNIT 01 基礎出力 ROOKIE
+  { id:1, unit:"UNIT 01  ◆  基礎出力", rank:"ROOKIE",
+    title:"Hello World",
+    question:"「Hello, World!」と画面に出力するプログラムを書いてください。",
+    hint:"puts メソッドを使って出力します。",
+    answer:`puts "Hello, World!"`,
+    expected:"Hello, World!",
+    explanation:"puts はRubyの基本的な出力メソッドです。文字列の末尾に自動で改行が追加されます。"
+  },
+  { id:2, unit:"UNIT 01  ◆  基礎出力", rank:"ROOKIE",
+    title:"コメントの書き方",
+    question:"# を使った1行コメントと =begin =end を使った複数行コメントを含むプログラムを書き「Hello」と出力してください。",
+    hint:"# は1行コメント、=begin ～ =end は複数行コメントです。",
+    answer:
+`# これは1行コメントです
+=begin
+これは
+複数行コメントです
+=end
+puts "Hello"`,
+    explanation:"# より右はコメントとして無視されます。=begin から =end で囲む部分は複数行コメントになります。"
+  },
+  { id:3, unit:"UNIT 01  ◆  基礎出力", rank:"ROOKIE",
+    title:"変数と出力",
+    question:"変数 name に \"Ruby\" を、version に 3 を代入して、それぞれ puts で出力してください。",
+    hint:"Rubyでは変数宣言に var や let は不要です。直接代入できます。",
+    answer:
+`name = "Ruby"
+version = 3
+puts name
+puts version`,
+    expected:"Ruby\n3",
+    explanation:"Rubyは動的型付け言語です。変数宣言なしに直接代入できます。puts は末尾に改行を追加します。"
+  },
+  // UNIT 02 変数と演算 BRONZE
+  { id:4, unit:"UNIT 02  ◆  変数と演算", rank:"BRONZE",
+    title:"文字列補完",
+    question:"name に \"Ruby\" を代入して、\"Hello, Ruby!\" と出力してください。文字列補完（#{}）を使うこと。",
+    hint:"\"#{変数名}\" の形で変数を文字列に埋め込めます。",
+    answer:
+`name = "Ruby"
+puts "Hello, #{name}!"`,
+    expected:"Hello, Ruby!",
+    explanation:"#{ } を使うと文字列の中に式や変数を埋め込めます。ダブルクォートの中でのみ使えます。"
+  },
+  { id:5, unit:"UNIT 02  ◆  変数と演算", rank:"BRONZE",
+    title:"四則演算",
+    question:"a = 10, b = 3 として、足し算・引き算・掛け算・割り算・余りをそれぞれ puts で出力してください。",
+    hint:"演算子は +、-、*、/、% です。整数同士の / は整数除算になります。",
+    answer:
+`a = 10
+b = 3
+puts a + b
+puts a - b
+puts a * b
+puts a / b
+puts a % b`,
+    expected:"13\n7\n30\n3\n1",
+    explanation:"Rubyの整数同士の / は整数除算です。10 / 3 は 3 になります。小数にしたい場合は 10.0 / 3 とします。"
+  },
+  { id:6, unit:"UNIT 02  ◆  変数と演算", rank:"BRONZE",
+    title:"文字列メソッド",
+    question:"\"hello world\" を大文字にして出力し、次に文字数を出力してください。",
+    hint:"upcase と length メソッドを使います。",
+    answer:
+`str = "hello world"
+puts str.upcase
+puts str.length`,
+    expected:"HELLO WORLD\n11",
+    explanation:"Rubyの文字列はメソッドが豊富です。upcase で大文字変換、length で文字数取得ができます。"
+  },
+  { id:7, unit:"UNIT 02  ◆  変数と演算", rank:"BRONZE",
+    title:"型変換",
+    question:"文字列 \"42\" を整数に変換して 8 を足し、結果を出力してください。",
+    hint:"to_i メソッドで文字列を整数に変換できます。",
+    answer:
+`num = "42".to_i
+puts num + 8`,
+    expected:"50",
+    explanation:"to_i は文字列を整数（Integer）に変換します。to_f は浮動小数点数、to_s は文字列への変換です。"
+  },
+  { id:8, unit:"UNIT 02  ◆  変数と演算", rank:"BRONZE",
+    title:"条件分岐 if/else",
+    question:"x = 15 として、x が 10 より大きければ \"big\"、そうでなければ \"small\" と出力してください。",
+    hint:"if 条件 ～ else ～ end の形で書きます。",
+    answer:
+`x = 15
+if x > 10
+  puts "big"
+else
+  puts "small"
+end`,
+    expected:"big",
+    explanation:"Rubyの if 文は end で閉じます。条件が真なら if ブロック、偽なら else ブロックが実行されます。"
+  },
+  // UNIT 03 制御フロー SILVER
+  { id:9, unit:"UNIT 03  ◆  制御フロー", rank:"SILVER",
+    title:"elsif と case",
+    question:"score = 75 として、80以上なら \"A\"、60以上なら \"B\"、それ以外は \"C\" と出力してください。",
+    hint:"elsif を使って複数条件を処理します。",
+    answer:
+`score = 75
+if score >= 80
+  puts "A"
+elsif score >= 60
+  puts "B"
+else
+  puts "C"
+end`,
+    expected:"B",
+    explanation:"elsif で追加の条件を並べられます。Rubyには unless（if の逆）もあり、条件が偽のときに実行します。"
+  },
+  { id:10, unit:"UNIT 03  ◆  制御フロー", rank:"SILVER",
+    title:"case/when",
+    question:"day = \"Mon\" として、\"Mon\" なら \"Monday\"、\"Tue\" なら \"Tuesday\"、それ以外は \"Other\" と出力してください。",
+    hint:"case ～ when ～ else ～ end の形で書きます。",
+    answer:
+`day = "Mon"
+case day
+when "Mon"
+  puts "Monday"
+when "Tue"
+  puts "Tuesday"
+else
+  puts "Other"
+end`,
+    expected:"Monday",
+    explanation:"case/when は複数の値を比較するときに便利です。C++のswitch文に相当しますが、より柔軟です。"
+  },
+  { id:11, unit:"UNIT 03  ◆  制御フロー", rank:"SILVER",
+    title:"while ループ",
+    question:"while を使って 0 から 4 まで順に出力してください。",
+    hint:"while 条件 ～ end の形で書きます。",
+    answer:
+`i = 0
+while i < 5
+  puts i
+  i += 1
+end`,
+    expected:"0\n1\n2\n3\n4",
+    explanation:"while は条件が真の間繰り返します。Rubyには ++ 演算子がないので += 1 を使います。"
+  },
+  { id:12, unit:"UNIT 03  ◆  制御フロー", rank:"SILVER",
+    title:"times メソッド",
+    question:"3.times を使って \"Hello\" を3回出力してください。",
+    hint:"整数.times { } の形で使います。",
+    answer:
+`3.times { puts "Hello" }`,
+    expected:"Hello\nHello\nHello",
+    explanation:"times はRuby独特のループです。3.times は0,1,2の3回ブロックを実行します。{ } がブロックです。"
+  },
+  { id:13, unit:"UNIT 03  ◆  制御フロー", rank:"SILVER",
+    title:"each メソッド",
+    question:"配列 [10, 20, 30] の各要素を each で順番に出力してください。",
+    hint:"配列.each { |変数| 処理 } の形で書きます。",
+    answer:
+`[10, 20, 30].each { |n| puts n }`,
+    expected:"10\n20\n30",
+    explanation:"each は配列の各要素に対してブロックを実行します。| | の中の変数にブロック変数に各要素が入ります。"
+  },
+  // UNIT 04 メソッド SILVER/GOLD
+  { id:14, unit:"UNIT 04  ◆  メソッド", rank:"SILVER",
+    title:"メソッドの定義",
+    question:"名前を受け取って \"Hello, [名前]!\" と出力する greet メソッドを定義して、\"Ruby\" で呼び出してください。",
+    hint:"def メソッド名(引数) ～ end で定義します。",
+    answer:
+`def greet(name)
+  puts "Hello, #{name}!"
+end
+greet("Ruby")`,
+    expected:"Hello, Ruby!",
+    explanation:"Rubyのメソッドは def ～ end で定義します。return を書かなくても最後の式の値が自動的に返されます。"
+  },
+  { id:15, unit:"UNIT 04  ◆  メソッド", rank:"GOLD",
+    title:"戻り値",
+    question:"2つの整数を受け取って足し算の結果を返す add メソッドを定義し、add(3, 4) の結果を出力してください。",
+    hint:"最後の式が自動的に戻り値になります。",
+    answer:
+`def add(a, b)
+  a + b
+end
+puts add(3, 4)`,
+    expected:"7",
+    explanation:"Rubyでは最後に評価した式が自動的に戻り値になります。明示的に return を書くこともできます。"
+  },
+  { id:16, unit:"UNIT 04  ◆  メソッド", rank:"GOLD",
+    title:"デフォルト引数",
+    question:"greet メソッドを引数なしで呼ぶと \"Hello, World!\"、\"Ruby\" を渡すと \"Hello, Ruby!\" と出力されるように実装してください。",
+    hint:"def greet(name = \"World\") のようにデフォルト値を設定できます。",
+    answer:
+`def greet(name = "World")
+  puts "Hello, #{name}!"
+end
+greet
+greet("Ruby")`,
+    expected:"Hello, World!\nHello, Ruby!",
+    explanation:"引数にデフォルト値を設定すると、省略したときにその値が使われます。"
+  },
+  { id:17, unit:"UNIT 04  ◆  メソッド", rank:"GOLD",
+    title:"可変長引数",
+    question:"任意の数の整数を受け取って合計を返す sum メソッドを定義し、sum(1,2,3,4,5) の結果を出力してください。",
+    hint:"*args で可変長引数を受け取れます。",
+    answer:
+`def sum(*numbers)
+  numbers.sum
+end
+puts sum(1, 2, 3, 4, 5)`,
+    expected:"15",
+    explanation:"* をつけた引数は可変長引数で、複数の値を配列として受け取ります。配列には sum メソッドがあります。"
+  },
+  // UNIT 05 配列とイテレータ GOLD/PLATINUM
+  { id:18, unit:"UNIT 05  ◆  配列とイテレータ", rank:"GOLD",
+    title:"配列の基本操作",
+    question:"[3, 1, 4, 1, 5, 9] を昇順にソートして出力し、要素数も出力してください。",
+    hint:"sort と length メソッドを使います。",
+    answer:
+`nums = [3, 1, 4, 1, 5, 9]
+puts nums.sort.inspect
+puts nums.length`,
+    expected:"[1, 1, 3, 4, 5, 9]\n6",
+    explanation:"sort は並び替えた新しい配列を返します。inspect は配列を見やすい文字列形式に変換します。"
+  },
+  { id:19, unit:"UNIT 05  ◆  配列とイテレータ", rank:"GOLD",
+    title:"map メソッド",
+    question:"[1, 2, 3, 4, 5] の各要素を2倍にした配列を map で作り、出力してください。",
+    hint:"配列.map { |x| 変換式 } の形で書きます。",
+    answer:
+`nums = [1, 2, 3, 4, 5]
+puts nums.map { |n| n * 2 }.inspect`,
+    expected:"[2, 4, 6, 8, 10]",
+    explanation:"map は各要素を変換して新しい配列を作ります。元の配列は変更されません。"
+  },
+  { id:20, unit:"UNIT 05  ◆  配列とイテレータ", rank:"PLATINUM",
+    title:"select と inject",
+    question:"[1, 2, 3, 4, 5, 6] から偶数だけを select で取り出した配列を出力してください。",
+    hint:"select { |x| 条件 } で条件に合う要素だけを取り出せます。even? メソッドを使います。",
+    answer:
+`nums = [1, 2, 3, 4, 5, 6]
+puts nums.select { |n| n.even? }.inspect`,
+    expected:"[2, 4, 6]",
+    explanation:"select は条件がtrueの要素だけを集めた配列を返します。even? は偶数かどうかを判定するメソッドです。"
+  },
+  // UNIT 06 ハッシュ PLATINUM
+  { id:21, unit:"UNIT 06  ◆  ハッシュ", rank:"PLATINUM",
+    title:"ハッシュの基本",
+    question:"person = { name: \"Taro\", age: 20 } というハッシュを作り、name と age を出力してください。",
+    hint:"シンボルキーには [:キー名] でアクセスします。",
+    answer:
+`person = { name: "Taro", age: 20 }
+puts person[:name]
+puts person[:age]`,
+    expected:"Taro\n20",
+    explanation:"ハッシュはキーと値のペアを格納します。シンボル（: で始まる）をキーにすると効率的です。"
+  },
+  { id:22, unit:"UNIT 06  ◆  ハッシュ", rank:"PLATINUM",
+    title:"ハッシュの操作",
+    question:"scores = { math: 80, english: 90 } に science: 75 を追加して、全キーと全値を出力してください。",
+    hint:"keys と values メソッドを使います。",
+    answer:
+`scores = { math: 80, english: 90 }
+scores[:science] = 75
+puts scores.keys.inspect
+puts scores.values.inspect`,
+    expected:"[:math, :english, :science]\n[80, 90, 75]",
+    explanation:"ハッシュへの追加は hash[key] = value で行います。keys は全キー、values は全値の配列を返します。"
+  },
+  { id:23, unit:"UNIT 06  ◆  ハッシュ", rank:"PLATINUM",
+    title:"inject で集計",
+    question:"[1, 2, 3, 4, 5] の合計を inject を使って計算し出力してください。",
+    hint:"inject(初期値) { |合計, 要素| 演算 } の形で書きます。",
+    answer:
+`nums = [1, 2, 3, 4, 5]
+total = nums.inject(0) { |sum, n| sum + n }
+puts total`,
+    expected:"15",
+    explanation:"inject（別名 reduce）は畳み込み演算です。初期値から始めて各要素を累積していきます。"
+  },
+  // UNIT 07 クラスとオブジェクト DIAMOND
+  { id:24, unit:"UNIT 07  ◆  クラスとオブジェクト", rank:"DIAMOND",
+    title:"クラスの定義",
+    question:"Animal クラスを定義してください。initialize で name を受け取り、speak メソッドで \"[name] says hello\" と出力します。Animal.new(\"Dog\").speak を呼び出してください。",
+    hint:"class ～ end でクラスを定義し、@name でインスタンス変数を使います。",
+    answer:
+`class Animal
+  def initialize(name)
+    @name = name
+  end
+  def speak
+    puts "#{@name} says hello"
+  end
+end
+Animal.new("Dog").speak`,
+    expected:"Dog says hello",
+    explanation:"initialize はコンストラクタです。@ で始まる変数はインスタンス変数で、そのオブジェクト内で共有されます。"
+  },
+  { id:25, unit:"UNIT 07  ◆  クラスとオブジェクト", rank:"DIAMOND",
+    title:"継承",
+    question:"Animal クラスを継承した Dog クラスを作り、speak で \"[name]: Woof!\" と出力してください。Dog.new(\"Rex\").speak を呼び出してください。",
+    hint:"class Dog < Animal の形で継承します。",
+    answer:
+`class Animal
+  def initialize(name)
+    @name = name
+  end
+end
+class Dog < Animal
+  def speak
+    puts "#{@name}: Woof!"
+  end
+end
+Dog.new("Rex").speak`,
+    expected:"Rex: Woof!",
+    explanation:"< を使って親クラスを継承します。継承したクラスは親のメソッドやインスタンス変数を使えます。"
+  },
+  { id:26, unit:"UNIT 07  ◆  クラスとオブジェクト", rank:"DIAMOND",
+    title:"attr_accessor",
+    question:"Person クラスに name と age の attr_accessor を設定し、p = Person.new(\"Taro\", 20)、p.age = 21 として \"Taro is 21\" と出力してください。",
+    hint:"attr_accessor :name, :age でゲッター・セッターを自動生成できます。",
+    answer:
+`class Person
+  attr_accessor :name, :age
+  def initialize(name, age)
+    @name = name
+    @age = age
+  end
+end
+p = Person.new("Taro", 20)
+p.age = 21
+puts "#{p.name} is #{p.age}"`,
+    expected:"Taro is 21",
+    explanation:"attr_accessor は読み書き両方のアクセサを自動生成します。attr_reader は読み取り専用、attr_writer は書き込み専用です。"
+  },
+  { id:27, unit:"UNIT 07  ◆  クラスとオブジェクト", rank:"DIAMOND",
+    title:"モジュールとMixin",
+    question:"greet メソッド（\"Hello, I'm [name]\" と出力）を持つ Greetable モジュールを作り、Person クラスに include して Person.new(\"Taro\").greet を呼び出してください。",
+    hint:"module ～ end でモジュールを定義し、include で取り込みます。",
+    answer:
+`module Greetable
+  def greet
+    puts "Hello, I'm #{@name}"
+  end
+end
+class Person
+  include Greetable
+  def initialize(name)
+    @name = name
+  end
+end
+Person.new("Taro").greet`,
+    expected:"Hello, I'm Taro",
+    explanation:"モジュールはメソッドをまとめる仕組みです。include するとクラスにメソッドが追加されます。これをMixinと呼びます。"
+  },
+  // UNIT 08 高度なRuby MASTER/LEGEND
+  { id:28, unit:"UNIT 08  ◆  高度なRuby", rank:"MASTER",
+    title:"例外処理",
+    question:"begin ～ rescue ～ end を使って、ゼロ除算エラーを捕捉し \"エラー: 0では割れません\" と出力してください。",
+    hint:"rescue ZeroDivisionError => e の形でエラーの種類を指定できます。",
+    answer:
+`begin
+  puts 10 / 0
+rescue ZeroDivisionError
+  puts "エラー: 0では割れません"
+end`,
+    expected:"エラー: 0では割れません",
+    explanation:"begin ～ rescue で例外を捕捉します。=> e で例外オブジェクトを変数に格納できます。ensure で後処理も書けます。"
+  },
+  { id:29, unit:"UNIT 08  ◆  高度なRuby", rank:"MASTER",
+    title:"Proc と lambda",
+    question:"2つの数を受け取って積を返す lambda を定義し、multiply = lambda { |a, b| a * b } として multiply.call(4, 5) の結果を出力してください。",
+    hint:"lambda { |引数| 処理 } で定義し、call で呼び出します。",
+    answer:
+`multiply = lambda { |a, b| a * b }
+puts multiply.call(4, 5)`,
+    expected:"20",
+    explanation:"lambdaはオブジェクトとして扱えるメソッドです。call で呼び出します。Proc も似ていますが引数チェックの厳密さが異なります。"
+  },
+  { id:30, unit:"UNIT 08  ◆  高度なRuby", rank:"LEGEND",
+    title:"メタプログラミング",
+    question:"method_missing を使って、未定義メソッド hello_world を呼んだ際に \"Hello, World!\" と出力する DynamicGreeter クラスを作り DynamicGreeter.new.hello_world を呼び出してください。",
+    hint:"method_missing(name, *args) でメソッド名を文字列として受け取れます。split と capitalize を使いましょう。",
+    answer:
+`class DynamicGreeter
+  def method_missing(name, *args)
+    words = name.to_s.split("_").map(&:capitalize)
+    puts words.join(", ") + "!"
+  end
+end
+DynamicGreeter.new.hello_world`,
+    expected:"Hello, World!",
+    explanation:"method_missing は未定義メソッドが呼ばれたときに実行される特殊メソッドです。これを使いメソッドを動的に生成できます。Rubyのメタプログラミングの基礎です。"
+  },
+];
+
+const rubyMissions = [
+  {
+    id: 1, rank: "BRONZE",
+    title: "FizzBuzz",
+    description: "1から30までの数を出力するが、3の倍数のとき「Fizz」、5の倍数のとき「Buzz」、両方の倍数のとき「FizzBuzz」と出力する。",
+    requirements: [
+      "1から30まで順番に処理する",
+      "3の倍数のとき「Fizz」を出力",
+      "5の倍数のとき「Buzz」を出力",
+      "15の倍数のとき「FizzBuzz」を出力",
+      "それ以外は数字をそのまま出力"
+    ],
+    hint: "times または each で1〜30を繰り返します。% 演算子で余りを使って判定します。",
+    answer:
+`(1..30).each do |i|
+  if i % 15 == 0
+    puts "FizzBuzz"
+  elsif i % 3 == 0
+    puts "Fizz"
+  elsif i % 5 == 0
+    puts "Buzz"
+  else
+    puts i
+  end
+end`
+  },
+  {
+    id: 2, rank: "BRONZE",
+    title: "成績平均計算機",
+    description: "生徒のテスト点数の配列から平均点を計算して出力する。小数点以下1桁で表示する。",
+    requirements: [
+      "scores = [75, 88, 92, 60, 71] を使う",
+      "合計を計算する",
+      "平均を計算する",
+      "小数点以下1桁で出力（round を使う）",
+      "\"平均点: XX.X\" の形式で出力"
+    ],
+    hint: "inject や sum で合計を計算し、length で割ります。round(1) で小数点以下1桁に丸めます。",
+    answer:
+`scores = [75, 88, 92, 60, 71]
+avg = scores.sum.to_f / scores.length
+puts "平均点: #{avg.round(1)}"`
+  },
+  {
+    id: 3, rank: "SILVER",
+    title: "ワードカウンター",
+    description: "文章を受け取り、各単語の出現回数をカウントして多い順に出力する。",
+    requirements: [
+      "text = \"ruby is great ruby is fun ruby\" を使う",
+      "スペースで単語に分割する",
+      "各単語の出現回数をハッシュで管理",
+      "出現回数が多い順にソートして出力",
+      "\"単語: 回数\" の形式で出力"
+    ],
+    hint: "split でスペース分割、ハッシュで集計、sort_by で並べ替えます。",
+    answer:
+`text = "ruby is great ruby is fun ruby"
+count = {}
+text.split(" ").each do |word|
+  count[word] = (count[word] || 0) + 1
+end
+count.sort_by { |_, v| -v }.each do |word, n|
+  puts "#{word}: #{n}"
+end`
+  },
+  {
+    id: 4, rank: "SILVER",
+    title: "簡易電話帳",
+    description: "名前と電話番号を管理する電話帳をハッシュで実装する。",
+    requirements: [
+      "ハッシュで電話帳を初期化（3件分データを入れる）",
+      "名前で電話番号を検索できる",
+      "存在しない名前を検索したとき「見つかりません」と出力",
+      "全件一覧を出力できる",
+      "上記を順番に実行して動作を確認する"
+    ],
+    hint: "ハッシュの key? メソッドでキーの存在確認ができます。each で全件繰り返し出力します。",
+    answer:
+`phonebook = {
+  "Taro" => "090-1234-5678",
+  "Hanako" => "080-9876-5432",
+  "Ken" => "070-1111-2222"
+}
+
+def lookup(book, name)
+  if book.key?(name)
+    puts "#{name}: #{book[name]}"
+  else
+    puts "見つかりません"
+  end
+end
+
+lookup(phonebook, "Taro")
+lookup(phonebook, "Alice")
+phonebook.each { |name, tel| puts "#{name}: #{tel}" }`
+  },
+  {
+    id: 5, rank: "GOLD",
+    title: "スタック実装",
+    description: "クラスを使ってスタック（LIFO）データ構造を実装する。",
+    requirements: [
+      "Stack クラスを定義する",
+      "push(value) でデータを追加",
+      "pop で最後のデータを取り出して返す",
+      "empty? でスタックが空かどうかを返す",
+      "push 3回、pop 2回、empty? を呼び出して動作確認"
+    ],
+    hint: "配列の push と pop メソッドを内部で使います。empty? は配列の empty? を使えます。",
+    answer:
+`class Stack
+  def initialize
+    @data = []
+  end
+  def push(value)
+    @data.push(value)
+  end
+  def pop
+    @data.pop
+  end
+  def empty?
+    @data.empty?
+  end
+end
+
+s = Stack.new
+s.push(10)
+s.push(20)
+s.push(30)
+puts s.pop
+puts s.pop
+puts s.empty?`
+  },
+  {
+    id: 6, rank: "GOLD",
+    title: "行列の転置",
+    description: "2次元配列（行列）を転置（行と列を入れ替え）する処理をクラスで実装する。",
+    requirements: [
+      "Matrix クラスを定義する",
+      "initialize で2次元配列を受け取る",
+      "transpose メソッドで転置した行列を返す",
+      "display メソッドで各行を出力する",
+      "3x3行列で動作確認する"
+    ],
+    hint: "Rubyには組み込みの transpose メソッドがあります。それを内部で使うか、自分で実装してみましょう。",
+    answer:
+`class Matrix
+  def initialize(data)
+    @data = data
+  end
+  def transpose
+    Matrix.new(@data.transpose)
+  end
+  def display
+    @data.each { |row| puts row.inspect }
+  end
+end
+
+m = Matrix.new([[1,2,3],[4,5,6],[7,8,9]])
+puts "元の行列:"
+m.display
+puts "転置後:"
+m.transpose.display`
+  },
+];
+
+const rubyUnitGuides = [
+  {
+    id: "ruby-unit01",
+    unit: "UNIT 01", title: "基礎出力",
+    summary: "Rubyの puts/print による出力と変数の基本を学ぶ。",
+    points: [
+      "puts は出力後に改行、print は改行なし",
+      "変数宣言は不要、直接代入できる",
+      "# で1行コメント、=begin ～ =end で複数行コメント",
+      "ダブルクォート文字列で #{ } による式展開が使える"
+    ],
+    words: [
+      { term: "puts", desc: "出力後に改行を追加するメソッド" },
+      { term: "print", desc: "改行なしで出力するメソッド" },
+      { term: "p", desc: "デバッグ用出力。オブジェクトの内容を詳しく表示" }
+    ]
+  },
+  {
+    id: "ruby-unit02",
+    unit: "UNIT 02", title: "変数と演算",
+    summary: "文字列補完、演算子、型変換と条件分岐の基本を学ぶ。",
+    points: [
+      "文字列補完 #{} でダブルクォート内に値を埋め込む",
+      "整数同士の / は整数除算になる",
+      "to_i, to_f, to_s で型変換",
+      "if ～ else ～ end で条件分岐"
+    ],
+    words: [
+      { term: "to_i", desc: "文字列を整数に変換するメソッド" },
+      { term: "to_f", desc: "文字列・整数を浮動小数点数に変換" },
+      { term: "upcase", desc: "文字列を大文字に変換するメソッド" }
+    ]
+  },
+  {
+    id: "ruby-unit03",
+    unit: "UNIT 03", title: "制御フロー",
+    summary: "elsif/case/when と繰り返し処理（while/times/each）を学ぶ。",
+    points: [
+      "elsif で複数条件、case/when で多分岐",
+      "times はシンプルなN回繰り返し",
+      "each は配列の各要素を処理",
+      "while は条件が真の間繰り返す"
+    ],
+    words: [
+      { term: "times", desc: "指定回数繰り返すメソッド（例: 3.times）" },
+      { term: "each", desc: "配列の各要素に対してブロックを実行" },
+      { term: "unless", desc: "条件が偽のときに実行（if の逆）" }
+    ]
+  },
+  {
+    id: "ruby-unit04",
+    unit: "UNIT 04", title: "メソッド",
+    summary: "def でのメソッド定義、デフォルト引数、可変長引数を学ぶ。",
+    points: [
+      "def ～ end でメソッドを定義",
+      "最後の式が自動的に戻り値になる",
+      "引数にデフォルト値を設定できる",
+      "*args で可変長引数を受け取る"
+    ],
+    words: [
+      { term: "def", desc: "メソッドを定義するキーワード" },
+      { term: "return", desc: "値を返すキーワード（省略可）" },
+      { term: "*args", desc: "可変長引数。複数の値を配列として受け取る" }
+    ]
+  },
+  {
+    id: "ruby-unit05",
+    unit: "UNIT 05", title: "配列とイテレータ",
+    summary: "map/select/inject などRubyらしい配列操作を学ぶ。",
+    points: [
+      "map で各要素を変換した新しい配列を作る",
+      "select で条件に合う要素だけを取り出す",
+      "inject/reduce で畳み込み演算",
+      "sort, uniq, flatten など便利なメソッド多数"
+    ],
+    words: [
+      { term: "map", desc: "各要素を変換した新しい配列を返す" },
+      { term: "select", desc: "条件に合う要素だけを集めた配列を返す" },
+      { term: "inject", desc: "畳み込み演算（合計・積などの集計）" }
+    ]
+  },
+  {
+    id: "ruby-unit06",
+    unit: "UNIT 06", title: "ハッシュ",
+    summary: "キーと値のペアを管理するハッシュの使い方を学ぶ。",
+    points: [
+      "{ key: value } でシンボルキーのハッシュを作成",
+      "hash[:key] でアクセス",
+      "keys/values/each で全体を操作",
+      "key? でキーの存在確認"
+    ],
+    words: [
+      { term: "ハッシュ", desc: "キーと値のペアを格納するデータ構造（辞書）" },
+      { term: "シンボル", desc: ": で始まる識別子。文字列より効率的なキー" },
+      { term: "key?", desc: "指定したキーが存在するか確認するメソッド" }
+    ]
+  },
+  {
+    id: "ruby-unit07",
+    unit: "UNIT 07", title: "クラスとオブジェクト",
+    summary: "class定義、継承、attr_accessor、モジュールのMixinを学ぶ。",
+    points: [
+      "class ～ end でクラスを定義",
+      "initialize がコンストラクタ",
+      "@ でインスタンス変数",
+      "attr_accessor でアクセサを自動生成",
+      "module + include でMixin"
+    ],
+    words: [
+      { term: "initialize", desc: "オブジェクト生成時に呼ばれるコンストラクタ" },
+      { term: "@変数", desc: "インスタンス変数。同じオブジェクト内で共有" },
+      { term: "attr_accessor", desc: "ゲッターとセッターを自動生成するマクロ" }
+    ]
+  },
+  {
+    id: "ruby-unit08",
+    unit: "UNIT 08", title: "高度なRuby",
+    summary: "例外処理、Proc/lambda、メタプログラミングを学ぶ。",
+    points: [
+      "begin ～ rescue ～ end で例外処理",
+      "lambda でオブジェクトとして扱えるメソッド",
+      "method_missing でメソッドを動的に処理",
+      "Rubyはメタプログラミングが強力"
+    ],
+    words: [
+      { term: "rescue", desc: "例外を捕捉するキーワード" },
+      { term: "lambda", desc: "オブジェクトとして扱えるメソッド（無名関数）" },
+      { term: "method_missing", desc: "未定義メソッド呼び出し時に実行される特殊メソッド" }
+    ]
+  }
+];
+
 // ===== 言語別データ取得ヘルパー =====
 
 function getProblems() {
   if (currentLanguage === 'python') return pythonProblems;
   if (currentLanguage === 'javascript') return javascriptProblems;
+  if (currentLanguage === 'ruby') return rubyProblems;
   return problems;
 }
 
 function getMissions() {
   if (currentLanguage === 'python') return pythonMissions;
   if (currentLanguage === 'javascript') return javascriptMissions;
+  if (currentLanguage === 'ruby') return rubyMissions;
   return missions;
 }
 
 function getUnitGuides() {
   if (currentLanguage === 'python') return pythonUnitGuides;
   if (currentLanguage === 'javascript') return javascriptUnitGuides;
+  if (currentLanguage === 'ruby') return rubyUnitGuides;
   return unitGuides;
 }
 
@@ -3489,12 +4190,14 @@ function getMissionProgressKey() {
 function getCompiler() {
   if (currentLanguage === 'python') return 'cpython-3.12.7';
   if (currentLanguage === 'javascript') return 'nodejs-head';
+  if (currentLanguage === 'ruby') return 'ruby-head';
   return 'gcc-head';
 }
 
 function getAceMode() {
   if (currentLanguage === 'python') return 'ace/mode/python';
   if (currentLanguage === 'javascript') return 'ace/mode/javascript';
+  if (currentLanguage === 'ruby') return 'ace/mode/ruby';
   return 'ace/mode/c_cpp';
 }
 
@@ -3508,6 +4211,10 @@ function getStarterCode() {
     if (p) return '// [問題] ' + p.question + '\n\n';
     return '// ここにコードを書いてください\n';
   }
+  if (currentLanguage === 'ruby') {
+    if (p) return '# [問題] ' + p.question + '\n\n';
+    return '# ここにコードを書いてください\n';
+  }
   if (p) return '// [問題] ' + p.question + '\n' + ACE_STARTER;
   return ACE_STARTER;
 }
@@ -3515,6 +4222,7 @@ function getStarterCode() {
 function getLangName() {
   if (currentLanguage === 'python') return 'Python';
   if (currentLanguage === 'javascript') return 'JavaScript';
+  if (currentLanguage === 'ruby') return 'Ruby';
   return 'C++';
 }
 
@@ -4730,6 +5438,7 @@ async function renderProfile() {
   var cppStartDate   = localStorage.getItem('cpp_started_at');
   var pyStartDate    = localStorage.getItem('python_started_at');
   var jsStartDate    = localStorage.getItem('javascript_started_at');
+  var rubyStartDate  = localStorage.getItem('ruby_started_at');
   var totalStudySec  = getTotalStudyTime();
 
   function _daysAgo(ds) {
@@ -4766,8 +5475,8 @@ async function renderProfile() {
         '<div class="profile-rank-badge" style="color:' + rank.color + ';border-color:' + rank.color + ';box-shadow:0 0 12px ' + rank.color + '33">' +
           '◆ ' + rank.name + ' ◆' +
         '</div>' +
-        '<div class="profile-total">' + stats.total + '<span> / 90 CLEARED</span></div>' +
-        '<div class="profile-mission-total">' + stats.totalMissions + ' / 18 MISSIONS</div>' +
+        '<div class="profile-total">' + stats.total + '<span> / 120 CLEARED</span></div>' +
+        '<div class="profile-mission-total">' + stats.totalMissions + ' / 24 MISSIONS</div>' +
       '</div>' +
     '</div>' +
     (currentUserIsAdmin
@@ -4819,8 +5528,9 @@ async function renderProfile() {
       buildHeatmapHTML() +
       '<div class="lang-start-list">' +
         _langStartItem('C++',        '#00599C', cppStartDate) +
-        _langStartItem('Python',     '#3776AB', pyStartDate)  +
-        _langStartItem('JavaScript', '#F0C040', jsStartDate)  +
+        _langStartItem('Python',     '#3776AB', pyStartDate) +
+        _langStartItem('JavaScript', '#F0C040', jsStartDate) +
+        _langStartItem('Ruby',       '#CC342D', rubyStartDate) +
       '</div>' +
     '</div>' +
 
