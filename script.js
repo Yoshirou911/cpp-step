@@ -105,6 +105,7 @@ var currentLanguage = null;
 // ===== 言語選択ページの描画 =====
 
 function renderLangSelect() {
+  document.getElementById('lang-badge').classList.add('hidden');
   var content = document.getElementById('lang-content');
   content.innerHTML =
     '<div class="lang-page-header">' +
@@ -157,10 +158,31 @@ function renderLangSelect() {
 
 // ===== 言語選択 =====
 
+function updateLangBadge() {
+  var badge = document.getElementById('lang-badge');
+  if (!currentLanguage) { badge.classList.add('hidden'); return; }
+
+  var langData = null, rankData = null;
+  LANGUAGE_GROUPS.forEach(function(g) {
+    g.langs.forEach(function(l) {
+      if (l.id === currentLanguage) { langData = l; rankData = g; }
+    });
+  });
+
+  if (!langData) { badge.classList.add('hidden'); return; }
+
+  badge.classList.remove('hidden');
+  badge.innerHTML =
+    '<span class="lang-badge-rank" style="color:' + rankData.rankColor + '">' + rankData.rank + '</span>' +
+    '<span class="lang-badge-sep">◆</span>' +
+    '<span class="lang-badge-name" style="color:' + langData.color + '">' + langData.name + '</span>';
+}
+
 function showNavAndProgress() {
   document.getElementById('nav-tabs').classList.remove('hidden');
   document.getElementById('progress-text').classList.remove('hidden');
   document.getElementById('progress-bar-wrap').classList.remove('hidden');
+  updateLangBadge();
 }
 
 function setActiveTab(tab) {

@@ -147,6 +147,56 @@ header::after {
 }
 #site-title:hover::after { width: 100%; }
 
+/* ヘッダータイトル行 (タイトル + 言語バッジ) */
+.header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* 現在の言語バッジ */
+#lang-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 16px 5px 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,107,0,0.18);
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  position: relative;
+  overflow: hidden;
+}
+#lang-badge::before {
+  content: 'NOW PLAYING';
+  position: absolute;
+  top: 2px; left: 10px;
+  font-size: 0.40rem;
+  letter-spacing: 0.22em;
+  color: rgba(255,107,0,0.35);
+  font-weight: 700;
+}
+
+.lang-badge-rank {
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.20em;
+  margin-top: 6px;
+}
+
+.lang-badge-sep {
+  color: rgba(255,107,0,0.35);
+  font-size: 0.45rem;
+  margin-top: 6px;
+}
+
+.lang-badge-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin-top: 6px;
+}
+
 #progress-text {
   font-size: 0.70rem;
   font-weight: 700;
