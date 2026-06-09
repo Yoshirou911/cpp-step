@@ -13,9 +13,18 @@
   <div id="bg-b" class="bg-layer"></div>
 
   <header>
-    <div class="header-title-row">
-      <h1 id="site-title">CODE STEP</h1>
-      <div id="lang-badge" class="hidden"></div>
+    <div class="header-top-row">
+      <div class="header-title-row">
+        <h1 id="site-title">CODE STEP</h1>
+        <div id="lang-badge" class="hidden"></div>
+      </div>
+      <div id="auth-area">
+        <button id="auth-btn" onclick="openAuthModal()">◆ LOGIN</button>
+        <div id="user-info" class="hidden">
+          <span id="user-email-display"></span>
+          <button id="logout-btn" onclick="authSignOut()">LOGOUT</button>
+        </div>
+      </div>
     </div>
     <p id="progress-text" class="hidden">0 / 30 問 クリア</p>
     <div id="progress-bar-wrap" class="hidden">
@@ -76,8 +85,29 @@
   </div>
   <button id="chat-toggle">AI</button>
 
+  <!-- 認証モーダル -->
+  <div id="auth-modal" class="hidden">
+    <div id="auth-modal-overlay" onclick="closeAuthModal()"></div>
+    <div id="auth-modal-box">
+      <div id="auth-modal-header">
+        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">LOGIN</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">SIGN UP</button>
+        <button id="auth-modal-close" onclick="closeAuthModal()">✕</button>
+      </div>
+      <div id="auth-modal-body">
+        <div id="auth-error" class="hidden"></div>
+        <div id="auth-success" class="hidden"></div>
+        <input type="email" id="auth-email" placeholder="メールアドレス" autocomplete="email">
+        <input type="password" id="auth-password" placeholder="パスワード（6文字以上）" autocomplete="current-password">
+        <button id="auth-submit-btn" onclick="submitAuth()">LOGIN</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Ace Editor (VS Code と同じエンジン) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.5/ace.min.js"></script>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="script.js"></script>
 </body>
 </html>

@@ -1,4 +1,23 @@
-﻿// ===== 言語データ =====
+﻿// ===== Supabase 設定 =====
+// Supabase プロジェクト作成後、以下の2行を書き換えてください
+// https://supabase.com → Project Settings → API で確認できます
+var SUPABASE_URL      = 'https://mvebyobsjywbormbzgtv.supabase.co';
+var SUPABASE_ANON_KEY = 'sb_publishable_u5R6gvT2YjwviCrHz8ZoOw_PAcGfVe0';
+
+var _supabase = null;
+try {
+  if (window.supabase && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+    _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+} catch(e) {}
+
+var currentUser = null;
+var _currentAuthTab = 'login';
+// 進捗のインメモリキャッシュ（言語切替時にリセット）
+var _progressCache = null;
+var _missionProgressCache = null;
+
+// ===== 言語データ =====
 
 var LANGUAGE_GROUPS = [
   {
@@ -193,12 +212,19 @@ function setActiveTab(tab) {
 
 function selectLanguage(langId) {
   currentLanguage = langId;
+  _progressCache = null;
+  _missionProgressCache = null;
   history.pushState({ page: 'list', lang: langId, tab: 'problems' }, '');
   showNavAndProgress();
   setActiveTab('problems');
   renderList();
   updateProgressDisplay();
   showPage('list');
+  // ログイン中なら Supabase から進捗を同期
+  if (currentUser && _supabase) {
+    syncProgressFromSupabase();
+    syncMissionProgressFromSupabase();
+  }
 }
 
 // ===== ブラウザ履歴の復元 =====
@@ -2547,28 +2573,79 @@ function getLangName() {
   return 'C++';
 }
 
-// ===== 進捗管理 =====
+// ===== 進捗管理 (Supabase 対応) =====
 
-function loadProgress() {
-  const data = localStorage.getItem(getProgressKey());
+function _getLocalProgress() {
+  var data = localStorage.getItem(getProgressKey());
   return data ? JSON.parse(data) : [];
 }
 
+function loadProgress() {
+  if (_progressCache !== null) return _progressCache.slice();
+  return _getLocalProgress();
+}
+
 function saveProgress(id) {
-  const progress = loadProgress();
-  if (!progress.includes(id)) {
-    progress.push(id);
-    localStorage.setItem(getProgressKey(), JSON.stringify(progress));
+  var progress = loadProgress();
+  if (progress.includes(id)) return;
+  progress.push(id);
+  _progressCache = progress;
+  localStorage.setItem(getProgressKey(), JSON.stringify(progress));
+  if (currentUser && _supabase) {
+    _supabase.from('progress').upsert({
+      user_id: currentUser.id,
+      language: currentLanguage || 'cpp',
+      problem_id: id
+    }).then(function() {}).catch(function() {});
   }
 }
 
 function removeProgress(id) {
-  const progress = loadProgress().filter(function(x) { return x !== id; });
+  var progress = loadProgress().filter(function(x) { return x !== id; });
+  _progressCache = progress;
   localStorage.setItem(getProgressKey(), JSON.stringify(progress));
+  if (currentUser && _supabase) {
+    _supabase.from('progress')
+      .delete()
+      .eq('user_id', currentUser.id)
+      .eq('language', currentLanguage || 'cpp')
+      .eq('problem_id', id)
+      .then(function() {}).catch(function() {});
+  }
 }
 
 function isLearned(id) {
   return loadProgress().includes(id);
+}
+
+async function syncProgressFromSupabase() {
+  if (!currentUser || !_supabase || !currentLanguage) return;
+  var lang = currentLanguage;
+  try {
+    var result = await _supabase
+      .from('progress')
+      .select('problem_id')
+      .eq('user_id', currentUser.id)
+      .eq('language', lang);
+    if (result.error) return;
+    var remoteIds = (result.data || []).map(function(r) { return r.problem_id; });
+    var localIds  = _getLocalProgress();
+    // リモート ∪ ローカル をマージ
+    var merged = remoteIds.slice();
+    localIds.forEach(function(id) { if (!merged.includes(id)) merged.push(id); });
+    _progressCache = merged;
+    localStorage.setItem(getProgressKey(), JSON.stringify(merged));
+    // ローカルのみのものを Supabase に書き込む
+    var toUpload = localIds.filter(function(id) { return !remoteIds.includes(id); });
+    if (toUpload.length > 0) {
+      var rows = toUpload.map(function(id) {
+        return { user_id: currentUser.id, language: lang, problem_id: id };
+      });
+      await _supabase.from('progress').upsert(rows);
+    }
+  } catch(e) {}
+  updateProgressDisplay();
+  renderList();
 }
 
 // ===== 画面切り替え =====
@@ -3111,26 +3188,73 @@ function toggleGuideUnit(id) {
 
 // ===== ミッション一覧の描画 =====
 
-function loadMissionProgress() {
-  const data = localStorage.getItem(getMissionProgressKey());
+function _getLocalMissionProgress() {
+  var data = localStorage.getItem(getMissionProgressKey());
   return data ? JSON.parse(data) : [];
 }
 
+function loadMissionProgress() {
+  if (_missionProgressCache !== null) return _missionProgressCache.slice();
+  return _getLocalMissionProgress();
+}
+
 function saveMissionProgress(id) {
-  const progress = loadMissionProgress();
-  if (!progress.includes(id)) {
-    progress.push(id);
-    localStorage.setItem(getMissionProgressKey(), JSON.stringify(progress));
+  var progress = loadMissionProgress();
+  if (progress.includes(id)) return;
+  progress.push(id);
+  _missionProgressCache = progress;
+  localStorage.setItem(getMissionProgressKey(), JSON.stringify(progress));
+  if (currentUser && _supabase) {
+    _supabase.from('mission_progress').upsert({
+      user_id: currentUser.id,
+      language: currentLanguage || 'cpp',
+      mission_id: id
+    }).then(function() {}).catch(function() {});
   }
 }
 
 function removeMissionProgress(id) {
-  const progress = loadMissionProgress().filter(function(x) { return x !== id; });
+  var progress = loadMissionProgress().filter(function(x) { return x !== id; });
+  _missionProgressCache = progress;
   localStorage.setItem(getMissionProgressKey(), JSON.stringify(progress));
+  if (currentUser && _supabase) {
+    _supabase.from('mission_progress')
+      .delete()
+      .eq('user_id', currentUser.id)
+      .eq('language', currentLanguage || 'cpp')
+      .eq('mission_id', id)
+      .then(function() {}).catch(function() {});
+  }
 }
 
 function isMissionCleared(id) {
   return loadMissionProgress().includes(id);
+}
+
+async function syncMissionProgressFromSupabase() {
+  if (!currentUser || !_supabase || !currentLanguage) return;
+  var lang = currentLanguage;
+  try {
+    var result = await _supabase
+      .from('mission_progress')
+      .select('mission_id')
+      .eq('user_id', currentUser.id)
+      .eq('language', lang);
+    if (result.error) return;
+    var remoteIds = (result.data || []).map(function(r) { return r.mission_id; });
+    var localIds  = _getLocalMissionProgress();
+    var merged = remoteIds.slice();
+    localIds.forEach(function(id) { if (!merged.includes(id)) merged.push(id); });
+    _missionProgressCache = merged;
+    localStorage.setItem(getMissionProgressKey(), JSON.stringify(merged));
+    var toUpload = localIds.filter(function(id) { return !remoteIds.includes(id); });
+    if (toUpload.length > 0) {
+      var rows = toUpload.map(function(id) {
+        return { user_id: currentUser.id, language: lang, mission_id: id };
+      });
+      await _supabase.from('mission_progress').upsert(rows);
+    }
+  } catch(e) {}
 }
 
 function renderMissionList() {
@@ -3328,6 +3452,139 @@ function toggleLearned(id) {
   renderList();
 }
 
+// ===== 認証モーダル UI =====
+
+function openAuthModal() {
+  document.getElementById('auth-modal').classList.remove('hidden');
+  setTimeout(function() { document.getElementById('auth-email').focus(); }, 50);
+}
+
+function closeAuthModal() {
+  document.getElementById('auth-modal').classList.add('hidden');
+  document.getElementById('auth-error').classList.add('hidden');
+  document.getElementById('auth-success').classList.add('hidden');
+  document.getElementById('auth-email').value = '';
+  document.getElementById('auth-password').value = '';
+}
+
+function switchAuthTab(tab) {
+  _currentAuthTab = tab;
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+  document.getElementById('auth-submit-btn').textContent = tab === 'login' ? 'LOGIN' : 'SIGN UP';
+  document.getElementById('auth-error').classList.add('hidden');
+  document.getElementById('auth-success').classList.add('hidden');
+}
+
+async function submitAuth() {
+  var email  = document.getElementById('auth-email').value.trim();
+  var pass   = document.getElementById('auth-password').value;
+  var errEl  = document.getElementById('auth-error');
+  var sucEl  = document.getElementById('auth-success');
+  var btn    = document.getElementById('auth-submit-btn');
+
+  errEl.classList.add('hidden');
+  sucEl.classList.add('hidden');
+
+  if (!email || !pass) {
+    errEl.textContent = 'メールアドレスとパスワードを入力してください';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  if (!_supabase) {
+    errEl.textContent = 'Supabase が未設定です（SUPABASE_URL / SUPABASE_ANON_KEY を設定してください）';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  var result;
+  if (_currentAuthTab === 'login') {
+    result = await _supabase.auth.signInWithPassword({ email: email, password: pass });
+  } else {
+    result = await _supabase.auth.signUp({ email: email, password: pass });
+  }
+
+  btn.disabled = false;
+  btn.textContent = _currentAuthTab === 'login' ? 'LOGIN' : 'SIGN UP';
+
+  if (result.error) {
+    errEl.textContent = result.error.message;
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  // サインアップ後にメール確認が必要な場合
+  if (_currentAuthTab === 'signup' && result.data && result.data.user && !result.data.session) {
+    sucEl.textContent = '確認メールを送信しました。受信ボックスをご確認ください。';
+    sucEl.classList.remove('hidden');
+    return;
+  }
+
+  closeAuthModal();
+}
+
+async function authSignOut() {
+  if (!_supabase) return;
+  await _supabase.auth.signOut();
+  currentUser = null;
+  _progressCache = null;
+  _missionProgressCache = null;
+  updateAuthUI();
+  updateProgressDisplay();
+  if (currentLanguage) { renderList(); renderMissionList(); }
+}
+
+function updateAuthUI() {
+  var btn     = document.getElementById('auth-btn');
+  var info    = document.getElementById('user-info');
+  var emailEl = document.getElementById('user-email-display');
+  if (currentUser) {
+    btn.classList.add('hidden');
+    info.classList.remove('hidden');
+    emailEl.textContent = currentUser.email;
+  } else {
+    btn.classList.remove('hidden');
+    info.classList.add('hidden');
+  }
+}
+
+async function initAuth() {
+  if (!_supabase) return;
+
+  // 認証状態の変化を監視（ログイン/ログアウト時に自動発火）
+  _supabase.auth.onAuthStateChange(async function(event, session) {
+    currentUser = session ? session.user : null;
+    _progressCache = null;
+    _missionProgressCache = null;
+    updateAuthUI();
+    if (currentUser && currentLanguage) {
+      await syncProgressFromSupabase();
+      await syncMissionProgressFromSupabase();
+      updateProgressDisplay();
+      renderList();
+    } else if (!currentUser && currentLanguage) {
+      updateProgressDisplay();
+      renderList();
+    }
+  });
+
+  // ページロード時の既存セッション取得
+  var sessionResult = await _supabase.auth.getSession();
+  if (sessionResult.data && sessionResult.data.session) {
+    currentUser = sessionResult.data.session.user;
+    updateAuthUI();
+    if (currentLanguage) {
+      await syncProgressFromSupabase();
+      await syncMissionProgressFromSupabase();
+      updateProgressDisplay();
+      renderList();
+    }
+  }
+}
+
 // ===== 初期化 =====
 
 document.getElementById("back-btn").addEventListener("click", function() {
@@ -3365,6 +3622,9 @@ document.getElementById('chat-input').addEventListener('keydown', function(e) {
 history.replaceState({ page: 'lang' }, '');
 renderLangSelect();
 showPage("lang");
+
+// Supabase 認証を初期化（非同期）
+initAuth();
 
 // ===== 背景スライドショー =====
 (function() {

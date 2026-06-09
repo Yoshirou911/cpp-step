@@ -147,12 +147,214 @@ header::after {
 }
 #site-title:hover::after { width: 100%; }
 
+/* ヘッダー最上行 (タイトル行 + 認証エリア) */
+.header-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
+}
+
 /* ヘッダータイトル行 (タイトル + 言語バッジ) */
 .header-title-row {
   display: flex;
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
+}
+
+/* 認証エリア */
+#auth-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+#auth-btn {
+  background: rgba(255,107,0,0.10);
+  border: 1px solid rgba(255,107,0,0.35);
+  color: rgba(255,107,0,0.85);
+  padding: 5px 14px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  font-family: 'Share Tech Mono', monospace;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  transition: background 0.2s, color 0.2s;
+}
+#auth-btn:hover {
+  background: rgba(255,107,0,0.25);
+  color: #FF6B00;
+}
+
+#user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#user-email-display {
+  color: rgba(255,255,255,0.55);
+  font-size: 0.72rem;
+  font-family: 'Share Tech Mono', monospace;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#logout-btn {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.35);
+  padding: 4px 11px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  font-family: 'Share Tech Mono', monospace;
+  transition: border-color 0.2s, color 0.2s;
+}
+#logout-btn:hover {
+  border-color: rgba(255,107,0,0.4);
+  color: rgba(255,107,0,0.75);
+}
+
+/* ===== 認証モーダル ===== */
+#auth-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#auth-modal.hidden { display: none !important; }
+
+#auth-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  cursor: pointer;
+}
+
+#auth-modal-box {
+  position: relative;
+  background: #0e0c09;
+  border: 1px solid rgba(255,107,0,0.28);
+  box-shadow:
+    0 0 0 1px rgba(255,107,0,0.06),
+    0 24px 64px rgba(0,0,0,0.85);
+  padding: 28px 28px 32px;
+  width: 360px;
+  max-width: 92vw;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+
+#auth-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 22px;
+}
+
+.auth-tab {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.35);
+  padding: 5px 16px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.auth-tab.active {
+  border-color: #FF6B00;
+  color: #FF6B00;
+  background: rgba(255,107,0,0.10);
+}
+.auth-tab:not(.active):hover {
+  border-color: rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.6);
+}
+
+#auth-modal-close {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.25);
+  font-size: 1.1rem;
+  cursor: pointer;
+  margin-left: auto;
+  padding: 4px 6px;
+  transition: color 0.2s;
+  line-height: 1;
+}
+#auth-modal-close:hover { color: rgba(255,255,255,0.6); }
+
+#auth-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#auth-modal-body input {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #ede0c8;
+  padding: 10px 13px;
+  font-size: 0.88rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.2s;
+}
+#auth-modal-body input:focus {
+  border-color: rgba(255,107,0,0.5);
+}
+#auth-modal-body input::placeholder {
+  color: rgba(255,255,255,0.2);
+}
+
+#auth-submit-btn {
+  margin-top: 4px;
+  background: rgba(255,107,0,0.15);
+  border: 1px solid rgba(255,107,0,0.55);
+  color: #FF6B00;
+  padding: 11px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  font-family: 'Share Tech Mono', monospace;
+  transition: background 0.2s;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+}
+#auth-submit-btn:hover { background: rgba(255,107,0,0.30); }
+#auth-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+#auth-error {
+  background: rgba(255,50,50,0.08);
+  border: 1px solid rgba(255,50,50,0.25);
+  color: #ff7777;
+  padding: 8px 11px;
+  font-size: 0.78rem;
+  font-family: 'Share Tech Mono', monospace;
+  line-height: 1.4;
+}
+
+#auth-success {
+  background: rgba(0,200,100,0.08);
+  border: 1px solid rgba(0,200,100,0.25);
+  color: #55dd99;
+  padding: 8px 11px;
+  font-size: 0.78rem;
+  font-family: 'Share Tech Mono', monospace;
+  line-height: 1.4;
 }
 
 /* 現在の言語バッジ */
