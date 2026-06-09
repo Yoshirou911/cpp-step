@@ -1461,3 +1461,42 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   color: var(--dim);
   letter-spacing: 0.04em;
 }
+
+/* ========== ランク表示・用途タグ ========== */
+.lang-section-rank {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-shadow: 0 0 12px currentColor;
+}
+
+.lang-card-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.lang-use-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.lang-use-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--dim);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,107,0,0.1);
+  border-radius: 3px;
+  padding: 2px 7px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.lang-available:hover .lang-use-tag {
+  border-color: rgba(255,107,0,0.25);
+  color: var(--text);
+}

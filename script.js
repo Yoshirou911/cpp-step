@@ -2,36 +2,100 @@
 
 var LANGUAGE_GROUPS = [
   {
-    level: 'BEGINNER',
-    label: '🟢 初心者向け',
-    desc: 'シンプルな文法で始めやすい',
+    rank: 'ROOKIE',
+    rankColor: '#9B9B9B',
+    desc: '文法がシンプルで誰でも始めやすい',
     langs: [
-      { id: 'python',     name: 'Python',     color: '#3776AB', problems: 0,  available: false },
-      { id: 'javascript', name: 'JavaScript', color: '#F0C040', problems: 0,  available: false },
-      { id: 'ruby',       name: 'Ruby',       color: '#CC342D', problems: 0,  available: false },
+      {
+        id: 'python', name: 'Python', color: '#3776AB', problems: 0, available: false,
+        uses: ['AI・機械学習', 'データ分析', 'Web開発', '自動化スクリプト']
+      },
     ]
   },
   {
-    level: 'INTERMEDIATE',
-    label: '🟡 中級者向け',
-    desc: 'オブジェクト指向・型システムを学ぶ',
+    rank: 'BRONZE',
+    rankColor: '#C47A2F',
+    desc: '少し複雑だが実用的なアプリが作れる',
     langs: [
-      { id: 'java',       name: 'Java',       color: '#ED8B00', problems: 0,  available: false },
-      { id: 'csharp',     name: 'C#',         color: '#9B4F96', problems: 0,  available: false },
-      { id: 'typescript', name: 'TypeScript', color: '#3178C6', problems: 0,  available: false },
-      { id: 'kotlin',     name: 'Kotlin',     color: '#7F52FF', problems: 0,  available: false },
-      { id: 'swift',      name: 'Swift',      color: '#FA7343', problems: 0,  available: false },
-      { id: 'go',         name: 'Go',         color: '#00ADD8', problems: 0,  available: false },
+      {
+        id: 'javascript', name: 'JavaScript', color: '#F0C040', problems: 0, available: false,
+        uses: ['Webフロントエンド', 'ブラウザゲーム', 'Node.js サーバー']
+      },
+      {
+        id: 'ruby', name: 'Ruby', color: '#CC342D', problems: 0, available: false,
+        uses: ['Web開発 (Rails)', 'スクリプト自動化', 'プロトタイプ開発']
+      },
     ]
   },
   {
-    level: 'ADVANCED',
-    label: '🔴 上級者向け',
-    desc: 'メモリ管理・低レベル操作を扱う',
+    rank: 'SILVER',
+    rankColor: '#B8C8D8',
+    desc: '型システムやOOP(オブジェクト指向)を本格的に学ぶ',
     langs: [
-      { id: 'c',          name: 'C',          color: '#A8B9CC', problems: 0,  available: false },
-      { id: 'cpp',        name: 'C++',        color: '#00599C', problems: 30, available: true  },
-      { id: 'rust',       name: 'Rust',       color: '#CE412B', problems: 0,  available: false },
+      {
+        id: 'typescript', name: 'TypeScript', color: '#3178C6', problems: 0, available: false,
+        uses: ['大規模Webアプリ', '型安全なフロントエンド', 'フレームワーク開発']
+      },
+      {
+        id: 'kotlin', name: 'Kotlin', color: '#7F52FF', problems: 0, available: false,
+        uses: ['Androidアプリ', 'サーバーサイド', 'Spring Boot']
+      },
+      {
+        id: 'swift', name: 'Swift', color: '#FA7343', problems: 0, available: false,
+        uses: ['iOSアプリ', 'macOSアプリ', 'watchOS・tvOS']
+      },
+    ]
+  },
+  {
+    rank: 'GOLD',
+    rankColor: '#EFC050',
+    desc: '企業現場でよく使われる実践的な言語',
+    langs: [
+      {
+        id: 'java', name: 'Java', color: '#ED8B00', problems: 0, available: false,
+        uses: ['企業向けシステム', 'Androidアプリ', 'Spring Bootサーバー']
+      },
+      {
+        id: 'csharp', name: 'C#', color: '#9B4F96', problems: 0, available: false,
+        uses: ['Unityゲーム開発', 'Windowsアプリ', '.NETサーバー']
+      },
+      {
+        id: 'go', name: 'Go', color: '#00ADD8', problems: 0, available: false,
+        uses: ['高速APIサーバー', 'Dockerなどインフラツール', 'クラウドサービス']
+      },
+    ]
+  },
+  {
+    rank: 'PLATINUM',
+    rankColor: '#00C8B4',
+    desc: 'OS・組み込みなど低レベルの世界',
+    langs: [
+      {
+        id: 'c', name: 'C', color: '#A8B9CC', problems: 0, available: false,
+        uses: ['OS開発 (Linux等)', '組み込み・マイコン', 'ドライバ・ファームウェア']
+      },
+    ]
+  },
+  {
+    rank: 'DIAMOND',
+    rankColor: '#5588FF',
+    desc: '高速・高機能。習得難度は高いが強力',
+    langs: [
+      {
+        id: 'cpp', name: 'C++', color: '#00599C', problems: 30, available: true,
+        uses: ['ゲームエンジン (Unreal)', 'OS・ブラウザ開発', '競技プログラミング', '高速数値計算']
+      },
+    ]
+  },
+  {
+    rank: 'MASTER',
+    rankColor: '#C040FF',
+    desc: '最高難度。安全性と速度を両立する次世代言語',
+    langs: [
+      {
+        id: 'rust', name: 'Rust', color: '#CE412B', problems: 0, available: false,
+        uses: ['システムプログラミング', 'WebAssembly', 'OSカーネル', '高安全性ソフト']
+      },
     ]
   },
 ];
@@ -53,7 +117,7 @@ function renderLangSelect() {
     section.className = 'lang-section';
     section.innerHTML =
       '<div class="lang-section-header">' +
-        '<span class="lang-section-label">' + group.label + '</span>' +
+        '<span class="lang-section-rank" style="color:' + group.rankColor + '">' + group.rank + '</span>' +
         '<span class="lang-section-desc">' + group.desc + '</span>' +
       '</div>' +
       '<div class="lang-grid"></div>';
@@ -64,13 +128,20 @@ function renderLangSelect() {
       var card = document.createElement('div');
       card.className = 'lang-card' + (lang.available ? ' lang-available' : ' lang-coming');
 
+      var useTags = lang.uses.map(function(u) {
+        return '<span class="lang-use-tag">' + u + '</span>';
+      }).join('');
+
       card.innerHTML =
         '<div class="lang-card-bar" style="background:' + lang.color + '"></div>' +
         '<div class="lang-card-body">' +
-          '<div class="lang-card-name">' + lang.name + '</div>' +
-          '<div class="lang-card-status' + (lang.available ? ' lang-status-open' : '') + '">' +
-            (lang.available ? lang.problems + ' PROBLEMS' : 'COMING SOON') +
+          '<div class="lang-card-top">' +
+            '<div class="lang-card-name">' + lang.name + '</div>' +
+            '<div class="lang-card-status' + (lang.available ? ' lang-status-open' : '') + '">' +
+              (lang.available ? lang.problems + ' PROBLEMS' : 'COMING SOON') +
+            '</div>' +
           '</div>' +
+          '<div class="lang-use-tags">' + useTags + '</div>' +
         '</div>';
 
       if (lang.available) {
