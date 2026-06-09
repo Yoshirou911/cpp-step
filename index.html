@@ -318,6 +318,41 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.5/ace.min.js"></script>
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- 管理者パネルモーダル -->
+  <div id="admin-panel" class="hidden">
+    <div class="admin-overlay" onclick="closeAdminPanel()"></div>
+    <div class="admin-box">
+      <div class="admin-header">
+        <span class="admin-header-title">⚙ 管理者パネル</span>
+        <button class="admin-close-btn" onclick="closeAdminPanel()">✕</button>
+      </div>
+
+      <!-- プレミアム付与 -->
+      <div class="admin-section">
+        <div class="admin-section-title">◆ プレミアム管理</div>
+        <div class="admin-input-row">
+          <input id="admin-email-input" type="email" class="admin-email-input"
+            placeholder="対象ユーザーのメールアドレス" autocomplete="off" />
+        </div>
+        <div class="admin-btn-row">
+          <button id="admin-give-btn" class="admin-btn admin-btn-give"
+            onclick="adminSetPremium(true)">✓ PLUSを付与</button>
+          <button id="admin-take-btn" class="admin-btn admin-btn-take"
+            onclick="adminSetPremium(false)">✕ PLUSを取消</button>
+        </div>
+        <div id="admin-msg" class="admin-msg"></div>
+      </div>
+
+      <!-- 表示テスト -->
+      <div class="admin-section">
+        <div class="admin-section-title">◆ 表示プレビュー</div>
+        <div class="admin-section-desc">実際には変更せず、表示だけを切り替えます</div>
+        <button id="admin-preview-toggle" class="admin-btn admin-btn-preview"
+          onclick="adminTogglePreview()">○ 実際の表示（PLUS）</button>
+      </div>
+    </div>
+  </div>
+
   <!-- プレミアムモーダル -->
   <div id="premium-modal" class="hidden">
     <div class="premium-overlay" onclick="closePremiumModal()"></div>

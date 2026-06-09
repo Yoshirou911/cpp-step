@@ -3097,6 +3097,164 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 }
 
 /* ─────────────────────────────────────────────────────────
+   管理者パネル
+   ────────────────────────────────────────────────────── */
+.admin-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 9000;
+}
+.admin-box {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9001;
+  background: #0e0c08;
+  border: 1px solid rgba(80,200,120,0.3);
+  border-radius: 14px;
+  width: min(400px, 92vw);
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(80,200,120,0.08), 0 20px 60px rgba(0,0,0,0.7);
+}
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(80,200,120,0.06);
+  border-bottom: 1px solid rgba(80,200,120,0.15);
+  padding: 14px 18px;
+}
+.admin-header-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.9rem;
+  color: rgba(80,200,120,0.9);
+  letter-spacing: 0.05em;
+}
+.admin-close-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.3);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  transition: color 0.2s;
+}
+.admin-close-btn:hover { color: rgba(255,255,255,0.7); }
+
+.admin-section {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.admin-section:last-child { border-bottom: none; }
+.admin-section-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: rgba(80,200,120,0.6);
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+.admin-section-desc {
+  font-size: 0.72rem;
+  color: rgba(140,130,100,0.5);
+  margin-bottom: 10px;
+}
+.admin-input-row { margin-bottom: 10px; }
+.admin-email-input {
+  width: 100%;
+  padding: 9px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 7px;
+  color: rgba(237,224,200,0.9);
+  font-size: 0.82rem;
+  outline: none;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.admin-email-input:focus { border-color: rgba(80,200,120,0.4); }
+.admin-email-input::placeholder { color: rgba(120,110,80,0.4); }
+
+.admin-btn-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.admin-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 7px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: 'Share Tech Mono', monospace;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.admin-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.admin-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.admin-btn-give  { background: rgba(80,200,120,0.18); color: #4cba80; border: 1px solid rgba(80,200,120,0.3); }
+.admin-btn-take  { background: rgba(255,80,80,0.12);  color: #e06060; border: 1px solid rgba(255,80,80,0.25); }
+.admin-btn-preview {
+  width: 100%;
+  background: rgba(255,165,0,0.1);
+  color: rgba(200,150,60,0.8);
+  border: 1px solid rgba(200,130,0,0.25);
+  padding: 9px;
+  letter-spacing: 0.04em;
+}
+.admin-btn-preview.active-preview {
+  background: rgba(255,165,0,0.2);
+  color: #ffa040;
+  border-color: rgba(255,165,0,0.5);
+  box-shadow: 0 0 12px rgba(255,165,0,0.15);
+}
+.admin-msg {
+  font-size: 0.78rem;
+  min-height: 18px;
+  color: rgba(80,200,120,0.8);
+}
+
+/* プロフィール内の管理者バッジ・ボタン */
+.admin-badge-label {
+  display: inline-block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(80,200,120,0.8);
+  border: 1px solid rgba(80,200,120,0.3);
+  border-radius: 4px;
+  padding: 1px 7px;
+  margin-bottom: 6px;
+  letter-spacing: 0.08em;
+}
+.admin-open-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin: 10px 0 0;
+  padding: 10px;
+  background: rgba(80,200,120,0.06);
+  border: 1px solid rgba(80,200,120,0.2);
+  border-radius: 8px;
+  color: rgba(80,200,120,0.75);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.admin-open-btn:hover {
+  background: rgba(80,200,120,0.12);
+  border-color: rgba(80,200,120,0.4);
+  color: rgba(80,200,120,1);
+}
+
+/* ─────────────────────────────────────────────────────────
    プレミアムロック（問題カード・ミッションカード）
    ────────────────────────────────────────────────────── */
 .premium-locked-card {

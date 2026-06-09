@@ -286,6 +286,9 @@ try {
 
 var currentUser = null;
 var currentUserIsPremium = false;
+var currentUserIsAdmin = false;
+var _premiumStatusCache = false;  // 実際のSupabase値（管理者プレビュー用に保持）
+var _adminPreviewFree = false;    // 管理者が「無料ユーザーとして表示」テスト中
 var PREMIUM_RANKS = ['SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND'];
 var _currentAuthTab = 'login';
 // 進捗のインメモリキャッシュ（言語切替時にリセット）
@@ -862,26 +865,37 @@ function isPremiumRequired(rank) {
 }
 
 async function fetchUserProfile() {
-  if (!currentUser || !_supabase) { currentUserIsPremium = false; updateAdDisplay(); return; }
+  if (!currentUser || !_supabase) {
+    currentUserIsPremium = false; currentUserIsAdmin = false;
+    updateAdDisplay(); return;
+  }
   try {
     var result = await _supabase
       .from('user_profiles')
-      .select('is_premium')
+      .select('is_premium, is_admin')
       .eq('user_id', currentUser.id)
       .maybeSingle();
     if (result.data) {
-      currentUserIsPremium = !!result.data.is_premium;
+      _premiumStatusCache  = !!result.data.is_premium;
+      currentUserIsAdmin   = !!result.data.is_admin;
     } else {
       // プロフィールが存在しなければ作成
       await _supabase.from('user_profiles').upsert({
         user_id: currentUser.id,
-        is_premium: false
+        is_premium: false,
+        is_admin: false
       });
-      currentUserIsPremium = false;
+      _premiumStatusCache = false;
+      currentUserIsAdmin  = false;
     }
-  } catch(e) { currentUserIsPremium = false; }
+    // 管理者プレビュー中でなければ実際の値を適用
+    currentUserIsPremium = _adminPreviewFree ? false : _premiumStatusCache;
+  } catch(e) {
+    currentUserIsPremium = false; currentUserIsAdmin = false;
+  }
   updateAdDisplay();
   if (currentLanguage) { renderList(); renderMissionList(); }
+  updateAdminBtnVisibility();
 }
 
 function updateAdDisplay() {
@@ -894,6 +908,76 @@ function updateAdDisplay() {
     }
   });
 }
+
+// ===== 管理者パネル =====
+
+function updateAdminBtnVisibility() {
+  var btn = document.getElementById('admin-panel-btn');
+  if (btn) btn.style.display = currentUserIsAdmin ? 'inline-flex' : 'none';
+}
+
+function openAdminPanel() {
+  if (!currentUserIsAdmin) return;
+  // プレビュー状態をボタンに反映
+  var toggle = document.getElementById('admin-preview-toggle');
+  if (toggle) {
+    toggle.textContent = _adminPreviewFree ? '● 無料ユーザー表示中' : '○ 実際の表示（PLUS）';
+    toggle.classList.toggle('active-preview', _adminPreviewFree);
+  }
+  document.getElementById('admin-panel').classList.remove('hidden');
+}
+
+function closeAdminPanel() {
+  document.getElementById('admin-panel').classList.add('hidden');
+  document.getElementById('admin-msg').textContent = '';
+  document.getElementById('admin-email-input').value = '';
+}
+
+function adminTogglePreview() {
+  if (!currentUserIsAdmin) return;
+  _adminPreviewFree = !_adminPreviewFree;
+  currentUserIsPremium = _adminPreviewFree ? false : _premiumStatusCache;
+  var toggle = document.getElementById('admin-preview-toggle');
+  if (toggle) {
+    toggle.textContent = _adminPreviewFree ? '● 無料ユーザー表示中' : '○ 実際の表示（PLUS）';
+    toggle.classList.toggle('active-preview', _adminPreviewFree);
+  }
+  updateAdDisplay();
+  if (currentLanguage) { renderList(); renderMissionList(); }
+}
+
+async function adminSetPremium(isPremium) {
+  if (!currentUserIsAdmin) return;
+  var email   = document.getElementById('admin-email-input').value.trim();
+  var msgEl   = document.getElementById('admin-msg');
+  var btnGive = document.getElementById('admin-give-btn');
+  var btnTake = document.getElementById('admin-take-btn');
+  if (!email) { msgEl.textContent = '❌ メールアドレスを入力してください'; return; }
+
+  btnGive.disabled = true; btnTake.disabled = true;
+  msgEl.textContent = '処理中...';
+
+  try {
+    var res = await fetch('/api/admin-grant', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ adminUserId: currentUser.id, targetEmail: email, isPremium: isPremium })
+    });
+    var data = await res.json();
+    if (data.error) throw new Error(data.error);
+    msgEl.textContent = isPremium
+      ? '✅ ' + email + ' に PLUS を付与しました'
+      : '✅ ' + email + ' の PLUS を取り消しました';
+    msgEl.style.color = '#4caf90';
+  } catch(e) {
+    msgEl.textContent = '❌ ' + e.message;
+    msgEl.style.color = '#ff6060';
+  } finally {
+    btnGive.disabled = false; btnTake.disabled = false;
+  }
+}
+
+// ===== プレミアムモーダル =====
 
 function openPremiumModal() {
   document.getElementById('premium-modal').classList.remove('hidden');
@@ -4677,6 +4761,7 @@ async function renderProfile() {
       '<div class="profile-avatar" style="--rank-color:' + rank.color + '">' + avatarLetter + '</div>' +
       '<div class="profile-hero-info">' +
         '<div class="profile-email">' + displayName + '</div>' +
+        (currentUserIsAdmin ? '<div class="admin-badge-label">⚙ ADMIN</div>' : '') +
         '<div class="profile-rank-badge" style="color:' + rank.color + ';border-color:' + rank.color + ';box-shadow:0 0 12px ' + rank.color + '33">' +
           '◆ ' + rank.name + ' ◆' +
         '</div>' +
@@ -4684,6 +4769,9 @@ async function renderProfile() {
         '<div class="profile-mission-total">' + stats.totalMissions + ' / 18 MISSIONS</div>' +
       '</div>' +
     '</div>' +
+    (currentUserIsAdmin
+      ? '<button id="admin-panel-btn" class="admin-open-btn" onclick="openAdminPanel()">⚙ 管理者パネルを開く</button>'
+      : '') +
 
     // ─── EXP・レベル ───
     '<div class="profile-section exp-section">' +
