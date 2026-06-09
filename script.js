@@ -855,11 +855,71 @@ function selectLanguage(langId) {
 
 // ===== ブラウザ履歴の復元 =====
 
+function startApp() {
+  playLangSelect();
+  localStorage.setItem('app_started', '1');
+  history.pushState({ page: 'lang' }, '');
+  renderLangSelect();
+  showPage('lang');
+}
+
+function openPrivacyPolicy() {
+  document.getElementById('privacy-modal').classList.remove('hidden');
+}
+function closePrivacyPolicy() {
+  document.getElementById('privacy-modal').classList.add('hidden');
+}
+function openTermsModal() {
+  document.getElementById('terms-modal').classList.remove('hidden');
+}
+function closeTermsModal() {
+  document.getElementById('terms-modal').classList.add('hidden');
+}
+
+// パスワードリセットメール送信
+async function sendPasswordReset() {
+  var email = document.getElementById('auth-email').value.trim();
+  var errEl = document.getElementById('auth-error');
+  var sucEl = document.getElementById('auth-success');
+  errEl.classList.add('hidden');
+  sucEl.classList.add('hidden');
+
+  if (!email) {
+    errEl.textContent = 'メールアドレスを入力してください';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  if (!_supabase) return;
+
+  var btn = document.getElementById('forgot-pw-btn');
+  btn.disabled = true;
+  btn.textContent = '送信中...';
+
+  try {
+    var result = await _supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/'
+    });
+    if (result.error) throw result.error;
+    sucEl.textContent = 'パスワードリセットメールを送信しました。受信ボックスをご確認ください。';
+    sucEl.classList.remove('hidden');
+  } catch(e) {
+    errEl.textContent = '送信エラー: ' + (e.message || '不明なエラー');
+    errEl.classList.remove('hidden');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'パスワードを忘れた方';
+}
+
 function restoreState(state) {
   if (!state || state.page === 'lang') {
     currentLanguage = null;
     renderLangSelect();
     showPage('lang');
+    return;
+  }
+  if (state.page === 'landing') {
+    showPage('landing');
     return;
   }
   currentLanguage = state.lang || null;
@@ -3374,7 +3434,7 @@ function showPage(name) {
   // 問題/ミッション詳細を離れるときに学習タイマーを保存
   stopStudyTimer();
   // 全ページを非表示にしてから対象だけ表示
-  ["page-lang", "page-list", "page-detail", "page-guide",
+  ["page-landing", "page-lang", "page-list", "page-detail", "page-guide",
    "page-mission-list", "page-mission-detail", "page-profile"].forEach(function(id) {
     document.getElementById(id).classList.add("hidden");
   });
@@ -3714,25 +3774,38 @@ async function runCode() {
   if (judgeArea) judgeArea.classList.add("hidden");
 
   try {
+    const controller = new AbortController();
+    const _timeout   = setTimeout(function() { controller.abort(); }, 20000);
+
     const res = await fetch("https://wandbox.org/api/compile.json", {
-      method: "POST",
+      method:  "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: code, compiler: getCompiler(), stdin: stdin })
+      body:    JSON.stringify({ code: code, compiler: getCompiler(), stdin: stdin }),
+      signal:  controller.signal
     });
+    clearTimeout(_timeout);
+
+    if (!res.ok) {
+      throw new Error('HTTP ' + res.status + ' — Wandbox APIエラー');
+    }
+
     const data = await res.json();
     outputArea.classList.remove("hidden");
 
     if (data.compiler_error) {
       outputText.textContent = "コンパイルエラー:\n" + data.compiler_error;
       outputText.className = "output-error";
+    } else if (data.program_error && !data.program_output) {
+      outputText.textContent = "実行時エラー:\n" + data.program_error;
+      outputText.className = "output-error";
     } else {
-      const output = data.program_output || "";
+      const output = (data.program_output || "") + (data.program_error ? "\n[stderr]\n" + data.program_error : "");
       outputText.textContent = output || "(出力なし)";
       outputText.className = "output-success";
 
       // 出力がある＆まだクリアしていない → 自動判定
-      if (output && currentProblemId && !isLearned(currentProblemId)) {
-        startAutoJudge(currentProblemId, output);
+      if (data.program_output && currentProblemId && !isLearned(currentProblemId)) {
+        startAutoJudge(currentProblemId, data.program_output);
       } else if (isLearned(currentProblemId)) {
         if (judgeArea) {
           judgeArea.innerHTML = '<div class="judge-pass">✔ CLEARED</div>';
@@ -3742,7 +3815,11 @@ async function runCode() {
     }
   } catch (e) {
     outputArea.classList.remove("hidden");
-    outputText.textContent = "エラー: 実行できませんでした。インターネット接続を確認してください。";
+    if (e.name === 'AbortError') {
+      outputText.textContent = "⏱ タイムアウト（20秒）: 無限ループや長時間処理が含まれていないか確認してください。";
+    } else {
+      outputText.textContent = "⚠ 実行エラー: Wandbox APIに接続できませんでした。\nインターネット接続を確認するか、しばらく待ってから再試行してください。\n詳細: " + e.message;
+    }
     outputText.className = "output-error";
   }
 
@@ -4607,6 +4684,8 @@ function closeAuthModal() {
   document.getElementById('auth-success').classList.add('hidden');
   document.getElementById('auth-email').value = '';
   document.getElementById('auth-password').value = '';
+  var fpBtn = document.getElementById('forgot-pw-btn');
+  if (fpBtn) { fpBtn.disabled = false; fpBtn.textContent = 'パスワードを忘れた方'; }
 }
 
 function switchAuthTab(tab) {
@@ -4750,10 +4829,15 @@ document.getElementById("profile-back-btn").addEventListener("click", function()
 
 document.getElementById("site-title").addEventListener("click", function() {
   playGoBack();
-  history.pushState({ page: 'lang' }, '');
   currentLanguage = null;
-  renderLangSelect();
-  showPage("lang");
+  if (!localStorage.getItem('app_started')) {
+    history.pushState({ page: 'landing' }, '');
+    showPage('landing');
+  } else {
+    history.pushState({ page: 'lang' }, '');
+    renderLangSelect();
+    showPage('lang');
+  }
 });
 
 document.getElementById('chat-toggle').addEventListener('click', function() {
@@ -4773,9 +4857,16 @@ document.getElementById('chat-input').addEventListener('keydown', function(e) {
   }
 });
 
-history.replaceState({ page: 'lang' }, '');
 renderLangSelect();
-showPage("lang");
+if (!localStorage.getItem('app_started')) {
+  // 初回訪問 → ランディングページを表示
+  history.replaceState({ page: 'landing' }, '');
+  showPage('landing');
+} else {
+  // 再訪問 → 言語選択へ
+  history.replaceState({ page: 'lang' }, '');
+  showPage('lang');
+}
 
 // ゲスト時もローカルにログイン日を記録
 recordLoginDay();

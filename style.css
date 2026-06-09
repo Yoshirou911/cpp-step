@@ -357,6 +357,376 @@ header::after {
   line-height: 1.4;
 }
 
+/* 認証モーダル追加要素 */
+.auth-extra-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+.auth-text-link {
+  background: none;
+  border: none;
+  color: rgba(160,144,112,0.45);
+  font-size: 0.65rem;
+  font-family: 'Share Tech Mono', monospace;
+  cursor: pointer;
+  padding: 3px 4px;
+  transition: color 0.2s;
+  letter-spacing: 0.05em;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.auth-text-link:hover { color: rgba(255,107,0,0.75); }
+.auth-text-link:disabled { opacity: 0.45; cursor: not-allowed; text-decoration: none; }
+.auth-link-sep {
+  color: rgba(160,144,112,0.25);
+  font-size: 0.60rem;
+}
+
+/* ──────────────────────────────────────────
+   LANDING PAGE
+────────────────────────────────────────── */
+
+#page-landing {
+  min-height: calc(100vh - 80px);
+  overflow-y: auto;
+}
+
+.landing-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 24px 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 56px;
+}
+
+/* ヒーロー */
+.landing-hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.landing-pre-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.28em;
+  color: rgba(255,107,0,0.50);
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.landing-title-main {
+  font-size: clamp(3.6rem, 12vw, 6.5rem);
+  font-weight: 900;
+  font-family: 'Barlow Condensed', sans-serif;
+  color: var(--bright);
+  letter-spacing: 0.04em;
+  line-height: 0.9;
+}
+.landing-title-step {
+  color: var(--orange);
+  text-shadow: 0 0 30px rgba(255,107,0,0.4);
+}
+
+.landing-tagline {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 800;
+  font-family: 'Barlow Condensed', sans-serif;
+  color: var(--bright);
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+}
+
+.landing-desc {
+  font-size: 0.92rem;
+  color: rgba(237,224,200,0.55);
+  font-family: 'Share Tech Mono', monospace;
+  line-height: 1.7;
+  letter-spacing: 0.04em;
+}
+
+.landing-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.landing-btn-primary {
+  background: rgba(255,107,0,0.18);
+  border: 1px solid #FF6B00;
+  color: #FF6B00;
+  padding: 14px 32px;
+  font-size: 1.0rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  font-family: 'Share Tech Mono', monospace;
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 18px rgba(255,107,0,0.20);
+}
+.landing-btn-primary:hover {
+  background: rgba(255,107,0,0.32);
+  box-shadow: 0 0 28px rgba(255,107,0,0.38);
+}
+.landing-btn-primary.large {
+  padding: 16px 48px;
+  font-size: 1.05rem;
+}
+
+.landing-btn-secondary {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(237,224,200,0.65);
+  padding: 14px 28px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  font-family: 'Share Tech Mono', monospace;
+  transition: border-color 0.2s, color 0.2s;
+}
+.landing-btn-secondary:hover {
+  border-color: rgba(255,255,255,0.38);
+  color: rgba(237,224,200,0.90);
+}
+
+.landing-free-note {
+  font-size: 0.65rem;
+  color: rgba(160,144,112,0.40);
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 0.06em;
+  margin-top: 4px;
+}
+
+/* 統計行 */
+.landing-stats-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 28px 32px;
+  background: rgba(14,12,9,0.7);
+  border: 1px solid rgba(255,107,0,0.10);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  width: 100%;
+}
+.landing-stat {
+  text-align: center;
+}
+.ls-num {
+  font-size: 2.6rem;
+  font-weight: 900;
+  font-family: 'Barlow Condensed', sans-serif;
+  color: #FF6B00;
+  line-height: 1;
+}
+.ls-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  color: rgba(160,144,112,0.50);
+  font-family: 'Share Tech Mono', monospace;
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+.landing-stat-sep {
+  color: rgba(255,107,0,0.25);
+  font-size: 0.7rem;
+}
+
+/* フィーチャーカード */
+.landing-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+.landing-card {
+  background: rgba(14,12,9,0.85);
+  border: 1px solid rgba(255,107,0,0.10);
+  padding: 22px 20px;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  transition: border-color 0.25s;
+}
+.landing-card:hover { border-color: rgba(255,107,0,0.28); }
+.lc-icon {
+  font-size: 1.6rem;
+  margin-bottom: 10px;
+}
+.lc-title {
+  font-size: 0.90rem;
+  font-weight: 700;
+  font-family: 'Barlow Condensed', sans-serif;
+  color: var(--bright);
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.lc-desc {
+  font-size: 0.72rem;
+  color: rgba(160,144,112,0.55);
+  font-family: 'Share Tech Mono', monospace;
+  line-height: 1.65;
+}
+
+/* 言語行 */
+.landing-langs-row {
+  display: flex;
+  gap: 28px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.landing-lang {
+  font-size: 1.4rem;
+  font-weight: 900;
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 0.06em;
+  opacity: 0.80;
+}
+
+/* ボトムCTA */
+.landing-bottom-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.landing-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.landing-text-link {
+  background: none;
+  border: none;
+  color: rgba(160,144,112,0.38);
+  font-size: 0.62rem;
+  font-family: 'Share Tech Mono', monospace;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s;
+  padding: 2px;
+}
+.landing-text-link:hover { color: rgba(255,107,0,0.65); }
+a.landing-text-link { text-decoration: underline; }
+.lfl-sep {
+  color: rgba(160,144,112,0.22);
+  font-size: 0.60rem;
+}
+
+/* ──────────────────────────────────────────
+   法的モーダル（プライバシー / 利用規約）
+────────────────────────────────────────── */
+
+#privacy-modal,
+#terms-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#privacy-modal.hidden,
+#terms-modal.hidden { display: none !important; }
+
+.legal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.78);
+  cursor: pointer;
+}
+
+.legal-box {
+  position: relative;
+  background: #0e0c09;
+  border: 1px solid rgba(255,107,0,0.22);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.85);
+  width: 540px;
+  max-width: 94vw;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+
+.legal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 22px;
+  border-bottom: 1px solid rgba(255,107,0,0.12);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: rgba(255,107,0,0.70);
+  font-family: 'Share Tech Mono', monospace;
+  flex-shrink: 0;
+}
+.legal-header button {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.28);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  transition: color 0.2s;
+}
+.legal-header button:hover { color: rgba(255,255,255,0.65); }
+
+.legal-body {
+  padding: 22px 24px 28px;
+  overflow-y: auto;
+  font-size: 0.80rem;
+  font-family: 'Share Tech Mono', monospace;
+  color: rgba(237,224,200,0.60);
+  line-height: 1.7;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,107,0,0.20) transparent;
+}
+.legal-body h3 {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(255,107,0,0.70);
+  letter-spacing: 0.12em;
+  margin: 20px 0 8px;
+  font-family: 'Share Tech Mono', monospace;
+}
+.legal-body h3:first-of-type { margin-top: 0; }
+.legal-body p  { margin-bottom: 8px; }
+.legal-body ul {
+  padding-left: 18px;
+  margin-bottom: 8px;
+}
+.legal-body li { margin-bottom: 4px; }
+.legal-body strong { color: rgba(237,224,200,0.80); }
+.legal-date {
+  font-size: 0.65rem;
+  color: rgba(160,144,112,0.38);
+  margin-bottom: 16px;
+}
+
+/* ランディングページ レスポンシブ */
+@media (max-width: 600px) {
+  .landing-wrap { padding: 32px 16px 48px; gap: 40px; }
+  .landing-stats-row { gap: 12px; padding: 20px 18px; }
+  .ls-num { font-size: 2rem; }
+  .landing-cards { grid-template-columns: 1fr 1fr; }
+  .landing-actions { flex-direction: column; align-items: stretch; }
+  .landing-btn-primary,
+  .landing-btn-secondary { text-align: center; }
+}
+
 /* 現在の言語バッジ */
 #lang-badge {
   display: inline-flex;

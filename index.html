@@ -3,7 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CODE STEP</title>
+  <title>CODE STEP — コードで、レベルアップしろ。</title>
+  <!-- SEO -->
+  <meta name="description" content="C++ / Python / JavaScript をゲームのように学べる無料プログラミング学習アプリ。90問＋ミッション＋バッジ＋EXPシステムで楽しく実力をつけよう。">
+  <meta name="keywords" content="プログラミング学習,C++,Python,JavaScript,コーディング練習,無料,初心者">
+  <!-- OGP -->
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="https://cpp-step.vercel.app/">
+  <meta property="og:title"       content="CODE STEP — コードで、レベルアップしろ。">
+  <meta property="og:description" content="C++ / Python / JavaScript をゲームのように学べる無料プログラミング学習アプリ。90問＋ミッション＋バッジ＋EXPシステム。">
+  <meta property="og:image"       content="https://cpp-step.vercel.app/icon.svg">
+  <meta property="og:site_name"   content="CODE STEP">
+  <meta name="twitter:card"        content="summary">
+  <meta name="twitter:title"       content="CODE STEP — コードで、レベルアップしろ。">
+  <meta name="twitter:description" content="C++ / Python / JavaScript をゲームのように学べる無料プログラミング学習アプリ。">
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#FF6B00">
@@ -49,8 +62,92 @@
     <button class="nav-tab" id="tab-guide" onclick="switchTab('guide')">◆ GUIDE</button>
   </div>
 
+  <!-- ランディングページ（初回訪問者向け） -->
+  <div id="page-landing" class="hidden">
+    <div class="landing-wrap">
+
+      <div class="landing-hero">
+        <div class="landing-pre-label">◆ FREE PROGRAMMING TRAINING ◆</div>
+        <div class="landing-title-main">CODE<span class="landing-title-step"> STEP</span></div>
+        <div class="landing-tagline">コードで、<br>レベルアップしろ。</div>
+        <p class="landing-desc">
+          C++ / Python / JavaScript を<br>ゲームのように学べるプログラミングトレーニング。
+        </p>
+        <div class="landing-actions">
+          <button class="landing-btn-primary" onclick="startApp()">▶ 今すぐ始める（無料）</button>
+          <button class="landing-btn-secondary" onclick="openAuthModal()">◆ ログインして続ける</button>
+        </div>
+        <div class="landing-free-note">✓ 完全無料 &nbsp;·&nbsp; ✓ 登録不要で即プレイ &nbsp;·&nbsp; ✓ ブラウザのみで完結</div>
+      </div>
+
+      <div class="landing-stats-row">
+        <div class="landing-stat">
+          <div class="ls-num">90</div>
+          <div class="ls-label">問題</div>
+        </div>
+        <div class="landing-stat-sep">◆</div>
+        <div class="landing-stat">
+          <div class="ls-num">18</div>
+          <div class="ls-label">ミッション</div>
+        </div>
+        <div class="landing-stat-sep">◆</div>
+        <div class="landing-stat">
+          <div class="ls-num">3</div>
+          <div class="ls-label">言語</div>
+        </div>
+        <div class="landing-stat-sep">◆</div>
+        <div class="landing-stat">
+          <div class="ls-num">19</div>
+          <div class="ls-label">バッジ</div>
+        </div>
+      </div>
+
+      <div class="landing-cards">
+        <div class="landing-card">
+          <div class="lc-icon">🎯</div>
+          <div class="lc-title">段階的な90問</div>
+          <div class="lc-desc">ROOKIE から LEGEND まで難易度別に用意。コードを実際に書いて自動判定。</div>
+        </div>
+        <div class="landing-card">
+          <div class="lc-icon">🤖</div>
+          <div class="lc-title">AI ヒント & 採点</div>
+          <div class="lc-desc">詰まったときはAIがヒントをくれる。AI自動採点でどんなコードも評価。</div>
+        </div>
+        <div class="landing-card">
+          <div class="lc-icon">⚡</div>
+          <div class="lc-title">EXP・レベル・バッジ</div>
+          <div class="lc-desc">クリアするたびEXP獲得＆レベルアップ。19種のバッジでプロフィールを彩ろう。</div>
+        </div>
+        <div class="landing-card">
+          <div class="lc-icon">📅</div>
+          <div class="lc-title">学習カレンダー</div>
+          <div class="lc-desc">毎日の学習時間をGitHub風に可視化。ログインストリークで継続記録を管理。</div>
+        </div>
+      </div>
+
+      <div class="landing-langs-row">
+        <span class="landing-lang" style="color:#00599C">C++</span>
+        <span class="landing-lang" style="color:#3776AB">Python</span>
+        <span class="landing-lang" style="color:#F0C040">JavaScript</span>
+      </div>
+
+      <div class="landing-bottom-cta">
+        <button class="landing-btn-primary large" onclick="startApp()">▶ 今すぐ無料で始める</button>
+      </div>
+
+      <div class="landing-footer-links">
+        <button class="landing-text-link" onclick="openPrivacyPolicy()">プライバシーポリシー</button>
+        <span class="lfl-sep">·</span>
+        <button class="landing-text-link" onclick="openTermsModal()">利用規約</button>
+        <span class="lfl-sep">·</span>
+        <a class="landing-text-link" href="https://github.com/Yoshirou911/cpp-step" target="_blank" rel="noopener">GitHub</a>
+      </div>
+
+    </div>
+  </div>
+
   <!-- 言語選択ページ -->
-  <div id="page-lang">
+  <div id="page-lang" class="hidden">
     <div id="lang-content"></div>
   </div>
 
@@ -133,6 +230,82 @@
         <input type="email" id="auth-email" placeholder="メールアドレス" autocomplete="email">
         <input type="password" id="auth-password" placeholder="パスワード（6文字以上）" autocomplete="current-password">
         <button id="auth-submit-btn" onclick="submitAuth()">LOGIN</button>
+        <div class="auth-extra-links">
+          <button class="auth-text-link" id="forgot-pw-btn" onclick="sendPasswordReset()">パスワードを忘れた方</button>
+          <span class="auth-link-sep">·</span>
+          <button class="auth-text-link" onclick="openPrivacyPolicy()">プライバシーポリシー</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- プライバシーポリシーモーダル -->
+  <div id="privacy-modal" class="hidden">
+    <div class="legal-overlay" onclick="closePrivacyPolicy()"></div>
+    <div class="legal-box">
+      <div class="legal-header">
+        <span>// プライバシーポリシー</span>
+        <button onclick="closePrivacyPolicy()">✕</button>
+      </div>
+      <div class="legal-body">
+        <p class="legal-date">最終更新: 2025年6月</p>
+        <h3>1. 収集する情報</h3>
+        <p>本サービスは以下の情報を収集します。</p>
+        <ul>
+          <li><strong>メールアドレス</strong>（アカウント登録時のみ）</li>
+          <li><strong>学習データ</strong>（問題・ミッションのクリア状況、ログイン日時、学習時間）— 主にお使いのデバイスのローカルストレージに保存。ログイン時はSupabaseサーバーにも同期されます。</li>
+        </ul>
+        <h3>2. 利用目的</h3>
+        <ul>
+          <li>ユーザー認証・進捗の保存と同期</li>
+          <li>サービスの品質改善</li>
+        </ul>
+        <h3>3. 第三者提供</h3>
+        <p>法令に基づく場合を除き、収集した個人情報を第三者に提供することはありません。</p>
+        <h3>4. 利用する外部サービス</h3>
+        <ul>
+          <li><strong>Supabase</strong> — 認証・データ保存（supabase.com）</li>
+          <li><strong>Wandbox</strong> — コード実行（wandbox.org）。入力したコードは実行のためWandboxに送信されます。</li>
+          <li><strong>Groq</strong> — AI機能（groq.com）。AIヒント使用時にコードと質問内容が送信されます。</li>
+          <li><strong>Vercel</strong> — ホスティング（vercel.com）</li>
+        </ul>
+        <h3>5. お問い合わせ</h3>
+        <p>プライバシーに関するご質問は <a href="https://github.com/Yoshirou911/cpp-step/issues" target="_blank" rel="noopener" style="color:#FF6B00">GitHub Issues</a> よりお問い合わせください。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 利用規約モーダル -->
+  <div id="terms-modal" class="hidden">
+    <div class="legal-overlay" onclick="closeTermsModal()"></div>
+    <div class="legal-box">
+      <div class="legal-header">
+        <span>// 利用規約</span>
+        <button onclick="closeTermsModal()">✕</button>
+      </div>
+      <div class="legal-body">
+        <p class="legal-date">最終更新: 2025年6月</p>
+        <h3>1. サービス概要</h3>
+        <p>CODE STEP（以下「本サービス」）は、C++ / Python / JavaScript のプログラミング学習を支援する無料のWebアプリケーションです。</p>
+        <h3>2. 利用条件</h3>
+        <ul>
+          <li>本サービスは13歳以上の方を対象としています。</li>
+          <li>アカウント登録は任意です。未登録でも主要機能を利用できます。</li>
+          <li>登録情報は正確な情報を入力してください。</li>
+        </ul>
+        <h3>3. 禁止事項</h3>
+        <ul>
+          <li>サービスへの不正アクセスや過剰なリクエスト</li>
+          <li>他のユーザーへの妨害行為</li>
+          <li>法令に違反する行為</li>
+          <li>外部APIの利用制限を超える意図的な負荷</li>
+        </ul>
+        <h3>4. 免責事項</h3>
+        <p>本サービスは現状有姿で提供されます。サービスの継続性・正確性・完全性を保証するものではありません。本サービスの利用により生じた損害について、運営者は責任を負いません。</p>
+        <h3>5. 変更・終了</h3>
+        <p>本サービスの内容変更・終了・利用規約の変更を予告なく行う場合があります。変更後もサービスを利用した場合、新しい規約に同意したものとみなします。</p>
+        <h3>6. 準拠法</h3>
+        <p>本規約は日本法に準拠し、解釈されるものとします。</p>
       </div>
     </div>
   </div>
