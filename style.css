@@ -1433,3 +1433,31 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 .lang-status-open {
   color: var(--orange);
 }
+
+/* ========== 言語セクション ========== */
+.lang-section {
+  margin-bottom: 36px;
+}
+
+.lang-section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,107,0,0.12);
+}
+
+.lang-section-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--bright);
+  letter-spacing: 0.06em;
+}
+
+.lang-section-desc {
+  font-size: 0.82rem;
+  color: var(--dim);
+  letter-spacing: 0.04em;
+}

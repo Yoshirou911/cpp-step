@@ -1,18 +1,39 @@
 ﻿// ===== 言語データ =====
 
-var LANGUAGES = [
-  { id: 'cpp',        name: 'C++',        color: '#00599C', problems: 30, available: true  },
-  { id: 'python',     name: 'Python',     color: '#3776AB', problems: 0,  available: false },
-  { id: 'javascript', name: 'JavaScript', color: '#F7DF1E', problems: 0,  available: false },
-  { id: 'java',       name: 'Java',       color: '#ED8B00', problems: 0,  available: false },
-  { id: 'c',          name: 'C',          color: '#A8B9CC', problems: 0,  available: false },
-  { id: 'csharp',     name: 'C#',         color: '#9B4F96', problems: 0,  available: false },
-  { id: 'go',         name: 'Go',         color: '#00ADD8', problems: 0,  available: false },
-  { id: 'rust',       name: 'Rust',       color: '#CE412B', problems: 0,  available: false },
-  { id: 'swift',      name: 'Swift',      color: '#FA7343', problems: 0,  available: false },
-  { id: 'kotlin',     name: 'Kotlin',     color: '#7F52FF', problems: 0,  available: false },
-  { id: 'typescript', name: 'TypeScript', color: '#3178C6', problems: 0,  available: false },
-  { id: 'ruby',       name: 'Ruby',       color: '#CC342D', problems: 0,  available: false },
+var LANGUAGE_GROUPS = [
+  {
+    level: 'BEGINNER',
+    label: '🟢 初心者向け',
+    desc: 'シンプルな文法で始めやすい',
+    langs: [
+      { id: 'python',     name: 'Python',     color: '#3776AB', problems: 0,  available: false },
+      { id: 'javascript', name: 'JavaScript', color: '#F0C040', problems: 0,  available: false },
+      { id: 'ruby',       name: 'Ruby',       color: '#CC342D', problems: 0,  available: false },
+    ]
+  },
+  {
+    level: 'INTERMEDIATE',
+    label: '🟡 中級者向け',
+    desc: 'オブジェクト指向・型システムを学ぶ',
+    langs: [
+      { id: 'java',       name: 'Java',       color: '#ED8B00', problems: 0,  available: false },
+      { id: 'csharp',     name: 'C#',         color: '#9B4F96', problems: 0,  available: false },
+      { id: 'typescript', name: 'TypeScript', color: '#3178C6', problems: 0,  available: false },
+      { id: 'kotlin',     name: 'Kotlin',     color: '#7F52FF', problems: 0,  available: false },
+      { id: 'swift',      name: 'Swift',      color: '#FA7343', problems: 0,  available: false },
+      { id: 'go',         name: 'Go',         color: '#00ADD8', problems: 0,  available: false },
+    ]
+  },
+  {
+    level: 'ADVANCED',
+    label: '🔴 上級者向け',
+    desc: 'メモリ管理・低レベル操作を扱う',
+    langs: [
+      { id: 'c',          name: 'C',          color: '#A8B9CC', problems: 0,  available: false },
+      { id: 'cpp',        name: 'C++',        color: '#00599C', problems: 30, available: true  },
+      { id: 'rust',       name: 'Rust',       color: '#CE412B', problems: 0,  available: false },
+    ]
+  },
 ];
 
 var currentLanguage = null;
@@ -25,29 +46,41 @@ function renderLangSelect() {
     '<div class="lang-page-header">' +
       '<div class="lang-page-title">◆ SELECT LANGUAGE</div>' +
       '<div class="lang-page-sub">学習する言語を選択してください</div>' +
-    '</div>' +
-    '<div class="lang-grid" id="lang-grid"></div>';
+    '</div>';
 
-  var grid = document.getElementById('lang-grid');
+  LANGUAGE_GROUPS.forEach(function(group) {
+    var section = document.createElement('div');
+    section.className = 'lang-section';
+    section.innerHTML =
+      '<div class="lang-section-header">' +
+        '<span class="lang-section-label">' + group.label + '</span>' +
+        '<span class="lang-section-desc">' + group.desc + '</span>' +
+      '</div>' +
+      '<div class="lang-grid"></div>';
 
-  LANGUAGES.forEach(function(lang) {
-    var card = document.createElement('div');
-    card.className = 'lang-card' + (lang.available ? ' lang-available' : ' lang-coming');
+    var grid = section.querySelector('.lang-grid');
 
-    card.innerHTML =
-      '<div class="lang-card-bar" style="background:' + lang.color + '"></div>' +
-      '<div class="lang-card-body">' +
-        '<div class="lang-card-name">' + lang.name + '</div>' +
-        '<div class="lang-card-status' + (lang.available ? ' lang-status-open' : '') + '">' +
-          (lang.available ? lang.problems + ' PROBLEMS' : 'COMING SOON') +
-        '</div>' +
-      '</div>';
+    group.langs.forEach(function(lang) {
+      var card = document.createElement('div');
+      card.className = 'lang-card' + (lang.available ? ' lang-available' : ' lang-coming');
 
-    if (lang.available) {
-      card.addEventListener('click', function() { selectLanguage(lang.id); });
-    }
+      card.innerHTML =
+        '<div class="lang-card-bar" style="background:' + lang.color + '"></div>' +
+        '<div class="lang-card-body">' +
+          '<div class="lang-card-name">' + lang.name + '</div>' +
+          '<div class="lang-card-status' + (lang.available ? ' lang-status-open' : '') + '">' +
+            (lang.available ? lang.problems + ' PROBLEMS' : 'COMING SOON') +
+          '</div>' +
+        '</div>';
 
-    grid.appendChild(card);
+      if (lang.available) {
+        card.addEventListener('click', function() { selectLanguage(lang.id); });
+      }
+
+      grid.appendChild(card);
+    });
+
+    content.appendChild(section);
   });
 }
 
