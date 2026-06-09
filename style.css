@@ -68,7 +68,7 @@ body::after {
   z-index: 999;
 }
 
-.hidden { display: none; }
+.hidden { display: none !important; }
 
 /* ========== HEADER ========== */
 header {
@@ -1295,7 +1295,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
 }
 
-#chat-panel.hidden { display: none; }
+#chat-panel.hidden { display: none !important; }
 
 #chat-header {
   display: flex;
