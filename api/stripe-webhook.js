@@ -27,7 +27,9 @@ function getRawBody(req) {
   });
 }
 
-// HMAC-SHA256 署名検証（crypto.subtle）
+// HMAC-SHA256 署名検証（crypto.subtle + 定数時間比較 + タイムスタンプ検証）
+const TOLERANCE_SEC = 300; // 5分以内のリクエストのみ許可
+
 async function verifyStripeSignature(rawBody, sigHeader, secret) {
   try {
     const parts = sigHeader.split(',');
@@ -40,6 +42,15 @@ async function verifyStripeSignature(rawBody, sigHeader, secret) {
     }
     if (!timestamp || !v1Sig) return false;
 
+    // タイムスタンプ検証（リプレイアタック対策）
+    const tsNum = parseInt(timestamp, 10);
+    if (isNaN(tsNum)) return false;
+    const ageSeconds = Math.floor(Date.now() / 1000) - tsNum;
+    if (ageSeconds > TOLERANCE_SEC || ageSeconds < -60) {
+      console.error(`Webhook: タイムスタンプが古すぎます (${ageSeconds}秒)`);
+      return false;
+    }
+
     const payload = `${timestamp}.${rawBody.toString('utf8')}`;
     const enc = new TextEncoder();
 
@@ -51,7 +62,16 @@ async function verifyStripeSignature(rawBody, sigHeader, secret) {
     const sig = await crypto.subtle.sign('HMAC', key, enc.encode(payload));
     const computed = Buffer.from(sig).toString('hex');
 
-    return computed === v1Sig;
+    // 定数時間比較（タイミング攻撃対策）
+    const computedBuf = Buffer.from(computed, 'hex');
+    const expectedBuf = Buffer.from(v1Sig,    'hex');
+    // 長さが異なる場合は即否定（ただし長さチェック自体は定数時間でない点に注意）
+    if (computedBuf.length !== expectedBuf.length) return false;
+    let mismatch = 0;
+    for (let i = 0; i < computedBuf.length; i++) {
+      mismatch |= computedBuf[i] ^ expectedBuf[i];
+    }
+    return mismatch === 0;
   } catch (e) {
     console.error('Signature verification error:', e);
     return false;

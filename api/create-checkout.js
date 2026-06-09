@@ -4,20 +4,55 @@
  *
  * 必要な環境変数（Vercel ダッシュボードで設定）:
  *   STRIPE_SECRET_KEY  — sk_live_... または sk_test_...
- *   STRIPE_PRICE_ID    — price_... (月額¥480のサブスクリプション価格ID)
+ *   STRIPE_PRICE_ID    — price_... (月額¥600のサブスクリプション価格ID)
  *   NEXT_PUBLIC_BASE_URL — https://cpp-step.vercel.app (任意、デフォルトで推定)
  */
 
+const rateLimitMap = new Map();
+const WINDOW_MS = 60 * 1000;
+const MAX_REQS  = 10;
+
+function isRateLimited(ip) {
+  const now   = Date.now();
+  const entry = rateLimitMap.get(ip) || { count: 0, start: now };
+  if (now - entry.start > WINDOW_MS) {
+    entry.count = 1; entry.start = now;
+    rateLimitMap.set(ip, entry); return false;
+  }
+  entry.count++;
+  rateLimitMap.set(ip, entry);
+  return entry.count > MAX_REQS;
+}
+
+const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,255}\.[^\s@]{1,63}$/;
+const UUID_RE  = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export default async function handler(req, res) {
-  // CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // CORS — 自ドメインのみ許可
+  res.setHeader('Access-Control-Allow-Origin', 'https://cpp-step.vercel.app');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
+  // レート制限
+  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim()
+    || req.socket?.remoteAddress || 'unknown';
+  if (isRateLimited(ip)) {
+    return res.status(429).json({ error: '短時間に送信しすぎています。1分後にお試しください。' });
+  }
+
   const { email, userId } = req.body || {};
+
+  // 入力バリデーション
+  if (email && !EMAIL_RE.test(email)) {
+    return res.status(400).json({ error: '不正なメールアドレスです' });
+  }
+  if (userId && !UUID_RE.test(userId)) {
+    return res.status(400).json({ error: '不正なユーザーIDです' });
+  }
+
   const stripeKey = process.env.STRIPE_SECRET_KEY;
   const priceId   = process.env.STRIPE_PRICE_ID;
   const baseUrl   = process.env.NEXT_PUBLIC_BASE_URL || 'https://cpp-step.vercel.app';
