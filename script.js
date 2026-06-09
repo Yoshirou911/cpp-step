@@ -2120,30 +2120,22 @@ function initAceEditor(initialCode) {
 
 function buildSkeleton(p) {
   if (currentLanguage === 'python') {
-    // 文字列リテラル（f文字列以外）と数値だけ空欄にして骨格を見せる
     var skeleton = p.answer.trim()
       .replace(/(?<![fF])"[^"]*"/g, '"________"')
       .replace(/\b\d+(\.\d+)?\b/g, '____');
     return skeleton + '\n';
   }
-  // C++：ロジック行の文字列と数値だけ空欄にして骨格を見せる
+  // C++：boilerplate を除いたロジック行だけ返す
   var allLines = p.answer.split('\n');
-  var includes = allLines
-    .filter(function(l) { return l.trim().startsWith('#include'); })
-    .join('\n');
   var logicLines = allLines.filter(function(l) {
     var t = l.trim();
     return t !== '' && !t.startsWith('#include') && !t.startsWith('using namespace')
         && t !== 'int main() {' && t !== '}' && t !== 'return 0;';
   });
   var blankedLogic = logicLines.map(function(l) {
-    return l.replace(/"[^"]*"/g, '"________"').replace(/\b\d+\b/g, '____');
+    return l.trim().replace(/"[^"]*"/g, '"________"').replace(/\b\d+\b/g, '____');
   }).join('\n');
-  return includes
-    + '\nusing namespace std;\n\nint main() {\n'
-    + (blankedLogic ? blankedLogic + '\n' : '    \n')
-    + '    return 0;\n'
-    + '}';
+  return blankedLogic ? blankedLogic + '\n' : '';
 }
 
 // onclick から引数なしで呼べるラッパー（クォートネスト問題を回避）
