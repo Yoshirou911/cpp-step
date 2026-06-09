@@ -157,20 +157,66 @@ function renderLangSelect() {
 
 // ===== 言語選択 =====
 
-function selectLanguage(langId) {
-  currentLanguage = langId;
+function showNavAndProgress() {
   document.getElementById('nav-tabs').classList.remove('hidden');
   document.getElementById('progress-text').classList.remove('hidden');
   document.getElementById('progress-bar-wrap').classList.remove('hidden');
+}
 
-  document.getElementById('tab-problems').classList.add('active');
-  document.getElementById('tab-missions').classList.remove('active');
-  document.getElementById('tab-guide').classList.remove('active');
+function setActiveTab(tab) {
+  ['problems', 'missions', 'guide'].forEach(function(t) {
+    document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+  });
+}
 
+function selectLanguage(langId) {
+  currentLanguage = langId;
+  history.pushState({ page: 'list', lang: langId, tab: 'problems' }, '');
+  showNavAndProgress();
+  setActiveTab('problems');
   renderList();
   updateProgressDisplay();
   showPage('list');
 }
+
+// ===== ブラウザ履歴の復元 =====
+
+function restoreState(state) {
+  if (!state || state.page === 'lang') {
+    currentLanguage = null;
+    renderLangSelect();
+    showPage('lang');
+    return;
+  }
+  currentLanguage = state.lang || null;
+  showNavAndProgress();
+  if (state.page === 'list') {
+    setActiveTab('problems');
+    renderList();
+    updateProgressDisplay();
+    showPage('list');
+  } else if (state.page === 'detail') {
+    setActiveTab('problems');
+    renderDetail(state.id);
+    showPage('detail');
+  } else if (state.page === 'guide') {
+    setActiveTab('guide');
+    renderGuide();
+    showPage('guide');
+  } else if (state.page === 'mission-list') {
+    setActiveTab('missions');
+    renderMissionList();
+    showPage('mission-list');
+  } else if (state.page === 'mission-detail') {
+    setActiveTab('missions');
+    renderMissionDetail(state.id);
+    showPage('mission-detail');
+  }
+}
+
+window.addEventListener('popstate', function(e) {
+  restoreState(e.state);
+});
 
 // ===== 問題データ =====
 
@@ -1871,6 +1917,7 @@ function renderList() {
         '</div>';
 
       card.addEventListener("click", function() {
+        history.pushState({ page: 'detail', lang: currentLanguage, id: p.id }, '');
         renderDetail(p.id);
         showPage("detail");
       });
@@ -2231,18 +2278,17 @@ async function sendChatMessage() {
 // ===== タブ切り替え =====
 
 function switchTab(tab) {
-  document.getElementById('tab-problems').classList.remove('active');
-  document.getElementById('tab-missions').classList.remove('active');
-  document.getElementById('tab-guide').classList.remove('active');
-  document.getElementById('tab-' + tab).classList.add('active');
-
+  setActiveTab(tab);
   if (tab === 'problems') {
+    history.pushState({ page: 'list', lang: currentLanguage, tab: 'problems' }, '');
     renderList();
     showPage('list');
   } else if (tab === 'missions') {
+    history.pushState({ page: 'mission-list', lang: currentLanguage, tab: 'missions' }, '');
     renderMissionList();
     showPage('mission-list');
   } else {
+    history.pushState({ page: 'guide', lang: currentLanguage, tab: 'guide' }, '');
     renderGuide();
     showPage('guide');
   }
@@ -2366,6 +2412,7 @@ function renderMissionList() {
       '</div>';
 
     card.addEventListener('click', function() {
+      history.pushState({ page: 'mission-detail', lang: currentLanguage, id: m.id }, '');
       renderMissionDetail(m.id);
       showPage('mission-detail');
     });
@@ -2520,16 +2567,15 @@ function toggleLearned(id) {
 // ===== 初期化 =====
 
 document.getElementById("back-btn").addEventListener("click", function() {
-  renderList();
-  showPage("list");
+  history.back();
 });
 
 document.getElementById("mission-back-btn").addEventListener("click", function() {
-  renderMissionList();
-  showPage("mission-list");
+  history.back();
 });
 
 document.getElementById("site-title").addEventListener("click", function() {
+  history.pushState({ page: 'lang' }, '');
   currentLanguage = null;
   renderLangSelect();
   showPage("lang");
@@ -2552,6 +2598,7 @@ document.getElementById('chat-input').addEventListener('keydown', function(e) {
   }
 });
 
+history.replaceState({ page: 'lang' }, '');
 renderLangSelect();
 showPage("lang");
 
