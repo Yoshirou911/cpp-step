@@ -3219,6 +3219,24 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   color: rgba(80,200,120,0.8);
 }
 
+/* PLUSバッジ */
+.plus-badge-label {
+  display: inline-block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  background: linear-gradient(90deg, #b8860b, #ffd700, #b8860b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  border: 1px solid rgba(255,215,0,0.35);
+  border-radius: 4px;
+  padding: 2px 10px;
+  margin-bottom: 6px;
+  box-shadow: 0 0 10px rgba(255,215,0,0.1);
+}
+
 /* プロフィール内の管理者バッジ・ボタン */
 .admin-badge-label {
   display: inline-block;

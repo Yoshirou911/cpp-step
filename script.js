@@ -4761,6 +4761,7 @@ async function renderProfile() {
       '<div class="profile-avatar" style="--rank-color:' + rank.color + '">' + avatarLetter + '</div>' +
       '<div class="profile-hero-info">' +
         '<div class="profile-email">' + displayName + '</div>' +
+        (_premiumStatusCache ? '<div class="plus-badge-label">◆ CODE STEP PLUS</div>' : '') +
         (currentUserIsAdmin ? '<div class="admin-badge-label">⚙ ADMIN</div>' : '') +
         '<div class="profile-rank-badge" style="color:' + rank.color + ';border-color:' + rank.color + ';box-shadow:0 0 12px ' + rank.color + '33">' +
           '◆ ' + rank.name + ' ◆' +
