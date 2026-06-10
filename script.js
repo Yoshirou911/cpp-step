@@ -327,10 +327,10 @@ var BADGES = [
   { id: 'js_master',     name: 'JS MASTER',      desc: 'JavaScript 30問クリア',                   tier: 'diamond',  check: function(s) { return s.js >= 30;     } },
   // ミッション
   { id: 'first_mission', name: 'MISSION START',  desc: '初ミッションクリア',                      tier: 'silver',   check: function(s) { return s.totalMissions >= 1; } },
-  { id: 'mission_all',   name: 'MISSION MASTER', desc: 'いずれかの言語で全ミッションクリア',       tier: 'master',   check: function(s) { return s.cppM >= 6 || s.pyM >= 6 || s.jsM >= 6 || s.rubyM >= 6 || s.tsM >= 6 || s.kotlinM >= 6 || s.swiftM >= 6; } },
+  { id: 'mission_all',   name: 'MISSION MASTER', desc: 'いずれかの言語で全ミッションクリア',       tier: 'master',   check: function(s) { return s.cppM >= 6 || s.pyM >= 6 || s.jsM >= 6 || s.rubyM >= 6 || s.tsM >= 6 || s.kotlinM >= 6 || s.swiftM >= 6 || s.javaM >= 6; } },
   // 多言語
-  { id: 'bilingual',     name: 'BILINGUAL',      desc: '2言語以上でクリア達成',                   tier: 'gold',     check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin, s.swift].filter(function(n){return n>0;}).length >= 2; } },
-  { id: 'trilingual',    name: 'TRILINGUAL',     desc: '3言語以上でクリア達成',                   tier: 'platinum', check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin, s.swift].filter(function(n){return n>0;}).length >= 3; } },
+  { id: 'bilingual',     name: 'BILINGUAL',      desc: '2言語以上でクリア達成',                   tier: 'gold',     check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin, s.swift, s.java].filter(function(n){return n>0;}).length >= 2; } },
+  { id: 'trilingual',    name: 'TRILINGUAL',     desc: '3言語以上でクリア達成',                   tier: 'platinum', check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin, s.swift, s.java].filter(function(n){return n>0;}).length >= 3; } },
   // ストリーク
   { id: 'streak_3',      name: '3 DAY STREAK',   desc: '3日連続ログイン',                         tier: 'silver',   check: function(s) { return s.currentStreak >= 3;  } },
   { id: 'streak_7',      name: 'WEEKLY',         desc: '7日連続ログイン',                         tier: 'gold',     check: function(s) { return s.currentStreak >= 7;  } },
@@ -347,7 +347,9 @@ var BADGES = [
   { id: 'legend_kotlin', name: 'KOTLIN LEGEND',  desc: 'Kotlin 超難問クリア',                     tier: 'legend',   check: function(s) { return s.legendKotlin; } },
   { id: 'swift_master',  name: 'SWIFT MASTER',   desc: 'Swift 全30問クリア',                      tier: 'diamond',  check: function(s) { return s.swift >= 30; } },
   { id: 'legend_swift',  name: 'SWIFT LEGEND',   desc: 'Swiftで伝説の称号獲得',                  tier: 'legend',   check: function(s) { return s.legendSwift; } },
-  { id: 'true_legend',   name: 'TRUE LEGEND',    desc: '全言語の超難問クリア',                    tier: 'legend',   check: function(s) { return s.legendCpp && s.legendPython && s.legendJs && s.legendRuby && s.legendTs && s.legendKotlin && s.legendSwift; } },
+  { id: 'java_master',   name: 'JAVA MASTER',    desc: 'Java 全30問クリア',                       tier: 'diamond',  check: function(s) { return s.java >= 30; } },
+  { id: 'legend_java',   name: 'JAVA LEGEND',    desc: 'Javaで伝説の称号獲得',                   tier: 'legend',   check: function(s) { return s.legendJava; } },
+  { id: 'true_legend',   name: 'TRUE LEGEND',    desc: '全言語の超難問クリア',                    tier: 'legend',   check: function(s) { return s.legendCpp && s.legendPython && s.legendJs && s.legendRuby && s.legendTs && s.legendKotlin && s.legendSwift && s.legendJava; } },
 ];
 
 // 全言語の進捗を localStorage から集計（言語切替不要）
@@ -367,6 +369,7 @@ function getProfileStats() {
   var tsArr   = getP('typescript');
   var kotlinArr = getP('kotlin');
   var swiftArr = getP('swift');
+  var javaArr = getP('java');
   var cpp    = cppArr.length;
   var python = pythonArr.length;
   var js     = jsArr.length;
@@ -374,6 +377,7 @@ function getProfileStats() {
   var ts     = tsArr.length;
   var kotlin = kotlinArr.length;
   var swift  = swiftArr.length;
+  var java   = javaArr.length;
   var cppM   = getM('cpp').length;
   var pyM    = getM('python').length;
   var jsM    = getM('javascript').length;
@@ -381,11 +385,12 @@ function getProfileStats() {
   var tsM    = getM('typescript').length;
   var kotlinM = getM('kotlin').length;
   var swiftM  = getM('swift').length;
+  var javaM   = getM('java').length;
   return {
-    cpp: cpp, python: python, js: js, ruby: ruby, ts: ts, kotlin: kotlin, swift: swift,
-    cppM: cppM, pyM: pyM, jsM: jsM, rubyM: rubyM, tsM: tsM, kotlinM: kotlinM, swiftM: swiftM,
-    total: cpp + python + js + ruby + ts + kotlin + swift,
-    totalMissions: cppM + pyM + jsM + rubyM + tsM + kotlinM + swiftM,
+    cpp: cpp, python: python, js: js, ruby: ruby, ts: ts, kotlin: kotlin, swift: swift, java: java,
+    cppM: cppM, pyM: pyM, jsM: jsM, rubyM: rubyM, tsM: tsM, kotlinM: kotlinM, swiftM: swiftM, javaM: javaM,
+    total: cpp + python + js + ruby + ts + kotlin + swift + java,
+    totalMissions: cppM + pyM + jsM + rubyM + tsM + kotlinM + swiftM + javaM,
     legendCpp:    cppArr.indexOf(31)    !== -1,
     legendPython: pythonArr.indexOf(31) !== -1,
     legendJs:     jsArr.indexOf(31)     !== -1,
@@ -393,6 +398,7 @@ function getProfileStats() {
     legendTs:     tsArr.indexOf(30)     !== -1,
     legendKotlin: kotlinArr.indexOf(30) !== -1,
     legendSwift:  swiftArr.indexOf(30)  !== -1,
+    legendJava:   javaArr.indexOf(30)   !== -1,
     // ストリークは非同期で後から上書きするため初期値0
     currentStreak: 0,
     bestStreak:    0,
@@ -499,7 +505,7 @@ function calculateEXP() {
   var problemExp = 0;
   var missionExp = 0;
 
-  // 問題クリア EXP（全7言語）
+  // 問題クリア EXP（全8言語）
   [
     { key: 'cpp',        get: function() { return problems; } },
     { key: 'python',     get: function() { return pythonProblems; } },
@@ -507,7 +513,8 @@ function calculateEXP() {
     { key: 'ruby',       get: function() { return rubyProblems; } },
     { key: 'typescript', get: function() { return typescriptProblems; } },
     { key: 'kotlin',     get: function() { return kotlinProblems; } },
-    { key: 'swift',      get: function() { return swiftProblems; } }
+    { key: 'swift',      get: function() { return swiftProblems; } },
+    { key: 'java',       get: function() { return javaProblems; } }
   ].forEach(function(lang) {
     var prog = JSON.parse(localStorage.getItem(lang.key + '_progress') || '[]');
     lang.get().forEach(function(p) {
@@ -517,7 +524,7 @@ function calculateEXP() {
     });
   });
 
-  // ミッションクリア EXP（全7言語）
+  // ミッションクリア EXP（全8言語）
   [
     { key: 'cpp',        get: function() { return missions; } },
     { key: 'python',     get: function() { return pythonMissions; } },
@@ -525,7 +532,8 @@ function calculateEXP() {
     { key: 'ruby',       get: function() { return rubyMissions; } },
     { key: 'typescript', get: function() { return typescriptMissions; } },
     { key: 'kotlin',     get: function() { return kotlinMissions; } },
-    { key: 'swift',      get: function() { return swiftMissions; } }
+    { key: 'swift',      get: function() { return swiftMissions; } },
+    { key: 'java',       get: function() { return javaMissions; } }
   ].forEach(function(lang) {
     var prog = JSON.parse(localStorage.getItem(lang.key + '_mission_progress') || '[]');
     lang.get().forEach(function(m) {
@@ -707,7 +715,7 @@ var LANGUAGE_GROUPS = [
     desc: '企業現場でよく使われる実践的な言語',
     langs: [
       {
-        id: 'java', name: 'Java', color: '#ED8B00', problems: 0, available: false,
+        id: 'java', name: 'Java', color: '#ED8B00', problems: 30, available: true,
         uses: ['企業向けシステム', 'Androidアプリ', 'Spring Bootサーバー']
       },
       {
@@ -6186,6 +6194,409 @@ const swiftUnitGuides = [
   }
 ];
 
+// ===== Java データ =====
+
+const javaProblems = [
+  // UNIT 01
+  {
+    id: 1, rank: "ROOKIE", unit: "UNIT 01", title: "Hello, Java!",
+    question: "\"Hello, Java!\" と出力してください。",
+    requirements: ["System.out.println() を使う"],
+    hint: "System.out.println(\"文字列\") で出力できます。",
+    answer: `class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, Java!");\n    }\n}`
+  },
+  {
+    id: 2, rank: "ROOKIE", unit: "UNIT 01", title: "変数と型",
+    question: "int型の変数 age に 25、String型の変数 name に \"Java\" を代入して \"名前: Java, 年齢: 25\" と出力してください。",
+    requirements: ["int型とString型の変数を宣言する", "System.out.println() で出力する"],
+    hint: "int age = 25; String name = \"Java\"; のように宣言できます。",
+    answer: `class Main {\n    public static void main(String[] args) {\n        int age = 25;\n        String name = "Java";\n        System.out.println("名前: " + name + ", 年齢: " + age);\n    }\n}`
+  },
+  {
+    id: 3, rank: "ROOKIE", unit: "UNIT 01", title: "文字列フォーマット",
+    question: "double型の変数 pi に 3.14159 を代入して、System.out.printf で小数点2桁 \"円周率: 3.14\" と出力してください。",
+    requirements: ["double型変数を宣言する", "System.out.printf で %.2f を使う"],
+    hint: "System.out.printf(\"円周率: %.2f%n\", pi) のように書きます。",
+    answer: `class Main {\n    public static void main(String[] args) {\n        double pi = 3.14159;\n        System.out.printf("円周率: %.2f%n", pi);\n    }\n}`
+  },
+  {
+    id: 4, rank: "ROOKIE", unit: "UNIT 01", title: "基本演算",
+    question: "int a = 17, b = 5 として、a+b, a-b, a*b, a/b, a%b をそれぞれ1行ずつ出力してください。",
+    requirements: ["加算・減算・乗算・除算・剰余を使う", "各結果を1行ずつ出力する"],
+    hint: "整数同士の / は整数除算になります。",
+    answer: `class Main {\n    public static void main(String[] args) {\n        int a = 17, b = 5;\n        System.out.println(a + b);\n        System.out.println(a - b);\n        System.out.println(a * b);\n        System.out.println(a / b);\n        System.out.println(a % b);\n    }\n}`
+  },
+  // UNIT 02
+  {
+    id: 5, rank: "ROOKIE", unit: "UNIT 02", title: "if-else",
+    question: "int score = 78 として、80以上\"優\", 60以上\"良\", それ未満\"可\" と出力してください。",
+    requirements: ["if-else if-else を使う", "条件に応じて出力を変える"],
+    hint: "else if (score >= 60) で2番目の条件を書きます。",
+    answer: `class Main {\n    public static void main(String[] args) {\n        int score = 78;\n        if (score >= 80) {\n            System.out.println("優");\n        } else if (score >= 60) {\n            System.out.println("良");\n        } else {\n            System.out.println("可");\n        }\n    }\n}`
+  },
+  {
+    id: 6, rank: "ROOKIE", unit: "UNIT 02", title: "for ループ",
+    question: "1から10の整数の合計を for ループで計算して出力してください。",
+    requirements: ["for ループを使う", "合計を変数に蓄積する"],
+    hint: "for(int i = 1; i <= 10; i++) のように書きます。",
+    answer: `class Main {\n    public static void main(String[] args) {\n        int sum = 0;\n        for (int i = 1; i <= 10; i++) {\n            sum += i;\n        }\n        System.out.println(sum);\n    }\n}`
+  },
+  {
+    id: 7, rank: "ROOKIE", unit: "UNIT 02", title: "while ループ",
+    question: "1から始めて2倍を繰り返し、初めて1000を超えた数を出力してください。",
+    requirements: ["while ループを使う", "1000を超えたら停止する"],
+    hint: "while (n <= 1000) { n *= 2; } で繰り返します。",
+    answer: `class Main {\n    public static void main(String[] args) {\n        int n = 1;\n        while (n <= 1000) {\n            n *= 2;\n        }\n        System.out.println(n);\n    }\n}`
+  },
+  {
+    id: 8, rank: "BRONZE", unit: "UNIT 02", title: "switch 文",
+    question: "int day = 3 として switch で \"水曜日\" と出力してください（1=月〜7=日）。",
+    requirements: ["switch 文を使う", "case と break を正しく書く"],
+    hint: "switch(day) { case 1: ... break; case 2: ... } のように書きます。",
+    answer: `class Main {\n    public static void main(String[] args) {\n        int day = 3;\n        switch (day) {\n            case 1: System.out.println("月曜日"); break;\n            case 2: System.out.println("火曜日"); break;\n            case 3: System.out.println("水曜日"); break;\n            case 4: System.out.println("木曜日"); break;\n            case 5: System.out.println("金曜日"); break;\n            case 6: System.out.println("土曜日"); break;\n            case 7: System.out.println("日曜日"); break;\n        }\n    }\n}`
+  },
+  // UNIT 03
+  {
+    id: 9, rank: "BRONZE", unit: "UNIT 03", title: "配列",
+    question: "int[] scores = {85, 62, 90, 41, 78} を定義し、合計と平均（小数点1桁）を出力してください。",
+    requirements: ["配列を定義する", "for-each ループで合計を求める", "printf で小数点1桁表示"],
+    hint: "for (int s : scores) { sum += s; } で合計できます。",
+    answer: `class Main {\n    public static void main(String[] args) {\n        int[] scores = {85, 62, 90, 41, 78};\n        int sum = 0;\n        for (int s : scores) {\n            sum += s;\n        }\n        System.out.println("合計: " + sum);\n        System.out.printf("平均: %.1f%n", (double) sum / scores.length);\n    }\n}`
+  },
+  {
+    id: 10, rank: "BRONZE", unit: "UNIT 03", title: "メソッド定義",
+    question: "int型の引数を2つ受け取り、大きい方を返す max(int a, int b) メソッドを定義して、max(12, 7) と max(3, 99) の結果を出力してください。",
+    requirements: ["static int max(int a, int b) を定義する", "2つの結果を出力する"],
+    hint: "return a > b ? a : b; で大きい方を返せます。",
+    answer: `class Main {\n    static int max(int a, int b) {\n        return a > b ? a : b;\n    }\n    public static void main(String[] args) {\n        System.out.println(max(12, 7));\n        System.out.println(max(3, 99));\n    }\n}`
+  },
+  {
+    id: 11, rank: "BRONZE", unit: "UNIT 03", title: "再帰",
+    question: "再帰を使って n の階乗を計算する factorial(int n) メソッドを定義して、5! と 10! を出力してください。",
+    requirements: ["再帰メソッドを定義する", "基底ケース (n <= 1) を設ける"],
+    hint: "return n * factorial(n - 1); で再帰します。",
+    answer: `class Main {\n    static long factorial(int n) {\n        if (n <= 1) return 1;\n        return n * factorial(n - 1);\n    }\n    public static void main(String[] args) {\n        System.out.println(factorial(5));\n        System.out.println(factorial(10));\n    }\n}`
+  },
+  {
+    id: 12, rank: "BRONZE", unit: "UNIT 03", title: "文字列操作",
+    question: "String s = \"Hello, Java World!\" として、長さ・大文字変換・\"Java\"を\"Swift\"に置換した結果を1行ずつ出力してください。",
+    requirements: [".length() で長さを取得", ".toUpperCase() で大文字変換", ".replace() で置換"],
+    hint: "s.replace(\"Java\", \"Swift\") で文字列を置換できます。",
+    answer: `class Main {\n    public static void main(String[] args) {\n        String s = "Hello, Java World!";\n        System.out.println(s.length());\n        System.out.println(s.toUpperCase());\n        System.out.println(s.replace("Java", "Swift"));\n    }\n}`
+  },
+  {
+    id: 13, rank: "BRONZE", unit: "UNIT 03", title: "多次元配列",
+    question: "3x3の int[][] matrix を定義して（値は1-9）、各行の合計を出力してください。",
+    requirements: ["2次元配列を定義する", "二重 for ループで各行の合計を求める"],
+    hint: "int[][] matrix = {{1,2,3},{4,5,6},{7,8,9}}; のように定義します。",
+    answer: `class Main {\n    public static void main(String[] args) {\n        int[][] matrix = {{1,2,3},{4,5,6},{7,8,9}};\n        for (int i = 0; i < matrix.length; i++) {\n            int sum = 0;\n            for (int j = 0; j < matrix[i].length; j++) {\n                sum += matrix[i][j];\n            }\n            System.out.println("行" + (i+1) + "の合計: " + sum);\n        }\n    }\n}`
+  },
+  // UNIT 04
+  {
+    id: 14, rank: "BRONZE", unit: "UNIT 04", title: "ArrayList",
+    question: "ArrayList<String> に \"Apple\", \"Banana\", \"Cherry\" を追加し、\"Banana\" を削除して残った要素を1行ずつ出力してください。",
+    requirements: ["java.util.ArrayList をインポートする", ".add() で追加、.remove() で削除", "for-each で出力"],
+    hint: "list.remove(\"Banana\") で要素を削除できます。",
+    answer: `import java.util.ArrayList;\nclass Main {\n    public static void main(String[] args) {\n        ArrayList<String> list = new ArrayList<>();\n        list.add("Apple");\n        list.add("Banana");\n        list.add("Cherry");\n        list.remove("Banana");\n        for (String s : list) {\n            System.out.println(s);\n        }\n    }\n}`
+  },
+  {
+    id: 15, rank: "SILVER", unit: "UNIT 04", title: "HashMap",
+    question: "HashMap<String, Integer> に 3人の名前と点数を入れ、全エントリを \"名前: 点数\" 形式で出力してください。",
+    requirements: ["java.util.HashMap をインポートする", ".put() でエントリを追加", "entrySet() で全エントリを取得"],
+    hint: "for (Map.Entry<String,Integer> e : map.entrySet()) で反復できます。",
+    answer: `import java.util.HashMap;\nimport java.util.Map;\nclass Main {\n    public static void main(String[] args) {\n        HashMap<String, Integer> map = new HashMap<>();\n        map.put("Alice", 90);\n        map.put("Bob", 75);\n        map.put("Carol", 85);\n        for (Map.Entry<String, Integer> e : map.entrySet()) {\n            System.out.println(e.getKey() + ": " + e.getValue());\n        }\n    }\n}`
+  },
+  {
+    id: 16, rank: "SILVER", unit: "UNIT 04", title: "Collections ソート",
+    question: "ArrayList<Integer> に [5,2,8,1,9,3] を入れ、Collections.sort で昇順ソートして出力してください。",
+    requirements: ["java.util.Collections をインポートする", "Collections.sort() でソート", "for-each で出力"],
+    hint: "Collections.sort(list) でリストを昇順ソートできます。",
+    answer: `import java.util.ArrayList;\nimport java.util.Collections;\nclass Main {\n    public static void main(String[] args) {\n        ArrayList<Integer> list = new ArrayList<>();\n        list.add(5); list.add(2); list.add(8);\n        list.add(1); list.add(9); list.add(3);\n        Collections.sort(list);\n        System.out.println(list);\n    }\n}`
+  },
+  {
+    id: 17, rank: "SILVER", unit: "UNIT 04", title: "Iterator",
+    question: "ArrayList<String> に \"red\",\"green\",\"blue\" を入れ、Iterator を使って要素を1行ずつ出力してください。",
+    requirements: ["java.util.Iterator をインポートする", "iterator() で Iterator を取得", "hasNext() と next() を使う"],
+    hint: "Iterator<String> it = list.iterator(); while(it.hasNext()) { ... } で反復します。",
+    answer: `import java.util.ArrayList;\nimport java.util.Iterator;\nclass Main {\n    public static void main(String[] args) {\n        ArrayList<String> list = new ArrayList<>();\n        list.add("red");\n        list.add("green");\n        list.add("blue");\n        Iterator<String> it = list.iterator();\n        while (it.hasNext()) {\n            System.out.println(it.next());\n        }\n    }\n}`
+  },
+  // UNIT 05
+  {
+    id: 18, rank: "SILVER", unit: "UNIT 05", title: "クラスとコンストラクタ",
+    question: "name(String)とage(int)フィールドを持つ Person クラスを定義し、コンストラクタと introduce() メソッド（\"私はXX、YY歳です\"）を実装して、Person(\"Alice\",30).introduce() を呼び出してください。",
+    requirements: ["Person クラスを定義する", "コンストラクタで初期化する", "introduce() メソッドを実装する"],
+    hint: "void introduce() { System.out.println(\"私は\" + name + \"、\" + age + \"歳です\"); } と書きます。",
+    answer: `class Person {\n    String name;\n    int age;\n    Person(String name, int age) {\n        this.name = name;\n        this.age = age;\n    }\n    void introduce() {\n        System.out.println("私は" + name + "、" + age + "歳です");\n    }\n}\nclass Main {\n    public static void main(String[] args) {\n        new Person("Alice", 30).introduce();\n    }\n}`
+  },
+  {
+    id: 19, rank: "SILVER", unit: "UNIT 05", title: "継承",
+    question: "speak() メソッドを持つ Animal クラスを継承して Dog クラスを作り、speak() を \"ワン！\" を返すようにオーバーライドして出力してください。",
+    requirements: ["Animal クラスを定義する", "Dog extends Animal で継承する", "@Override で speak() をオーバーライドする"],
+    hint: "@Override を付けてスーパークラスのメソッドをオーバーライドします。",
+    answer: `class Animal {\n    void speak() {\n        System.out.println("...");\n    }\n}\nclass Dog extends Animal {\n    @Override\n    void speak() {\n        System.out.println("ワン！");\n    }\n}\nclass Main {\n    public static void main(String[] args) {\n        Dog dog = new Dog();\n        dog.speak();\n    }\n}`
+  },
+  {
+    id: 20, rank: "SILVER", unit: "UNIT 05", title: "interface",
+    question: "double area() を持つ Shape インターフェースを定義し、Circle(radius) と Rectangle(width, height) で実装して、それぞれの面積（小数点2桁）を出力してください。",
+    requirements: ["Shape interface を定義する", "Circle と Rectangle で implements する", "printf で小数点2桁表示"],
+    hint: "class Circle implements Shape { public double area() { return Math.PI * r * r; } }",
+    answer: `interface Shape {\n    double area();\n}\nclass Circle implements Shape {\n    double radius;\n    Circle(double radius) { this.radius = radius; }\n    public double area() { return Math.PI * radius * radius; }\n}\nclass Rectangle implements Shape {\n    double width, height;\n    Rectangle(double w, double h) { this.width = w; this.height = h; }\n    public double area() { return width * height; }\n}\nclass Main {\n    public static void main(String[] args) {\n        Shape c = new Circle(5);\n        Shape r = new Rectangle(4, 6);\n        System.out.printf("Circle: %.2f%n", c.area());\n        System.out.printf("Rectangle: %.2f%n", r.area());\n    }\n}`
+  },
+  {
+    id: 21, rank: "GOLD", unit: "UNIT 05", title: "抽象クラス",
+    question: "abstract double calculate() を持つ Tax 抽象クラスを作り、ConsumptionTax（税率10%）を実装して、Tax t = new ConsumptionTax(1000); t.calculate() を出力してください。",
+    requirements: ["abstract class Tax を定義する", "ConsumptionTax extends Tax で実装する", "calculate() で税込み金額を返す"],
+    hint: "abstract クラスはインスタンス化できませんが、参照型としては使えます。",
+    answer: `abstract class Tax {\n    double amount;\n    Tax(double amount) { this.amount = amount; }\n    abstract double calculate();\n}\nclass ConsumptionTax extends Tax {\n    ConsumptionTax(double amount) { super(amount); }\n    public double calculate() { return amount * 1.1; }\n}\nclass Main {\n    public static void main(String[] args) {\n        Tax t = new ConsumptionTax(1000);\n        System.out.println(t.calculate());\n    }\n}`
+  },
+  // UNIT 06
+  {
+    id: 22, rank: "GOLD", unit: "UNIT 06", title: "try-catch",
+    question: "int[] arr = {1,2,3} に対して arr[5] にアクセスし、ArrayIndexOutOfBoundsException をキャッチして \"範囲外エラー: \" + e.getMessage() を出力してください。",
+    requirements: ["try-catch ブロックを使う", "ArrayIndexOutOfBoundsException をキャッチする"],
+    hint: "catch (ArrayIndexOutOfBoundsException e) { System.out.println(...); } と書きます。",
+    answer: `class Main {\n    public static void main(String[] args) {\n        int[] arr = {1, 2, 3};\n        try {\n            System.out.println(arr[5]);\n        } catch (ArrayIndexOutOfBoundsException e) {\n            System.out.println("範囲外エラー: " + e.getMessage());\n        }\n    }\n}`
+  },
+  {
+    id: 23, rank: "GOLD", unit: "UNIT 06", title: "カスタム例外",
+    question: "AgeException extends Exception を定義し、int型のageを受け取り0未満なら AgeException をスローする checkAge() を実装して、checkAge(-1) を呼び出してください。",
+    requirements: ["AgeException extends Exception を定義する", "throws AgeException をメソッド宣言に追加する", "try-catch でキャッチする"],
+    hint: "if (age < 0) throw new AgeException(\"年齢が不正です\"); のようにスローします。",
+    answer: `class AgeException extends Exception {\n    AgeException(String msg) { super(msg); }\n}\nclass Main {\n    static void checkAge(int age) throws AgeException {\n        if (age < 0) throw new AgeException("年齢が不正です: " + age);\n        System.out.println("年齢: " + age);\n    }\n    public static void main(String[] args) {\n        try {\n            checkAge(-1);\n        } catch (AgeException e) {\n            System.out.println("エラー: " + e.getMessage());\n        }\n    }\n}`
+  },
+  {
+    id: 24, rank: "GOLD", unit: "UNIT 06", title: "ジェネリクスクラス",
+    question: "型パラメータTを持つ Pair<T,U> クラスを定義して Pair<String,Integer>(\"Score\",100) を作り、getFirst()とgetSecond()の結果を出力してください。",
+    requirements: ["Pair<T,U> クラスをジェネリクスで定義する", "getFirst() と getSecond() を実装する"],
+    hint: "class Pair<T, U> { T first; U second; ... } のように定義します。",
+    answer: `class Pair<T, U> {\n    T first;\n    U second;\n    Pair(T first, U second) { this.first = first; this.second = second; }\n    T getFirst() { return first; }\n    U getSecond() { return second; }\n}\nclass Main {\n    public static void main(String[] args) {\n        Pair<String, Integer> p = new Pair<>("Score", 100);\n        System.out.println(p.getFirst());\n        System.out.println(p.getSecond());\n    }\n}`
+  },
+  {
+    id: 25, rank: "GOLD", unit: "UNIT 06", title: "ジェネリクスメソッド",
+    question: "<T extends Comparable<T>> T findMax(T[] arr) を定義して Integer[] と String[] でテストしてください。",
+    requirements: ["ジェネリクスメソッドを定義する", "T extends Comparable<T> で比較可能な型に制限する"],
+    hint: "if (arr[i].compareTo(max) > 0) max = arr[i]; で最大値を求めます。",
+    answer: `class Main {\n    static <T extends Comparable<T>> T findMax(T[] arr) {\n        T max = arr[0];\n        for (T item : arr) {\n            if (item.compareTo(max) > 0) max = item;\n        }\n        return max;\n    }\n    public static void main(String[] args) {\n        Integer[] nums = {3, 7, 1, 9, 4};\n        String[] words = {"banana", "apple", "cherry"};\n        System.out.println(findMax(nums));\n        System.out.println(findMax(words));\n    }\n}`
+  },
+  // UNIT 07
+  {
+    id: 26, rank: "DIAMOND", unit: "UNIT 07", title: "ラムダ式",
+    question: "List<Integer> numbers = Arrays.asList(1,2,3,4,5,6,7,8,9,10) から偶数をフィルターして2倍にしてリスト出力してください。",
+    requirements: ["stream().filter() で偶数を絞り込む", "map() で2倍にする", "collect(Collectors.toList()) でリストに変換"],
+    hint: ".filter(n -> n % 2 == 0).map(n -> n * 2) のようにチェーンします。",
+    answer: `import java.util.*;\nimport java.util.stream.*;\nclass Main {\n    public static void main(String[] args) {\n        List<Integer> numbers = Arrays.asList(1,2,3,4,5,6,7,8,9,10);\n        List<Integer> result = numbers.stream()\n            .filter(n -> n % 2 == 0)\n            .map(n -> n * 2)\n            .collect(Collectors.toList());\n        System.out.println(result);\n    }\n}`
+  },
+  {
+    id: 27, rank: "DIAMOND", unit: "UNIT 07", title: "Stream 集計",
+    question: "List<String> words = Arrays.asList(\"Java\",\"Stream\",\"API\",\"Lambda\",\"Functional\") から文字数が5以上の単語を長さ降順にソートして出力してください。",
+    requirements: ["filter() で文字数5以上を絞り込む", "sorted(Comparator) で降順ソート", "forEach() で出力"],
+    hint: ".sorted(Comparator.comparingInt(String::length).reversed()) で降順ソートできます。",
+    answer: `import java.util.*;\nclass Main {\n    public static void main(String[] args) {\n        List<String> words = Arrays.asList("Java","Stream","API","Lambda","Functional");\n        words.stream()\n            .filter(w -> w.length() >= 5)\n            .sorted(Comparator.comparingInt(String::length).reversed())\n            .forEach(System.out::println);\n    }\n}`
+  },
+  {
+    id: 28, rank: "DIAMOND", unit: "UNIT 07", title: "Optional",
+    question: "List<String> names = Arrays.asList(\"Alice\",\"Bob\",\"Charlie\") から \"B\" で始まる最初の名前を Optional で取得し、存在すれば出力、なければ \"見つかりません\" を出力してください。",
+    requirements: ["stream().filter().findFirst() で Optional を取得", "ifPresentOrElse() または orElse() で結果を処理"],
+    hint: ".findFirst() は Optional<T> を返します。.orElse(\"見つかりません\") で代替値を設定できます。",
+    answer: `import java.util.*;\nclass Main {\n    public static void main(String[] args) {\n        List<String> names = Arrays.asList("Alice","Bob","Charlie");\n        String result = names.stream()\n            .filter(n -> n.startsWith("B"))\n            .findFirst()\n            .orElse("見つかりません");\n        System.out.println(result);\n    }\n}`
+  },
+  // UNIT 08
+  {
+    id: 29, rank: "MASTER", unit: "UNIT 08", title: "Comparable 実装",
+    question: "score(int)とname(String)を持つ Student クラスを Comparable<Student> で実装（スコア降順）し、List<Student> を Collections.sort でソートして出力してください。",
+    requirements: ["Comparable<Student> を implements する", "compareTo() でスコア降順を定義する", "Collections.sort() でソートする"],
+    hint: "return other.score - this.score; でスコア降順になります。",
+    answer: `import java.util.*;\nclass Student implements Comparable<Student> {\n    String name;\n    int score;\n    Student(String name, int score) { this.name = name; this.score = score; }\n    public int compareTo(Student other) { return other.score - this.score; }\n    public String toString() { return name + ": " + score; }\n}\nclass Main {\n    public static void main(String[] args) {\n        List<Student> list = new ArrayList<>();\n        list.add(new Student("Alice", 85));\n        list.add(new Student("Bob", 92));\n        list.add(new Student("Carol", 78));\n        Collections.sort(list);\n        for (Student s : list) System.out.println(s);\n    }\n}`
+  },
+  {
+    id: 30, rank: "LEGEND", unit: "UNIT 08", title: "ジェネリクスStack",
+    question: "ジェネリクスを使った Stack<T> クラスを ArrayList で実装し（push/pop/peek/isEmpty/size）、Integer と String でそれぞれテストしてください。",
+    requirements: ["Stack<T> クラスをジェネリクスで定義する", "push/pop/peek/isEmpty/size を実装する", "Integer と String でテストする"],
+    hint: "ArrayList の末尾を使って push は add()、pop は remove(size-1) で実装できます。",
+    answer: `import java.util.ArrayList;\nclass Stack<T> {\n    private ArrayList<T> list = new ArrayList<>();\n    void push(T item) { list.add(item); }\n    T pop() { if (isEmpty()) throw new RuntimeException("空"); return list.remove(list.size()-1); }\n    T peek() { if (isEmpty()) throw new RuntimeException("空"); return list.get(list.size()-1); }\n    boolean isEmpty() { return list.isEmpty(); }\n    int size() { return list.size(); }\n}\nclass Main {\n    public static void main(String[] args) {\n        Stack<Integer> s1 = new Stack<>();\n        s1.push(10); s1.push(20); s1.push(30);\n        System.out.println("peek: " + s1.peek());\n        System.out.println("pop: " + s1.pop() + ", size: " + s1.size());\n        Stack<String> s2 = new Stack<>();\n        s2.push("Java"); s2.push("Generic"); s2.push("Stack");\n        while (!s2.isEmpty()) System.out.println(s2.pop());\n    }\n}`
+  }
+];
+
+const javaMissions = [
+  {
+    id: 1, rank: "BRONZE",
+    title: "配列マスター",
+    description: "配列の操作を習得する",
+    question: "int[] data = {15, 8, 23, 4, 42, 16, 7, 35} を使って：最大値、最小値、合計、平均（小数点1桁）を出力し、さらに降順にソートして出力してください。",
+    requirements: ["最大値・最小値を求める", "合計・平均を計算する", "降順ソートする"],
+    hint: "Arrays.sort() で昇順ソートし、逆順に出力するか手動ソートしてください。",
+    answer: `import java.util.Arrays;\nclass Main {\n    public static void main(String[] args) {\n        int[] data = {15,8,23,4,42,16,7,35};\n        int max=data[0], min=data[0], sum=0;\n        for(int x:data){if(x>max)max=x;if(x<min)min=x;sum+=x;}\n        System.out.println("最大: "+max);\n        System.out.println("最小: "+min);\n        System.out.println("合計: "+sum);\n        System.out.printf("平均: %.1f%n",(double)sum/data.length);\n        Arrays.sort(data);\n        System.out.print("降順: ");\n        for(int i=data.length-1;i>=0;i--)System.out.print(data[i]+(i>0?", ":"\\n"));\n    }\n}`
+  },
+  {
+    id: 2, rank: "BRONZE",
+    title: "文字列処理マスター",
+    description: "文字列操作を習得する",
+    question: "String sentence = \"The quick brown fox jumps over the lazy dog\" を使って：単語数、最長の単語、大文字変換、\"fox\"を\"cat\"に置換した文字列を出力してください。",
+    requirements: ["split() で単語分割", "最長単語を求める", "toUpperCase()・replace() を使う"],
+    hint: "split(\" \") でスペース区切りに分割できます。",
+    answer: `class Main {\n    public static void main(String[] args) {\n        String s = "The quick brown fox jumps over the lazy dog";\n        String[] words = s.split(" ");\n        System.out.println("単語数: " + words.length);\n        String longest = "";\n        for(String w:words)if(w.length()>longest.length())longest=w;\n        System.out.println("最長: " + longest);\n        System.out.println("大文字: " + s.toUpperCase());\n        System.out.println("置換: " + s.replace("fox","cat"));\n    }\n}`
+  },
+  {
+    id: 3, rank: "SILVER",
+    title: "OOPデザイン",
+    description: "クラス設計を実践する",
+    question: "銀行口座クラス BankAccount を作成してください。フィールド：owner(String)、balance(double)。メソッド：deposit(double)、withdraw(double)（残高不足なら\"残高不足\"と出力）、getBalance()。口座を作り入金・出金をテストしてください。",
+    requirements: ["コンストラクタでowner・balanceを初期化", "deposit/withdrawを実装", "残高不足のハンドリング"],
+    hint: "withdraw では balance < amount のチェックを忘れずに。",
+    answer: `class BankAccount {\n    String owner;\n    double balance;\n    BankAccount(String owner, double balance){this.owner=owner;this.balance=balance;}\n    void deposit(double amount){balance+=amount;System.out.printf("%s 入金: %.0f → 残高: %.0f%n",owner,amount,balance);}\n    void withdraw(double amount){if(balance<amount){System.out.println("残高不足");return;}balance-=amount;System.out.printf("%s 出金: %.0f → 残高: %.0f%n",owner,amount,balance);}\n    double getBalance(){return balance;}\n}\nclass Main {\n    public static void main(String[] args) {\n        BankAccount acc = new BankAccount("Alice", 10000);\n        acc.deposit(5000);\n        acc.withdraw(3000);\n        acc.withdraw(20000);\n        System.out.printf("最終残高: %.0f%n", acc.getBalance());\n    }\n}`
+  },
+  {
+    id: 4, rank: "SILVER",
+    title: "コレクション活用",
+    description: "ArrayList と HashMap を組み合わせる",
+    question: "学生の成績管理システムを作ってください。HashMap<String, ArrayList<Integer>> で各学生の複数教科の点数を管理し、各学生の平均点と全学生の平均点を出力してください。Alice:[80,75,90], Bob:[65,70,60], Carol:[95,88,92]",
+    requirements: ["HashMap<String, ArrayList<Integer>> を使う", "各学生の平均を計算", "全体の平均を計算"],
+    hint: "entrySet() で HashMap のエントリを取得できます。",
+    answer: `import java.util.*;\nclass Main {\n    public static void main(String[] args) {\n        HashMap<String,ArrayList<Integer>> grades = new HashMap<>();\n        grades.put("Alice", new ArrayList<>(Arrays.asList(80,75,90)));\n        grades.put("Bob",   new ArrayList<>(Arrays.asList(65,70,60)));\n        grades.put("Carol", new ArrayList<>(Arrays.asList(95,88,92)));\n        double totalAll = 0; int countAll = 0;\n        for(Map.Entry<String,ArrayList<Integer>> e : grades.entrySet()){\n            double avg=e.getValue().stream().mapToInt(i->i).average().orElse(0);\n            System.out.printf("%s の平均: %.1f%n",e.getKey(),avg);\n            totalAll+=e.getValue().stream().mapToInt(i->i).sum();\n            countAll+=e.getValue().size();\n        }\n        System.out.printf("全体平均: %.1f%n",totalAll/countAll);\n    }\n}`
+  },
+  {
+    id: 5, rank: "GOLD",
+    title: "Stream APIマスター",
+    description: "Stream APIを使いこなす",
+    question: "List<String> names = [\"Alice\",\"Bob\",\"Charlie\",\"David\",\"Eve\",\"Frank\"] を Stream API で：①3文字以上の名前をアルファベット順、②全名前を大文字で連結（カンマ区切り）、③名前の長さの合計、を出力してください。",
+    requirements: ["filter + sorted + forEach を使う", "map + collect(joining) を使う", "mapToInt + sum を使う"],
+    hint: "Collectors.joining(\", \") で文字列連結できます。",
+    answer: `import java.util.*;\nimport java.util.stream.*;\nclass Main {\n    public static void main(String[] args) {\n        List<String> names = Arrays.asList("Alice","Bob","Charlie","David","Eve","Frank");\n        System.out.println("3文字以上(昇順):");\n        names.stream().filter(n->n.length()>=3).sorted().forEach(System.out::println);\n        String joined = names.stream().map(String::toUpperCase).collect(Collectors.joining(", "));\n        System.out.println("大文字連結: "+joined);\n        int totalLen = names.stream().mapToInt(String::length).sum();\n        System.out.println("長さの合計: "+totalLen);\n    }\n}`
+  },
+  {
+    id: 6, rank: "GOLD",
+    title: "汎用データ構造",
+    description: "ジェネリクスでデータ構造を実装する",
+    question: "ジェネリクスを使った Queue<T>（先入れ先出し）を LinkedList で実装してください。enqueue/dequeue/peek/isEmpty/size メソッドを実装し、Integer と String の両方でテストしてください。",
+    requirements: ["Queue<T>クラスをジェネリクスで定義", "LinkedList<T> を内部データ構造に使用", "Integer と String 両方でテスト"],
+    hint: "java.util.LinkedList の addLast/removeFirst を活用できます。",
+    answer: `import java.util.LinkedList;\nclass Queue<T> {\n    private LinkedList<T> list = new LinkedList<>();\n    void enqueue(T item){list.addLast(item);}\n    T dequeue(){if(isEmpty())throw new RuntimeException("空");return list.removeFirst();}\n    T peek(){if(isEmpty())throw new RuntimeException("空");return list.getFirst();}\n    boolean isEmpty(){return list.isEmpty();}\n    int size(){return list.size();}\n}\nclass Main {\n    public static void main(String[] args) {\n        Queue<Integer> q1 = new Queue<>();\n        q1.enqueue(10); q1.enqueue(20); q1.enqueue(30);\n        System.out.println("Integer Queue: "+q1.dequeue()+", "+q1.dequeue()+", size="+q1.size());\n        Queue<String> q2 = new Queue<>();\n        q2.enqueue("Java"); q2.enqueue("Stream"); q2.enqueue("API");\n        System.out.println("peek: "+q2.peek());\n        while(!q2.isEmpty())System.out.println(q2.dequeue());\n    }\n}`
+  }
+];
+
+const javaUnitGuides = [
+  {
+    id: "java-unit01", unit: "UNIT 01", title: "Hello Java & 基本出力",
+    summary: "Javaプログラムの基本構造、System.out.println、変数と基本型を学ぶ。",
+    points: [
+      "Javaはすべてのコードをクラスの中に書く",
+      "エントリーポイントは public static void main(String[] args)",
+      "System.out.println() で改行付き出力、print() で改行なし",
+      "基本型: int, double, boolean, char; 参照型: String"
+    ],
+    words: [
+      { term: "public static void main", desc: "Javaプログラムの開始点となるメソッドシグネチャ" },
+      { term: "System.out.println()", desc: "標準出力に改行付きで出力するメソッド" },
+      { term: "String", desc: "文字列を表す参照型（大文字始まり）" }
+    ]
+  },
+  {
+    id: "java-unit02", unit: "UNIT 02", title: "制御構文",
+    summary: "if-else、for、while、switch を学ぶ。",
+    points: [
+      "if-else で条件分岐",
+      "for(int i=0; i<n; i++) で回数ループ",
+      "while で条件ループ",
+      "switch は case: break: を忘れずに"
+    ],
+    words: [
+      { term: "for", desc: "初期化;条件;更新 の3つで制御する繰り返し文" },
+      { term: "break", desc: "ループまたはswitch文を終了するキーワード" },
+      { term: "continue", desc: "現在の反復をスキップして次に進むキーワード" }
+    ]
+  },
+  {
+    id: "java-unit03", unit: "UNIT 03", title: "配列とメソッド",
+    summary: "配列の宣言・操作、メソッド定義、再帰を学ぶ。",
+    points: [
+      "int[] arr = new int[5] または {1,2,3} で配列を作成",
+      "配列の長さは arr.length",
+      "static メソッドは main から直接呼び出せる",
+      "再帰は自分自身を呼び出すメソッド（基底ケースを忘れずに）"
+    ],
+    words: [
+      { term: "int[]", desc: "int型の配列。宣言時にサイズか初期値を指定する" },
+      { term: "static", desc: "インスタンスを作らずにクラスから直接呼べるメソッド/フィールド" },
+      { term: "return", desc: "メソッドから値を返して処理を終了するキーワード" }
+    ]
+  },
+  {
+    id: "java-unit04", unit: "UNIT 04", title: "コレクション",
+    summary: "ArrayList、HashMap、Collections クラスを学ぶ。",
+    points: [
+      "ArrayList<T> は可変長リスト（配列の代替）",
+      "HashMap<K,V> はキーと値のペアを管理",
+      "Collections.sort() でリストをソート",
+      "ジェネリクス <T> で型安全なコレクションを使う"
+    ],
+    words: [
+      { term: "ArrayList", desc: "サイズが可変の配列リスト。add/remove/get が使える" },
+      { term: "HashMap", desc: "キーと値のペアを格納するハッシュテーブル" },
+      { term: "import", desc: "他のパッケージのクラスを使うための宣言" }
+    ]
+  },
+  {
+    id: "java-unit05", unit: "UNIT 05", title: "クラスと継承",
+    summary: "クラス定義、コンストラクタ、継承、@Override を学ぶ。",
+    points: [
+      "クラスはフィールドとメソッドの集まり",
+      "コンストラクタはクラス名と同じ名前・戻り値なし",
+      "extends でクラスを継承",
+      "@Override でスーパークラスのメソッドを上書き"
+    ],
+    words: [
+      { term: "constructor", desc: "オブジェクト生成時に呼ばれる初期化メソッド" },
+      { term: "extends", desc: "クラスを継承するキーワード" },
+      { term: "@Override", desc: "親クラスのメソッドをオーバーライドすることを明示するアノテーション" }
+    ]
+  },
+  {
+    id: "java-unit06", unit: "UNIT 06", title: "インターフェースと抽象クラス",
+    summary: "interface、abstract class、ポリモーフィズムを学ぶ。",
+    points: [
+      "interface は実装を強制する契約",
+      "abstract class は実装と抽象メソッドを混在できる",
+      "implements でインターフェースを実装",
+      "ポリモーフィズムで型を抽象的に扱える"
+    ],
+    words: [
+      { term: "interface", desc: "メソッドのシグネチャだけを定義する型の契約" },
+      { term: "abstract", desc: "実装を持たないメソッド/インスタンス化できないクラスを示すキーワード" },
+      { term: "implements", desc: "インターフェースを実装するキーワード" }
+    ]
+  },
+  {
+    id: "java-unit07", unit: "UNIT 07", title: "例外処理とジェネリクス",
+    summary: "try-catch-finally、カスタム例外、ジェネリクスクラスを学ぶ。",
+    points: [
+      "try-catch で例外をキャッチ",
+      "throw でカスタム例外をスロー",
+      "extends Exception でカスタム例外を定義",
+      "<T> でジェネリクスの型パラメータを定義"
+    ],
+    words: [
+      { term: "try-catch", desc: "例外が発生しうるコードを囲み、エラーを処理するブロック" },
+      { term: "throw", desc: "例外オブジェクトを投げるキーワード" },
+      { term: "Exception", desc: "検査例外の基底クラス" }
+    ]
+  },
+  {
+    id: "java-unit08", unit: "UNIT 08", title: "Stream API & ラムダ式",
+    summary: "Java 8以降のStream API、ラムダ式、Optional を学ぶ。",
+    points: [
+      "stream() でコレクションをStreamに変換",
+      "filter/map/sorted/collect/reduce で処理を連鎖",
+      "ラムダ式 (引数) -> 式 で無名関数を表現",
+      "Optional<T> でnull安全な処理が可能"
+    ],
+    words: [
+      { term: "Stream", desc: "コレクションの要素を関数型スタイルで処理するパイプライン" },
+      { term: "lambda", desc: "(引数)->式 の形で書く無名関数。Java 8から導入" },
+      { term: "Optional", desc: "値が存在するか不明な場合にnullの代わりに使うコンテナ型" }
+    ]
+  }
+];
+
 // ===== 言語別データ取得ヘルパー =====
 
 function getProblems() {
@@ -6195,6 +6606,7 @@ function getProblems() {
   if (currentLanguage === 'typescript') return typescriptProblems;
   if (currentLanguage === 'kotlin') return kotlinProblems;
   if (currentLanguage === 'swift') return swiftProblems;
+  if (currentLanguage === 'java') return javaProblems;
   return problems;
 }
 
@@ -6205,6 +6617,7 @@ function getMissions() {
   if (currentLanguage === 'typescript') return typescriptMissions;
   if (currentLanguage === 'kotlin') return kotlinMissions;
   if (currentLanguage === 'swift') return swiftMissions;
+  if (currentLanguage === 'java') return javaMissions;
   return missions;
 }
 
@@ -6215,6 +6628,7 @@ function getUnitGuides() {
   if (currentLanguage === 'typescript') return typescriptUnitGuides;
   if (currentLanguage === 'kotlin') return kotlinUnitGuides;
   if (currentLanguage === 'swift') return swiftUnitGuides;
+  if (currentLanguage === 'java') return javaUnitGuides;
   return unitGuides;
 }
 
@@ -6233,6 +6647,7 @@ function getCompiler() {
   if (currentLanguage === 'typescript') return 'typescript-5.6.2';
   if (currentLanguage === 'kotlin') return 'kotlin';
   if (currentLanguage === 'swift') return 'swift-5.10';
+  if (currentLanguage === 'java') return 'openjdk-head';
   return 'gcc-head';
 }
 
@@ -6243,6 +6658,7 @@ function getAceMode() {
   if (currentLanguage === 'typescript') return 'ace/mode/typescript';
   if (currentLanguage === 'kotlin') return 'ace/mode/kotlin';
   if (currentLanguage === 'swift') return 'ace/mode/swift';
+  if (currentLanguage === 'java') return 'ace/mode/java';
   return 'ace/mode/c_cpp';
 }
 
@@ -6272,6 +6688,10 @@ function getStarterCode() {
     if (p) return '// [問題] ' + p.question + '\n\n';
     return '// ここにコードを書いてください\n';
   }
+  if (currentLanguage === 'java') {
+    if (p) return '// [問題] ' + p.question + '\n\nclass Main {\n    public static void main(String[] args) {\n        \n    }\n}\n';
+    return 'class Main {\n    public static void main(String[] args) {\n        \n    }\n}\n';
+  }
   if (p) return '// [問題] ' + p.question + '\n' + ACE_STARTER;
   return ACE_STARTER;
 }
@@ -6283,6 +6703,7 @@ function getLangName() {
   if (currentLanguage === 'typescript') return 'TypeScript';
   if (currentLanguage === 'kotlin') return 'Kotlin';
   if (currentLanguage === 'swift') return 'Swift';
+  if (currentLanguage === 'java') return 'Java';
   return 'C++';
 }
 
@@ -7497,7 +7918,8 @@ async function renderProfile() {
     ruby:   Math.min(100, stats.ruby   / 30 * 100),
     ts:     Math.min(100, stats.ts     / 30 * 100),
     kotlin: Math.min(100, stats.kotlin / 30 * 100),
-    swift:  Math.min(100, stats.swift  / 30 * 100)
+    swift:  Math.min(100, stats.swift  / 30 * 100),
+    java:   Math.min(100, stats.java   / 30 * 100)
   };
 
   // ストリーク状態の判定（今日ログイン済みかどうか）
@@ -7550,8 +7972,8 @@ async function renderProfile() {
         '<div class="profile-rank-badge" style="color:' + rank.color + ';border-color:' + rank.color + ';box-shadow:0 0 12px ' + rank.color + '33">' +
           '◆ ' + rank.name + ' ◆' +
         '</div>' +
-        '<div class="profile-total">' + stats.total + '<span> / 213 CLEARED</span></div>' +
-        '<div class="profile-mission-total">' + stats.totalMissions + ' / 42 MISSIONS</div>' +
+        '<div class="profile-total">' + stats.total + '<span> / 243 CLEARED</span></div>' +
+        '<div class="profile-mission-total">' + stats.totalMissions + ' / 48 MISSIONS</div>' +
       '</div>' +
     '</div>' +
     (currentUserIsAdmin
@@ -7647,6 +8069,7 @@ async function renderProfile() {
         _statCardHTML('TypeScript', '#3178C6', stats.ts,     pct.ts,     stats.tsM,     30) +
         _statCardHTML('Kotlin',     '#7F52FF', stats.kotlin, pct.kotlin, stats.kotlinM, 30) +
         _statCardHTML('Swift',      '#FA7343', stats.swift,  pct.swift,  stats.swiftM,  30) +
+        _statCardHTML('Java',       '#ED8B00', stats.java,   pct.java,   stats.javaM,   30) +
       '</div>' +
     '</div>' +
 
