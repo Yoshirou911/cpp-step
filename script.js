@@ -47,48 +47,68 @@ function _kick(t0, startFreq, endFreq, dur, vol) {
   osc.stop(t0 + dur + 0.01);
 }
 
-// 問題クリア音：バス打撃 + 上昇アルペジオ
+// 問題クリア音：戻るボタン基準 × キック + FM降下 + 上昇メロディ
 function playClearSound() {
   if (!_soundEnabled) return;
   try {
-    var ctx = getAudioCtx();
-    var now = ctx.currentTime;
-    // サブベースキック（超低音）
-    _kick(now, 110, 20, 0.55, 0.68);
-    // ディープサブベース余韻
-    _tone(38,  now,        0.80, 'sine', 0.42);   // D1 超低音ルンブル
-    _tone(55,  now,        0.60, 'sine', 0.30);   // A1
-    // メロディ
-    _tone(261.6, now + 0.08,  0.24, 'sine', 0.20); // C4
-    _tone(329.6, now + 0.20,  0.24, 'sine', 0.20); // E4
-    _tone(392.0, now + 0.32,  0.24, 'sine', 0.20); // G4
-    _tone(523.25, now + 0.44, 0.55, 'sine', 0.26); // C5
-    _tone(659.25, now + 0.60, 0.60, 'sine', 0.15); // E5（余韻）
+    var ctx = getAudioCtx(), t = ctx.currentTime;
+    // 戻るボタンと同じキック
+    _kick(t, 90, 16, 0.30, 0.62);
+    // 戻るボタンと同じFM構造（降下）
+    var mod = ctx.createOscillator(), mG = ctx.createGain();
+    var car = ctx.createOscillator(), filt = ctx.createBiquadFilter(), gn = ctx.createGain();
+    mod.connect(mG); mG.connect(car.frequency);
+    car.connect(filt); filt.connect(gn); gn.connect(ctx.destination);
+    mod.type = 'sine';
+    mod.frequency.setValueAtTime(110, t); mod.frequency.exponentialRampToValueAtTime(18, t + 0.18);
+    mG.gain.setValueAtTime(380, t); mG.gain.exponentialRampToValueAtTime(8, t + 0.18);
+    car.type = 'sine';
+    car.frequency.setValueAtTime(260, t); car.frequency.exponentialRampToValueAtTime(45, t + 0.16);
+    filt.type = 'lowpass'; filt.frequency.setValueAtTime(400, t); filt.frequency.exponentialRampToValueAtTime(80, t + 0.18);
+    gn.gain.setValueAtTime(0.24, t); gn.gain.exponentialRampToValueAtTime(0.001, t + 0.20);
+    mod.start(t); mod.stop(t + 0.21); car.start(t); car.stop(t + 0.21);
+    // 上昇メロディ（達成感を付加）
+    _tone(261.6, t + 0.10, 0.22, 'sine', 0.18); // C4
+    _tone(329.6, t + 0.22, 0.22, 'sine', 0.18); // E4
+    _tone(392.0, t + 0.34, 0.22, 'sine', 0.18); // G4
+    _tone(523.25, t + 0.46, 0.50, 'sine', 0.22); // C5
+    _tone(659.25, t + 0.60, 0.55, 'sine', 0.13); // E5
   } catch(e) {}
 }
 
-// ミッションクリア音：重厚ファンファーレ + サブベース連打
+// ミッションクリア音：戻るボタン基準 × 3連打 + ファンファーレ
 function playMissionClearSound() {
   if (!_soundEnabled) return;
   try {
-    var ctx = getAudioCtx();
-    var now = ctx.currentTime;
-    // サブベース連打（3発）超低音
-    _kick(now,        130, 20, 0.50, 0.75);
-    _kick(now + 0.22, 120, 18, 0.48, 0.68);
-    _kick(now + 0.44, 150, 22, 0.75, 0.80);
-    // 超ディープルンブル
-    _tone(28,  now,        1.10, 'sine', 0.40);   // 超低音サブベース
-    _tone(38,  now + 0.35, 1.00, 'sine', 0.32);
-    // ファンファーレ
-    _tone(196.0, now,        0.16, 'square', 0.11); // G3
-    _tone(261.6, now + 0.16, 0.16, 'square', 0.11); // C4
-    _tone(329.6, now + 0.32, 0.16, 'square', 0.11); // E4
-    _tone(392.0, now + 0.48, 0.65, 'square', 0.14); // G4
-    _tone(523.25, now + 0.65, 0.85, 'square', 0.16); // C5
-    // ハーモニー
-    _tone(329.6, now + 0.48, 0.65, 'sine', 0.07);
-    _tone(392.0, now + 0.65, 0.85, 'sine', 0.09);
+    var ctx = getAudioCtx(), t = ctx.currentTime;
+    // 戻るボタンと同じキック × 3連打
+    _kick(t,        90, 16, 0.30, 0.65);
+    _kick(t + 0.24, 90, 16, 0.30, 0.65);
+    _kick(t + 0.48, 90, 16, 0.50, 0.80);
+    // 戻るボタンと同じFM × 3セット
+    [0, 0.24, 0.48].forEach(function(offset) {
+      var mo = ctx.createOscillator(), mg = ctx.createGain();
+      var co = ctx.createOscillator(), fi = ctx.createBiquadFilter(), gi = ctx.createGain();
+      mo.connect(mg); mg.connect(co.frequency);
+      co.connect(fi); fi.connect(gi); gi.connect(ctx.destination);
+      mo.type = 'sine';
+      mo.frequency.setValueAtTime(110, t+offset); mo.frequency.exponentialRampToValueAtTime(18, t+offset+0.18);
+      mg.gain.setValueAtTime(380, t+offset); mg.gain.exponentialRampToValueAtTime(8, t+offset+0.18);
+      co.type = 'sine';
+      co.frequency.setValueAtTime(260, t+offset); co.frequency.exponentialRampToValueAtTime(45, t+offset+0.16);
+      fi.type = 'lowpass'; fi.frequency.setValueAtTime(400, t+offset); fi.frequency.exponentialRampToValueAtTime(80, t+offset+0.18);
+      gi.gain.setValueAtTime(0.24, t+offset); gi.gain.exponentialRampToValueAtTime(0.001, t+offset+0.20);
+      mo.start(t+offset); mo.stop(t+offset+0.21);
+      co.start(t+offset); co.stop(t+offset+0.21);
+    });
+    // ファンファーレ（3発目の後）
+    _tone(196.0, t + 0.48, 0.16, 'square', 0.11);
+    _tone(261.6, t + 0.64, 0.16, 'square', 0.11);
+    _tone(329.6, t + 0.80, 0.16, 'square', 0.11);
+    _tone(392.0, t + 0.96, 0.65, 'square', 0.13);
+    _tone(523.25, t + 1.12, 0.80, 'square', 0.15);
+    _tone(329.6, t + 0.96, 0.65, 'sine', 0.07);
+    _tone(392.0, t + 1.12, 0.80, 'sine', 0.09);
   } catch(e) {}
 }
 
@@ -104,91 +124,83 @@ function toggleSound() {
 
 // ホログラムボタン押下（汎用クリック）
 // サブベースパンチ + 低域FM
+// 戻るボタン基準・短縮版（汎用クリック）
 function playUIClick() {
   if (!_soundEnabled) return;
   try {
     var ctx = getAudioCtx(), t = ctx.currentTime;
-    // サブベースパンチ（超低音）
-    _kick(t, 85, 20, 0.16, 0.58);
-    // 低域FM
+    // 戻るボタンと同じキック・短め
+    _kick(t, 90, 16, 0.15, 0.58);
+    // 戻るボタンと同じFM・短縮
     var mod = ctx.createOscillator(), mG = ctx.createGain();
     var car = ctx.createOscillator(), filt = ctx.createBiquadFilter(), gain = ctx.createGain();
     mod.connect(mG); mG.connect(car.frequency);
     car.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
     mod.type = 'sine';
-    mod.frequency.setValueAtTime(35, t);
-    mG.gain.setValueAtTime(220, t);
-    mG.gain.exponentialRampToValueAtTime(8, t + 0.08);
+    mod.frequency.setValueAtTime(110, t); mod.frequency.exponentialRampToValueAtTime(18, t + 0.10);
+    mG.gain.setValueAtTime(380, t); mG.gain.exponentialRampToValueAtTime(8, t + 0.10);
     car.type = 'sine';
-    car.frequency.setValueAtTime(140, t);
-    car.frequency.exponentialRampToValueAtTime(360, t + 0.08);
-    filt.type = 'lowpass'; filt.frequency.setValueAtTime(500, t); filt.Q.setValueAtTime(4, t);
-    gain.gain.setValueAtTime(0.26, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.11);
-    mod.start(t); mod.stop(t + 0.12);
-    car.start(t); car.stop(t + 0.12);
+    car.frequency.setValueAtTime(260, t); car.frequency.exponentialRampToValueAtTime(45, t + 0.09);
+    filt.type = 'lowpass'; filt.frequency.setValueAtTime(400, t); filt.frequency.exponentialRampToValueAtTime(80, t + 0.10);
+    gain.gain.setValueAtTime(0.24, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+    mod.start(t); mod.stop(t + 0.13); car.start(t); car.stop(t + 0.13);
   } catch(e) {}
 }
 
 // スキャン＆ロックオン（問題/ミッション選択）
 // 重低音スイープ → ディープピング + エコー
+// 戻るボタン基準・確認ピング付き（問題/ミッション選択）
 function playItemSelect() {
   if (!_soundEnabled) return;
   try {
     var ctx = getAudioCtx(), t = ctx.currentTime;
-    // サブベースパルス（超低音）
-    _kick(t, 80, 18, 0.22, 0.55);
-    // Phase 1: 超低域FMスキャン
-    var m1 = ctx.createOscillator(), mg1 = ctx.createGain();
-    var c1 = ctx.createOscillator(), f1 = ctx.createBiquadFilter(), g1 = ctx.createGain();
-    m1.connect(mg1); mg1.connect(c1.frequency);
-    c1.connect(f1); f1.connect(g1); g1.connect(ctx.destination);
-    m1.type = 'sine';
-    m1.frequency.setValueAtTime(32, t); m1.frequency.exponentialRampToValueAtTime(140, t + 0.10);
-    mg1.gain.setValueAtTime(340, t); mg1.gain.exponentialRampToValueAtTime(18, t + 0.10);
-    c1.type = 'sine';
-    c1.frequency.setValueAtTime(65, t); c1.frequency.exponentialRampToValueAtTime(260, t + 0.10);
-    f1.type = 'lowpass'; f1.frequency.setValueAtTime(380, t); f1.frequency.exponentialRampToValueAtTime(700, t + 0.10);
-    g1.gain.setValueAtTime(0.28, t); g1.gain.exponentialRampToValueAtTime(0.001, t + 0.13);
-    m1.start(t); m1.stop(t + 0.14); c1.start(t); c1.stop(t + 0.14);
-    // Phase 2: ロックオンディープピング（1オクターブ下）
-    var o2 = ctx.createOscillator(), g2 = ctx.createGain();
-    o2.connect(g2); g2.connect(ctx.destination);
-    o2.type = 'sine';
-    o2.frequency.setValueAtTime(330, t + 0.10); o2.frequency.exponentialRampToValueAtTime(220, t + 0.28);
-    g2.gain.setValueAtTime(0.22, t + 0.10); g2.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
-    o2.start(t + 0.10); o2.stop(t + 0.33);
-    // ベースエコー
-    var o3 = ctx.createOscillator(), dly = ctx.createDelay(), g3 = ctx.createGain();
-    o3.connect(dly); dly.connect(g3); g3.connect(ctx.destination);
-    o3.type = 'sine';
-    o3.frequency.setValueAtTime(330, t + 0.10); o3.frequency.exponentialRampToValueAtTime(220, t + 0.28);
-    dly.delayTime.setValueAtTime(0.12, t);
-    g3.gain.setValueAtTime(0.10, t + 0.10); g3.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
-    o3.start(t + 0.10); o3.stop(t + 0.46);
-  } catch(e) {}
-}
-
-// インターフェースパネル切替（タブ）
-// 低域ウーシュ + サブベース
-function playNavTab() {
-  if (!_soundEnabled) return;
-  try {
-    var ctx = getAudioCtx(), t = ctx.currentTime;
-    // サブベース（超低音）
-    _kick(t, 65, 16, 0.18, 0.48);
+    // 戻るボタンと同じキック
+    _kick(t, 90, 16, 0.30, 0.58);
+    // 戻るボタンと同じFM
     var mod = ctx.createOscillator(), mG = ctx.createGain();
     var car = ctx.createOscillator(), filt = ctx.createBiquadFilter(), gain = ctx.createGain();
     mod.connect(mG); mG.connect(car.frequency);
     car.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
     mod.type = 'sine';
-    mod.frequency.setValueAtTime(30, t); mod.frequency.linearRampToValueAtTime(90, t + 0.10);
-    mG.gain.setValueAtTime(260, t); mG.gain.exponentialRampToValueAtTime(10, t + 0.10);
+    mod.frequency.setValueAtTime(110, t); mod.frequency.exponentialRampToValueAtTime(18, t + 0.18);
+    mG.gain.setValueAtTime(380, t); mG.gain.exponentialRampToValueAtTime(8, t + 0.18);
     car.type = 'sine';
-    car.frequency.setValueAtTime(110, t); car.frequency.exponentialRampToValueAtTime(280, t + 0.10);
-    filt.type = 'lowpass'; filt.frequency.setValueAtTime(300, t); filt.frequency.exponentialRampToValueAtTime(600, t + 0.11);
-    gain.gain.setValueAtTime(0.24, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
-    mod.start(t); mod.stop(t + 0.15); car.start(t); car.stop(t + 0.15);
+    car.frequency.setValueAtTime(260, t); car.frequency.exponentialRampToValueAtTime(45, t + 0.16);
+    filt.type = 'lowpass'; filt.frequency.setValueAtTime(400, t); filt.frequency.exponentialRampToValueAtTime(80, t + 0.18);
+    gain.gain.setValueAtTime(0.24, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.20);
+    mod.start(t); mod.stop(t + 0.21); car.start(t); car.stop(t + 0.21);
+    // 確認ピング（ロックオン感）
+    var op = ctx.createOscillator(), gp = ctx.createGain();
+    op.connect(gp); gp.connect(ctx.destination);
+    op.type = 'sine';
+    op.frequency.setValueAtTime(330, t + 0.18); op.frequency.exponentialRampToValueAtTime(220, t + 0.38);
+    gp.gain.setValueAtTime(0.20, t + 0.18); gp.gain.exponentialRampToValueAtTime(0.001, t + 0.42);
+    op.start(t + 0.18); op.stop(t + 0.43);
+  } catch(e) {}
+}
+
+// インターフェースパネル切替（タブ）
+// 低域ウーシュ + サブベース
+// 戻るボタン基準・やや短め（タブ切替）
+function playNavTab() {
+  if (!_soundEnabled) return;
+  try {
+    var ctx = getAudioCtx(), t = ctx.currentTime;
+    // 戻るボタンと同じキック・やや短め
+    _kick(t, 90, 16, 0.22, 0.58);
+    // 戻るボタンと同じFM・やや短縮
+    var mod = ctx.createOscillator(), mG = ctx.createGain();
+    var car = ctx.createOscillator(), filt = ctx.createBiquadFilter(), gain = ctx.createGain();
+    mod.connect(mG); mG.connect(car.frequency);
+    car.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
+    mod.type = 'sine';
+    mod.frequency.setValueAtTime(110, t); mod.frequency.exponentialRampToValueAtTime(18, t + 0.14);
+    mG.gain.setValueAtTime(380, t); mG.gain.exponentialRampToValueAtTime(8, t + 0.14);
+    car.type = 'sine';
+    car.frequency.setValueAtTime(260, t); car.frequency.exponentialRampToValueAtTime(45, t + 0.13);
+    filt.type = 'lowpass'; filt.frequency.setValueAtTime(400, t); filt.frequency.exponentialRampToValueAtTime(80, t + 0.14);
+    gain.gain.setValueAtTime(0.24, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+    mod.start(t); mod.stop(t + 0.17); car.start(t); car.stop(t + 0.17);
   } catch(e) {}
 }
 
@@ -221,43 +233,38 @@ function playLangSelect() {
   if (!_soundEnabled) return;
   try {
     var ctx = getAudioCtx(), t = ctx.currentTime;
-    // サブベース二連打（超低音）
-    _kick(t,        120, 20, 0.40, 0.72);
-    _kick(t + 0.08, 110, 18, 0.50, 0.62);
-    // 超ディープルンブル
-    _tone(25, t, 0.65, 'sine', 0.40);   // 超低音サブベース
-    _tone(38, t, 0.50, 'sine', 0.28);
-    // Layer 1: 超低域FMスイープ
-    var m1=ctx.createOscillator(), mg1=ctx.createGain(), c1=ctx.createOscillator(), g1=ctx.createGain();
-    m1.connect(mg1); mg1.connect(c1.frequency); c1.connect(g1); g1.connect(ctx.destination);
-    m1.type='sine'; m1.frequency.setValueAtTime(28,t); m1.frequency.exponentialRampToValueAtTime(110,t+0.13);
-    mg1.gain.setValueAtTime(420,t); mg1.gain.exponentialRampToValueAtTime(15,t+0.13);
-    c1.type='sine'; c1.frequency.setValueAtTime(55,t); c1.frequency.exponentialRampToValueAtTime(220,t+0.13);
-    g1.gain.setValueAtTime(0.28,t); g1.gain.exponentialRampToValueAtTime(0.001,t+0.16);
-    m1.start(t); m1.stop(t+0.17); c1.start(t); c1.stop(t+0.17);
-    // Layer 2: 低域FMスイープ（遅れ）
-    var m2=ctx.createOscillator(), mg2=ctx.createGain(), c2=ctx.createOscillator();
-    var f2=ctx.createBiquadFilter(), g2=ctx.createGain();
-    m2.connect(mg2); mg2.connect(c2.frequency); c2.connect(f2); f2.connect(g2); g2.connect(ctx.destination);
-    m2.type='sine'; m2.frequency.setValueAtTime(50,t+0.07); m2.frequency.exponentialRampToValueAtTime(180,t+0.20);
-    mg2.gain.setValueAtTime(480,t+0.07); mg2.gain.exponentialRampToValueAtTime(18,t+0.20);
-    c2.type='sine'; c2.frequency.setValueAtTime(180,t+0.07); c2.frequency.exponentialRampToValueAtTime(520,t+0.20);
-    f2.type='lowpass'; f2.frequency.setValueAtTime(650,t+0.07);
-    g2.gain.setValueAtTime(0.22,t+0.07); g2.gain.exponentialRampToValueAtTime(0.001,t+0.22);
-    m2.start(t+0.07); m2.stop(t+0.23); c2.start(t+0.07); c2.stop(t+0.23);
-    // Layer 3: 確認ディープピング（1オクターブ下）
+    // 戻るボタンと同じキック × 2連打
+    _kick(t,        90, 16, 0.30, 0.65);
+    _kick(t + 0.10, 90, 16, 0.38, 0.72);
+    // 戻るボタンと同じFM × 2セット（時差あり）
+    [0, 0.10].forEach(function(offset) {
+      var mo=ctx.createOscillator(), mg=ctx.createGain();
+      var co=ctx.createOscillator(), fi=ctx.createBiquadFilter(), gi=ctx.createGain();
+      mo.connect(mg); mg.connect(co.frequency);
+      co.connect(fi); fi.connect(gi); gi.connect(ctx.destination);
+      mo.type='sine';
+      mo.frequency.setValueAtTime(110,t+offset); mo.frequency.exponentialRampToValueAtTime(18,t+offset+0.18);
+      mg.gain.setValueAtTime(380,t+offset); mg.gain.exponentialRampToValueAtTime(8,t+offset+0.18);
+      co.type='sine';
+      co.frequency.setValueAtTime(260,t+offset); co.frequency.exponentialRampToValueAtTime(45,t+offset+0.16);
+      fi.type='lowpass'; fi.frequency.setValueAtTime(400,t+offset); fi.frequency.exponentialRampToValueAtTime(80,t+offset+0.18);
+      gi.gain.setValueAtTime(0.24,t+offset); gi.gain.exponentialRampToValueAtTime(0.001,t+offset+0.20);
+      mo.start(t+offset); mo.stop(t+offset+0.21);
+      co.start(t+offset); co.stop(t+offset+0.21);
+    });
+    // 確認ディープピング（2発目後に）
     var o3=ctx.createOscillator(), g3=ctx.createGain();
     o3.connect(g3); g3.connect(ctx.destination);
-    o3.type='sine'; o3.frequency.setValueAtTime(440,t+0.18); o3.frequency.exponentialRampToValueAtTime(275,t+0.40);
-    g3.gain.setValueAtTime(0.22,t+0.18); g3.gain.exponentialRampToValueAtTime(0.001,t+0.44);
-    o3.start(t+0.18); o3.stop(t+0.45);
-    // ベースエコー
+    o3.type='sine'; o3.frequency.setValueAtTime(440,t+0.26); o3.frequency.exponentialRampToValueAtTime(275,t+0.48);
+    g3.gain.setValueAtTime(0.22,t+0.26); g3.gain.exponentialRampToValueAtTime(0.001,t+0.52);
+    o3.start(t+0.26); o3.stop(t+0.53);
+    // エコー
     var o4=ctx.createOscillator(), dly=ctx.createDelay(), g4=ctx.createGain();
     o4.connect(dly); dly.connect(g4); g4.connect(ctx.destination);
-    o4.type='sine'; o4.frequency.setValueAtTime(440,t+0.18); o4.frequency.exponentialRampToValueAtTime(275,t+0.40);
+    o4.type='sine'; o4.frequency.setValueAtTime(440,t+0.26); o4.frequency.exponentialRampToValueAtTime(275,t+0.48);
     dly.delayTime.setValueAtTime(0.15,t);
-    g4.gain.setValueAtTime(0.09,t+0.18); g4.gain.exponentialRampToValueAtTime(0.001,t+0.60);
-    o4.start(t+0.18); o4.stop(t+0.61);
+    g4.gain.setValueAtTime(0.09,t+0.26); g4.gain.exponentialRampToValueAtTime(0.001,t+0.65);
+    o4.start(t+0.26); o4.stop(t+0.66);
   } catch(e) {}
 }
 
