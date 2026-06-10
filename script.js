@@ -67,12 +67,6 @@ function playClearSound() {
     filt.type = 'lowpass'; filt.frequency.setValueAtTime(400, t); filt.frequency.exponentialRampToValueAtTime(80, t + 0.18);
     gn.gain.setValueAtTime(0.24, t); gn.gain.exponentialRampToValueAtTime(0.001, t + 0.20);
     mod.start(t); mod.stop(t + 0.21); car.start(t); car.stop(t + 0.21);
-    // 上昇メロディ（達成感を付加）
-    _tone(261.6, t + 0.10, 0.22, 'sine', 0.18); // C4
-    _tone(329.6, t + 0.22, 0.22, 'sine', 0.18); // E4
-    _tone(392.0, t + 0.34, 0.22, 'sine', 0.18); // G4
-    _tone(523.25, t + 0.46, 0.50, 'sine', 0.22); // C5
-    _tone(659.25, t + 0.60, 0.55, 'sine', 0.13); // E5
   } catch(e) {}
 }
 
@@ -101,14 +95,6 @@ function playMissionClearSound() {
       mo.start(t+offset); mo.stop(t+offset+0.21);
       co.start(t+offset); co.stop(t+offset+0.21);
     });
-    // ファンファーレ（3発目の後）
-    _tone(196.0, t + 0.48, 0.16, 'square', 0.11);
-    _tone(261.6, t + 0.64, 0.16, 'square', 0.11);
-    _tone(329.6, t + 0.80, 0.16, 'square', 0.11);
-    _tone(392.0, t + 0.96, 0.65, 'square', 0.13);
-    _tone(523.25, t + 1.12, 0.80, 'square', 0.15);
-    _tone(329.6, t + 0.96, 0.65, 'sine', 0.07);
-    _tone(392.0, t + 1.12, 0.80, 'sine', 0.09);
   } catch(e) {}
 }
 
@@ -169,13 +155,6 @@ function playItemSelect() {
     filt.type = 'lowpass'; filt.frequency.setValueAtTime(400, t); filt.frequency.exponentialRampToValueAtTime(80, t + 0.18);
     gain.gain.setValueAtTime(0.24, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.20);
     mod.start(t); mod.stop(t + 0.21); car.start(t); car.stop(t + 0.21);
-    // 確認ピング（ロックオン感）
-    var op = ctx.createOscillator(), gp = ctx.createGain();
-    op.connect(gp); gp.connect(ctx.destination);
-    op.type = 'sine';
-    op.frequency.setValueAtTime(330, t + 0.18); op.frequency.exponentialRampToValueAtTime(220, t + 0.38);
-    gp.gain.setValueAtTime(0.20, t + 0.18); gp.gain.exponentialRampToValueAtTime(0.001, t + 0.42);
-    op.start(t + 0.18); op.stop(t + 0.43);
   } catch(e) {}
 }
 
@@ -252,19 +231,6 @@ function playLangSelect() {
       mo.start(t+offset); mo.stop(t+offset+0.21);
       co.start(t+offset); co.stop(t+offset+0.21);
     });
-    // 確認ディープピング（2発目後に）
-    var o3=ctx.createOscillator(), g3=ctx.createGain();
-    o3.connect(g3); g3.connect(ctx.destination);
-    o3.type='sine'; o3.frequency.setValueAtTime(440,t+0.26); o3.frequency.exponentialRampToValueAtTime(275,t+0.48);
-    g3.gain.setValueAtTime(0.22,t+0.26); g3.gain.exponentialRampToValueAtTime(0.001,t+0.52);
-    o3.start(t+0.26); o3.stop(t+0.53);
-    // エコー
-    var o4=ctx.createOscillator(), dly=ctx.createDelay(), g4=ctx.createGain();
-    o4.connect(dly); dly.connect(g4); g4.connect(ctx.destination);
-    o4.type='sine'; o4.frequency.setValueAtTime(440,t+0.26); o4.frequency.exponentialRampToValueAtTime(275,t+0.48);
-    dly.delayTime.setValueAtTime(0.15,t);
-    g4.gain.setValueAtTime(0.09,t+0.26); g4.gain.exponentialRampToValueAtTime(0.001,t+0.65);
-    o4.start(t+0.26); o4.stop(t+0.66);
   } catch(e) {}
 }
 
