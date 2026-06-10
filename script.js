@@ -53,17 +53,17 @@ function playClearSound() {
   try {
     var ctx = getAudioCtx();
     var now = ctx.currentTime;
-    // サブベースキック
-    _kick(now, 180, 38, 0.35, 0.48);
-    // ディープベース余韻
-    _tone(55,  now,        0.50, 'sine', 0.28);   // A1
-    _tone(110, now,        0.35, 'sine', 0.18);   // A2
-    // メロディ（1オクターブ下）
-    _tone(261.6, now + 0.06,  0.22, 'sine', 0.20); // C4
-    _tone(329.6, now + 0.16,  0.22, 'sine', 0.20); // E4
-    _tone(392.0, now + 0.26,  0.22, 'sine', 0.20); // G4
-    _tone(523.25, now + 0.36, 0.50, 'sine', 0.26); // C5
-    _tone(659.25, now + 0.50, 0.55, 'sine', 0.15); // E5（余韻）
+    // サブベースキック（超低音）
+    _kick(now, 110, 20, 0.55, 0.68);
+    // ディープサブベース余韻
+    _tone(38,  now,        0.80, 'sine', 0.42);   // D1 超低音ルンブル
+    _tone(55,  now,        0.60, 'sine', 0.30);   // A1
+    // メロディ
+    _tone(261.6, now + 0.08,  0.24, 'sine', 0.20); // C4
+    _tone(329.6, now + 0.20,  0.24, 'sine', 0.20); // E4
+    _tone(392.0, now + 0.32,  0.24, 'sine', 0.20); // G4
+    _tone(523.25, now + 0.44, 0.55, 'sine', 0.26); // C5
+    _tone(659.25, now + 0.60, 0.60, 'sine', 0.15); // E5（余韻）
   } catch(e) {}
 }
 
@@ -73,22 +73,22 @@ function playMissionClearSound() {
   try {
     var ctx = getAudioCtx();
     var now = ctx.currentTime;
-    // サブベース連打（3発）
-    _kick(now,        220, 42, 0.28, 0.50);
-    _kick(now + 0.18, 200, 40, 0.26, 0.45);
-    _kick(now + 0.36, 240, 44, 0.55, 0.55);
-    // ディープルンブル
-    _tone(40,  now,        0.80, 'sine', 0.22);
-    _tone(55,  now + 0.30, 0.75, 'sine', 0.20);
-    // ファンファーレ（1オクターブ下）
-    _tone(196.0, now,        0.14, 'square', 0.11); // G3
-    _tone(261.6, now + 0.14, 0.14, 'square', 0.11); // C4
-    _tone(329.6, now + 0.28, 0.14, 'square', 0.11); // E4
-    _tone(392.0, now + 0.42, 0.60, 'square', 0.14); // G4
-    _tone(523.25, now + 0.58, 0.80, 'square', 0.16); // C5
+    // サブベース連打（3発）超低音
+    _kick(now,        130, 20, 0.50, 0.75);
+    _kick(now + 0.22, 120, 18, 0.48, 0.68);
+    _kick(now + 0.44, 150, 22, 0.75, 0.80);
+    // 超ディープルンブル
+    _tone(28,  now,        1.10, 'sine', 0.40);   // 超低音サブベース
+    _tone(38,  now + 0.35, 1.00, 'sine', 0.32);
+    // ファンファーレ
+    _tone(196.0, now,        0.16, 'square', 0.11); // G3
+    _tone(261.6, now + 0.16, 0.16, 'square', 0.11); // C4
+    _tone(329.6, now + 0.32, 0.16, 'square', 0.11); // E4
+    _tone(392.0, now + 0.48, 0.65, 'square', 0.14); // G4
+    _tone(523.25, now + 0.65, 0.85, 'square', 0.16); // C5
     // ハーモニー
-    _tone(329.6, now + 0.42, 0.60, 'sine', 0.07);
-    _tone(392.0, now + 0.58, 0.80, 'sine', 0.09);
+    _tone(329.6, now + 0.48, 0.65, 'sine', 0.07);
+    _tone(392.0, now + 0.65, 0.85, 'sine', 0.09);
   } catch(e) {}
 }
 
@@ -108,25 +108,25 @@ function playUIClick() {
   if (!_soundEnabled) return;
   try {
     var ctx = getAudioCtx(), t = ctx.currentTime;
-    // サブベースパンチ
-    _kick(t, 140, 42, 0.09, 0.38);
+    // サブベースパンチ（超低音）
+    _kick(t, 85, 20, 0.16, 0.58);
     // 低域FM
     var mod = ctx.createOscillator(), mG = ctx.createGain();
     var car = ctx.createOscillator(), filt = ctx.createBiquadFilter(), gain = ctx.createGain();
     mod.connect(mG); mG.connect(car.frequency);
     car.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
     mod.type = 'sine';
-    mod.frequency.setValueAtTime(55, t);
-    mG.gain.setValueAtTime(180, t);
-    mG.gain.exponentialRampToValueAtTime(8, t + 0.06);
+    mod.frequency.setValueAtTime(35, t);
+    mG.gain.setValueAtTime(220, t);
+    mG.gain.exponentialRampToValueAtTime(8, t + 0.08);
     car.type = 'sine';
-    car.frequency.setValueAtTime(220, t);
-    car.frequency.exponentialRampToValueAtTime(480, t + 0.06);
-    filt.type = 'lowpass'; filt.frequency.setValueAtTime(700, t); filt.Q.setValueAtTime(3, t);
-    gain.gain.setValueAtTime(0.20, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
-    mod.start(t); mod.stop(t + 0.09);
-    car.start(t); car.stop(t + 0.09);
+    car.frequency.setValueAtTime(140, t);
+    car.frequency.exponentialRampToValueAtTime(360, t + 0.08);
+    filt.type = 'lowpass'; filt.frequency.setValueAtTime(500, t); filt.Q.setValueAtTime(4, t);
+    gain.gain.setValueAtTime(0.26, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.11);
+    mod.start(t); mod.stop(t + 0.12);
+    car.start(t); car.stop(t + 0.12);
   } catch(e) {}
 }
 
@@ -136,36 +136,36 @@ function playItemSelect() {
   if (!_soundEnabled) return;
   try {
     var ctx = getAudioCtx(), t = ctx.currentTime;
-    // サブベースパルス
-    _kick(t, 120, 38, 0.13, 0.35);
-    // Phase 1: 重低音FMスキャン
+    // サブベースパルス（超低音）
+    _kick(t, 80, 18, 0.22, 0.55);
+    // Phase 1: 超低域FMスキャン
     var m1 = ctx.createOscillator(), mg1 = ctx.createGain();
     var c1 = ctx.createOscillator(), f1 = ctx.createBiquadFilter(), g1 = ctx.createGain();
     m1.connect(mg1); mg1.connect(c1.frequency);
     c1.connect(f1); f1.connect(g1); g1.connect(ctx.destination);
     m1.type = 'sine';
-    m1.frequency.setValueAtTime(55, t); m1.frequency.exponentialRampToValueAtTime(200, t + 0.075);
-    mg1.gain.setValueAtTime(280, t); mg1.gain.exponentialRampToValueAtTime(20, t + 0.075);
+    m1.frequency.setValueAtTime(32, t); m1.frequency.exponentialRampToValueAtTime(140, t + 0.10);
+    mg1.gain.setValueAtTime(340, t); mg1.gain.exponentialRampToValueAtTime(18, t + 0.10);
     c1.type = 'sine';
-    c1.frequency.setValueAtTime(100, t); c1.frequency.exponentialRampToValueAtTime(380, t + 0.075);
-    f1.type = 'lowpass'; f1.frequency.setValueAtTime(500, t); f1.frequency.exponentialRampToValueAtTime(900, t + 0.075);
-    g1.gain.setValueAtTime(0.22, t); g1.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
-    m1.start(t); m1.stop(t + 0.10); c1.start(t); c1.stop(t + 0.10);
-    // Phase 2: ロックオンディープピング
+    c1.frequency.setValueAtTime(65, t); c1.frequency.exponentialRampToValueAtTime(260, t + 0.10);
+    f1.type = 'lowpass'; f1.frequency.setValueAtTime(380, t); f1.frequency.exponentialRampToValueAtTime(700, t + 0.10);
+    g1.gain.setValueAtTime(0.28, t); g1.gain.exponentialRampToValueAtTime(0.001, t + 0.13);
+    m1.start(t); m1.stop(t + 0.14); c1.start(t); c1.stop(t + 0.14);
+    // Phase 2: ロックオンディープピング（1オクターブ下）
     var o2 = ctx.createOscillator(), g2 = ctx.createGain();
     o2.connect(g2); g2.connect(ctx.destination);
     o2.type = 'sine';
-    o2.frequency.setValueAtTime(660, t + 0.07); o2.frequency.exponentialRampToValueAtTime(440, t + 0.20);
-    g2.gain.setValueAtTime(0.18, t + 0.07); g2.gain.exponentialRampToValueAtTime(0.001, t + 0.24);
-    o2.start(t + 0.07); o2.stop(t + 0.25);
+    o2.frequency.setValueAtTime(330, t + 0.10); o2.frequency.exponentialRampToValueAtTime(220, t + 0.28);
+    g2.gain.setValueAtTime(0.22, t + 0.10); g2.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
+    o2.start(t + 0.10); o2.stop(t + 0.33);
     // ベースエコー
     var o3 = ctx.createOscillator(), dly = ctx.createDelay(), g3 = ctx.createGain();
     o3.connect(dly); dly.connect(g3); g3.connect(ctx.destination);
     o3.type = 'sine';
-    o3.frequency.setValueAtTime(660, t + 0.07); o3.frequency.exponentialRampToValueAtTime(440, t + 0.20);
-    dly.delayTime.setValueAtTime(0.10, t);
-    g3.gain.setValueAtTime(0.07, t + 0.07); g3.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
-    o3.start(t + 0.07); o3.stop(t + 0.36);
+    o3.frequency.setValueAtTime(330, t + 0.10); o3.frequency.exponentialRampToValueAtTime(220, t + 0.28);
+    dly.delayTime.setValueAtTime(0.12, t);
+    g3.gain.setValueAtTime(0.10, t + 0.10); g3.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+    o3.start(t + 0.10); o3.stop(t + 0.46);
   } catch(e) {}
 }
 
@@ -175,20 +175,20 @@ function playNavTab() {
   if (!_soundEnabled) return;
   try {
     var ctx = getAudioCtx(), t = ctx.currentTime;
-    // サブベース
-    _kick(t, 100, 36, 0.10, 0.30);
+    // サブベース（超低音）
+    _kick(t, 65, 16, 0.18, 0.48);
     var mod = ctx.createOscillator(), mG = ctx.createGain();
     var car = ctx.createOscillator(), filt = ctx.createBiquadFilter(), gain = ctx.createGain();
     mod.connect(mG); mG.connect(car.frequency);
     car.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
     mod.type = 'sine';
-    mod.frequency.setValueAtTime(50, t); mod.frequency.linearRampToValueAtTime(130, t + 0.08);
-    mG.gain.setValueAtTime(220, t); mG.gain.exponentialRampToValueAtTime(10, t + 0.08);
+    mod.frequency.setValueAtTime(30, t); mod.frequency.linearRampToValueAtTime(90, t + 0.10);
+    mG.gain.setValueAtTime(260, t); mG.gain.exponentialRampToValueAtTime(10, t + 0.10);
     car.type = 'sine';
-    car.frequency.setValueAtTime(180, t); car.frequency.exponentialRampToValueAtTime(420, t + 0.08);
-    filt.type = 'lowpass'; filt.frequency.setValueAtTime(400, t); filt.frequency.exponentialRampToValueAtTime(800, t + 0.085);
-    gain.gain.setValueAtTime(0.18, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.10);
-    mod.start(t); mod.stop(t + 0.11); car.start(t); car.stop(t + 0.11);
+    car.frequency.setValueAtTime(110, t); car.frequency.exponentialRampToValueAtTime(280, t + 0.10);
+    filt.type = 'lowpass'; filt.frequency.setValueAtTime(300, t); filt.frequency.exponentialRampToValueAtTime(600, t + 0.11);
+    gain.gain.setValueAtTime(0.24, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+    mod.start(t); mod.stop(t + 0.15); car.start(t); car.stop(t + 0.15);
   } catch(e) {}
 }
 
@@ -198,20 +198,20 @@ function playGoBack() {
   if (!_soundEnabled) return;
   try {
     var ctx = getAudioCtx(), t = ctx.currentTime;
-    // サブベース消失
-    _kick(t, 130, 32, 0.18, 0.38);
+    // サブベース消失（超低音下降）
+    _kick(t, 90, 16, 0.30, 0.58);
     var mod = ctx.createOscillator(), mG = ctx.createGain();
     var car = ctx.createOscillator(), filt = ctx.createBiquadFilter(), gain = ctx.createGain();
     mod.connect(mG); mG.connect(car.frequency);
     car.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
     mod.type = 'sine';
-    mod.frequency.setValueAtTime(160, t); mod.frequency.exponentialRampToValueAtTime(28, t + 0.12);
-    mG.gain.setValueAtTime(320, t); mG.gain.exponentialRampToValueAtTime(8, t + 0.12);
+    mod.frequency.setValueAtTime(110, t); mod.frequency.exponentialRampToValueAtTime(18, t + 0.18);
+    mG.gain.setValueAtTime(380, t); mG.gain.exponentialRampToValueAtTime(8, t + 0.18);
     car.type = 'sine';
-    car.frequency.setValueAtTime(380, t); car.frequency.exponentialRampToValueAtTime(80, t + 0.11);
-    filt.type = 'lowpass'; filt.frequency.setValueAtTime(600, t); filt.frequency.exponentialRampToValueAtTime(120, t + 0.12);
-    gain.gain.setValueAtTime(0.18, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
-    mod.start(t); mod.stop(t + 0.15); car.start(t); car.stop(t + 0.15);
+    car.frequency.setValueAtTime(260, t); car.frequency.exponentialRampToValueAtTime(45, t + 0.16);
+    filt.type = 'lowpass'; filt.frequency.setValueAtTime(400, t); filt.frequency.exponentialRampToValueAtTime(80, t + 0.18);
+    gain.gain.setValueAtTime(0.24, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.20);
+    mod.start(t); mod.stop(t + 0.21); car.start(t); car.stop(t + 0.21);
   } catch(e) {}
 }
 
@@ -221,43 +221,43 @@ function playLangSelect() {
   if (!_soundEnabled) return;
   try {
     var ctx = getAudioCtx(), t = ctx.currentTime;
-    // サブベース二連打
-    _kick(t,        200, 38, 0.22, 0.52);
-    _kick(t + 0.07, 180, 36, 0.30, 0.42);
-    // ディープルンブル
-    _tone(38, t, 0.45, 'sine', 0.25);
-    _tone(55, t, 0.35, 'sine', 0.18);
-    // Layer 1: 重低域FMスイープ
+    // サブベース二連打（超低音）
+    _kick(t,        120, 20, 0.40, 0.72);
+    _kick(t + 0.08, 110, 18, 0.50, 0.62);
+    // 超ディープルンブル
+    _tone(25, t, 0.65, 'sine', 0.40);   // 超低音サブベース
+    _tone(38, t, 0.50, 'sine', 0.28);
+    // Layer 1: 超低域FMスイープ
     var m1=ctx.createOscillator(), mg1=ctx.createGain(), c1=ctx.createOscillator(), g1=ctx.createGain();
     m1.connect(mg1); mg1.connect(c1.frequency); c1.connect(g1); g1.connect(ctx.destination);
-    m1.type='sine'; m1.frequency.setValueAtTime(45,t); m1.frequency.exponentialRampToValueAtTime(160,t+0.10);
-    mg1.gain.setValueAtTime(360,t); mg1.gain.exponentialRampToValueAtTime(15,t+0.10);
-    c1.type='sine'; c1.frequency.setValueAtTime(80,t); c1.frequency.exponentialRampToValueAtTime(320,t+0.10);
-    g1.gain.setValueAtTime(0.22,t); g1.gain.exponentialRampToValueAtTime(0.001,t+0.12);
-    m1.start(t); m1.stop(t+0.13); c1.start(t); c1.stop(t+0.13);
-    // Layer 2: 中域FMスイープ（遅れ）
+    m1.type='sine'; m1.frequency.setValueAtTime(28,t); m1.frequency.exponentialRampToValueAtTime(110,t+0.13);
+    mg1.gain.setValueAtTime(420,t); mg1.gain.exponentialRampToValueAtTime(15,t+0.13);
+    c1.type='sine'; c1.frequency.setValueAtTime(55,t); c1.frequency.exponentialRampToValueAtTime(220,t+0.13);
+    g1.gain.setValueAtTime(0.28,t); g1.gain.exponentialRampToValueAtTime(0.001,t+0.16);
+    m1.start(t); m1.stop(t+0.17); c1.start(t); c1.stop(t+0.17);
+    // Layer 2: 低域FMスイープ（遅れ）
     var m2=ctx.createOscillator(), mg2=ctx.createGain(), c2=ctx.createOscillator();
     var f2=ctx.createBiquadFilter(), g2=ctx.createGain();
     m2.connect(mg2); mg2.connect(c2.frequency); c2.connect(f2); f2.connect(g2); g2.connect(ctx.destination);
-    m2.type='sine'; m2.frequency.setValueAtTime(80,t+0.06); m2.frequency.exponentialRampToValueAtTime(280,t+0.16);
-    mg2.gain.setValueAtTime(420,t+0.06); mg2.gain.exponentialRampToValueAtTime(18,t+0.16);
-    c2.type='sine'; c2.frequency.setValueAtTime(280,t+0.06); c2.frequency.exponentialRampToValueAtTime(760,t+0.16);
-    f2.type='lowpass'; f2.frequency.setValueAtTime(900,t+0.06);
-    g2.gain.setValueAtTime(0.18,t+0.06); g2.gain.exponentialRampToValueAtTime(0.001,t+0.18);
-    m2.start(t+0.06); m2.stop(t+0.19); c2.start(t+0.06); c2.stop(t+0.19);
-    // Layer 3: 確認ディープピング
+    m2.type='sine'; m2.frequency.setValueAtTime(50,t+0.07); m2.frequency.exponentialRampToValueAtTime(180,t+0.20);
+    mg2.gain.setValueAtTime(480,t+0.07); mg2.gain.exponentialRampToValueAtTime(18,t+0.20);
+    c2.type='sine'; c2.frequency.setValueAtTime(180,t+0.07); c2.frequency.exponentialRampToValueAtTime(520,t+0.20);
+    f2.type='lowpass'; f2.frequency.setValueAtTime(650,t+0.07);
+    g2.gain.setValueAtTime(0.22,t+0.07); g2.gain.exponentialRampToValueAtTime(0.001,t+0.22);
+    m2.start(t+0.07); m2.stop(t+0.23); c2.start(t+0.07); c2.stop(t+0.23);
+    // Layer 3: 確認ディープピング（1オクターブ下）
     var o3=ctx.createOscillator(), g3=ctx.createGain();
     o3.connect(g3); g3.connect(ctx.destination);
-    o3.type='sine'; o3.frequency.setValueAtTime(880,t+0.14); o3.frequency.exponentialRampToValueAtTime(550,t+0.32);
-    g3.gain.setValueAtTime(0.20,t+0.14); g3.gain.exponentialRampToValueAtTime(0.001,t+0.36);
-    o3.start(t+0.14); o3.stop(t+0.37);
+    o3.type='sine'; o3.frequency.setValueAtTime(440,t+0.18); o3.frequency.exponentialRampToValueAtTime(275,t+0.40);
+    g3.gain.setValueAtTime(0.22,t+0.18); g3.gain.exponentialRampToValueAtTime(0.001,t+0.44);
+    o3.start(t+0.18); o3.stop(t+0.45);
     // ベースエコー
     var o4=ctx.createOscillator(), dly=ctx.createDelay(), g4=ctx.createGain();
     o4.connect(dly); dly.connect(g4); g4.connect(ctx.destination);
-    o4.type='sine'; o4.frequency.setValueAtTime(880,t+0.14); o4.frequency.exponentialRampToValueAtTime(550,t+0.32);
-    dly.delayTime.setValueAtTime(0.13,t);
-    g4.gain.setValueAtTime(0.07,t+0.14); g4.gain.exponentialRampToValueAtTime(0.001,t+0.50);
-    o4.start(t+0.14); o4.stop(t+0.51);
+    o4.type='sine'; o4.frequency.setValueAtTime(440,t+0.18); o4.frequency.exponentialRampToValueAtTime(275,t+0.40);
+    dly.delayTime.setValueAtTime(0.15,t);
+    g4.gain.setValueAtTime(0.09,t+0.18); g4.gain.exponentialRampToValueAtTime(0.001,t+0.60);
+    o4.start(t+0.18); o4.stop(t+0.61);
   } catch(e) {}
 }
 
