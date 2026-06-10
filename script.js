@@ -327,10 +327,10 @@ var BADGES = [
   { id: 'js_master',     name: 'JS MASTER',      desc: 'JavaScript 30問クリア',                   tier: 'diamond',  check: function(s) { return s.js >= 30;     } },
   // ミッション
   { id: 'first_mission', name: 'MISSION START',  desc: '初ミッションクリア',                      tier: 'silver',   check: function(s) { return s.totalMissions >= 1; } },
-  { id: 'mission_all',   name: 'MISSION MASTER', desc: 'いずれかの言語で全ミッションクリア',       tier: 'master',   check: function(s) { return s.cppM >= 6 || s.pyM >= 6 || s.jsM >= 6 || s.rubyM >= 6 || s.tsM >= 6 || s.kotlinM >= 6 || s.swiftM >= 6 || s.javaM >= 6; } },
+  { id: 'mission_all',   name: 'MISSION MASTER', desc: 'いずれかの言語で全ミッションクリア',       tier: 'master',   check: function(s) { return s.cppM >= 6 || s.pyM >= 6 || s.jsM >= 6 || s.rubyM >= 6 || s.tsM >= 6 || s.kotlinM >= 6 || s.swiftM >= 6 || s.javaM >= 6 || s.csharpM >= 6 || s.goM >= 6 || s.cM >= 6 || s.rustM >= 6; } },
   // 多言語
-  { id: 'bilingual',     name: 'BILINGUAL',      desc: '2言語以上でクリア達成',                   tier: 'gold',     check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin, s.swift, s.java].filter(function(n){return n>0;}).length >= 2; } },
-  { id: 'trilingual',    name: 'TRILINGUAL',     desc: '3言語以上でクリア達成',                   tier: 'platinum', check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin, s.swift, s.java].filter(function(n){return n>0;}).length >= 3; } },
+  { id: 'bilingual',     name: 'BILINGUAL',      desc: '2言語以上でクリア達成',                   tier: 'gold',     check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin, s.swift, s.java, s.csharp, s.go, s.c, s.rust].filter(function(n){return n>0;}).length >= 2; } },
+  { id: 'trilingual',    name: 'TRILINGUAL',     desc: '3言語以上でクリア達成',                   tier: 'platinum', check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin, s.swift, s.java, s.csharp, s.go, s.c, s.rust].filter(function(n){return n>0;}).length >= 3; } },
   // ストリーク
   { id: 'streak_3',      name: '3 DAY STREAK',   desc: '3日連続ログイン',                         tier: 'silver',   check: function(s) { return s.currentStreak >= 3;  } },
   { id: 'streak_7',      name: 'WEEKLY',         desc: '7日連続ログイン',                         tier: 'gold',     check: function(s) { return s.currentStreak >= 7;  } },
@@ -349,7 +349,15 @@ var BADGES = [
   { id: 'legend_swift',  name: 'SWIFT LEGEND',   desc: 'Swiftで伝説の称号獲得',                  tier: 'legend',   check: function(s) { return s.legendSwift; } },
   { id: 'java_master',   name: 'JAVA MASTER',    desc: 'Java 全30問クリア',                       tier: 'diamond',  check: function(s) { return s.java >= 30; } },
   { id: 'legend_java',   name: 'JAVA LEGEND',    desc: 'Javaで伝説の称号獲得',                   tier: 'legend',   check: function(s) { return s.legendJava; } },
-  { id: 'true_legend',   name: 'TRUE LEGEND',    desc: '全言語の超難問クリア',                    tier: 'legend',   check: function(s) { return s.legendCpp && s.legendPython && s.legendJs && s.legendRuby && s.legendTs && s.legendKotlin && s.legendSwift && s.legendJava; } },
+  { id: 'csharp_master', name: 'C# MASTER',      desc: 'C# 全30問クリア',                         tier: 'diamond',  check: function(s) { return s.csharp >= 30; } },
+  { id: 'legend_csharp', name: 'C# LEGEND',      desc: 'C#で伝説の称号獲得',                      tier: 'legend',   check: function(s) { return s.legendCsharp; } },
+  { id: 'go_master',     name: 'GO MASTER',      desc: 'Go 全30問クリア',                         tier: 'diamond',  check: function(s) { return s.go >= 30; } },
+  { id: 'legend_go',     name: 'GO LEGEND',      desc: 'Goで伝説の称号獲得',                      tier: 'legend',   check: function(s) { return s.legendGo; } },
+  { id: 'c_master',      name: 'C MASTER',       desc: 'C 全30問クリア',                          tier: 'diamond',  check: function(s) { return s.c >= 30; } },
+  { id: 'legend_c',      name: 'C LEGEND',       desc: 'Cで伝説の称号獲得',                       tier: 'legend',   check: function(s) { return s.legendC; } },
+  { id: 'rust_master',   name: 'RUST MASTER',    desc: 'Rust 全30問クリア',                       tier: 'diamond',  check: function(s) { return s.rust >= 30; } },
+  { id: 'legend_rust',   name: 'RUST LEGEND',    desc: 'Rustで伝説の称号獲得',                    tier: 'legend',   check: function(s) { return s.legendRust; } },
+  { id: 'true_legend',   name: 'TRUE LEGEND',    desc: '全言語の超難問クリア',                    tier: 'legend',   check: function(s) { return s.legendCpp && s.legendPython && s.legendJs && s.legendRuby && s.legendTs && s.legendKotlin && s.legendSwift && s.legendJava && s.legendCsharp && s.legendGo && s.legendC && s.legendRust; } },
 ];
 
 // 全言語の進捗を localStorage から集計（言語切替不要）
@@ -368,8 +376,12 @@ function getProfileStats() {
   var rubyArr = getP('ruby');
   var tsArr   = getP('typescript');
   var kotlinArr = getP('kotlin');
-  var swiftArr = getP('swift');
-  var javaArr = getP('java');
+  var swiftArr  = getP('swift');
+  var javaArr   = getP('java');
+  var csharpArr = getP('csharp');
+  var goArr     = getP('go');
+  var cArr      = getP('c');
+  var rustArr   = getP('rust');
   var cpp    = cppArr.length;
   var python = pythonArr.length;
   var js     = jsArr.length;
@@ -378,19 +390,29 @@ function getProfileStats() {
   var kotlin = kotlinArr.length;
   var swift  = swiftArr.length;
   var java   = javaArr.length;
-  var cppM   = getM('cpp').length;
-  var pyM    = getM('python').length;
-  var jsM    = getM('javascript').length;
-  var rubyM  = getM('ruby').length;
-  var tsM    = getM('typescript').length;
+  var csharp = csharpArr.length;
+  var go     = goArr.length;
+  var c      = cArr.length;
+  var rust   = rustArr.length;
+  var cppM    = getM('cpp').length;
+  var pyM     = getM('python').length;
+  var jsM     = getM('javascript').length;
+  var rubyM   = getM('ruby').length;
+  var tsM     = getM('typescript').length;
   var kotlinM = getM('kotlin').length;
   var swiftM  = getM('swift').length;
   var javaM   = getM('java').length;
+  var csharpM = getM('csharp').length;
+  var goM     = getM('go').length;
+  var cM      = getM('c').length;
+  var rustM   = getM('rust').length;
   return {
     cpp: cpp, python: python, js: js, ruby: ruby, ts: ts, kotlin: kotlin, swift: swift, java: java,
+    csharp: csharp, go: go, c: c, rust: rust,
     cppM: cppM, pyM: pyM, jsM: jsM, rubyM: rubyM, tsM: tsM, kotlinM: kotlinM, swiftM: swiftM, javaM: javaM,
-    total: cpp + python + js + ruby + ts + kotlin + swift + java,
-    totalMissions: cppM + pyM + jsM + rubyM + tsM + kotlinM + swiftM + javaM,
+    csharpM: csharpM, goM: goM, cM: cM, rustM: rustM,
+    total: cpp + python + js + ruby + ts + kotlin + swift + java + csharp + go + c + rust,
+    totalMissions: cppM + pyM + jsM + rubyM + tsM + kotlinM + swiftM + javaM + csharpM + goM + cM + rustM,
     legendCpp:    cppArr.indexOf(31)    !== -1,
     legendPython: pythonArr.indexOf(31) !== -1,
     legendJs:     jsArr.indexOf(31)     !== -1,
@@ -399,6 +421,10 @@ function getProfileStats() {
     legendKotlin: kotlinArr.indexOf(30) !== -1,
     legendSwift:  swiftArr.indexOf(30)  !== -1,
     legendJava:   javaArr.indexOf(30)   !== -1,
+    legendCsharp: csharpArr.indexOf(30) !== -1,
+    legendGo:     goArr.indexOf(30)     !== -1,
+    legendC:      cArr.indexOf(30)      !== -1,
+    legendRust:   rustArr.indexOf(30)   !== -1,
     // ストリークは非同期で後から上書きするため初期値0
     currentStreak: 0,
     bestStreak:    0,
@@ -505,7 +531,7 @@ function calculateEXP() {
   var problemExp = 0;
   var missionExp = 0;
 
-  // 問題クリア EXP（全8言語）
+  // 問題クリア EXP（全12言語）
   [
     { key: 'cpp',        get: function() { return problems; } },
     { key: 'python',     get: function() { return pythonProblems; } },
@@ -514,7 +540,11 @@ function calculateEXP() {
     { key: 'typescript', get: function() { return typescriptProblems; } },
     { key: 'kotlin',     get: function() { return kotlinProblems; } },
     { key: 'swift',      get: function() { return swiftProblems; } },
-    { key: 'java',       get: function() { return javaProblems; } }
+    { key: 'java',       get: function() { return javaProblems; } },
+    { key: 'csharp',     get: function() { return csharpProblems; } },
+    { key: 'go',         get: function() { return goProblems; } },
+    { key: 'c',          get: function() { return cProblems; } },
+    { key: 'rust',       get: function() { return rustProblems; } }
   ].forEach(function(lang) {
     var prog = JSON.parse(localStorage.getItem(lang.key + '_progress') || '[]');
     lang.get().forEach(function(p) {
@@ -524,7 +554,7 @@ function calculateEXP() {
     });
   });
 
-  // ミッションクリア EXP（全8言語）
+  // ミッションクリア EXP（全12言語）
   [
     { key: 'cpp',        get: function() { return missions; } },
     { key: 'python',     get: function() { return pythonMissions; } },
@@ -533,7 +563,11 @@ function calculateEXP() {
     { key: 'typescript', get: function() { return typescriptMissions; } },
     { key: 'kotlin',     get: function() { return kotlinMissions; } },
     { key: 'swift',      get: function() { return swiftMissions; } },
-    { key: 'java',       get: function() { return javaMissions; } }
+    { key: 'java',       get: function() { return javaMissions; } },
+    { key: 'csharp',     get: function() { return csharpMissions; } },
+    { key: 'go',         get: function() { return goMissions; } },
+    { key: 'c',          get: function() { return cMissions; } },
+    { key: 'rust',       get: function() { return rustMissions; } }
   ].forEach(function(lang) {
     var prog = JSON.parse(localStorage.getItem(lang.key + '_mission_progress') || '[]');
     lang.get().forEach(function(m) {
@@ -719,11 +753,11 @@ var LANGUAGE_GROUPS = [
         uses: ['企業向けシステム', 'Androidアプリ', 'Spring Bootサーバー']
       },
       {
-        id: 'csharp', name: 'C#', color: '#9B4F96', problems: 0, available: false,
+        id: 'csharp', name: 'C#', color: '#9B4F96', problems: 30, available: true,
         uses: ['Unityゲーム開発', 'Windowsアプリ', '.NETサーバー']
       },
       {
-        id: 'go', name: 'Go', color: '#00ADD8', problems: 0, available: false,
+        id: 'go', name: 'Go', color: '#00ADD8', problems: 30, available: true,
         uses: ['高速APIサーバー', 'Dockerなどインフラツール', 'クラウドサービス']
       },
     ]
@@ -734,7 +768,7 @@ var LANGUAGE_GROUPS = [
     desc: 'OS・組み込みなど低レベルの世界',
     langs: [
       {
-        id: 'c', name: 'C', color: '#A8B9CC', problems: 0, available: false,
+        id: 'c', name: 'C', color: '#A8B9CC', problems: 30, available: true,
         uses: ['OS開発 (Linux等)', '組み込み・マイコン', 'ドライバ・ファームウェア']
       },
     ]
@@ -756,7 +790,7 @@ var LANGUAGE_GROUPS = [
     desc: '最高難度。安全性と速度を両立する次世代言語',
     langs: [
       {
-        id: 'rust', name: 'Rust', color: '#CE412B', problems: 0, available: false,
+        id: 'rust', name: 'Rust', color: '#CE412B', problems: 30, available: true,
         uses: ['システムプログラミング', 'WebAssembly', 'OSカーネル', '高安全性ソフト']
       },
     ]
@@ -6597,6 +6631,2456 @@ const javaUnitGuides = [
   }
 ];
 
+// ===== C# データ =====
+
+const csharpProblems = [
+  // UNIT 01
+  {
+    id: 1, rank: "ROOKIE", unit: "UNIT 01", title: "Hello, C#!",
+    question: "\"Hello, C#!\" と出力してください。",
+    requirements: ["Console.WriteLine() を使う"],
+    hint: "Console.WriteLine(\"文字列\") で出力できます。",
+    answer: `using System;\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello, C#!");\n    }\n}`
+  },
+  {
+    id: 2, rank: "ROOKIE", unit: "UNIT 01", title: "変数と型",
+    question: "int型変数 age に 28、string型変数 name に \"CSharp\" を代入して \"名前: CSharp, 年齢: 28\" と出力してください。",
+    requirements: ["int と string 変数を宣言する", "Console.WriteLine で出力する"],
+    hint: "int age = 28; string name = \"CSharp\"; のように宣言できます。",
+    answer: `using System;\nclass Program {\n    static void Main() {\n        int age = 28;\n        string name = "CSharp";\n        Console.WriteLine("名前: " + name + ", 年齢: " + age);\n    }\n}`
+  },
+  {
+    id: 3, rank: "ROOKIE", unit: "UNIT 01", title: "文字列補間",
+    question: "string変数 city に \"Tokyo\" を代入し、文字列補間 $\"...\" を使って \"Welcome to Tokyo!\" と出力してください。",
+    requirements: ["$\"...\" 構文を使う", "変数 city を埋め込む"],
+    hint: "$\"Welcome to {city}!\" のように書きます。",
+    answer: `using System;\nclass Program {\n    static void Main() {\n        string city = "Tokyo";\n        Console.WriteLine($"Welcome to {city}!");\n    }\n}`
+  },
+  {
+    id: 4, rank: "ROOKIE", unit: "UNIT 01", title: "基本演算",
+    question: "int変数 a=15, b=4 を宣言し、和・差・積・商・余りを各行に出力してください。",
+    requirements: ["a+b, a-b, a*b, a/b, a%b をそれぞれ出力する"],
+    hint: "整数同士の除算は整数になります。15/4=3",
+    answer: `using System;\nclass Program {\n    static void Main() {\n        int a = 15, b = 4;\n        Console.WriteLine(a + b);\n        Console.WriteLine(a - b);\n        Console.WriteLine(a * b);\n        Console.WriteLine(a / b);\n        Console.WriteLine(a % b);\n    }\n}`
+  },
+  // UNIT 02
+  {
+    id: 5, rank: "ROOKIE", unit: "UNIT 02", title: "if-else",
+    question: "int変数 score に 75 を代入し、60以上なら \"合格\"、未満なら \"不合格\" と出力してください。",
+    requirements: ["if-else を使う"],
+    hint: "if (score >= 60) { ... } else { ... }",
+    answer: `using System;\nclass Program {\n    static void Main() {\n        int score = 75;\n        if (score >= 60) Console.WriteLine("合格");\n        else Console.WriteLine("不合格");\n    }\n}`
+  },
+  {
+    id: 6, rank: "ROOKIE", unit: "UNIT 02", title: "forループ",
+    question: "for ループで 1 から 5 まで順に出力してください。",
+    requirements: ["for (int i = 1; i <= 5; i++) を使う"],
+    hint: "ループ変数を Console.WriteLine で出力します。",
+    answer: `using System;\nclass Program {\n    static void Main() {\n        for (int i = 1; i <= 5; i++) Console.WriteLine(i);\n    }\n}`
+  },
+  {
+    id: 7, rank: "ROOKIE", unit: "UNIT 02", title: "whileループ",
+    question: "while ループで 10 から 1 まで逆順に出力してください。",
+    requirements: ["while を使う", "10, 9, ..., 1 の順に出力する"],
+    hint: "int n = 10; while (n >= 1) { ... n--; }",
+    answer: `using System;\nclass Program {\n    static void Main() {\n        int n = 10;\n        while (n >= 1) { Console.WriteLine(n); n--; }\n    }\n}`
+  },
+  {
+    id: 8, rank: "ROOKIE", unit: "UNIT 02", title: "foreach",
+    question: "string配列 fruits = {\"Apple\", \"Banana\", \"Cherry\"} を foreach で各要素を出力してください。",
+    requirements: ["string[] 配列を作る", "foreach を使う"],
+    hint: "foreach (string f in fruits) { Console.WriteLine(f); }",
+    answer: `using System;\nclass Program {\n    static void Main() {\n        string[] fruits = {"Apple", "Banana", "Cherry"};\n        foreach (string f in fruits) Console.WriteLine(f);\n    }\n}`
+  },
+  // UNIT 03
+  {
+    id: 9, rank: "BRONZE", unit: "UNIT 03", title: "配列操作",
+    question: "int配列 {3,1,4,1,5,9,2,6} を宣言し、Array.Sort で昇順ソートして全要素を出力してください。",
+    requirements: ["int[] 配列を宣言する", "Array.Sort() で並び替える", "foreach で出力する"],
+    hint: "Array.Sort(arr) で配列をインプレースにソートできます。",
+    answer: `using System;\nclass Program {\n    static void Main() {\n        int[] arr = {3, 1, 4, 1, 5, 9, 2, 6};\n        Array.Sort(arr);\n        foreach (int x in arr) Console.Write(x + " ");\n        Console.WriteLine();\n    }\n}`
+  },
+  {
+    id: 10, rank: "BRONZE", unit: "UNIT 03", title: "List<T>",
+    question: "List<int> を作り、1〜5 を Add で追加後、Remove(3) で3を削除し、全要素を出力してください。",
+    requirements: ["List<int> を使う", "Add で要素を追加する", "Remove で要素を削除する"],
+    hint: "using System.Collections.Generic; が必要です（または using System;）。",
+    answer: `using System;\nusing System.Collections.Generic;\nclass Program {\n    static void Main() {\n        var list = new List<int> {1, 2, 3, 4, 5};\n        list.Remove(3);\n        foreach (int x in list) Console.Write(x + " ");\n        Console.WriteLine();\n    }\n}`
+  },
+  {
+    id: 11, rank: "BRONZE", unit: "UNIT 03", title: "Dictionary",
+    question: "Dictionary<string, int> で \"Apple\"→120, \"Banana\"→80, \"Cherry\"→200 を登録し、foreach でキーと値を \"Apple: 120\" 形式で出力してください。",
+    requirements: ["Dictionary<string, int> を使う", "foreach で KeyValuePair を取り出す"],
+    hint: "foreach (var kv in dict) { Console.WriteLine(kv.Key + \": \" + kv.Value); }",
+    answer: `using System;\nusing System.Collections.Generic;\nclass Program {\n    static void Main() {\n        var dict = new Dictionary<string, int> {\n            {"Apple", 120}, {"Banana", 80}, {"Cherry", 200}\n        };\n        foreach (var kv in dict)\n            Console.WriteLine($"{kv.Key}: {kv.Value}");\n    }\n}`
+  },
+  {
+    id: 12, rank: "BRONZE", unit: "UNIT 03", title: "文字列操作",
+    question: "string s = \"Hello, World!\" に対して、ToUpper()・Length・Replace(\"World\", \"C#\") の結果を各行に出力してください。",
+    requirements: ["ToUpper() で大文字変換", "Length で長さ", "Replace() で置換"],
+    hint: "s.ToUpper(), s.Length, s.Replace(...) で各操作できます。",
+    answer: `using System;\nclass Program {\n    static void Main() {\n        string s = "Hello, World!";\n        Console.WriteLine(s.ToUpper());\n        Console.WriteLine(s.Length);\n        Console.WriteLine(s.Replace("World", "C#"));\n    }\n}`
+  },
+  // UNIT 04
+  {
+    id: 13, rank: "BRONZE", unit: "UNIT 04", title: "メソッド定義",
+    question: "int型の引数 a, b を受け取り大きい方を返す Max メソッドを定義し、Max(7, 3) と Max(2, 9) の結果を出力してください。",
+    requirements: ["static int Max(int a, int b) を定義する", "三項演算子か if を使う"],
+    hint: "return a > b ? a : b; で大きい方を返せます。",
+    answer: `using System;\nclass Program {\n    static int Max(int a, int b) => a > b ? a : b;\n    static void Main() {\n        Console.WriteLine(Max(7, 3));\n        Console.WriteLine(Max(2, 9));\n    }\n}`
+  },
+  {
+    id: 14, rank: "BRONZE", unit: "UNIT 04", title: "再帰関数",
+    question: "再帰を使って階乗を計算する Factorial メソッドを実装し、5! = 120 を出力してください。",
+    requirements: ["再帰呼び出しを使う", "Factorial(5) が 120 を返す"],
+    hint: "Factorial(0) = 1, Factorial(n) = n * Factorial(n-1)",
+    answer: `using System;\nclass Program {\n    static long Factorial(int n) => n <= 1 ? 1 : n * Factorial(n - 1);\n    static void Main() {\n        Console.WriteLine(Factorial(5));\n    }\n}`
+  },
+  {
+    id: 15, rank: "BRONZE", unit: "UNIT 04", title: "Mathクラス",
+    question: "Math.Pow(2, 10)、Math.Sqrt(144)、Math.Abs(-7) の結果を各行に出力してください。",
+    requirements: ["Math.Pow() で累乗", "Math.Sqrt() で平方根", "Math.Abs() で絶対値"],
+    hint: "結果は double 型です。Math.Sqrt(144) = 12.0 など。",
+    answer: `using System;\nclass Program {\n    static void Main() {\n        Console.WriteLine(Math.Pow(2, 10));\n        Console.WriteLine(Math.Sqrt(144));\n        Console.WriteLine(Math.Abs(-7));\n    }\n}`
+  },
+  {
+    id: 16, rank: "BRONZE", unit: "UNIT 04", title: "LINQ基礎",
+    question: "int[] numbers = {1,2,3,4,5,6,7,8,9,10} から、LINQ の Where で偶数だけ絞り込み、Select で2倍にして出力してください。",
+    requirements: ["using System.Linq; を追加", "Where(x => x % 2 == 0) で偶数フィルタ", "Select(x => x * 2) で変換"],
+    hint: "numbers.Where(...).Select(...) とメソッドチェーンで書けます。",
+    answer: `using System;\nusing System.Linq;\nclass Program {\n    static void Main() {\n        int[] numbers = {1,2,3,4,5,6,7,8,9,10};\n        var result = numbers.Where(x => x % 2 == 0).Select(x => x * 2);\n        foreach (int x in result) Console.Write(x + " ");\n        Console.WriteLine();\n    }\n}`
+  },
+  // UNIT 05
+  {
+    id: 17, rank: "SILVER", unit: "UNIT 05", title: "クラスとコンストラクタ",
+    question: "string Name と int Age プロパティを持つ Person クラスを作り、コンストラクタで初期化して \"Alice (30)\" と出力してください。",
+    requirements: ["class Person を定義する", "コンストラクタで Name と Age を初期化", "インスタンスを作って出力する"],
+    hint: "public Person(string name, int age) { Name = name; Age = age; }",
+    answer:
+`using System;
+class Person {
+    public string Name { get; }
+    public int Age { get; }
+    public Person(string name, int age) { Name = name; Age = age; }
+    public override string ToString() => $"{Name} ({Age})";
+}
+class Program {
+    static void Main() {
+        var p = new Person("Alice", 30);
+        Console.WriteLine(p);
+    }
+}`
+  },
+  {
+    id: 18, rank: "SILVER", unit: "UNIT 05", title: "プロパティ",
+    question: "Temperature クラスに double Celsius プロパティを持ち、Fahrenheit は get のみで Celsius * 9/5 + 32 を返すプロパティを実装してください。100℃ のとき 212°F と出力してください。",
+    requirements: ["Celsius は get; set; プロパティ", "Fahrenheit は計算プロパティ"],
+    hint: "public double Fahrenheit => Celsius * 9.0 / 5.0 + 32;",
+    answer:
+`using System;
+class Temperature {
+    public double Celsius { get; set; }
+    public double Fahrenheit => Celsius * 9.0 / 5.0 + 32;
+}
+class Program {
+    static void Main() {
+        var t = new Temperature { Celsius = 100 };
+        Console.WriteLine($"{t.Celsius}°C = {t.Fahrenheit}°F");
+    }
+}`
+  },
+  {
+    id: 19, rank: "SILVER", unit: "UNIT 05", title: "継承とオーバーライド",
+    question: "Animal クラスに virtual string Sound() を定義し、Dog と Cat に override して \"ワン\" \"ニャン\" を返すサブクラスを作り、それぞれの Sound() を出力してください。",
+    requirements: ["Animal クラスを基底クラスにする", "Dog と Cat で override する"],
+    hint: "public override string Sound() => \"ワン\";",
+    answer:
+`using System;
+class Animal {
+    public virtual string Sound() => "...";
+}
+class Dog : Animal {
+    public override string Sound() => "ワン";
+}
+class Cat : Animal {
+    public override string Sound() => "ニャン";
+}
+class Program {
+    static void Main() {
+        Animal[] animals = { new Dog(), new Cat() };
+        foreach (var a in animals) Console.WriteLine(a.Sound());
+    }
+}`
+  },
+  {
+    id: 20, rank: "SILVER", unit: "UNIT 05", title: "インターフェース",
+    question: "double Area() メソッドを持つ IShape インターフェースを定義し、Circle と Rectangle に実装して面積を出力してください（Circle: r=5, Rectangle: 4×6）。",
+    requirements: ["interface IShape { double Area(); } を定義", "Circle と Rectangle に実装"],
+    hint: "class Circle : IShape { public double Area() => Math.PI * r * r; }",
+    answer:
+`using System;
+interface IShape { double Area(); }
+class Circle : IShape {
+    double r;
+    public Circle(double r) { this.r = r; }
+    public double Area() => Math.PI * r * r;
+}
+class Rectangle : IShape {
+    double w, h;
+    public Rectangle(double w, double h) { this.w = w; this.h = h; }
+    public double Area() => w * h;
+}
+class Program {
+    static void Main() {
+        IShape[] shapes = { new Circle(5), new Rectangle(4, 6) };
+        foreach (var s in shapes) Console.WriteLine($"{s.GetType().Name}: {s.Area():F2}");
+    }
+}`
+  },
+  // UNIT 06
+  {
+    id: 21, rank: "SILVER", unit: "UNIT 06", title: "抽象クラス",
+    question: "abstract class Shape に abstract double Area() を定義し、Triangle（底辺・高さ）に実装して面積を出力してください（底辺6, 高さ4 → 12）。",
+    requirements: ["abstract class を定義する", "abstract メソッドをサブクラスで実装する"],
+    hint: "public override double Area() => base * height / 2;",
+    answer:
+`using System;
+abstract class Shape {
+    public abstract double Area();
+}
+class Triangle : Shape {
+    double b, h;
+    public Triangle(double b, double h) { this.b = b; this.h = h; }
+    public override double Area() => b * h / 2;
+}
+class Program {
+    static void Main() {
+        Shape t = new Triangle(6, 4);
+        Console.WriteLine(t.Area());
+    }
+}`
+  },
+  {
+    id: 22, rank: "SILVER", unit: "UNIT 06", title: "try-catch",
+    question: "int.Parse に \"abc\" を渡して FormatException をキャッチし、\"数値変換エラー\" と出力してください。finally ブロックで \"処理完了\" も出力してください。",
+    requirements: ["try-catch-finally を使う", "FormatException をキャッチする"],
+    hint: "catch (FormatException e) { Console.WriteLine(\"エラー: \" + e.Message); }",
+    answer:
+`using System;
+class Program {
+    static void Main() {
+        try {
+            int n = int.Parse("abc");
+        } catch (FormatException) {
+            Console.WriteLine("数値変換エラー");
+        } finally {
+            Console.WriteLine("処理完了");
+        }
+    }
+}`
+  },
+  {
+    id: 23, rank: "GOLD", unit: "UNIT 06", title: "カスタム例外",
+    question: "AgeException クラス（Exception継承）を定義し、年齢が0未満または150超の場合に投げる ValidateAge メソッドを実装してください（-1 と 200 でテスト）。",
+    requirements: ["Exception を継承した AgeException を定義", "ValidateAge で範囲チェックして投げる"],
+    hint: "class AgeException : Exception { public AgeException(string msg) : base(msg) {} }",
+    answer:
+`using System;
+class AgeException : Exception {
+    public AgeException(string msg) : base(msg) {}
+}
+class Program {
+    static void ValidateAge(int age) {
+        if (age < 0 || age > 150)
+            throw new AgeException($"無効な年齢: {age}");
+    }
+    static void Main() {
+        foreach (int age in new[] { -1, 200 }) {
+            try { ValidateAge(age); }
+            catch (AgeException e) { Console.WriteLine(e.Message); }
+        }
+    }
+}`
+  },
+  {
+    id: 24, rank: "GOLD", unit: "UNIT 06", title: "ジェネリクス",
+    question: "型パラメータ T を使った Stack<T> クラスを実装してください（Push/Pop/Peek/Count）。int と string の両方でテストしてください。",
+    requirements: ["class Stack<T> を定義する", "List<T> を内部で使う", "Push/Pop/Peek/Count を実装"],
+    hint: "private List<T> items = new List<T>(); を内部に持ちます。",
+    answer:
+`using System;
+using System.Collections.Generic;
+class Stack<T> {
+    private List<T> items = new List<T>();
+    public void Push(T item) => items.Add(item);
+    public T Pop() { var v = items[items.Count-1]; items.RemoveAt(items.Count-1); return v; }
+    public T Peek() => items[items.Count-1];
+    public int Count => items.Count;
+}
+class Program {
+    static void Main() {
+        var s = new Stack<int>();
+        s.Push(1); s.Push(2); s.Push(3);
+        Console.WriteLine(s.Peek());
+        Console.WriteLine(s.Pop());
+        Console.WriteLine(s.Count);
+    }
+}`
+  },
+  // UNIT 07
+  {
+    id: 25, rank: "GOLD", unit: "UNIT 07", title: "Nullable型",
+    question: "int? 型変数 value に null を代入し、HasValue で確認して、null のときは -1 を、そうでなければ値を出力してください。null合体演算子 ?? も使ってください。",
+    requirements: ["int? 型を使う", "HasValue プロパティで確認", "?? 演算子でデフォルト値を設定"],
+    hint: "int result = value ?? -1; で null のとき -1 になります。",
+    answer: `using System;\nclass Program {\n    static void Main() {\n        int? value = null;\n        Console.WriteLine(value.HasValue);\n        Console.WriteLine(value ?? -1);\n        value = 42;\n        Console.WriteLine(value ?? -1);\n    }\n}`
+  },
+  {
+    id: 26, rank: "GOLD", unit: "UNIT 07", title: "ラムダ式",
+    question: "Func<int, int> で「x の二乗を返す」ラムダ式を作り、1〜5 に適用して出力してください。Action<string> で \"Hello {s}\" を出力するラムダも作ってください。",
+    requirements: ["Func<int, int> ラムダを定義する", "Action<string> ラムダを定義する"],
+    hint: "Func<int, int> square = x => x * x;",
+    answer: `using System;\nclass Program {\n    static void Main() {\n        Func<int, int> square = x => x * x;\n        for (int i = 1; i <= 5; i++) Console.Write(square(i) + " ");\n        Console.WriteLine();\n        Action<string> greet = s => Console.WriteLine($"Hello {s}");\n        greet("World");\n    }\n}`
+  },
+  {
+    id: 27, rank: "DIAMOND", unit: "UNIT 07", title: "LINQ応用",
+    question: "文字列リスト {\"Alice\", \"Bob\", \"Charlie\", \"Dave\", \"Eve\"} から、名前の長さが4以上のものを長さ降順でソートして出力してください。",
+    requirements: ["Where で長さ4以上をフィルタ", "OrderByDescending で長さ降順ソート"],
+    hint: "list.Where(s => s.Length >= 4).OrderByDescending(s => s.Length)",
+    answer: `using System;\nusing System.Linq;\nusing System.Collections.Generic;\nclass Program {\n    static void Main() {\n        var names = new List<string> {"Alice", "Bob", "Charlie", "Dave", "Eve"};\n        var result = names.Where(s => s.Length >= 4).OrderByDescending(s => s.Length);\n        foreach (var n in result) Console.WriteLine(n);\n    }\n}`
+  },
+  {
+    id: 28, rank: "DIAMOND", unit: "UNIT 07", title: "LINQグループ化",
+    question: "int[] {1,2,3,4,5,6,7,8,9,10} を偶数・奇数でグループ化し、各グループのキーと合計を出力してください。",
+    requirements: ["GroupBy で偶奇分類する", "各グループの Sum() を計算する"],
+    hint: "numbers.GroupBy(x => x % 2 == 0 ? \"偶数\" : \"奇数\")",
+    answer: `using System;\nusing System.Linq;\nclass Program {\n    static void Main() {\n        int[] numbers = {1,2,3,4,5,6,7,8,9,10};\n        foreach (var g in numbers.GroupBy(x => x % 2 == 0 ? "偶数" : "奇数"))\n            Console.WriteLine($"{g.Key}: 合計={g.Sum()}");\n    }\n}`
+  },
+  // UNIT 08
+  {
+    id: 29, rank: "MASTER", unit: "UNIT 08", title: "デリゲートと高階関数",
+    question: "int[] {1,2,3,4,5} に対して Apply メソッドを作り、Func<int,int> を受け取って各要素に適用した新しい配列を返してください。二乗と三倍の2パターンでテストしてください。",
+    requirements: ["static int[] Apply(int[] arr, Func<int,int> f) を定義", "二乗と3倍でテスト"],
+    hint: "return arr.Select(f).ToArray(); または for ループで実装できます。",
+    answer:
+`using System;
+using System.Linq;
+class Program {
+    static int[] Apply(int[] arr, Func<int,int> f) => arr.Select(f).ToArray();
+    static void Main() {
+        int[] nums = {1, 2, 3, 4, 5};
+        Console.WriteLine("二乗: " + string.Join(" ", Apply(nums, x => x * x)));
+        Console.WriteLine("三倍: " + string.Join(" ", Apply(nums, x => x * 3)));
+    }
+}`
+  },
+  {
+    id: 30, rank: "LEGEND", unit: "UNIT 08", title: "LINQ総合演習",
+    question: "Student クラス（Name, Score, Grade）のリストを作り、LINQ で: ①Gradeごとにグループ化して各グループの平均スコアを出力、②スコア上位3人の名前を出力、③ScoreがAverage以上の生徒数を出力してください。",
+    requirements: ["Student クラスを定義する", "GroupBy でグループ化して平均を出す", "OrderByDescending + Take で上位3人を出す", "Count で平均以上を数える"],
+    hint: "var avg = students.Average(s => s.Score); で平均が取れます。",
+    answer:
+`using System;
+using System.Linq;
+using System.Collections.Generic;
+class Student {
+    public string Name { get; set; }
+    public int Score { get; set; }
+    public string Grade { get; set; }
+}
+class Program {
+    static void Main() {
+        var students = new List<Student> {
+            new Student { Name="Alice",   Score=92, Grade="A" },
+            new Student { Name="Bob",     Score=75, Grade="B" },
+            new Student { Name="Charlie", Score=88, Grade="A" },
+            new Student { Name="Dave",    Score=60, Grade="C" },
+            new Student { Name="Eve",     Score=95, Grade="A" },
+            new Student { Name="Frank",   Score=70, Grade="B" }
+        };
+        Console.WriteLine("=== グレード別平均 ===");
+        foreach (var g in students.GroupBy(s => s.Grade).OrderBy(g => g.Key))
+            Console.WriteLine($"{g.Key}: {g.Average(s => s.Score):F1}");
+        Console.WriteLine("=== 上位3人 ===");
+        foreach (var s in students.OrderByDescending(s => s.Score).Take(3))
+            Console.WriteLine(s.Name);
+        double avg = students.Average(s => s.Score);
+        Console.WriteLine($"=== 平均以上: {students.Count(s => s.Score >= avg)}人 ===");
+    }
+}`
+  }
+];
+
+const csharpMissions = [
+  {
+    id: 1, rank: "BRONZE",
+    title: "配列・Listマスター",
+    description: "数値コレクションの集計・ソート・フィルタリング",
+    question: "int[] {64, 34, 25, 12, 22, 11, 90} を: ①バブルソートで昇順に並べる、②偶数のみ抽出して合計を出力、③最大値・最小値・平均を出力してください。",
+    requirements: ["バブルソートを自力実装する（Array.Sortは使わない）", "偶数フィルタ・合計・最大・最小・平均を出力"],
+    hint: "二重ループで隣接要素を比較・交換するのがバブルソートです。",
+    answer:
+`using System;
+using System.Linq;
+class Program {
+    static void Main() {
+        int[] arr = {64, 34, 25, 12, 22, 11, 90};
+        for (int i = 0; i < arr.Length - 1; i++)
+            for (int j = 0; j < arr.Length - 1 - i; j++)
+                if (arr[j] > arr[j+1]) { int tmp = arr[j]; arr[j] = arr[j+1]; arr[j+1] = tmp; }
+        Console.WriteLine("ソート: " + string.Join(" ", arr));
+        var evens = arr.Where(x => x % 2 == 0).ToArray();
+        Console.WriteLine("偶数合計: " + evens.Sum());
+        Console.WriteLine($"最大:{arr.Max()} 最小:{arr.Min()} 平均:{arr.Average():F1}");
+    }
+}`
+  },
+  {
+    id: 2, rank: "BRONZE",
+    title: "文字列処理マスター",
+    description: "Split/Join/Replace/Containsを組み合わせた処理",
+    question: "カンマ区切り文字列 \"apple,banana,cherry,apricot,avocado\" を: ①Split で分割、②'a' で始まる単語を抽出、③各単語を大文字に変換してスペース区切りで出力してください。",
+    requirements: ["Split(',') で分割", "StartsWith('a') でフィルタ", "ToUpper() と string.Join() を使う"],
+    hint: "words.Where(w => w.StartsWith(\"a\")) でフィルタできます。",
+    answer:
+`using System;
+using System.Linq;
+class Program {
+    static void Main() {
+        string csv = "apple,banana,cherry,apricot,avocado";
+        string[] words = csv.Split(',');
+        Console.WriteLine("全単語: " + words.Length + "個");
+        var aWords = words.Where(w => w.StartsWith("a")).Select(w => w.ToUpper());
+        Console.WriteLine("a始まり(大文字): " + string.Join(" ", aWords));
+    }
+}`
+  },
+  {
+    id: 3, rank: "SILVER",
+    title: "OOPデザイン",
+    description: "継承とinterfaceを使ったクラス設計",
+    question: "IPayable インターフェース（double MonthlyPay() メソッド）を定義し、Employee（基本給）と Contractor（時給×時間）クラスに実装してください。各インスタンスの支払額を出力してください。",
+    requirements: ["IPayable インターフェースを定義", "Employee（基本給 300000）と Contractor（時給 2000×160時間）を実装", "多態性で処理する"],
+    hint: "IPayable[] workers = { new Employee(...), new Contractor(...) }; で統一処理できます。",
+    answer:
+`using System;
+interface IPayable { double MonthlyPay(); }
+class Employee : IPayable {
+    string Name; double BaseSalary;
+    public Employee(string name, double salary) { Name = name; BaseSalary = salary; }
+    public double MonthlyPay() => BaseSalary;
+    public override string ToString() => Name;
+}
+class Contractor : IPayable {
+    string Name; double HourlyRate; int Hours;
+    public Contractor(string name, double rate, int hours) { Name = name; HourlyRate = rate; Hours = hours; }
+    public double MonthlyPay() => HourlyRate * Hours;
+    public override string ToString() => Name;
+}
+class Program {
+    static void Main() {
+        IPayable[] workers = { new Employee("Alice", 300000), new Contractor("Bob", 2000, 160) };
+        foreach (var w in workers)
+            Console.WriteLine($"{w}: {w.MonthlyPay():C0}");
+    }
+}`
+  },
+  {
+    id: 4, rank: "SILVER",
+    title: "LINQの活用",
+    description: "Where/Select/OrderBy/GroupByの組み合わせ",
+    question: "Product クラス（Name, Price, Category）のリストを作り: ①Food カテゴリの平均価格、②Price > 100 の商品を安い順に、③カテゴリ別の商品数を出力してください。",
+    requirements: ["Product クラスを定義する", "Where/Average/OrderBy/GroupBy を使う"],
+    hint: "products.GroupBy(p => p.Category) でカテゴリ別にグループ化できます。",
+    answer:
+`using System;
+using System.Linq;
+using System.Collections.Generic;
+class Product {
+    public string Name { get; set; }
+    public double Price { get; set; }
+    public string Category { get; set; }
+}
+class Program {
+    static void Main() {
+        var products = new List<Product> {
+            new Product { Name="Rice",   Price=80,  Category="Food" },
+            new Product { Name="Bread",  Price=120, Category="Food" },
+            new Product { Name="Pen",    Price=50,  Category="Stationery" },
+            new Product { Name="Notebook",Price=200,Category="Stationery" },
+            new Product { Name="Milk",   Price=90,  Category="Food" }
+        };
+        Console.WriteLine($"Food平均: {products.Where(p=>p.Category=="Food").Average(p=>p.Price):F1}");
+        Console.WriteLine("100超(安い順):");
+        foreach (var p in products.Where(p=>p.Price>100).OrderBy(p=>p.Price))
+            Console.WriteLine($"  {p.Name} {p.Price}");
+        Console.WriteLine("カテゴリ別件数:");
+        foreach (var g in products.GroupBy(p=>p.Category))
+            Console.WriteLine($"  {g.Key}: {g.Count()}件");
+    }
+}`
+  },
+  {
+    id: 5, rank: "GOLD",
+    title: "例外処理設計",
+    description: "try-catch-finally + カスタム例外の設計",
+    question: "BankAccount クラスを作り、残高不足の Withdraw 時は InsufficientFundsException を投げてください。入金・出金・残高確認を含む一連の操作をデモしてください。",
+    requirements: ["InsufficientFundsException クラスを定義", "BankAccount の Withdraw でチェック", "try-catch-finally で操作をラップ"],
+    hint: "if (amount > Balance) throw new InsufficientFundsException(...);",
+    answer:
+`using System;
+class InsufficientFundsException : Exception {
+    public InsufficientFundsException(double amount) : base($"残高不足: {amount}円が引き出せません") {}
+}
+class BankAccount {
+    public double Balance { get; private set; }
+    public BankAccount(double initial) { Balance = initial; }
+    public void Deposit(double amount) { Balance += amount; Console.WriteLine($"入金: {amount}円 → 残高: {Balance}円"); }
+    public void Withdraw(double amount) {
+        if (amount > Balance) throw new InsufficientFundsException(amount);
+        Balance -= amount;
+        Console.WriteLine($"出金: {amount}円 → 残高: {Balance}円");
+    }
+}
+class Program {
+    static void Main() {
+        var acc = new BankAccount(1000);
+        try {
+            acc.Deposit(500);
+            acc.Withdraw(800);
+            acc.Withdraw(900);
+        } catch (InsufficientFundsException e) {
+            Console.WriteLine("エラー: " + e.Message);
+        } finally {
+            Console.WriteLine($"最終残高: {acc.Balance}円");
+        }
+    }
+}`
+  },
+  {
+    id: 6, rank: "GOLD",
+    title: "ジェネリクスコレクション",
+    description: "汎用スタック/キューの実装",
+    question: "IContainer<T> インターフェース（Add/Remove/Peek/Count）を定義し、MyStack<T> と MyQueue<T> を実装してください。int で動作確認してください。",
+    requirements: ["interface IContainer<T> を定義する", "MyStack<T>（LIFO）と MyQueue<T>（FIFO）を実装", "それぞれ 3 要素で動作確認"],
+    hint: "Stack は末尾追加・末尾取得、Queue は末尾追加・先頭取得です。",
+    answer:
+`using System;
+using System.Collections.Generic;
+interface IContainer<T> { void Add(T item); T Remove(); T Peek(); int Count { get; } }
+class MyStack<T> : IContainer<T> {
+    List<T> d = new List<T>();
+    public void Add(T item) => d.Add(item);
+    public T Remove() { var v = d[d.Count-1]; d.RemoveAt(d.Count-1); return v; }
+    public T Peek() => d[d.Count-1];
+    public int Count => d.Count;
+}
+class MyQueue<T> : IContainer<T> {
+    List<T> d = new List<T>();
+    public void Add(T item) => d.Add(item);
+    public T Remove() { var v = d[0]; d.RemoveAt(0); return v; }
+    public T Peek() => d[0];
+    public int Count => d.Count;
+}
+class Program {
+    static void Main() {
+        var stack = new MyStack<int>();
+        stack.Add(1); stack.Add(2); stack.Add(3);
+        Console.WriteLine("Stack: " + stack.Remove() + " " + stack.Remove());
+        var queue = new MyQueue<int>();
+        queue.Add(1); queue.Add(2); queue.Add(3);
+        Console.WriteLine("Queue: " + queue.Remove() + " " + queue.Remove());
+    }
+}`
+  }
+];
+
+const csharpUnitGuides = [
+  {
+    id: "csharp-unit01", unit: "UNIT 01", title: "Hello C# & 変数",
+    summary: "Console.WriteLine、変数宣言（int/double/string/bool）、文字列補間 $\"\" を学ぶ。",
+    points: ["Console.WriteLine() でコンソール出力", "int, double, string, bool が基本型", "$\"Hello {name}\" で変数を文字列に埋め込める", "var キーワードで型推論も可能"],
+    words: [{ term: "Console.WriteLine", desc: "改行付きでコンソールに出力するメソッド" }, { term: "string補間", desc: "$\"...{変数}...\" で変数を直接埋め込む構文" }, { term: "var", desc: "型推論による変数宣言。右辺から型が決まる" }]
+  },
+  {
+    id: "csharp-unit02", unit: "UNIT 02", title: "制御フロー",
+    summary: "if-else、for、while、foreach による処理の流れを制御する方法を学ぶ。",
+    points: ["if-else で条件分岐", "for ループでカウンタ制御の繰り返し", "while で条件が真の間繰り返す", "foreach でコレクションの各要素を処理"],
+    words: [{ term: "for", desc: "初期化;条件;更新 の3パートを持つループ" }, { term: "foreach", desc: "コレクションの各要素を順に処理するループ" }, { term: "break/continue", desc: "ループを即終了/次の反復へスキップ" }]
+  },
+  {
+    id: "csharp-unit03", unit: "UNIT 03", title: "コレクション",
+    summary: "配列、List<T>、Dictionary<K,V> の使い方と文字列操作を学ぶ。",
+    points: ["int[] で固定長配列、List<T> で可変長リスト", "Dictionary<K,V> でキーと値のペアを管理", "Array.Sort() で配列をソート", "string は Split/Join/Replace/Contains などメソッドが豊富"],
+    words: [{ term: "List<T>", desc: "型安全な可変長リスト。Add/Remove/Contains が使える" }, { term: "Dictionary<K,V>", desc: "キーと値のペアを格納するコレクション" }, { term: "generic", desc: "<T> のような型パラメータを持つ型・メソッド" }]
+  },
+  {
+    id: "csharp-unit04", unit: "UNIT 04", title: "メソッドとLINQ基礎",
+    summary: "静的メソッド、再帰、Mathクラス、LINQの基本的な使い方を学ぶ。",
+    points: ["static メソッドはインスタンス不要で呼び出せる", "再帰はメソッドが自分自身を呼び出す手法", "Math クラスに Pow/Sqrt/Abs などが揃っている", "LINQ の Where/Select でコレクションをフィルタ・変換"],
+    words: [{ term: "static", desc: "クラスのインスタンスなしで呼び出せるメソッド/フィールド" }, { term: "LINQ", desc: "Language Integrated Query。コレクション操作を宣言的に書ける" }, { term: "=> 式体", desc: "=> を使ったシンプルなメソッド記法" }]
+  },
+  {
+    id: "csharp-unit05", unit: "UNIT 05", title: "OOP基礎",
+    summary: "クラス、コンストラクタ、プロパティ、継承、インターフェースを学ぶ。",
+    points: ["class でデータと動作をカプセル化", "コンストラクタでインスタンス生成時に初期化", "プロパティ（get/set）でフィールドへのアクセスを制御", "interface で型に関係なく共通の振る舞いを保証"],
+    words: [{ term: "constructor", desc: "new でインスタンス生成時に実行される初期化メソッド" }, { term: "property", desc: "get/set アクセサを持つクラスメンバー" }, { term: "interface", desc: "実装を持たない契約の定義。クラスが実装する" }]
+  },
+  {
+    id: "csharp-unit06", unit: "UNIT 06", title: "抽象クラスと例外",
+    summary: "abstract class、try-catch-finally、カスタム例外、ジェネリクスを学ぶ。",
+    points: ["abstract class は直接インスタンス化できない基底クラス", "try-catch で例外を安全にハンドリング", "finally は例外の有無に関わらず必ず実行される", "Exception を継承してカスタム例外を作れる"],
+    words: [{ term: "abstract", desc: "実装を持たない（サブクラスに委ねる）メソッド/クラス" }, { term: "try-catch", desc: "例外が発生しうるコードを囲んでキャッチする構文" }, { term: "finally", desc: "例外の有無にかかわらず必ず実行されるブロック" }]
+  },
+  {
+    id: "csharp-unit07", unit: "UNIT 07", title: "ラムダとLINQ応用",
+    summary: "Nullable型、Func/Action、ラムダ式、高度なLINQ操作を学ぶ。",
+    points: ["int? など ? 付き型で null を許容できる", "?? 演算子で null のときのデフォルト値を指定", "Func<T,R> と Action<T> で関数を変数として扱える", "OrderBy/GroupBy/Aggregate など高度なLINQが使える"],
+    words: [{ term: "Nullable<T>", desc: "値型を null 許容にする型。T? と書く" }, { term: "Func<T,R>", desc: "T を引数に取り R を返す関数型" }, { term: "GroupBy", desc: "コレクションをキーでグループ化するLINQメソッド" }]
+  },
+  {
+    id: "csharp-unit08", unit: "UNIT 08", title: "高度な機能と総合演習",
+    summary: "デリゲート、高階関数、async/awaitの概念、LINQの総合的な活用を学ぶ。",
+    points: ["delegate は関数を型として扱う仕組み", "Func/Action はデリゲートの汎用版", "高階関数は関数を引数や戻り値にする関数", "LINQ + クラス設計の組み合わせで実用的なデータ処理が書ける"],
+    words: [{ term: "delegate", desc: "メソッドを参照するオブジェクト。型安全な関数ポインタ" }, { term: "高階関数", desc: "関数を引数に取るか関数を返す関数" }, { term: "async/await", desc: "非同期処理を同期的に書けるキーワード" }]
+  }
+];
+
+// ===== Go データ =====
+
+const goProblems = [
+  // UNIT 01
+  {
+    id: 1, rank: "ROOKIE", unit: "UNIT 01", title: "Hello, Go!",
+    question: "\"Hello, Go!\" と出力してください。",
+    requirements: ["fmt.Println() を使う", "package main と import \"fmt\" を忘れずに"],
+    hint: "fmt.Println(\"文字列\") で改行付き出力ができます。",
+    answer: `package main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello, Go!")\n}`
+  },
+  {
+    id: 2, rank: "ROOKIE", unit: "UNIT 01", title: "変数宣言",
+    question: "var で int 型変数 age に 25、:= で string 変数 name に \"Gopher\" を代入し \"名前: Gopher, 年齢: 25\" と出力してください。",
+    requirements: ["var で宣言する変数を1つ", ":= で宣言する変数を1つ"],
+    hint: "var age int = 25 か var age = 25。name := \"Gopher\" のように短縮宣言もできます。",
+    answer: `package main\n\nimport "fmt"\n\nfunc main() {\n    var age int = 25\n    name := "Gopher"\n    fmt.Printf("名前: %s, 年齢: %d\n", name, age)\n}`
+  },
+  {
+    id: 3, rank: "ROOKIE", unit: "UNIT 01", title: "定数と型",
+    question: "const で Pi = 3.14159 を定義し、bool 型変数 isGo を true にして、Pi と isGo を出力してください。",
+    requirements: ["const で定数を定義する", "bool 型変数を使う"],
+    hint: "const Pi = 3.14159 で定数を定義できます。",
+    answer: `package main\n\nimport "fmt"\n\nconst Pi = 3.14159\n\nfunc main() {\n    isGo := true\n    fmt.Println(Pi)\n    fmt.Println(isGo)\n}`
+  },
+  {
+    id: 4, rank: "ROOKIE", unit: "UNIT 01", title: "型変換と演算",
+    question: "int 変数 a=7, b=2 を宣言し、商（整数除算）と余りを出力してください。さらに float64 に変換して浮動小数点除算の結果も出力してください。",
+    requirements: ["a/b で整数除算", "a%b で余り", "float64(a)/float64(b) で浮動小数点除算"],
+    hint: "Go では型変換は明示的に行う必要があります。float64(a) のように書きます。",
+    answer: `package main\n\nimport "fmt"\n\nfunc main() {\n    a, b := 7, 2\n    fmt.Println(a/b)\n    fmt.Println(a%b)\n    fmt.Printf("%.2f\n", float64(a)/float64(b))\n}`
+  },
+  // UNIT 02
+  {
+    id: 5, rank: "ROOKIE", unit: "UNIT 02", title: "if-else",
+    question: "int 変数 n に 17 を代入し、偶数なら \"偶数\"、奇数なら \"奇数\" と出力してください。if 文の初期化ステートメントも使ってください。",
+    requirements: ["if n%2 == 0 で判定する"],
+    hint: "if x := n % 2; x == 0 { ... } のように初期化ステートメントを使えます。",
+    answer: `package main\n\nimport "fmt"\n\nfunc main() {\n    n := 17\n    if n%2 == 0 {\n        fmt.Println("偶数")\n    } else {\n        fmt.Println("奇数")\n    }\n}`
+  },
+  {
+    id: 6, rank: "ROOKIE", unit: "UNIT 02", title: "forループ",
+    question: "for ループで 1 から 10 までの合計を計算して出力してください（合計: 55）。",
+    requirements: ["for i := 1; i <= 10; i++ を使う", "合計を累積する変数を使う"],
+    hint: "sum := 0; for i := 1; i <= 10; i++ { sum += i }",
+    answer: `package main\n\nimport "fmt"\n\nfunc main() {\n    sum := 0\n    for i := 1; i <= 10; i++ {\n        sum += i\n    }\n    fmt.Println(sum)\n}`
+  },
+  {
+    id: 7, rank: "ROOKIE", unit: "UNIT 02", title: "for as while",
+    question: "Go の for を while 相当として使い、2 の累乗を 1, 2, 4, 8, 16, 32 と出力してください（32を超えたら停止）。",
+    requirements: ["for 条件式 { ... } の形式を使う"],
+    hint: "n := 1; for n <= 32 { fmt.Println(n); n *= 2 }",
+    answer: `package main\n\nimport "fmt"\n\nfunc main() {\n    n := 1\n    for n <= 32 {\n        fmt.Println(n)\n        n *= 2\n    }\n}`
+  },
+  {
+    id: 8, rank: "ROOKIE", unit: "UNIT 02", title: "range for",
+    question: "string スライス {\"Go\", \"Rust\", \"C\", \"Python\"} を range で回し、インデックスと値を \"0: Go\" 形式で出力してください。",
+    requirements: ["for i, v := range langs を使う"],
+    hint: "for i, v := range langs { fmt.Printf(\"%d: %s\\n\", i, v) }",
+    answer: `package main\n\nimport "fmt"\n\nfunc main() {\n    langs := []string{"Go", "Rust", "C", "Python"}\n    for i, v := range langs {\n        fmt.Printf("%d: %s\n", i, v)\n    }\n}`
+  },
+  // UNIT 03
+  {
+    id: 9, rank: "BRONZE", unit: "UNIT 03", title: "配列とスライス",
+    question: "長さ5の int 配列を宣言して初期化し、スライス操作（[1:3]）で部分列を取り出して出力してください。",
+    requirements: ["[5]int 型配列を宣言", "スライス [1:3] で部分列を取り出す"],
+    hint: "[5]int{10, 20, 30, 40, 50} で初期化できます。",
+    answer: `package main\n\nimport "fmt"\n\nfunc main() {\n    arr := [5]int{10, 20, 30, 40, 50}\n    sl := arr[1:3]\n    fmt.Println(arr)\n    fmt.Println(sl)\n}`
+  },
+  {
+    id: 10, rank: "BRONZE", unit: "UNIT 03", title: "スライス操作",
+    question: "空のスライスを作り、append で 1〜5 を追加し、len と cap を出力してください。さらに別のスライスを append で結合してください。",
+    requirements: ["make か var で空スライス作成", "append で要素を追加", "len() と cap() を使う"],
+    hint: "nums := []int{}; nums = append(nums, 1, 2, 3) で追加できます。",
+    answer: `package main\n\nimport "fmt"\n\nfunc main() {\n    nums := []int{}\n    for i := 1; i <= 5; i++ {\n        nums = append(nums, i)\n    }\n    fmt.Println(nums)\n    fmt.Println("len:", len(nums), "cap:", cap(nums))\n    extra := []int{6, 7, 8}\n    nums = append(nums, extra...)\n    fmt.Println(nums)\n}`
+  },
+  {
+    id: 11, rank: "BRONZE", unit: "UNIT 03", title: "Map",
+    question: "map[string]int で \"Tokyo\"→1400, \"Osaka\"→880, \"Nagoya\"→230 を登録し、全エントリを出力後、\"Osaka\" を削除して残りを出力してください。",
+    requirements: ["map を make で作成する", "delete() でキーを削除する"],
+    hint: "m := map[string]int{\"Tokyo\": 1400} で初期化、delete(m, \"Osaka\") で削除。",
+    answer: `package main\n\nimport "fmt"\n\nfunc main() {\n    m := map[string]int{"Tokyo": 1400, "Osaka": 880, "Nagoya": 230}\n    for k, v := range m {\n        fmt.Printf("%s: %d\n", k, v)\n    }\n    delete(m, "Osaka")\n    fmt.Println("---削除後---")\n    for k, v := range m {\n        fmt.Printf("%s: %d\n", k, v)\n    }\n}`
+  },
+  {
+    id: 12, rank: "BRONZE", unit: "UNIT 03", title: "Map集計",
+    question: "文字列 \"hello world\" の各文字の出現数を map[rune]int で数えて出力してください（空白は除く）。",
+    requirements: ["range で文字列を1文字ずつ処理", "map でカウントする", "空白はスキップする"],
+    hint: "for _, c := range str { if c != ' ' { count[c]++ } }",
+    answer: `package main\n\nimport "fmt"\n\nfunc main() {\n    str := "hello world"\n    count := map[rune]int{}\n    for _, c := range str {\n        if c != ' ' {\n            count[c]++\n        }\n    }\n    for k, v := range count {\n        fmt.Printf("%c: %d\n", k, v)\n    }\n}`
+  },
+  // UNIT 04
+  {
+    id: 13, rank: "BRONZE", unit: "UNIT 04", title: "関数",
+    question: "2つの int を受け取り、和と積を返す SumProduct 関数を定義して、(3, 4) で呼び出して結果を出力してください。",
+    requirements: ["複数の戻り値を持つ関数を定義する"],
+    hint: "func SumProduct(a, b int) (int, int) { return a+b, a*b }",
+    answer: `package main\n\nimport "fmt"\n\nfunc SumProduct(a, b int) (int, int) {\n    return a + b, a * b\n}\n\nfunc main() {\n    s, p := SumProduct(3, 4)\n    fmt.Println("和:", s)\n    fmt.Println("積:", p)\n}`
+  },
+  {
+    id: 14, rank: "BRONZE", unit: "UNIT 04", title: "可変長引数",
+    question: "任意個数の int を受け取り合計を返す Sum 関数と、任意個数の string を受け取り結合する Join 関数を定義してください。",
+    requirements: ["...int と ...string を使う", "range でループする"],
+    hint: "func Sum(nums ...int) int { ... } のように書きます。",
+    answer: `package main\n\nimport "fmt"\n\nfunc Sum(nums ...int) int {\n    total := 0\n    for _, n := range nums {\n        total += n\n    }\n    return total\n}\n\nfunc Join(strs ...string) string {\n    result := ""\n    for _, s := range strs {\n        result += s\n    }\n    return result\n}\n\nfunc main() {\n    fmt.Println(Sum(1, 2, 3, 4, 5))\n    fmt.Println(Join("Hello", ", ", "World"))\n}`
+  },
+  {
+    id: 15, rank: "BRONZE", unit: "UNIT 04", title: "defer",
+    question: "\"開始\"、defer で \"終了\"（後で実行）、\"処理中\" の順にコードを書き、実行順を確認してください。複数の defer の逆順実行も確認してください。",
+    requirements: ["defer キーワードを使う", "複数 defer の逆順実行を確認"],
+    hint: "defer は関数の終了時にスタックの逆順で実行されます。",
+    answer: `package main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("開始")\n    defer fmt.Println("終了")\n    defer fmt.Println("後片付け")\n    fmt.Println("処理中")\n}`
+  },
+  {
+    id: 16, rank: "BRONZE", unit: "UNIT 04", title: "無名関数",
+    question: "即時実行関数（IIFE）と変数に代入したクロージャを使って、カウンターを実装してください（0→1→2→3 と出力）。",
+    requirements: ["func() { ... }() で即時実行", "func() int を変数に代入してクロージャを作る"],
+    hint: "counter := 0; inc := func() { counter++ ... } のようにクロージャで外側の変数を参照できます。",
+    answer: `package main\n\nimport "fmt"\n\nfunc main() {\n    func() {\n        fmt.Println("即時実行")\n    }()\n    counter := 0\n    inc := func() {\n        counter++\n        fmt.Println(counter)\n    }\n    inc()\n    inc()\n    inc()\n}`
+  },
+  // UNIT 05
+  {
+    id: 17, rank: "SILVER", unit: "UNIT 05", title: "構造体",
+    question: "Name string と Age int フィールドを持つ Person 構造体を定義し、\"Alice (30)\" 形式で出力するメソッド String() を実装してください。",
+    requirements: ["type Person struct を定義する", "func (p Person) String() string を実装"],
+    hint: "fmt.Sprintf(\"%s (%d)\", p.Name, p.Age) で文字列を作れます。",
+    answer: `package main\n\nimport "fmt"\n\ntype Person struct {\n    Name string\n    Age  int\n}\n\nfunc (p Person) String() string {\n    return fmt.Sprintf("%s (%d)", p.Name, p.Age)\n}\n\nfunc main() {\n    p := Person{Name: "Alice", Age: 30}\n    fmt.Println(p)\n}`
+  },
+  {
+    id: 18, rank: "SILVER", unit: "UNIT 05", title: "ポインタレシーバ",
+    question: "Counter 構造体に int フィールドを持たせ、ポインタレシーバで Increment() と Reset() を実装してください。3回インクリメント後、値を確認して、リセットしてください。",
+    requirements: ["func (c *Counter) Increment() でポインタレシーバを使う", "ポインタレシーバで値を変更する"],
+    hint: "c.Value++ でフィールドを変更。ポインタレシーバなら呼び出し元の値が変わります。",
+    answer: `package main\n\nimport "fmt"\n\ntype Counter struct {\n    Value int\n}\n\nfunc (c *Counter) Increment() { c.Value++ }\nfunc (c *Counter) Reset() { c.Value = 0 }\n\nfunc main() {\n    c := Counter{}\n    c.Increment()\n    c.Increment()\n    c.Increment()\n    fmt.Println(c.Value)\n    c.Reset()\n    fmt.Println(c.Value)\n}`
+  },
+  {
+    id: 19, rank: "SILVER", unit: "UNIT 05", title: "インターフェース",
+    question: "Area() float64 を持つ Shape インターフェースを定義し、Circle（半径）と Rectangle（幅・高さ）を実装して面積を出力してください。",
+    requirements: ["type Shape interface { Area() float64 } を定義", "Circle と Rectangle に実装"],
+    hint: "math.Pi を使うには import \"math\" が必要です。",
+    answer: `package main\n\nimport (\n    "fmt"\n    "math"\n)\n\ntype Shape interface {\n    Area() float64\n}\n\ntype Circle struct{ R float64 }\ntype Rectangle struct{ W, H float64 }\n\nfunc (c Circle) Area() float64    { return math.Pi * c.R * c.R }\nfunc (r Rectangle) Area() float64 { return r.W * r.H }\n\nfunc main() {\n    shapes := []Shape{Circle{5}, Rectangle{4, 6}}\n    for _, s := range shapes {\n        fmt.Printf("%T: %.2f\n", s, s.Area())\n    }\n}`
+  },
+  {
+    id: 20, rank: "SILVER", unit: "UNIT 05", title: "構造体埋め込み",
+    question: "Animal 構造体（Name, Sound()メソッド）を定義し、Dog 構造体に埋め込んで、Dog 独自の Fetch() メソッドも追加してください。",
+    requirements: ["struct 埋め込みを使う", "埋め込んだ構造体のメソッドが昇格する"],
+    hint: "type Dog struct { Animal } のように書くと Animal のフィールド・メソッドが昇格します。",
+    answer: `package main\n\nimport "fmt"\n\ntype Animal struct{ Name string }\n\nfunc (a Animal) Sound() string { return "..." }\n\ntype Dog struct {\n    Animal\n}\n\nfunc (d Dog) Sound() string { return "ワン" }\nfunc (d Dog) Fetch() string { return d.Name + "がボールを取ってきた!" }\n\nfunc main() {\n    d := Dog{Animal{Name: "Pochi"}}\n    fmt.Println(d.Sound())\n    fmt.Println(d.Fetch())\n    fmt.Println(d.Name)\n}`
+  },
+  // UNIT 06
+  {
+    id: 21, rank: "SILVER", unit: "UNIT 06", title: "ポインタ",
+    question: "int 変数 x = 10 のポインタを取り、ポインタ経由で値を 20 に変更し、x の値が変わっていることを確認してください。",
+    requirements: ["& でアドレスを取得する", "* でデリファレンスして値を変更する"],
+    hint: "p := &x; *p = 20; fmt.Println(x) で x が 20 になります。",
+    answer: `package main\n\nimport "fmt"\n\nfunc main() {\n    x := 10\n    p := &x\n    fmt.Println("変更前:", x)\n    *p = 20\n    fmt.Println("変更後:", x)\n    fmt.Println("アドレス:", p)\n}`
+  },
+  {
+    id: 22, rank: "SILVER", unit: "UNIT 06", title: "エラー処理",
+    question: "strconv.Atoi で文字列を整数に変換し、エラーが発生した場合は適切に処理してください。\"42\" と \"abc\" の両方でテストしてください。",
+    requirements: ["strconv.Atoi を使う", "err != nil でエラーチェックする"],
+    hint: "n, err := strconv.Atoi(s); if err != nil { ... }",
+    answer: `package main\n\nimport (\n    "fmt"\n    "strconv"\n)\n\nfunc main() {\n    for _, s := range []string{"42", "abc"} {\n        n, err := strconv.Atoi(s)\n        if err != nil {\n            fmt.Printf("エラー: %v\n", err)\n        } else {\n            fmt.Printf("変換成功: %d\n", n)\n        }\n    }\n}`
+  },
+  {
+    id: 23, rank: "GOLD", unit: "UNIT 06", title: "カスタムエラー",
+    question: "DivisionError 型を定義して error インターフェースを実装し、ゼロ除算のときに返す Divide 関数を作ってください。",
+    requirements: ["type DivisionError struct を定義", "func (e DivisionError) Error() string を実装", "Divide 関数でゼロ除算をチェック"],
+    hint: "type DivisionError struct { Divisor int }; func (e DivisionError) Error() string { ... }",
+    answer: `package main\n\nimport "fmt"\n\ntype DivisionError struct{ Divisor int }\n\nfunc (e DivisionError) Error() string {\n    return fmt.Sprintf("ゼロ除算: %d ÷ %d", e.Divisor, 0)\n}\n\nfunc Divide(a, b int) (int, error) {\n    if b == 0 {\n        return 0, DivisionError{Divisor: a}\n    }\n    return a / b, nil\n}\n\nfunc main() {\n    if result, err := Divide(10, 2); err == nil {\n        fmt.Println(result)\n    }\n    if _, err := Divide(5, 0); err != nil {\n        fmt.Println(err)\n    }\n}`
+  },
+  {
+    id: 24, rank: "GOLD", unit: "UNIT 06", title: "クロージャ",
+    question: "呼び出すたびに n ずつ増える Adder を返すクロージャ MakeAdder(n int) を実装してください（+3 と +5 のアダーを作ってテスト）。",
+    requirements: ["関数を返す関数を定義する", "クロージャで外側の変数を捕捉する"],
+    hint: "func MakeAdder(n int) func(int) int { return func(x int) int { return x + n } }",
+    answer: `package main\n\nimport "fmt"\n\nfunc MakeAdder(n int) func(int) int {\n    return func(x int) int {\n        return x + n\n    }\n}\n\nfunc main() {\n    add3 := MakeAdder(3)\n    add5 := MakeAdder(5)\n    fmt.Println(add3(10))\n    fmt.Println(add5(10))\n    fmt.Println(add3(add5(0)))\n}`
+  },
+  // UNIT 07
+  {
+    id: 25, rank: "GOLD", unit: "UNIT 07", title: "高階関数",
+    question: "int スライスを受け取り func(int)int を適用した新スライスを返す Map 関数、条件 func(int)bool で絞り込む Filter 関数を実装してください。",
+    requirements: ["Map(nums []int, f func(int)int) []int を定義", "Filter(nums []int, f func(int)bool) []int を定義"],
+    hint: "Go には組み込みの map/filter がないので自作します。",
+    answer: `package main\n\nimport "fmt"\n\nfunc Map(nums []int, f func(int) int) []int {\n    result := make([]int, len(nums))\n    for i, v := range nums {\n        result[i] = f(v)\n    }\n    return result\n}\n\nfunc Filter(nums []int, f func(int) bool) []int {\n    var result []int\n    for _, v := range nums {\n        if f(v) {\n            result = append(result, v)\n        }\n    }\n    return result\n}\n\nfunc main() {\n    nums := []int{1, 2, 3, 4, 5}\n    doubled := Map(nums, func(x int) int { return x * 2 })\n    evens := Filter(nums, func(x int) bool { return x%2 == 0 })\n    fmt.Println(doubled)\n    fmt.Println(evens)\n}`
+  },
+  {
+    id: 26, rank: "GOLD", unit: "UNIT 07", title: "Reduce関数",
+    question: "int スライスと初期値と func(int,int)int を受け取り畳み込む Reduce 関数を実装し、合計・積・最大値の計算に使ってください。",
+    requirements: ["Reduce(nums []int, init int, f func(int,int)int) int を定義", "合計・積・最大値でテスト"],
+    hint: "acc := init; for _, v := range nums { acc = f(acc, v) } return acc",
+    answer: `package main\n\nimport "fmt"\n\nfunc Reduce(nums []int, init int, f func(int, int) int) int {\n    acc := init\n    for _, v := range nums {\n        acc = f(acc, v)\n    }\n    return acc\n}\n\nfunc main() {\n    nums := []int{1, 2, 3, 4, 5}\n    sum := Reduce(nums, 0, func(a, b int) int { return a + b })\n    product := Reduce(nums, 1, func(a, b int) int { return a * b })\n    max := Reduce(nums, nums[0], func(a, b int) int {\n        if a > b { return a }\n        return b\n    })\n    fmt.Println("合計:", sum)\n    fmt.Println("積:", product)\n    fmt.Println("最大:", max)\n}`
+  },
+  {
+    id: 27, rank: "DIAMOND", unit: "UNIT 07", title: "ゴルーチン",
+    question: "goroutine で3つのメッセージを並行して送り、channel で受け取って出力してください。WaitGroup は使わずチャネルで同期してください。",
+    requirements: ["go func() { ch <- ... }() でゴルーチンを起動", "channel でメッセージを受け取る"],
+    hint: "ch := make(chan string, 3) でバッファ付きチャネルを作り、3回 <-ch で受け取ります。",
+    answer: `package main\n\nimport "fmt"\n\nfunc main() {\n    ch := make(chan string, 3)\n    go func() { ch <- "ゴルーチン1" }()\n    go func() { ch <- "ゴルーチン2" }()\n    go func() { ch <- "ゴルーチン3" }()\n    for i := 0; i < 3; i++ {\n        fmt.Println(<-ch)\n    }\n}`
+  },
+  {
+    id: 28, rank: "DIAMOND", unit: "UNIT 07", title: "チャネルとselect",
+    question: "2つのチャネルに異なるタイミングで送信し、select で受信できた方を処理するコードを書いてください。",
+    requirements: ["select { case v := <-ch1: ... case v := <-ch2: ... } を使う"],
+    hint: "select はチャネルの準備ができた case をランダムに選んで実行します。",
+    answer: `package main\n\nimport "fmt"\n\nfunc main() {\n    ch1 := make(chan string, 1)\n    ch2 := make(chan string, 1)\n    ch1 <- "チャネル1からのメッセージ"\n    ch2 <- "チャネル2からのメッセージ"\n    for i := 0; i < 2; i++ {\n        select {\n        case msg := <-ch1:\n            fmt.Println("ch1:", msg)\n        case msg := <-ch2:\n            fmt.Println("ch2:", msg)\n        }\n    }\n}`
+  },
+  // UNIT 08
+  {
+    id: 29, rank: "MASTER", unit: "UNIT 08", title: "型アサーション",
+    question: "interface{} スライスに int, string, float64 を混在させ、type switch で型ごとに処理を分岐して出力してください。",
+    requirements: ["interface{} スライスを作る", "switch v := x.(type) { case int: ... } を使う"],
+    hint: "switch v := item.(type) { case int: fmt.Println(\"int:\", v) ... }",
+    answer: `package main\n\nimport "fmt"\n\nfunc describe(i interface{}) {\n    switch v := i.(type) {\n    case int:\n        fmt.Printf("int: %d\n", v)\n    case string:\n        fmt.Printf("string: %s\n", v)\n    case float64:\n        fmt.Printf("float64: %.2f\n", v)\n    default:\n        fmt.Printf("unknown: %T\n", v)\n    }\n}\n\nfunc main() {\n    items := []interface{}{42, "hello", 3.14, true}\n    for _, item := range items {\n        describe(item)\n    }\n}`
+  },
+  {
+    id: 30, rank: "LEGEND", unit: "UNIT 08", title: "総合演習: タスク管理システム",
+    question: "Task 構造体（ID, Title, Done）、TaskManager を実装してください: Add/Complete/Filter(done bool)/Summary メソッドを持ち、インターフェースで抽象化してください。",
+    requirements: ["Task と TaskManager 構造体を定義", "ITaskManager インターフェースを定義", "Add/Complete/Filter/Summary を実装"],
+    hint: "Filter で done フラグが一致するタスクを返し、Summary で完了率を表示します。",
+    answer:
+`package main
+
+import "fmt"
+
+type Task struct {
+    ID    int
+    Title string
+    Done  bool
+}
+
+type ITaskManager interface {
+    Add(title string)
+    Complete(id int) bool
+    Filter(done bool) []Task
+    Summary()
+}
+
+type TaskManager struct {
+    tasks  []Task
+    nextID int
+}
+
+func (tm *TaskManager) Add(title string) {
+    tm.nextID++
+    tm.tasks = append(tm.tasks, Task{ID: tm.nextID, Title: title})
+}
+
+func (tm *TaskManager) Complete(id int) bool {
+    for i := range tm.tasks {
+        if tm.tasks[i].ID == id {
+            tm.tasks[i].Done = true
+            return true
+        }
+    }
+    return false
+}
+
+func (tm *TaskManager) Filter(done bool) []Task {
+    var result []Task
+    for _, t := range tm.tasks {
+        if t.Done == done {
+            result = append(result, t)
+        }
+    }
+    return result
+}
+
+func (tm *TaskManager) Summary() {
+    total := len(tm.tasks)
+    done := len(tm.Filter(true))
+    fmt.Printf("完了: %d/%d (%.0f%%)\n", done, total, float64(done)/float64(total)*100)
+}
+
+func main() {
+    var tm ITaskManager = &TaskManager{}
+    tm.Add("Goを学ぶ")
+    tm.Add("テストを書く")
+    tm.Add("コードレビュー")
+    tm.Complete(1)
+    tm.Complete(3)
+    tm.Summary()
+    fmt.Println("未完了:")
+    for _, t := range tm.(*TaskManager).Filter(false) {
+        fmt.Printf("  [%d] %s\n", t.ID, t.Title)
+    }
+}`
+  }
+];
+
+const goMissions = [
+  {
+    id: 1, rank: "BRONZE",
+    title: "スライス操作マスター",
+    description: "append/sort/search の活用",
+    question: "int スライスを: ①手動バブルソート、②二分探索で値を探す、③重複を除去、④2つのソート済みスライスをマージする関数を実装してください。",
+    requirements: ["BubbleSort([]int) []int を実装", "BinarySearch([]int, int) int を実装（見つからなければ-1）", "Unique([]int) []int を実装", "Merge([]int, []int) []int を実装"],
+    hint: "二分探索は lo, hi を使って範囲を二分していきます。",
+    answer:
+`package main
+
+import "fmt"
+
+func BubbleSort(s []int) []int {
+    n := make([]int, len(s))
+    copy(n, s)
+    for i := 0; i < len(n)-1; i++ {
+        for j := 0; j < len(n)-1-i; j++ {
+            if n[j] > n[j+1] { n[j], n[j+1] = n[j+1], n[j] }
+        }
+    }
+    return n
+}
+
+func BinarySearch(s []int, target int) int {
+    lo, hi := 0, len(s)-1
+    for lo <= hi {
+        mid := (lo + hi) / 2
+        if s[mid] == target { return mid }
+        if s[mid] < target { lo = mid + 1 } else { hi = mid - 1 }
+    }
+    return -1
+}
+
+func Unique(s []int) []int {
+    seen := map[int]bool{}
+    var result []int
+    for _, v := range s {
+        if !seen[v] { seen[v] = true; result = append(result, v) }
+    }
+    return result
+}
+
+func Merge(a, b []int) []int {
+    result := make([]int, 0, len(a)+len(b))
+    i, j := 0, 0
+    for i < len(a) && j < len(b) {
+        if a[i] <= b[j] { result = append(result, a[i]); i++ } else { result = append(result, b[j]); j++ }
+    }
+    result = append(result, a[i:]...)
+    result = append(result, b[j:]...)
+    return result
+}
+
+func main() {
+    nums := []int{5, 2, 8, 1, 9, 3, 7}
+    sorted := BubbleSort(nums)
+    fmt.Println("ソート:", sorted)
+    fmt.Println("8の位置:", BinarySearch(sorted, 8))
+    fmt.Println("重複除去:", Unique([]int{1, 2, 2, 3, 3, 3}))
+    fmt.Println("マージ:", Merge([]int{1, 3, 5}, []int{2, 4, 6}))
+}`
+  },
+  {
+    id: 2, rank: "BRONZE",
+    title: "Map活用: ワードカウント",
+    description: "map を使った集計処理",
+    question: "文章から単語の出現頻度を数えて上位3件を出力するプログラムを作ってください（strings.Fields で分割、大文字小文字を無視）。",
+    requirements: ["strings.Fields で単語分割", "strings.ToLower で統一", "map で頻度カウント", "上位3件を出力"],
+    hint: "sort パッケージの Slice 関数でカスタムソートができます。",
+    answer:
+`package main
+
+import (
+    "fmt"
+    "sort"
+    "strings"
+)
+
+func main() {
+    text := "the quick brown fox jumps over the lazy dog the fox"
+    words := strings.Fields(strings.ToLower(text))
+    count := map[string]int{}
+    for _, w := range words {
+        count[w]++
+    }
+    type wordCount struct{ word string; cnt int }
+    var wcs []wordCount
+    for w, c := range count {
+        wcs = append(wcs, wordCount{w, c})
+    }
+    sort.Slice(wcs, func(i, j int) bool { return wcs[i].cnt > wcs[j].cnt })
+    fmt.Println("上位3件:")
+    for i := 0; i < 3 && i < len(wcs); i++ {
+        fmt.Printf("  %s: %d回\n", wcs[i].word, wcs[i].cnt)
+    }
+}`
+  },
+  {
+    id: 3, rank: "SILVER",
+    title: "struct・interface設計",
+    description: "図形の面積・周長計算システム",
+    question: "Shape インターフェース（Area/Perimeter）を定義し、Circle・Rectangle・Triangle に実装してください。各図形の情報を一覧表示するプログラムを作成してください。",
+    requirements: ["Shape interface { Area() float64; Perimeter() float64 } を定義", "3種類の図形を実装", "スライスでまとめて処理する"],
+    hint: "Triangle の面積はヘロンの公式 √(s(s-a)(s-b)(s-c)) で計算できます。",
+    answer:
+`package main
+
+import (
+    "fmt"
+    "math"
+)
+
+type Shape interface {
+    Area() float64
+    Perimeter() float64
+    Name() string
+}
+
+type Circle struct{ R float64 }
+type Rectangle struct{ W, H float64 }
+type Triangle struct{ A, B, C float64 }
+
+func (c Circle) Area() float64      { return math.Pi * c.R * c.R }
+func (c Circle) Perimeter() float64 { return 2 * math.Pi * c.R }
+func (c Circle) Name() string       { return "Circle" }
+
+func (r Rectangle) Area() float64      { return r.W * r.H }
+func (r Rectangle) Perimeter() float64 { return 2 * (r.W + r.H) }
+func (r Rectangle) Name() string       { return "Rectangle" }
+
+func (t Triangle) Area() float64 {
+    s := (t.A + t.B + t.C) / 2
+    return math.Sqrt(s * (s - t.A) * (s - t.B) * (s - t.C))
+}
+func (t Triangle) Perimeter() float64 { return t.A + t.B + t.C }
+func (t Triangle) Name() string       { return "Triangle" }
+
+func main() {
+    shapes := []Shape{Circle{5}, Rectangle{4, 6}, Triangle{3, 4, 5}}
+    for _, s := range shapes {
+        fmt.Printf("%s: 面積=%.2f 周長=%.2f\n", s.Name(), s.Area(), s.Perimeter())
+    }
+}`
+  },
+  {
+    id: 4, rank: "SILVER",
+    title: "関数型パターン",
+    description: "クロージャ・高階関数の活用",
+    question: "Pipeline を実装してください: 複数の func(int)int 変換を連結し、一つの変換関数として返す Compose 関数、そして int スライスに適用する Pipeline 関数を作ってください。",
+    requirements: ["Compose(fns ...func(int)int) func(int)int を実装", "Pipeline(nums []int, fns ...func(int)int) []int を実装"],
+    hint: "Compose は関数を順次適用するクロージャを返します。",
+    answer:
+`package main
+
+import "fmt"
+
+func Compose(fns ...func(int) int) func(int) int {
+    return func(x int) int {
+        for _, f := range fns {
+            x = f(x)
+        }
+        return x
+    }
+}
+
+func Pipeline(nums []int, fns ...func(int) int) []int {
+    transform := Compose(fns...)
+    result := make([]int, len(nums))
+    for i, n := range nums {
+        result[i] = transform(n)
+    }
+    return result
+}
+
+func main() {
+    double := func(x int) int { return x * 2 }
+    addTen := func(x int) int { return x + 10 }
+    square := func(x int) int { return x * x }
+
+    nums := []int{1, 2, 3, 4, 5}
+    result := Pipeline(nums, double, addTen, square)
+    fmt.Println(result)
+
+    f := Compose(double, addTen)
+    fmt.Println(f(5))
+}`
+  },
+  {
+    id: 5, rank: "GOLD",
+    title: "エラー処理パターン",
+    description: "カスタムerrorとwrapping",
+    question: "設定ファイルのパース処理を模倣した ValidateConfig 関数を作ってください。複数のエラーを収集して一度に返す MultiError 型を実装し、fmt.Errorf の %w でエラーをラップしてください。",
+    requirements: ["type MultiError []error を定義して Error() string を実装", "fmt.Errorf(\"context: %w\", err) でラップ", "errors.Is/As での unwrap にも対応"],
+    hint: "MultiError.Error() は全エラーを改行で結合した文字列を返します。",
+    answer:
+`package main
+
+import (
+    "errors"
+    "fmt"
+    "strings"
+)
+
+type MultiError []error
+
+func (m MultiError) Error() string {
+    msgs := make([]string, len(m))
+    for i, e := range m {
+        msgs[i] = e.Error()
+    }
+    return strings.Join(msgs, "; ")
+}
+
+type ValidationError struct{ Field, Message string }
+func (e *ValidationError) Error() string { return fmt.Sprintf("%s: %s", e.Field, e.Message) }
+
+func ValidateConfig(host string, port int, timeout int) error {
+    var errs MultiError
+    if host == "" {
+        errs = append(errs, fmt.Errorf("設定エラー: %w", &ValidationError{"host", "空文字は不可"}))
+    }
+    if port < 1 || port > 65535 {
+        errs = append(errs, fmt.Errorf("設定エラー: %w", &ValidationError{"port", "1-65535 の範囲外"}))
+    }
+    if timeout <= 0 {
+        errs = append(errs, fmt.Errorf("設定エラー: %w", &ValidationError{"timeout", "正の値が必要"}))
+    }
+    if len(errs) > 0 {
+        return errs
+    }
+    return nil
+}
+
+func main() {
+    err := ValidateConfig("", 99999, -1)
+    if err != nil {
+        fmt.Println(err)
+        var ve *ValidationError
+        if errors.As(err.(MultiError)[0], &ve) {
+            fmt.Println("最初のフィールド:", ve.Field)
+        }
+    }
+    err2 := ValidateConfig("localhost", 8080, 30)
+    fmt.Println("有効な設定:", err2 == nil)
+}`
+  },
+  {
+    id: 6, rank: "GOLD",
+    title: "goroutine・channel",
+    description: "並行処理の基礎",
+    question: "fan-out / fan-in パターンを実装してください: 入力チャネルから値を受け取り、複数のワーカーゴルーチンで並行処理し、結果を集約して出力してください。",
+    requirements: ["producer ゴルーチンで値を送信", "複数の worker ゴルーチンで並行処理", "結果を集約して出力", "sync.WaitGroup で完了を待機"],
+    hint: "done チャネルまたは WaitGroup でワーカーの終了を待ちます。",
+    answer:
+`package main
+
+import (
+    "fmt"
+    "sync"
+)
+
+func main() {
+    jobs := make(chan int, 10)
+    results := make(chan int, 10)
+
+    var wg sync.WaitGroup
+    for w := 1; w <= 3; w++ {
+        wg.Add(1)
+        go func(id int) {
+            defer wg.Done()
+            for j := range jobs {
+                result := j * j
+                fmt.Printf("worker%d: %d^2 = %d\n", id, j, result)
+                results <- result
+            }
+        }(w)
+    }
+
+    for i := 1; i <= 9; i++ {
+        jobs <- i
+    }
+    close(jobs)
+
+    go func() {
+        wg.Wait()
+        close(results)
+    }()
+
+    total := 0
+    for r := range results {
+        total += r
+    }
+    fmt.Println("合計:", total)
+}`
+  }
+];
+
+const goUnitGuides = [
+  {
+    id: "go-unit01", unit: "UNIT 01", title: "Hello Go & 変数",
+    summary: "fmt.Println、var / := による変数宣言、基本型（int/float64/string/bool）を学ぶ。",
+    points: ["fmt.Println() で改行付き出力、fmt.Printf() でフォーマット出力", "var name type = value か name := value の短縮形で宣言", "Go は強い静的型付け言語。型変換は明示的に行う", "定数は const で定義し変更不可"],
+    words: [{ term: ":=", desc: "型推論付きの短縮変数宣言。関数内でのみ使用可" }, { term: "fmt.Printf", desc: "%d/%s/%.2f などのフォーマット指定子を使った出力" }, { term: "const", desc: "変更不可の定数を定義するキーワード" }]
+  },
+  {
+    id: "go-unit02", unit: "UNIT 02", title: "制御フロー",
+    summary: "Go の if-else、for（Go唯一のループ）、switch、range を学ぶ。",
+    points: ["Go のループは for のみ（while/do-while なし）", "for i := 0; i < n; i++ / for condition / for range の3形式", "switch に break は不要（自動でフォールスルーしない）", "range でスライス・マップ・文字列を反復処理できる"],
+    words: [{ term: "for range", desc: "コレクションの要素を (index, value) で取り出すループ" }, { term: "switch", desc: "条件分岐。Go では break 不要でフォールスルーしない" }, { term: "fallthrough", desc: "switch の次の case を実行するキーワード（明示的）" }]
+  },
+  {
+    id: "go-unit03", unit: "UNIT 03", title: "コレクション",
+    summary: "配列（固定長）、スライス（可変長）、map（ハッシュマップ）の使い方を学ぶ。",
+    points: ["[N]T が配列（固定長）、[]T がスライス（可変長）", "append でスライスに要素を追加（戻り値を代入必須）", "map[K]V でキーと値のペアを管理", "delete(m, key) でキーを削除。ok イディオムで存在確認"],
+    words: [{ term: "slice", desc: "可変長配列。len（長さ）と cap（容量）を持つ" }, { term: "append", desc: "スライスに要素を追加する組み込み関数。戻り値を使う" }, { term: "map", desc: "キーと値のペアを格納するハッシュマップ" }]
+  },
+  {
+    id: "go-unit04", unit: "UNIT 04", title: "関数と defer",
+    summary: "関数定義、複数戻り値、可変長引数、defer、無名関数・クロージャを学ぶ。",
+    points: ["Go の関数は複数の値を返せる（戻り値に名前も付けられる）", "...T で可変長引数を受け取る", "defer は関数終了時に LIFO 順で実行される（後処理に最適）", "無名関数はクロージャとして外側の変数を捕捉できる"],
+    words: [{ term: "多値返却", desc: "Go 関数は (result, error) のように複数値を返せる" }, { term: "defer", desc: "関数の終了時（LIFO順）に実行されるコードを登録" }, { term: "クロージャ", desc: "外側のスコープの変数を捕捉した無名関数" }]
+  },
+  {
+    id: "go-unit05", unit: "UNIT 05", title: "構造体とインターフェース",
+    summary: "struct、メソッド（値/ポインタレシーバ）、interface、埋め込みを学ぶ。",
+    points: ["type T struct { ... } で構造体を定義", "func (t T) Method() は値レシーバ、(t *T) はポインタレシーバ", "interface は型の振る舞いを定義する抽象型", "struct 内に別の struct を埋め込むと、そのフィールド・メソッドが昇格"],
+    words: [{ term: "ポインタレシーバ", desc: "*T を使うレシーバ。メソッド内でフィールドを変更できる" }, { term: "interface", desc: "メソッドの集合を定義する型。暗黙的に実装する" }, { term: "埋め込み", desc: "struct に別の struct を名前なしで埋め込む仕組み" }]
+  },
+  {
+    id: "go-unit06", unit: "UNIT 06", title: "ポインタとエラー処理",
+    summary: "ポインタ（&/*）、Go 標準のエラー処理パターン、カスタムエラー型を学ぶ。",
+    points: ["& でアドレス取得、* でデリファレンス（値を取得）", "Go のエラー処理は (value, error) を返して if err != nil でチェック", "error インターフェースは Error() string を持つ型", "fmt.Errorf(\"%w\", err) でエラーをラップできる"],
+    words: [{ term: "pointer", desc: "変数のメモリアドレスを格納する型。*T と書く" }, { term: "error", desc: "Error() string メソッドを持つ組み込みインターフェース" }, { term: "%w", desc: "fmt.Errorf でエラーをラップするフォーマット動詞" }]
+  },
+  {
+    id: "go-unit07", unit: "UNIT 07", title: "ゴルーチンとチャネル",
+    summary: "goroutine による並行処理と channel によるデータ受け渡しを学ぶ。",
+    points: ["go func() で軽量スレッド（goroutine）を起動", "chan T でチャネルを作り <- で送受信", "バッファなし channel は送受信が揃うまでブロック", "select で複数チャネルを待機できる"],
+    words: [{ term: "goroutine", desc: "go キーワードで起動する軽量な並行実行単位" }, { term: "channel", desc: "goroutine 間でデータをやり取りするパイプ" }, { term: "select", desc: "複数チャネルのうち準備ができたものを処理するスイッチ" }]
+  },
+  {
+    id: "go-unit08", unit: "UNIT 08", title: "型アサーションと総合演習",
+    summary: "空インターフェース、型アサーション、type switch、並行パターンを総合的に学ぶ。",
+    points: ["interface{} (= any) は任意の型を格納できる", "v.(T) で型アサーション、失敗すると panic", "v, ok := x.(T) で安全にアサーションできる", "switch v := x.(type) で型ごとに分岐する type switch"],
+    words: [{ term: "interface{}", desc: "任意の型を格納できる空インターフェース（= any）" }, { term: "型アサーション", desc: "インターフェース値から具体的な型の値を取り出す操作" }, { term: "type switch", desc: "インターフェース値の動的型で分岐するスイッチ文" }]
+  }
+];
+
+// ===== C データ =====
+
+const cProblems = [
+  // UNIT 01
+  {
+    id: 1, rank: "ROOKIE", unit: "UNIT 01", title: "Hello, C!",
+    question: "\"Hello, C!\" と出力してください。",
+    requirements: ["printf() を使う", "#include <stdio.h> を書く"],
+    hint: "printf(\"文字列\\n\") で改行付き出力ができます。",
+    answer: `#include <stdio.h>\n\nint main() {\n    printf("Hello, C!\\n");\n    return 0;\n}`
+  },
+  {
+    id: 2, rank: "ROOKIE", unit: "UNIT 01", title: "変数と型",
+    question: "int変数 age に 20、float変数 height に 1.75 を代入し、それぞれ出力してください（heightは小数点2桁）。",
+    requirements: ["int と float 変数を宣言する", "printf の書式指定子 %d と %.2f を使う"],
+    hint: "printf(\"%d\\n\", age); printf(\"%.2f\\n\", height);",
+    answer: `#include <stdio.h>\n\nint main() {\n    int age = 20;\n    float height = 1.75f;\n    printf("%d\\n", age);\n    printf("%.2f\\n", height);\n    return 0;\n}`
+  },
+  {
+    id: 3, rank: "ROOKIE", unit: "UNIT 01", title: "演算子",
+    question: "int変数 a=10, b=3 を宣言し、和・差・積・商・余りをすべて出力してください。",
+    requirements: ["+, -, *, /, % 演算子を使う"],
+    hint: "printf(\"%d\\n\", a + b); のように各演算の結果を出力します。",
+    answer: `#include <stdio.h>\n\nint main() {\n    int a = 10, b = 3;\n    printf("%d\\n", a + b);\n    printf("%d\\n", a - b);\n    printf("%d\\n", a * b);\n    printf("%d\\n", a / b);\n    printf("%d\\n", a % b);\n    return 0;\n}`
+  },
+  {
+    id: 4, rank: "ROOKIE", unit: "UNIT 01", title: "定数",
+    question: "#define で PI = 3.14159 を定義し、半径 5.0 の円の面積（PI × r × r）を出力してください。",
+    requirements: ["#define で定数を定義する", "面積を計算して出力する"],
+    hint: "#define PI 3.14159 と書き、PI * r * r で面積を計算します。",
+    answer: `#include <stdio.h>\n#define PI 3.14159\n\nint main() {\n    float r = 5.0f;\n    float area = PI * r * r;\n    printf("%.2f\\n", area);\n    return 0;\n}`
+  },
+  // UNIT 02
+  {
+    id: 5, rank: "ROOKIE", unit: "UNIT 02", title: "if-else",
+    question: "int変数 score に 72 を代入し、70以上なら \"Pass\"、未満なら \"Fail\" と出力してください。",
+    requirements: ["if-else 文を使う"],
+    hint: "if (score >= 70) { printf(\"Pass\\n\"); } else { printf(\"Fail\\n\"); }",
+    answer: `#include <stdio.h>\n\nint main() {\n    int score = 72;\n    if (score >= 70) printf("Pass\\n");\n    else printf("Fail\\n");\n    return 0;\n}`
+  },
+  {
+    id: 6, rank: "ROOKIE", unit: "UNIT 02", title: "forループ",
+    question: "for ループで 1 から 5 の二乗を出力してください（1, 4, 9, 16, 25）。",
+    requirements: ["for ループを使う", "i*i で二乗を計算する"],
+    hint: "for (int i = 1; i <= 5; i++) { printf(\"%d\\n\", i*i); }",
+    answer: `#include <stdio.h>\n\nint main() {\n    for (int i = 1; i <= 5; i++) {\n        printf("%d\\n", i * i);\n    }\n    return 0;\n}`
+  },
+  {
+    id: 7, rank: "ROOKIE", unit: "UNIT 02", title: "whileループ",
+    question: "while ループで整数 n = 1 から始めて 3倍していき、1000 を超えるまで出力してください。",
+    requirements: ["while ループを使う", "n *= 3 で更新する"],
+    hint: "while (n <= 1000) { printf(\"%d\\n\", n); n *= 3; }",
+    answer: `#include <stdio.h>\n\nint main() {\n    int n = 1;\n    while (n <= 1000) {\n        printf("%d\\n", n);\n        n *= 3;\n    }\n    return 0;\n}`
+  },
+  {
+    id: 8, rank: "ROOKIE", unit: "UNIT 02", title: "do-while",
+    question: "do-while ループで 1 から 5 の合計を計算し、\"合計: 15\" と出力してください。",
+    requirements: ["do { ... } while(条件) を使う"],
+    hint: "int sum = 0, i = 1; do { sum += i; i++; } while (i <= 5);",
+    answer: `#include <stdio.h>\n\nint main() {\n    int sum = 0, i = 1;\n    do {\n        sum += i;\n        i++;\n    } while (i <= 5);\n    printf("合計: %d\\n", sum);\n    return 0;\n}`
+  },
+  // UNIT 03
+  {
+    id: 9, rank: "BRONZE", unit: "UNIT 03", title: "配列",
+    question: "int配列 {5, 3, 8, 1, 9, 2, 7} を宣言し、最大値と最小値を求めて出力してください。",
+    requirements: ["配列を宣言して初期化する", "ループで最大値・最小値を探す"],
+    hint: "int arr[] = {5, 3, 8, 1, 9, 2, 7}; sizeof(arr)/sizeof(arr[0]) で要素数を取得できます。",
+    answer: `#include <stdio.h>\n\nint main() {\n    int arr[] = {5, 3, 8, 1, 9, 2, 7};\n    int n = sizeof(arr) / sizeof(arr[0]);\n    int max = arr[0], min = arr[0];\n    for (int i = 1; i < n; i++) {\n        if (arr[i] > max) max = arr[i];\n        if (arr[i] < min) min = arr[i];\n    }\n    printf("最大: %d\\n最小: %d\\n", max, min);\n    return 0;\n}`
+  },
+  {
+    id: 10, rank: "BRONZE", unit: "UNIT 03", title: "文字列",
+    question: "char配列に \"Hello\" を格納し、1文字ずつループで出力してください。また strlen で長さを出力してください。",
+    requirements: ["char str[] を宣言する", "for ループで1文字ずつ出力する", "strlen() で長さを取得する"],
+    hint: "#include <string.h> を追加。for (int i = 0; str[i] != '\\0'; i++) で処理できます。",
+    answer: `#include <stdio.h>\n#include <string.h>\n\nint main() {\n    char str[] = "Hello";\n    for (int i = 0; str[i] != '\\0'; i++) {\n        printf("%c\\n", str[i]);\n    }\n    printf("長さ: %lu\\n", strlen(str));\n    return 0;\n}`
+  },
+  {
+    id: 11, rank: "BRONZE", unit: "UNIT 03", title: "string.h関数",
+    question: "\"Hello\" と \"World\" を strcpy と strcat を使って結合し、strcmp で \"Hello\" と \"hello\" を比較した結果を出力してください。",
+    requirements: ["strcpy でコピーする", "strcat で連結する", "strcmp で比較する"],
+    hint: "strcat(dest, src) で src を dest の末尾に追加できます。",
+    answer: `#include <stdio.h>\n#include <string.h>\n\nint main() {\n    char buf[50];\n    strcpy(buf, "Hello");\n    strcat(buf, " World");\n    printf("%s\\n", buf);\n    int cmp = strcmp("Hello", "hello");\n    printf("strcmp結果: %d\\n", cmp);\n    return 0;\n}`
+  },
+  {
+    id: 12, rank: "BRONZE", unit: "UNIT 03", title: "2次元配列",
+    question: "3×3の int 行列を宣言・初期化し、全要素を表形式で出力してください（各要素間はタブ区切り）。",
+    requirements: ["int matrix[3][3] を宣言する", "二重ループで出力する"],
+    hint: "printf(\"%d\\t\", matrix[i][j]); で各要素を出力し、行末に改行を入れます。",
+    answer: `#include <stdio.h>\n\nint main() {\n    int m[3][3] = {{1,2,3},{4,5,6},{7,8,9}};\n    for (int i = 0; i < 3; i++) {\n        for (int j = 0; j < 3; j++) {\n            printf("%d\\t", m[i][j]);\n        }\n        printf("\\n");\n    }\n    return 0;\n}`
+  },
+  // UNIT 04
+  {
+    id: 13, rank: "BRONZE", unit: "UNIT 04", title: "関数",
+    question: "int a, b を受け取り最大公約数を返す gcd 関数（ユークリッドの互除法）を実装し、gcd(48, 18) = 6 を出力してください。",
+    requirements: ["int gcd(int a, int b) を定義する", "再帰かループでユークリッド互除法を実装する"],
+    hint: "gcd(a, b) = gcd(b, a%b)。b == 0 のとき a を返します。",
+    answer: `#include <stdio.h>\n\nint gcd(int a, int b) {\n    return b == 0 ? a : gcd(b, a % b);\n}\n\nint main() {\n    printf("%d\\n", gcd(48, 18));\n    return 0;\n}`
+  },
+  {
+    id: 14, rank: "BRONZE", unit: "UNIT 04", title: "再帰関数",
+    question: "フィボナッチ数列を再帰で計算する fib 関数を実装し、fib(0)〜fib(9) を出力してください。",
+    requirements: ["int fib(int n) を再帰で実装する", "fib(0)=0, fib(1)=1"],
+    hint: "return fib(n-1) + fib(n-2); がベース。n<=1 のときの基底ケースを忘れずに。",
+    answer: `#include <stdio.h>\n\nint fib(int n) {\n    if (n <= 1) return n;\n    return fib(n-1) + fib(n-2);\n}\n\nint main() {\n    for (int i = 0; i < 10; i++) {\n        printf("%d ", fib(i));\n    }\n    printf("\\n");\n    return 0;\n}`
+  },
+  {
+    id: 15, rank: "BRONZE", unit: "UNIT 04", title: "値渡しと参照渡し",
+    question: "2つの int を値渡しで交換する swap_val と、ポインタ渡しで実際に交換する swap_ref を実装し、違いを確認してください。",
+    requirements: ["void swap_val(int a, int b) は効果なし", "void swap_ref(int *a, int *b) で実際に交換"],
+    hint: "*a と *b を介して値を交換します。int tmp = *a; *a = *b; *b = tmp;",
+    answer: `#include <stdio.h>\n\nvoid swap_val(int a, int b) { int t = a; a = b; b = t; }\nvoid swap_ref(int *a, int *b) { int t = *a; *a = *b; *b = t; }\n\nint main() {\n    int x = 3, y = 7;\n    swap_val(x, y);\n    printf("値渡し後: x=%d, y=%d\\n", x, y);\n    swap_ref(&x, &y);\n    printf("参照渡し後: x=%d, y=%d\\n", x, y);\n    return 0;\n}`
+  },
+  {
+    id: 16, rank: "BRONZE", unit: "UNIT 04", title: "static変数",
+    question: "呼び出すたびにカウントをインクリメントして返す counter 関数を、static 変数を使って実装し、3回呼び出して出力してください。",
+    requirements: ["static int count = 0; を関数内で宣言する", "関数を3回呼び出す"],
+    hint: "static 変数は関数を抜けても値が保持されます。",
+    answer: `#include <stdio.h>\n\nint counter() {\n    static int count = 0;\n    return ++count;\n}\n\nint main() {\n    printf("%d\\n", counter());\n    printf("%d\\n", counter());\n    printf("%d\\n", counter());\n    return 0;\n}`
+  },
+  // UNIT 05
+  {
+    id: 17, rank: "SILVER", unit: "UNIT 05", title: "ポインタ基礎",
+    question: "int変数 n = 42 のアドレスをポインタ変数 p に格納し、p 経由で値を 100 に変更後、n の値を確認してください。アドレスも出力してください。",
+    requirements: ["int *p = &n; でポインタを作る", "*p = 100; で値を変更する"],
+    hint: "printf(\"%p\\n\", p); でアドレスを出力できます（%p は void* が必要な処理系もあります）。",
+    answer: `#include <stdio.h>\n\nint main() {\n    int n = 42;\n    int *p = &n;\n    printf("変更前: n=%d, *p=%d\\n", n, *p);\n    *p = 100;\n    printf("変更後: n=%d, *p=%d\\n", n, *p);\n    printf("アドレス: %p\\n", (void*)p);\n    return 0;\n}`
+  },
+  {
+    id: 18, rank: "SILVER", unit: "UNIT 05", title: "ポインタ演算",
+    question: "int配列 {10, 20, 30, 40, 50} をポインタで走査し、p++ で要素を順に出力してください。また配列の先頭から3番目の要素をポインタ算術で取得してください。",
+    requirements: ["int *p = arr; で先頭ポインタを取得", "p++ でポインタを進める", "*(arr + 2) で3番目を取得"],
+    hint: "配列名自体が先頭要素のポインタです。p++ は次の要素へ移動します。",
+    answer: `#include <stdio.h>\n\nint main() {\n    int arr[] = {10, 20, 30, 40, 50};\n    int *p = arr;\n    for (int i = 0; i < 5; i++) {\n        printf("%d ", *p);\n        p++;\n    }\n    printf("\\n");\n    printf("3番目: %d\\n", *(arr + 2));\n    return 0;\n}`
+  },
+  {
+    id: 19, rank: "SILVER", unit: "UNIT 05", title: "配列とポインタ",
+    question: "int配列を受け取り合計を返す sum 関数をポインタを使って実装してください（引数は int *arr, int n）。",
+    requirements: ["int sum(int *arr, int n) を定義する", "ポインタを使って要素にアクセスする"],
+    hint: "*(arr + i) か arr[i] でアクセスできます（内部的に同じです）。",
+    answer: `#include <stdio.h>\n\nint sum(int *arr, int n) {\n    int total = 0;\n    for (int i = 0; i < n; i++) {\n        total += *(arr + i);\n    }\n    return total;\n}\n\nint main() {\n    int data[] = {1, 2, 3, 4, 5};\n    printf("%d\\n", sum(data, 5));\n    return 0;\n}`
+  },
+  {
+    id: 20, rank: "SILVER", unit: "UNIT 05", title: "ポインタと文字列",
+    question: "char* ポインタを使って文字列の長さを返す my_strlen と文字列をコピーする my_strcpy を実装してください（標準ライブラリを使わず自作）。",
+    requirements: ["int my_strlen(const char *s) を実装", "void my_strcpy(char *dst, const char *src) を実装"],
+    hint: "while (*s != '\\0') { s++; len++; } のように\\0（ヌル終端）を手がかりに走査します。",
+    answer: `#include <stdio.h>\n\nint my_strlen(const char *s) {\n    int len = 0;\n    while (*s++) len++;\n    return len;\n}\n\nvoid my_strcpy(char *dst, const char *src) {\n    while ((*dst++ = *src++) != '\\0');\n}\n\nint main() {\n    printf("%d\\n", my_strlen("Hello"));\n    char buf[20];\n    my_strcpy(buf, "World");\n    printf("%s\\n", buf);\n    return 0;\n}`
+  },
+  // UNIT 06
+  {
+    id: 21, rank: "SILVER", unit: "UNIT 06", title: "構造体",
+    question: "name (char[50]) と score (int) を持つ Student 構造体を定義し、3人分の配列を作って平均点を出力してください。",
+    requirements: ["struct Student を定義する", "構造体の配列を作る", "平均を計算して出力する"],
+    hint: "struct Student students[3] = {{\"Alice\", 85}, {\"Bob\", 72}, {\"Carol\", 91}};",
+    answer: `#include <stdio.h>\n\nstruct Student {\n    char name[50];\n    int score;\n};\n\nint main() {\n    struct Student students[] = {{"Alice", 85}, {"Bob", 72}, {"Carol", 91}};\n    int n = 3, total = 0;\n    for (int i = 0; i < n; i++) total += students[i].score;\n    printf("平均: %.1f\\n", (float)total / n);\n    return 0;\n}`
+  },
+  {
+    id: 22, rank: "SILVER", unit: "UNIT 06", title: "typedef struct",
+    question: "typedef を使って Point 型（x, y の float）を定義し、2点間の距離を計算する distance 関数を実装してください。",
+    requirements: ["typedef struct を使う", "sqrt を使った distance 関数を実装"],
+    hint: "#include <math.h> が必要。dist = sqrt((x2-x1)^2 + (y2-y1)^2)",
+    answer: `#include <stdio.h>\n#include <math.h>\n\ntypedef struct {\n    float x, y;\n} Point;\n\nfloat distance(Point a, Point b) {\n    float dx = b.x - a.x, dy = b.y - a.y;\n    return sqrt(dx*dx + dy*dy);\n}\n\nint main() {\n    Point p1 = {0.0f, 0.0f};\n    Point p2 = {3.0f, 4.0f};\n    printf("距離: %.2f\\n", distance(p1, p2));\n    return 0;\n}`
+  },
+  {
+    id: 23, rank: "GOLD", unit: "UNIT 06", title: "構造体とポインタ",
+    question: "Node 構造体（int value, Node* next）で連結リストを作り、3つのノードを繋いで全要素を出力してください。",
+    requirements: ["struct Node { int value; struct Node *next; } を定義", "3ノードを手動で作って連結", "while ループで全要素を出力"],
+    hint: "node1.next = &node2; node2.next = &node3; node3.next = NULL;",
+    answer: `#include <stdio.h>\n\nstruct Node {\n    int value;\n    struct Node *next;\n};\n\nint main() {\n    struct Node n3 = {30, NULL};\n    struct Node n2 = {20, &n3};\n    struct Node n1 = {10, &n2};\n    struct Node *p = &n1;\n    while (p != NULL) {\n        printf("%d\\n", p->value);\n        p = p->next;\n    }\n    return 0;\n}`
+  },
+  {
+    id: 24, rank: "GOLD", unit: "UNIT 06", title: "構造体配列と関数",
+    question: "Item 構造体（name, price）の配列を引数で受け取り、最高値のアイテム名を返す max_price_item 関数を実装してください。",
+    requirements: ["Item 構造体を定義する", "Item* を引数に取る関数を実装", "最高値のアイテムへのポインタを返す"],
+    hint: "Item* max_price_item(Item *items, int n) のように定義し、ポインタを返します。",
+    answer: `#include <stdio.h>\n\ntypedef struct {\n    char name[50];\n    int price;\n} Item;\n\nItem* max_price_item(Item *items, int n) {\n    Item *max = &items[0];\n    for (int i = 1; i < n; i++) {\n        if (items[i].price > max->price) max = &items[i];\n    }\n    return max;\n}\n\nint main() {\n    Item items[] = {{"Apple", 120}, {"Banana", 80}, {"Cherry", 200}};\n    Item *m = max_price_item(items, 3);\n    printf("%s: %d円\\n", m->name, m->price);\n    return 0;\n}`
+  },
+  // UNIT 07
+  {
+    id: 25, rank: "GOLD", unit: "UNIT 07", title: "動的メモリ確保",
+    question: "malloc で int 配列 (n=5) を確保し、1〜5 を格納して出力後、free で解放してください。realloc でサイズを拡張する例も示してください。",
+    requirements: ["malloc で動的確保する", "free で解放する", "realloc で再確保する"],
+    hint: "int *arr = (int*)malloc(n * sizeof(int));",
+    answer: `#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    int n = 5;\n    int *arr = (int*)malloc(n * sizeof(int));\n    for (int i = 0; i < n; i++) arr[i] = i + 1;\n    for (int i = 0; i < n; i++) printf("%d ", arr[i]);\n    printf("\\n");\n    arr = (int*)realloc(arr, (n+3) * sizeof(int));\n    for (int i = n; i < n+3; i++) arr[i] = i + 1;\n    for (int i = 0; i < n+3; i++) printf("%d ", arr[i]);\n    printf("\\n");\n    free(arr);\n    return 0;\n}`
+  },
+  {
+    id: 26, rank: "GOLD", unit: "UNIT 07", title: "動的配列: スタック",
+    question: "malloc を使ったスタックを実装してください: Stack 構造体（int* data, int top, int capacity）、push/pop/is_empty 関数を定義して動作確認してください。",
+    requirements: ["Stack 構造体を定義する", "malloc で動的確保する", "push/pop/is_empty を実装する"],
+    hint: "push 時に top >= capacity なら容量オーバーエラー。pop 時に top < 0 ならアンダーフロー。",
+    answer:
+`#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int *data;
+    int top;
+    int capacity;
+} Stack;
+
+Stack* create_stack(int cap) {
+    Stack *s = (Stack*)malloc(sizeof(Stack));
+    s->data = (int*)malloc(cap * sizeof(int));
+    s->top = -1;
+    s->capacity = cap;
+    return s;
+}
+
+void push(Stack *s, int val) {
+    if (s->top < s->capacity - 1) s->data[++s->top] = val;
+}
+
+int pop(Stack *s) {
+    if (s->top < 0) return -1;
+    return s->data[s->top--];
+}
+
+int is_empty(Stack *s) { return s->top < 0; }
+
+int main() {
+    Stack *s = create_stack(5);
+    push(s, 10); push(s, 20); push(s, 30);
+    while (!is_empty(s)) printf("%d\\n", pop(s));
+    free(s->data); free(s);
+    return 0;
+}`
+  },
+  {
+    id: 27, rank: "DIAMOND", unit: "UNIT 07", title: "関数ポインタ",
+    question: "int (*op)(int, int) 型の関数ポインタを使い、加算・減算・乗算の関数を切り替えて計算する apply 関数を実装してください。",
+    requirements: ["int add(int,int), sub, mul を定義する", "int apply(int a, int b, int(*op)(int,int)) を定義", "3つの演算でテストする"],
+    hint: "int (*fp)(int,int) = add; fp(3,4); のように関数ポインタを使います。",
+    answer:
+`#include <stdio.h>
+
+int add(int a, int b) { return a + b; }
+int sub(int a, int b) { return a - b; }
+int mul(int a, int b) { return a * b; }
+
+int apply(int a, int b, int(*op)(int,int)) {
+    return op(a, b);
+}
+
+int main() {
+    printf("%d\\n", apply(10, 3, add));
+    printf("%d\\n", apply(10, 3, sub));
+    printf("%d\\n", apply(10, 3, mul));
+    return 0;
+}`
+  },
+  {
+    id: 28, rank: "DIAMOND", unit: "UNIT 07", title: "コールバックとソート",
+    question: "qsort を使って int 配列を昇順・降順でソートしてください。比較関数をコールバックとして渡します。",
+    requirements: ["int cmp_asc(const void*, const void*) を定義する", "int cmp_desc(const void*, const void*) を定義する", "qsort(arr, n, sizeof(int), cmp_asc) を使う"],
+    hint: "比較関数は *(int*)a - *(int*)b（昇順）か逆（降順）で書きます。",
+    answer:
+`#include <stdio.h>
+#include <stdlib.h>
+
+int cmp_asc(const void *a, const void *b) { return *(int*)a - *(int*)b; }
+int cmp_desc(const void *a, const void *b) { return *(int*)b - *(int*)a; }
+
+void print_arr(int *arr, int n) {
+    for (int i = 0; i < n; i++) printf("%d ", arr[i]);
+    printf("\\n");
+}
+
+int main() {
+    int arr[] = {5, 3, 8, 1, 9, 2, 7};
+    int n = 7;
+    qsort(arr, n, sizeof(int), cmp_asc);
+    printf("昇順: "); print_arr(arr, n);
+    qsort(arr, n, sizeof(int), cmp_desc);
+    printf("降順: "); print_arr(arr, n);
+    return 0;
+}`
+  },
+  // UNIT 08
+  {
+    id: 29, rank: "MASTER", unit: "UNIT 08", title: "ビット演算",
+    question: "unsigned int 変数を使い: ①特定ビットのセット・クリア・トグル・確認を実装、②32bit整数の1のビット数を数える popcount 関数を実装してください。",
+    requirements: ["OR(|)でセット、AND(&~)でクリア、XOR(^)でトグル", "ビットシフト(<<,>>)を使う", "popcount を実装する"],
+    hint: "n &= ~(1u << bit) でビットをクリア。popcount はループで n & 1 を確認しながら n >>= 1 します。",
+    answer:
+`#include <stdio.h>
+
+unsigned int set_bit(unsigned int n, int b)    { return n | (1u << b); }
+unsigned int clear_bit(unsigned int n, int b)  { return n & ~(1u << b); }
+unsigned int toggle_bit(unsigned int n, int b) { return n ^ (1u << b); }
+int check_bit(unsigned int n, int b) { return (n >> b) & 1; }
+
+int popcount(unsigned int n) {
+    int count = 0;
+    while (n) { count += n & 1; n >>= 1; }
+    return count;
+}
+
+int main() {
+    unsigned int x = 0b1010;
+    printf("元: %u\\n", x);
+    x = set_bit(x, 0);    printf("bit0セット: %u\\n", x);
+    x = clear_bit(x, 1);  printf("bit1クリア: %u\\n", x);
+    x = toggle_bit(x, 2); printf("bit2トグル: %u\\n", x);
+    printf("bit3: %d\\n", check_bit(x, 3));
+    printf("popcount(0b1101): %d\\n", popcount(0b1101));
+    return 0;
+}`
+  },
+  {
+    id: 30, rank: "LEGEND", unit: "UNIT 08", title: "総合演習: 汎用ソートシステム",
+    question: "void* と関数ポインタを使った汎用ソート関数 generic_sort を実装し、int 配列と文字列配列の両方をソートしてください。バブルソートで実装してください。",
+    requirements: ["void generic_sort(void *base, int n, int size, int(*cmp)(const void*, const void*)) を実装", "int 配列と char*[] 配列の両方でテスト", "memcpy でデータを交換する"],
+    hint: "char *arr = (char*)base; で void* を byte 配列として扱い、i*size で各要素にアクセスします。",
+    answer:
+`#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void generic_sort(void *base, int n, int size, int(*cmp)(const void*, const void*)) {
+    char *arr = (char*)base;
+    char *tmp = (char*)malloc(size);
+    for (int i = 0; i < n-1; i++) {
+        for (int j = 0; j < n-1-i; j++) {
+            char *a = arr + j*size, *b = arr + (j+1)*size;
+            if (cmp(a, b) > 0) {
+                memcpy(tmp, a, size);
+                memcpy(a, b, size);
+                memcpy(b, tmp, size);
+            }
+        }
+    }
+    free(tmp);
+}
+
+int cmp_int(const void *a, const void *b) { return *(int*)a - *(int*)b; }
+int cmp_str(const void *a, const void *b) { return strcmp(*(char**)a, *(char**)b); }
+
+int main() {
+    int nums[] = {5, 2, 8, 1, 9};
+    generic_sort(nums, 5, sizeof(int), cmp_int);
+    for (int i = 0; i < 5; i++) printf("%d ", nums[i]);
+    printf("\\n");
+    const char *words[] = {"banana", "apple", "cherry"};
+    generic_sort(words, 3, sizeof(char*), cmp_str);
+    for (int i = 0; i < 3; i++) printf("%s\\n", words[i]);
+    return 0;
+}`
+  }
+];
+
+const cMissions = [
+  {
+    id: 1, rank: "BRONZE",
+    title: "配列・文字列操作",
+    description: "ソート・検索・文字列処理の基本",
+    question: "①int配列をバブルソート、②線形探索でターゲット位置を返す関数、③文字列を逆順にする関数を実装してください。",
+    requirements: ["bubble_sort(int *arr, int n) を実装", "int linear_search(int *arr, int n, int target) を実装", "void reverse_str(char *s) を実装（in-place）"],
+    hint: "reverse_str は先頭と末尾を交換しながら内側に進みます。",
+    answer:
+`#include <stdio.h>
+#include <string.h>
+
+void bubble_sort(int *arr, int n) {
+    for (int i = 0; i < n-1; i++)
+        for (int j = 0; j < n-1-i; j++)
+            if (arr[j] > arr[j+1]) { int t = arr[j]; arr[j] = arr[j+1]; arr[j+1] = t; }
+}
+
+int linear_search(int *arr, int n, int target) {
+    for (int i = 0; i < n; i++) if (arr[i] == target) return i;
+    return -1;
+}
+
+void reverse_str(char *s) {
+    int l = 0, r = strlen(s) - 1;
+    while (l < r) { char t = s[l]; s[l++] = s[r]; s[r--] = t; }
+}
+
+int main() {
+    int arr[] = {5, 3, 8, 1, 7};
+    bubble_sort(arr, 5);
+    for (int i = 0; i < 5; i++) printf("%d ", arr[i]);
+    printf("\\n");
+    printf("8の位置: %d\\n", linear_search(arr, 5, 8));
+    char s[] = "Hello";
+    reverse_str(s);
+    printf("%s\\n", s);
+    return 0;
+}`
+  },
+  {
+    id: 2, rank: "BRONZE",
+    title: "関数・再帰マスター",
+    description: "再帰アルゴリズムの実装",
+    question: "①再帰でフィボナッチ（メモ化あり）、②二分探索、③配列のバブルソートを実装してください。",
+    requirements: ["fib_memo(int n) をメモ化で実装", "binary_search(int *arr, int n, int target) を実装", "それぞれ動作確認する"],
+    hint: "メモ化は static int memo[100] = {0}; で実現できます。",
+    answer:
+`#include <stdio.h>
+#include <string.h>
+
+long long fib_memo(int n) {
+    static long long memo[100] = {0};
+    if (n <= 1) return n;
+    if (memo[n]) return memo[n];
+    return memo[n] = fib_memo(n-1) + fib_memo(n-2);
+}
+
+int binary_search(int *arr, int n, int target) {
+    int lo = 0, hi = n-1;
+    while (lo <= hi) {
+        int mid = (lo+hi)/2;
+        if (arr[mid] == target) return mid;
+        if (arr[mid] < target) lo = mid+1; else hi = mid-1;
+    }
+    return -1;
+}
+
+int main() {
+    for (int i = 0; i <= 9; i++) printf("%lld ", fib_memo(i));
+    printf("\\n");
+    int arr[] = {1,3,5,7,9,11,13};
+    printf("7の位置: %d\\n", binary_search(arr, 7, 7));
+    printf("4の位置: %d\\n", binary_search(arr, 7, 4));
+    return 0;
+}`
+  },
+  {
+    id: 3, rank: "SILVER",
+    title: "ポインタ活用",
+    description: "ポインタを使った配列・文字列の操作",
+    question: "ポインタのみを使って: ①配列の合計・最大値・最小値を求める関数、②文字列の文字数・単語数を数える関数を実装してください（配列インデックスは使わない）。",
+    requirements: ["sum_ptr, max_ptr, min_ptr を実装（int* のみ使用）", "count_chars, count_words を実装", "count_words は空白区切りで数える"],
+    hint: "while (*p) でヌル終端まで走査。単語数は「空白→非空白」の切り替え回数でカウントできます。",
+    answer:
+`#include <stdio.h>
+
+int sum_ptr(int *arr, int n) {
+    int s = 0;
+    int *end = arr + n;
+    while (arr < end) s += *arr++;
+    return s;
+}
+
+int max_ptr(int *arr, int n) {
+    int m = *arr++;
+    while (--n > 0) { if (*arr > m) m = *arr; arr++; }
+    return m;
+}
+
+int count_chars(const char *s) {
+    int n = 0;
+    while (*s++) n++;
+    return n;
+}
+
+int count_words(const char *s) {
+    int words = 0, in_word = 0;
+    while (*s) {
+        if (*s != ' ' && !in_word) { words++; in_word = 1; }
+        else if (*s == ' ') in_word = 0;
+        s++;
+    }
+    return words;
+}
+
+int main() {
+    int arr[] = {3, 1, 4, 1, 5, 9};
+    printf("合計: %d\\n", sum_ptr(arr, 6));
+    printf("最大: %d\\n", max_ptr(arr, 6));
+    const char *s = "hello world foo";
+    printf("文字数: %d\\n", count_chars(s));
+    printf("単語数: %d\\n", count_words(s));
+    return 0;
+}`
+  },
+  {
+    id: 4, rank: "SILVER",
+    title: "構造体設計",
+    description: "学生情報管理システム",
+    question: "Student 構造体（name, score）の配列を管理するシステムを作ってください: 追加・全表示・平均計算・最高点者表示の関数を実装してください。",
+    requirements: ["Student 構造体を定義する", "add_student / print_all / avg_score / top_student を実装"],
+    hint: "配列の現在サイズをグローバル変数か引数で管理します。",
+    answer:
+`#include <stdio.h>
+#include <string.h>
+
+#define MAX 10
+
+typedef struct {
+    char name[50];
+    int score;
+} Student;
+
+Student db[MAX];
+int count = 0;
+
+void add_student(const char *name, int score) {
+    if (count < MAX) {
+        strcpy(db[count].name, name);
+        db[count].score = score;
+        count++;
+    }
+}
+
+void print_all() {
+    for (int i = 0; i < count; i++)
+        printf("%s: %d\\n", db[i].name, db[i].score);
+}
+
+float avg_score() {
+    float sum = 0;
+    for (int i = 0; i < count; i++) sum += db[i].score;
+    return count ? sum / count : 0;
+}
+
+void top_student() {
+    int best = 0;
+    for (int i = 1; i < count; i++) if (db[i].score > db[best].score) best = i;
+    printf("最高点: %s (%d)\\n", db[best].name, db[best].score);
+}
+
+int main() {
+    add_student("Alice", 85);
+    add_student("Bob", 92);
+    add_student("Carol", 78);
+    print_all();
+    printf("平均: %.1f\\n", avg_score());
+    top_student();
+    return 0;
+}`
+  },
+  {
+    id: 5, rank: "GOLD",
+    title: "動的メモリ管理",
+    description: "malloc/freeを使ったデータ構造",
+    question: "malloc/free を使った動的配列 DynArray を実装してください: 初期容量4、push_back で自動2倍拡張、get/size/destroy 関数付き。",
+    requirements: ["DynArray 構造体（data, size, capacity）を定義", "push_back でサイズ不足時に realloc", "destroy で free する"],
+    hint: "capacity を超えたら realloc(arr->data, new_cap * sizeof(int)) で拡張します。",
+    answer:
+`#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int *data;
+    int size;
+    int capacity;
+} DynArray;
+
+DynArray* create() {
+    DynArray *a = (DynArray*)malloc(sizeof(DynArray));
+    a->data = (int*)malloc(4 * sizeof(int));
+    a->size = 0;
+    a->capacity = 4;
+    return a;
+}
+
+void push_back(DynArray *a, int val) {
+    if (a->size >= a->capacity) {
+        a->capacity *= 2;
+        a->data = (int*)realloc(a->data, a->capacity * sizeof(int));
+    }
+    a->data[a->size++] = val;
+}
+
+void destroy(DynArray *a) { free(a->data); free(a); }
+
+int main() {
+    DynArray *arr = create();
+    for (int i = 1; i <= 10; i++) push_back(arr, i * i);
+    printf("size=%d cap=%d\\n", arr->size, arr->capacity);
+    for (int i = 0; i < arr->size; i++) printf("%d ", arr->data[i]);
+    printf("\\n");
+    destroy(arr);
+    return 0;
+}`
+  },
+  {
+    id: 6, rank: "GOLD",
+    title: "関数ポインタ活用",
+    description: "ソート関数のカスタマイズ",
+    question: "汎用ソート・探索ライブラリを作ってください: 関数ポインタを使った generic_sort（バブルソート）とgeneric_find（線形探索）を int・float・文字列で動作確認してください。",
+    requirements: ["generic_sort(void*, int, int, int(*)(void*,void*)) を実装", "generic_find(void*, int, int, void*, int(*)(void*,void*)) を実装", "3種類の型でテストする"],
+    hint: "char* に キャストして size バイトずつアクセスします。比較関数は0を返せば等しいとみなします。",
+    answer:
+`#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void generic_sort(void *base, int n, int sz, int(*cmp)(void*,void*)) {
+    char *a = (char*)base;
+    char *tmp = (char*)malloc(sz);
+    for (int i=0;i<n-1;i++) for (int j=0;j<n-1-i;j++) {
+        char *p = a+j*sz, *q = a+(j+1)*sz;
+        if (cmp(p,q)>0) { memcpy(tmp,p,sz); memcpy(p,q,sz); memcpy(q,tmp,sz); }
+    }
+    free(tmp);
+}
+
+int cmp_int(void *a, void *b)   { return *(int*)a - *(int*)b; }
+int cmp_float(void *a, void *b) { float d = *(float*)a - *(float*)b; return d>0?1:d<0?-1:0; }
+
+int main() {
+    int nums[] = {5,2,8,1,9,3};
+    generic_sort(nums,6,sizeof(int),cmp_int);
+    for(int i=0;i<6;i++) printf("%d ",nums[i]); printf("\\n");
+    float fls[] = {3.1f,1.4f,2.7f,0.5f};
+    generic_sort(fls,4,sizeof(float),cmp_float);
+    for(int i=0;i<4;i++) printf("%.1f ",fls[i]); printf("\\n");
+    return 0;
+}`
+  }
+];
+
+const cUnitGuides = [
+  {
+    id: "c-unit01", unit: "UNIT 01", title: "Hello C & 基本入出力",
+    summary: "printf、変数宣言（int/float/char）、演算子、定数（#define）を学ぶ。",
+    points: ["printf(\"%d %f %c\\n\", i, f, c) で書式付き出力", "int/float/double/char が基本型", "#define PI 3.14 でマクロ定数を定義", "変数宣言は使用前に行う（C89ではブロック先頭）"],
+    words: [{ term: "printf", desc: "書式指定子（%d/%f/%s/%c）を使った出力関数" }, { term: "#define", desc: "プリプロセッサマクロ。型なしで定数を定義する" }, { term: "書式指定子", desc: "%d=整数 %f=浮動小数 %s=文字列 %c=文字 %p=ポインタ" }]
+  },
+  {
+    id: "c-unit02", unit: "UNIT 02", title: "制御フロー",
+    summary: "if-else、for、while、do-while、switch による制御を学ぶ。",
+    points: ["if-else/switch で条件分岐", "for で初期化・条件・更新を一か所に書く", "while は条件チェックが先、do-while は後", "break でループ即終了、continue で次の反復へ"],
+    words: [{ term: "do-while", desc: "最低1回は実行が保証されるループ" }, { term: "switch-case", desc: "整数値の多岐分岐。break を忘れるとfall-through" }, { term: "continue", desc: "現在の反復をスキップして次の反復へ進む" }]
+  },
+  {
+    id: "c-unit03", unit: "UNIT 03", title: "配列と文字列",
+    summary: "固定長配列、char[]文字列、string.h の便利関数を学ぶ。",
+    points: ["int arr[N] で固定長配列。サイズはコンパイル時に決まる", "文字列は char[] で、末尾に \\0（ヌル終端）がある", "strlen/strcpy/strcat/strcmp が文字列操作の基本", "sizeof(arr)/sizeof(arr[0]) で配列要素数を取得"],
+    words: [{ term: "ヌル終端", desc: "C文字列の末尾に置かれる \\0（ASCII 0）" }, { term: "strlen", desc: "ヌル終端を含まない文字列の長さを返す" }, { term: "sizeof", desc: "型またはオブジェクトのバイトサイズを返す演算子" }]
+  },
+  {
+    id: "c-unit04", unit: "UNIT 04", title: "関数と再帰",
+    summary: "関数定義・プロトタイプ宣言、値渡し、再帰、static変数を学ぶ。",
+    points: ["Cの関数は値渡し（引数のコピーが渡される）", "ポインタを渡せば参照渡しと同等の効果", "再帰は基底ケースとスタックオーバーフローに注意", "static 変数は関数を抜けても値が保持される"],
+    words: [{ term: "プロトタイプ宣言", desc: "関数の型シグネチャを先頭で宣言する。後方参照のため" }, { term: "static変数", desc: "関数ローカルだが値が保持される変数。初期化は一度のみ" }, { term: "値渡し", desc: "引数の値をコピーして渡す。元の変数は変更されない" }]
+  },
+  {
+    id: "c-unit05", unit: "UNIT 05", title: "ポインタ",
+    summary: "ポインタの基礎（&/*）、ポインタ演算、配列とポインタの関係を学ぶ。",
+    points: ["& でアドレスを取得、* でデリファレンス（値を取得）", "配列名は先頭要素へのポインタと等価", "p++ は次の要素（sizeof(T) バイト先）を指す", "const char* は読み取り専用の文字列ポインタ"],
+    words: [{ term: "&（アドレス演算子）", desc: "変数のメモリアドレスを返す" }, { term: "*（間接参照）", desc: "ポインタが指すアドレスの値を返す" }, { term: "ポインタ演算", desc: "p+n は n*sizeof(T) バイト先のアドレス" }]
+  },
+  {
+    id: "c-unit06", unit: "UNIT 06", title: "構造体",
+    summary: "struct定義、typedef、構造体とポインタ（->演算子）を学ぶ。",
+    points: ["struct でデータを一つのまとまりとして定義", "typedef struct で短い型名を付けられる", "構造体ポインタからのメンバアクセスは -> を使う", "構造体は値渡し（コピー）されるので大きな構造体はポインタを使う"],
+    words: [{ term: "struct", desc: "異なる型のフィールドをまとめたユーザー定義型" }, { term: "->演算子", desc: "ポインタからメンバにアクセスする演算子。(*p).x と同等" }, { term: "typedef", desc: "既存の型に新しい名前を付けるキーワード" }]
+  },
+  {
+    id: "c-unit07", unit: "UNIT 07", title: "動的メモリと関数ポインタ",
+    summary: "malloc/free/realloc による動的メモリ管理と関数ポインタを学ぶ。",
+    points: ["malloc でヒープ領域を動的確保。使用後は必ず free", "realloc で確保済み領域を拡縮できる", "関数ポインタで実行時に呼び出す関数を切り替えられる", "qsort の比較関数もコールバック（関数ポインタ）の一例"],
+    words: [{ term: "malloc", desc: "ヒープ上にバイト数を指定してメモリを確保する関数" }, { term: "free", desc: "malloc で確保したメモリを解放する。必ずセットで使う" }, { term: "関数ポインタ", desc: "関数のアドレスを格納するポインタ変数" }]
+  },
+  {
+    id: "c-unit08", unit: "UNIT 08", title: "ビット演算と総合演習",
+    summary: "ビット演算（AND/OR/XOR/シフト）と汎用プログラミングを学ぶ。",
+    points: ["& OR | XOR ^ NOT ~ でビット単位の演算", "<< で左シフト（×2）、>> で右シフト（÷2）", "フラグ管理（セット/クリア/トグル/チェック）に頻出", "void* と関数ポインタで型汎用なコードが書ける"],
+    words: [{ term: "ビットマスク", desc: "特定ビットを選択するために使うビットパターン" }, { term: "左シフト(<<)", desc: "ビットをn桁左に移動。2のn乗倍に相当" }, { term: "void*", desc: "型情報を持たない汎用ポインタ。キャストして使う" }]
+  }
+];
+
+// ===== Rust データ =====
+
+const rustProblems = [
+  // UNIT 01
+  {
+    id: 1, rank: "ROOKIE", unit: "UNIT 01", title: "Hello, Rust!",
+    question: "\"Hello, Rust!\" と出力してください。",
+    requirements: ["println! マクロを使う"],
+    hint: "println!(\"文字列\") で改行付き出力ができます。",
+    answer: `fn main() {\n    println!("Hello, Rust!");\n}`
+  },
+  {
+    id: 2, rank: "ROOKIE", unit: "UNIT 01", title: "変数とミュータビリティ",
+    question: "let で不変変数 x = 5 を宣言し出力、次に let mut で可変変数 y = 10 を宣言して 20 に変更して出力してください。",
+    requirements: ["let でイミュータブル変数を作る", "let mut でミュータブル変数を作る"],
+    hint: "Rust のデフォルトは不変（immutable）。変更するには mut が必要です。",
+    answer: `fn main() {\n    let x = 5;\n    println!("{}", x);\n    let mut y = 10;\n    y = 20;\n    println!("{}", y);\n}`
+  },
+  {
+    id: 3, rank: "ROOKIE", unit: "UNIT 01", title: "基本型",
+    question: "i32, f64, bool, char の変数を宣言し、それぞれの値と型を println! で出力してください。",
+    requirements: ["i32, f64, bool, char 型を使う", "型注釈を明示的に書く"],
+    hint: "let n: i32 = 42; のように型注釈を付けられます。",
+    answer: `fn main() {\n    let n: i32 = 42;\n    let f: f64 = 3.14;\n    let b: bool = true;\n    let c: char = 'R';\n    println!("{} {} {} {}", n, f, b, c);\n}`
+  },
+  {
+    id: 4, rank: "ROOKIE", unit: "UNIT 01", title: "演算と型変換",
+    question: "i32 変数 a=7, b=2 の商と余りを出力し、as f64 でキャストして浮動小数点除算の結果も出力してください。",
+    requirements: ["a/b で整数除算", "a%b で余り", "a as f64 / b as f64 で実数除算"],
+    hint: "Rust は自動型変換しないため as でキャストします。",
+    answer: `fn main() {\n    let a: i32 = 7;\n    let b: i32 = 2;\n    println!("{}", a / b);\n    println!("{}", a % b);\n    println!("{:.2}", a as f64 / b as f64);\n}`
+  },
+  // UNIT 02
+  {
+    id: 5, rank: "ROOKIE", unit: "UNIT 02", title: "if-else",
+    question: "i32 変数 n = 42 を宣言し、正・負・ゼロで分岐して出力してください。if を式として使い let result = if ... で結果を変数に入れてください。",
+    requirements: ["if-else if-else で3分岐する", "if を式として使う"],
+    hint: "let label = if n > 0 { \"正\" } else if n < 0 { \"負\" } else { \"ゼロ\" };",
+    answer: `fn main() {\n    let n = 42i32;\n    let label = if n > 0 { "正" } else if n < 0 { "負" } else { "ゼロ" };\n    println!("{}", label);\n}`
+  },
+  {
+    id: 6, rank: "ROOKIE", unit: "UNIT 02", title: "loop と while",
+    question: "loop で 1 から始めて、5 の倍数になったら break するコードを書き、その値を出力してください。次に while で 1〜10 の合計を求めてください。",
+    requirements: ["loop { ... break; } を使う", "while で合計を計算する"],
+    hint: "loop は無限ループ。break で抜けられ、break VALUE で値を返せます。",
+    answer: `fn main() {\n    let mut n = 1;\n    let result = loop {\n        if n % 5 == 0 { break n; }\n        n += 1;\n    };\n    println!("{}", result);\n    let mut sum = 0;\n    let mut i = 1;\n    while i <= 10 { sum += i; i += 1; }\n    println!("{}", sum);\n}`
+  },
+  {
+    id: 7, rank: "ROOKIE", unit: "UNIT 02", title: "for と range",
+    question: "for i in 1..=5 で 1〜5 を出力し、for i in (1..=5).rev() で逆順に出力してください。",
+    requirements: ["1..=5 のレンジを使う", ".rev() で逆順にする"],
+    hint: "1..5 は1〜4（5を含まない）、1..=5 は1〜5（5を含む）です。",
+    answer: `fn main() {\n    for i in 1..=5 { print!("{} ", i); }\n    println!();\n    for i in (1..=5).rev() { print!("{} ", i); }\n    println!();\n}`
+  },
+  {
+    id: 8, rank: "ROOKIE", unit: "UNIT 02", title: "enumerate と zip",
+    question: "Vec<&str> {\"apple\", \"banana\", \"cherry\"} を enumerate で (インデックス, 値) を出力し、2つのベクタを zip して対応する要素をペアで出力してください。",
+    requirements: [".iter().enumerate() を使う", "2つのベクタを zip する"],
+    hint: "for (i, v) in fruits.iter().enumerate() { ... }",
+    answer: `fn main() {\n    let fruits = vec!["apple", "banana", "cherry"];\n    for (i, v) in fruits.iter().enumerate() {\n        println!("{}: {}", i, v);\n    }\n    let nums = vec![1, 2, 3];\n    let names = vec!["one", "two", "three"];\n    for (n, s) in nums.iter().zip(names.iter()) {\n        println!("{} = {}", n, s);\n    }\n}`
+  },
+  // UNIT 03
+  {
+    id: 9, rank: "BRONZE", unit: "UNIT 03", title: "Vec<T>",
+    question: "Vec<i32> を作り 1〜5 を push、pop して取り出し、len と contains を使って出力してください。",
+    requirements: ["vec! マクロか Vec::new() で作成", "push/pop/len/contains を使う"],
+    hint: "pop() は Option<T> を返します。unwrap() か match で取り出せます。",
+    answer: `fn main() {\n    let mut v: Vec<i32> = Vec::new();\n    for i in 1..=5 { v.push(i); }\n    println!("{:?}", v);\n    println!("len: {}", v.len());\n    println!("pop: {:?}", v.pop());\n    println!("contains 3: {}", v.contains(&3));\n}`
+  },
+  {
+    id: 10, rank: "BRONZE", unit: "UNIT 03", title: "String操作",
+    question: "String を作り push_str で追加、len・contains・replace・to_uppercase を使って出力してください。",
+    requirements: ["String::from() か to_string() で作成", "push_str/len/contains/replace/to_uppercase を使う"],
+    hint: "&str は文字列スライス、String は所有権を持つ文字列です。",
+    answer: `fn main() {\n    let mut s = String::from("Hello");\n    s.push_str(", Rust!");\n    println!("{}", s);\n    println!("len: {}", s.len());\n    println!("contains Rust: {}", s.contains("Rust"));\n    println!("{}", s.replace("Rust", "World"));\n    println!("{}", s.to_uppercase());\n}`
+  },
+  {
+    id: 11, rank: "BRONZE", unit: "UNIT 03", title: "HashMap",
+    question: "HashMap<String, i32> で \"Tokyo\"→1400, \"Osaka\"→880, \"Nagoya\"→230 を登録し、entry API で \"Kyoto\"を追加し、全エントリを出力してください。",
+    requirements: ["std::collections::HashMap を使う", "entry().or_insert() を使う"],
+    hint: "use std::collections::HashMap; が必要です。",
+    answer: `use std::collections::HashMap;\n\nfn main() {\n    let mut map = HashMap::new();\n    map.insert("Tokyo".to_string(), 1400);\n    map.insert("Osaka".to_string(), 880);\n    map.insert("Nagoya".to_string(), 230);\n    map.entry("Kyoto".to_string()).or_insert(150);\n    for (k, v) in &map {\n        println!("{}: {}", k, v);\n    }\n}`
+  },
+  {
+    id: 12, rank: "BRONZE", unit: "UNIT 03", title: "イテレータ",
+    question: "Vec<i32> {1..=10} に対して map で二乗、filter で偶数のみ、collect で新しい Vec を作り出力してください。また sum() と max() も使ってください。",
+    requirements: ["map/filter/collect を連鎖させる", "sum() と max() を使う"],
+    hint: ".collect::<Vec<i32>>() か let result: Vec<i32> = ... で型を指定します。",
+    answer: `fn main() {\n    let nums: Vec<i32> = (1..=10).collect();\n    let result: Vec<i32> = nums.iter().map(|&x| x*x).filter(|&x| x%2==0).collect();\n    println!("{:?}", result);\n    let sum: i32 = nums.iter().sum();\n    println!("合計: {}", sum);\n    println!("最大: {}", nums.iter().max().unwrap());\n}`
+  },
+  // UNIT 04
+  {
+    id: 13, rank: "BRONZE", unit: "UNIT 04", title: "関数",
+    question: "i32 の最大公約数を求める gcd 関数を実装し、gcd(48, 18) = 6 を出力してください。型注釈を明示してください。",
+    requirements: ["fn gcd(a: i32, b: i32) -> i32 を定義する", "ユークリッドの互除法を使う"],
+    hint: "if b == 0 { a } else { gcd(b, a % b) }",
+    answer: `fn gcd(a: i32, b: i32) -> i32 {\n    if b == 0 { a } else { gcd(b, a % b) }\n}\n\nfn main() {\n    println!("{}", gcd(48, 18));\n    println!("{}", gcd(100, 75));\n}`
+  },
+  {
+    id: 14, rank: "BRONZE", unit: "UNIT 04", title: "クロージャ",
+    question: "クロージャを変数に代入し: ①二乗するクロージャ、②n を加算するクロージャ（環境キャプチャ）を定義して使ってください。",
+    requirements: ["|x| x * x の形でクロージャを定義する", "外側の変数をキャプチャするクロージャを作る"],
+    hint: "let add_n = |x| x + n; は外側の n を借用してキャプチャします。",
+    answer: `fn main() {\n    let square = |x: i32| x * x;\n    println!("{}", square(5));\n    let n = 10;\n    let add_n = |x| x + n;\n    println!("{}", add_n(5));\n    let nums = vec![1, 2, 3, 4, 5];\n    let doubled: Vec<i32> = nums.iter().map(|&x| x * 2).collect();\n    println!("{:?}", doubled);\n}`
+  },
+  {
+    id: 15, rank: "BRONZE", unit: "UNIT 04", title: "fold と sum",
+    question: "Vec<i32> {1..=5} に対して fold で積（120）を計算し、sum で合計を計算し、reduce で最大値を求めてください。",
+    requirements: ["fold(初期値, |acc, &x| ...) を使う", "iter().sum() を使う", "reduce で最大値を求める"],
+    hint: "fold(1, |acc, &x| acc * x) で積が計算できます。",
+    answer: `fn main() {\n    let nums: Vec<i32> = (1..=5).collect();\n    let product = nums.iter().fold(1, |acc, &x| acc * x);\n    println!("積: {}", product);\n    let sum: i32 = nums.iter().sum();\n    println!("合計: {}", sum);\n    let max = nums.iter().copied().reduce(|a, b| if a > b { a } else { b });\n    println!("最大: {}", max.unwrap());\n}`
+  },
+  {
+    id: 16, rank: "BRONZE", unit: "UNIT 04", title: "sort と dedup",
+    question: "Vec<i32> {3,1,4,1,5,9,2,6,5,3} をソートして重複を除去し出力してください。また Vec<&str> を文字列長でカスタムソートしてください。",
+    requirements: ["sort() でソート", "dedup() で隣接重複を除去（sort後に使う）", "sort_by でカスタム比較"],
+    hint: "dedup() は連続した重複のみ除去するため、事前に sort() が必要です。",
+    answer: `fn main() {\n    let mut nums = vec![3,1,4,1,5,9,2,6,5,3];\n    nums.sort();\n    nums.dedup();\n    println!("{:?}", nums);\n    let mut words = vec!["banana", "apple", "kiwi", "cherry"];\n    words.sort_by(|a, b| a.len().cmp(&b.len()));\n    println!("{:?}", words);\n}`
+  },
+  // UNIT 05
+  {
+    id: 17, rank: "SILVER", unit: "UNIT 05", title: "構造体",
+    question: "Rectangle 構造体（width, height: f64）を定義し、area と perimeter を計算するメソッドを impl で実装してください。",
+    requirements: ["struct Rectangle を定義する", "impl Rectangle { fn area(&self) -> f64 ... } を実装"],
+    hint: "&self を使う読み取り専用メソッドと、&mut self を使う変更メソッドを区別します。",
+    answer: `struct Rectangle {\n    width: f64,\n    height: f64,\n}\n\nimpl Rectangle {\n    fn new(w: f64, h: f64) -> Self { Rectangle { width: w, height: h } }\n    fn area(&self) -> f64 { self.width * self.height }\n    fn perimeter(&self) -> f64 { 2.0 * (self.width + self.height) }\n}\n\nfn main() {\n    let r = Rectangle::new(4.0, 6.0);\n    println!("面積: {}", r.area());\n    println!("周長: {}", r.perimeter());\n}`
+  },
+  {
+    id: 18, rank: "SILVER", unit: "UNIT 05", title: "impl とメソッド",
+    question: "Counter 構造体（value: i32）を作り、increment/decrement/reset/value メソッドを impl で実装してください。メソッドチェーンができるよう &mut self を返す設計にしてください。",
+    requirements: ["Counter 構造体と impl を定義する", "&mut self を返してメソッドチェーンを可能にする"],
+    hint: "fn increment(&mut self) -> &mut Self { self.value += 1; self }",
+    answer: `struct Counter { value: i32 }\n\nimpl Counter {\n    fn new() -> Self { Counter { value: 0 } }\n    fn increment(&mut self) -> &mut Self { self.value += 1; self }\n    fn decrement(&mut self) -> &mut Self { self.value -= 1; self }\n    fn reset(&mut self) -> &mut Self { self.value = 0; self }\n    fn get(&self) -> i32 { self.value }\n}\n\nfn main() {\n    let mut c = Counter::new();\n    c.increment().increment().increment().decrement();\n    println!("{}", c.get());\n    c.reset();\n    println!("{}", c.get());\n}`
+  },
+  {
+    id: 19, rank: "SILVER", unit: "UNIT 05", title: "トレイト",
+    question: "fn describe(&self) -> String メソッドを持つ Describable トレイトを定義し、Circle と Rectangle に実装してください。",
+    requirements: ["trait Describable { fn describe(&self) -> String; } を定義", "Circle と Rectangle に実装"],
+    hint: "impl Describable for Circle { fn describe(&self) -> String { ... } }",
+    answer: `trait Describable {\n    fn describe(&self) -> String;\n}\n\nstruct Circle { radius: f64 }\nstruct Rectangle { width: f64, height: f64 }\n\nimpl Describable for Circle {\n    fn describe(&self) -> String {\n        format!("Circle(r={})", self.radius)\n    }\n}\n\nimpl Describable for Rectangle {\n    fn describe(&self) -> String {\n        format!("Rectangle({}x{})", self.width, self.height)\n    }\n}\n\nfn main() {\n    let shapes: Vec<Box<dyn Describable>> = vec![\n        Box::new(Circle { radius: 5.0 }),\n        Box::new(Rectangle { width: 4.0, height: 6.0 }),\n    ];\n    for s in &shapes { println!("{}", s.describe()); }\n}`
+  },
+  {
+    id: 20, rank: "SILVER", unit: "UNIT 05", title: "#[derive]",
+    question: "Point 構造体に #[derive(Debug, Clone, PartialEq)] を付け、2点を比較して \"同じ\" / \"違う\" と出力し、clone した点を変更しても元が変わらないことを確認してください。",
+    requirements: ["#[derive(Debug, Clone, PartialEq)] を付ける", "{:?} で Debug 出力する", "clone で複製して独立性を確認"],
+    hint: "#[derive(...)] はコンパイラがトレイト実装を自動生成してくれます。",
+    answer: `#[derive(Debug, Clone, PartialEq)]\nstruct Point { x: f64, y: f64 }\n\nfn main() {\n    let p1 = Point { x: 1.0, y: 2.0 };\n    let p2 = Point { x: 1.0, y: 2.0 };\n    let mut p3 = p1.clone();\n    println!("{:?}", p1);\n    println!("p1 == p2: {}", p1 == p2);\n    p3.x = 99.0;\n    println!("p3変更後 p1: {:?}", p1);\n    println!("p3: {:?}", p3);\n}`
+  },
+  // UNIT 06
+  {
+    id: 21, rank: "SILVER", unit: "UNIT 06", title: "enum",
+    question: "Direction enum（North, South, East, West）を定義し、各方向に対応する日本語名を返す name メソッドを impl で実装してください。",
+    requirements: ["enum Direction を定義する", "impl Direction { fn name(&self) -> &str } を実装"],
+    hint: "match self { Direction::North => \"北\", ... }",
+    answer: `enum Direction { North, South, East, West }\n\nimpl Direction {\n    fn name(&self) -> &str {\n        match self {\n            Direction::North => "北",\n            Direction::South => "南",\n            Direction::East  => "東",\n            Direction::West  => "西",\n        }\n    }\n}\n\nfn main() {\n    let dirs = [Direction::North, Direction::East, Direction::South, Direction::West];\n    for d in &dirs { println!("{}", d.name()); }\n}`
+  },
+  {
+    id: 22, rank: "SILVER", unit: "UNIT 06", title: "match",
+    question: "i32 を受け取り match で: 1→\"one\", 2→\"two\", 3..=9→\"small\", _→\"other\" を返す関数を定義し、複数の値でテストしてください。",
+    requirements: ["match 式を使う", "レンジパターン 3..=9 を使う", "_ でワイルドカードを使う"],
+    hint: "match n { 1 => ..., 2 => ..., 3..=9 => ..., _ => ... }",
+    answer: `fn classify(n: i32) -> &'static str {\n    match n {\n        1 => "one",\n        2 => "two",\n        3..=9 => "small",\n        _ => "other",\n    }\n}\n\nfn main() {\n    for n in [1, 2, 5, 10, -1] {\n        println!("{}: {}", n, classify(n));\n    }\n}`
+  },
+  {
+    id: 23, rank: "GOLD", unit: "UNIT 06", title: "Option<T>",
+    question: "Vec<i32> から指定インデックスの要素を安全に返す safe_get 関数を Option<&i32> で実装し、if let と unwrap_or でそれぞれ値を取り出してください。",
+    requirements: ["fn safe_get(v: &Vec<i32>, i: usize) -> Option<&i32> を定義", "if let Some(v) = ... で取り出す", ".unwrap_or(&-1) でデフォルト値を設定"],
+    hint: "v.get(i) は既にインデックスの安全なアクセスを行い Option を返します。",
+    answer: `fn safe_get(v: &Vec<i32>, i: usize) -> Option<&i32> {\n    v.get(i)\n}\n\nfn main() {\n    let v = vec![10, 20, 30, 40, 50];\n    if let Some(val) = safe_get(&v, 2) {\n        println!("index 2: {}", val);\n    }\n    println!("index 10: {}", safe_get(&v, 10).unwrap_or(&-1));\n    let doubled: Vec<i32> = v.iter().filter_map(|&x| if x > 20 { Some(x*2) } else { None }).collect();\n    println!("{:?}", doubled);\n}`
+  },
+  {
+    id: 24, rank: "GOLD", unit: "UNIT 06", title: "Result<T, E>",
+    question: "文字列を i32 にパースする parse_int 関数を Result<i32, String> で実装し、? 演算子を使ってエラーを伝播させるサンプルも書いてください。",
+    requirements: ["fn parse_int(s: &str) -> Result<i32, String> を定義", "match で Ok/Err を処理する", "? 演算子を使う関数も作る"],
+    hint: "s.parse::<i32>().map_err(|e| e.to_string()) で Result<i32, String> に変換できます。",
+    answer: `fn parse_int(s: &str) -> Result<i32, String> {\n    s.parse::<i32>().map_err(|e| e.to_string())\n}\n\nfn double_parse(s: &str) -> Result<i32, String> {\n    let n = parse_int(s)?;\n    Ok(n * 2)\n}\n\nfn main() {\n    match parse_int("42") {\n        Ok(n)  => println!("成功: {}", n),\n        Err(e) => println!("失敗: {}", e),\n    }\n    match parse_int("abc") {\n        Ok(n)  => println!("成功: {}", n),\n        Err(e) => println!("失敗: {}", e),\n    }\n    println!("{:?}", double_parse("21"));\n    println!("{:?}", double_parse("xyz"));\n}`
+  },
+  // UNIT 07
+  {
+    id: 25, rank: "GOLD", unit: "UNIT 07", title: "所有権とムーブ",
+    question: "String を関数に渡すと所有権がムーブされて使えなくなることを確認し、clone と参照渡し（&String）で解決する方法を示してください。",
+    requirements: ["所有権のムーブを実際に体験する", "clone() で複製する", "& で参照を渡す"],
+    hint: "fn takes_string(s: String) はムーブ。fn borrows_string(s: &String) は借用。",
+    answer: `fn takes_string(s: String) -> usize { s.len() }\nfn borrows_string(s: &String) -> usize { s.len() }\n\nfn main() {\n    let s1 = String::from("hello");\n    let s2 = s1.clone();\n    println!("clone後 s1: {}", s1);\n    let len = takes_string(s2);\n    println!("len: {}", len);\n    let s3 = String::from("world");\n    let len2 = borrows_string(&s3);\n    println!("借用後 s3: {} len: {}", s3, len2);\n}`
+  },
+  {
+    id: 26, rank: "GOLD", unit: "UNIT 07", title: "借用と参照",
+    question: "Vec<i32> の最大値を返す関数を &Vec<i32> で受け取って実装し、関数呼び出し後も元の Vec が使えることを確認してください。また &mut Vec<i32> で要素を変更する関数も作ってください。",
+    requirements: ["fn max_val(v: &Vec<i32>) -> i32 を実装（所有権を取らない）", "fn double_all(v: &mut Vec<i32>) を実装（ミュータブル参照）"],
+    hint: "Rust は同時に複数の可変参照を許可しません（借用チェッカー）。",
+    answer: `fn max_val(v: &Vec<i32>) -> i32 {\n    *v.iter().max().unwrap()\n}\n\nfn double_all(v: &mut Vec<i32>) {\n    for x in v.iter_mut() { *x *= 2; }\n}\n\nfn main() {\n    let mut nums = vec![3, 1, 4, 1, 5, 9];\n    println!("最大: {}", max_val(&nums));\n    println!("元: {:?}", nums);\n    double_all(&mut nums);\n    println!("2倍後: {:?}", nums);\n}`
+  },
+  {
+    id: 27, rank: "DIAMOND", unit: "UNIT 07", title: "Box<T>",
+    question: "Box<T> を使ってヒープに値を確保し、再帰的なデータ構造（単方向リスト）を定義してください: List<i32>（Cons(i32, Box<List<i32>>) / Nil）。",
+    requirements: ["enum List<T> { Cons(T, Box<List<T>>), Nil } を定義", "3要素のリストを作る", "再帰で全要素を出力する"],
+    hint: "Box を使わないと再帰型はサイズが確定できずコンパイルエラーになります。",
+    answer: `enum List {\n    Cons(i32, Box<List>),\n    Nil,\n}\n\nimpl List {\n    fn print(&self) {\n        match self {\n            List::Cons(v, next) => { print!("{} ", v); next.print(); }\n            List::Nil => println!(),\n        }\n    }\n}\n\nfn main() {\n    let list = List::Cons(1,\n        Box::new(List::Cons(2,\n            Box::new(List::Cons(3,\n                Box::new(List::Nil))))));\n    list.print();\n}`
+  },
+  {
+    id: 28, rank: "DIAMOND", unit: "UNIT 07", title: "ライフタイム基礎",
+    question: "2つの文字列スライスのうち長い方を返す longest 関数をライフタイム注釈付きで実装してください。また構造体にライフタイム付きの参照フィールドを持たせてください。",
+    requirements: ["fn longest<'a>(x: &'a str, y: &'a str) -> &'a str を定義", "ライフタイム付き参照フィールドを持つ構造体を定義"],
+    hint: "<'a> はライフタイムパラメータ。戻り値の寿命が引数の寿命に依存することを示します。",
+    answer: `fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {\n    if x.len() >= y.len() { x } else { y }\n}\n\nstruct Excerpt<'a> {\n    text: &'a str,\n}\n\nimpl<'a> Excerpt<'a> {\n    fn display(&self) { println!("{}", self.text); }\n}\n\nfn main() {\n    let s1 = String::from("long string");\n    let result;\n    {\n        let s2 = String::from("xy");\n        result = longest(s1.as_str(), s2.as_str());\n        println!("長い方: {}", result);\n    }\n    let novel = String::from("最初の文。次の文。");\n    let e = Excerpt { text: &novel };\n    e.display();\n}`
+  },
+  // UNIT 08
+  {
+    id: 29, rank: "MASTER", unit: "UNIT 08", title: "ジェネリクスとトレイト境界",
+    question: "T: PartialOrd を境界とする largest 関数を実装し、i32 と f64 の両方で動作することを確認してください。また Display + Debug 境界を持つ print_twice 関数も実装してください。",
+    requirements: ["fn largest<T: PartialOrd>(list: &[T]) -> &T を定義", "fn print_twice<T: std::fmt::Display + std::fmt::Debug>(x: T) を定義"],
+    hint: "トレイト境界は where T: Display + Debug のようにまとめて書くこともできます。",
+    answer: `use std::fmt;\n\nfn largest<T: PartialOrd>(list: &[T]) -> &T {\n    let mut max = &list[0];\n    for item in list { if item > max { max = item; } }\n    max\n}\n\nfn print_twice<T: fmt::Display + fmt::Debug>(x: T) {\n    println!("Display: {}", x);\n    println!("Debug: {:?}", x);\n}\n\nfn main() {\n    let nums = vec![3, 1, 4, 1, 5, 9];\n    println!("最大: {}", largest(&nums));\n    let floats = vec![2.1, 3.7, 1.5];\n    println!("最大: {}", largest(&floats));\n    print_twice(42);\n    print_twice("hello");\n}`
+  },
+  {
+    id: 30, rank: "LEGEND", unit: "UNIT 08", title: "総合演習: イテレータアダプタ自作",
+    question: "カスタムイテレータ Counter を実装し、zip/map/filter/fold と組み合わせて複雑な処理を実現してください（1〜5 の値を生成し、2つの Counter の積の合計を計算）。",
+    requirements: ["struct Counter と impl Iterator for Counter を実装", "next() メソッドを実装する", "zip/map/fold を使って合計を計算する"],
+    hint: "impl Iterator for Counter { type Item = u32; fn next(&mut self) -> Option<u32> { ... } }",
+    answer:
+`struct Counter {
+    count: u32,
+}
+
+impl Counter {
+    fn new() -> Counter { Counter { count: 0 } }
+}
+
+impl Iterator for Counter {
+    type Item = u32;
+    fn next(&mut self) -> Option<u32> {
+        if self.count < 5 {
+            self.count += 1;
+            Some(self.count)
+        } else {
+            None
+        }
+    }
+}
+
+fn main() {
+    let sum: u32 = Counter::new()
+        .zip(Counter::new().skip(1))
+        .map(|(a, b)| a * b)
+        .filter(|x| x % 3 == 0)
+        .fold(0, |acc, x| acc + x);
+    println!("合計: {}", sum);
+
+    let v: Vec<u32> = Counter::new().map(|x| x * x).collect();
+    println!("二乗: {:?}", v);
+
+    println!("合計: {}", Counter::new().sum::<u32>());
+}`
+  }
+];
+
+const rustMissions = [
+  {
+    id: 1, rank: "BRONZE",
+    title: "Vec・イテレータ",
+    description: "map/filter/collectを使った変換処理",
+    question: "Vec<i32> {1..=20} に対して: ①3の倍数のみ抽出、②各要素を文字列に変換して連結、③チャンクに分割して2D Vecを作る処理をイテレータで実装してください。",
+    requirements: ["filter/map/collect を使う", "join で文字列連結する", "chunks で分割する"],
+    hint: ".map(|x| x.to_string()).collect::<Vec<_>>().join(\", \") で文字列結合できます。",
+    answer:
+`fn main() {
+    let nums: Vec<i32> = (1..=20).collect();
+    let multiples_of_3: Vec<i32> = nums.iter().filter(|&&x| x % 3 == 0).copied().collect();
+    println!("3の倍数: {:?}", multiples_of_3);
+    let joined: String = nums.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(", ");
+    println!("結合: {}", joined);
+    let chunks: Vec<&[i32]> = nums.chunks(5).collect();
+    for (i, chunk) in chunks.iter().enumerate() {
+        println!("chunk{}: {:?}", i, chunk);
+    }
+    let sum_squares: i32 = nums.iter().map(|&x| x*x).sum();
+    println!("二乗和: {}", sum_squares);
+}`
+  },
+  {
+    id: 2, rank: "BRONZE",
+    title: "String・HashMap",
+    description: "文字出現カウント・集計",
+    question: "文章から: ①単語の出現頻度を HashMap でカウント、②最頻出単語を見つける、③母音の数を数える処理を実装してください。",
+    requirements: ["entry().or_insert(0) でカウント", "max_by_key で最頻出を探す", "母音をカウントする"],
+    hint: "*count += 1 で HashMap の値をインクリメントできます。",
+    answer:
+`use std::collections::HashMap;
+
+fn count_words(text: &str) -> HashMap<String, usize> {
+    let mut map = HashMap::new();
+    for word in text.split_whitespace() {
+        let w = word.to_lowercase().trim_matches(|c: char| !c.is_alphabetic()).to_string();
+        if !w.is_empty() { *map.entry(w).or_insert(0) += 1; }
+    }
+    map
+}
+
+fn most_frequent(map: &HashMap<String, usize>) -> Option<(&String, &usize)> {
+    map.iter().max_by_key(|(_, &v)| v)
+}
+
+fn count_vowels(s: &str) -> usize {
+    s.chars().filter(|c| "aeiouAEIOU".contains(*c)).count()
+}
+
+fn main() {
+    let text = "the quick brown fox jumps over the lazy dog the fox";
+    let freq = count_words(text);
+    if let Some((word, count)) = most_frequent(&freq) {
+        println!("最頻出: {} ({}回)", word, count);
+    }
+    println!("母音数: {}", count_vowels(text));
+    let mut pairs: Vec<_> = freq.iter().collect();
+    pairs.sort_by(|a, b| b.1.cmp(a.1).then(a.0.cmp(b.0)));
+    println!("上位3:");
+    for (w, c) in pairs.iter().take(3) { println!("  {}: {}", w, c); }
+}`
+  },
+  {
+    id: 3, rank: "SILVER",
+    title: "struct・トレイト",
+    description: "Displayを実装した図形クラス",
+    question: "Shape トレイト（area/perimeter）と std::fmt::Display を Circle・Rectangle・Triangle に実装し、図形の情報を表示するプログラムを作ってください。",
+    requirements: ["trait Shape { fn area/perimeter } を定義", "fmt::Display を実装する", "Vec<Box<dyn Shape + Display>> で統一処理（または別々）"],
+    hint: "impl fmt::Display for Circle { fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { ... } }",
+    answer:
+`use std::fmt;
+
+trait Shape {
+    fn area(&self) -> f64;
+    fn perimeter(&self) -> f64;
+}
+
+struct Circle { r: f64 }
+struct Rectangle { w: f64, h: f64 }
+struct Triangle { a: f64, b: f64, c: f64 }
+
+impl Shape for Circle {
+    fn area(&self) -> f64 { std::f64::consts::PI * self.r * self.r }
+    fn perimeter(&self) -> f64 { 2.0 * std::f64::consts::PI * self.r }
+}
+impl Shape for Rectangle {
+    fn area(&self) -> f64 { self.w * self.h }
+    fn perimeter(&self) -> f64 { 2.0 * (self.w + self.h) }
+}
+impl Shape for Triangle {
+    fn area(&self) -> f64 {
+        let s = (self.a+self.b+self.c)/2.0;
+        (s*(s-self.a)*(s-self.b)*(s-self.c)).sqrt()
+    }
+    fn perimeter(&self) -> f64 { self.a+self.b+self.c }
+}
+
+impl fmt::Display for Circle { fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { write!(f, "Circle(r={})", self.r) } }
+impl fmt::Display for Rectangle { fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { write!(f, "Rect({}x{})", self.w, self.h) } }
+impl fmt::Display for Triangle { fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { write!(f, "Triangle({},{},{})", self.a, self.b, self.c) } }
+
+fn print_shape(s: &(impl Shape + fmt::Display)) {
+    println!("{}: 面積={:.2} 周長={:.2}", s, s.area(), s.perimeter());
+}
+
+fn main() {
+    print_shape(&Circle { r: 5.0 });
+    print_shape(&Rectangle { w: 4.0, h: 6.0 });
+    print_shape(&Triangle { a: 3.0, b: 4.0, c: 5.0 });
+}`
+  },
+  {
+    id: 4, rank: "SILVER",
+    title: "Option・Result",
+    description: "エラーハンドリングパターン",
+    question: "設定値のパースと検証を行う関数群を実装してください: parse_port（1-65535検証）、parse_host（空文字NG）、両者をまとめて Result を返す parse_config を ? で実装。",
+    requirements: ["fn parse_port(s: &str) -> Result<u16, String>", "fn parse_host(s: &str) -> Result<String, String>", "fn parse_config(host: &str, port: &str) -> Result<(String, u16), String>"],
+    hint: "? は Err の場合に早期リターンします。エラー型が一致している必要があります。",
+    answer:
+`fn parse_port(s: &str) -> Result<u16, String> {
+    let n: u16 = s.parse().map_err(|_| format!("無効なポート: {}", s))?;
+    if n == 0 { return Err("ポートは1以上が必要".to_string()); }
+    Ok(n)
+}
+
+fn parse_host(s: &str) -> Result<String, String> {
+    if s.is_empty() { return Err("ホスト名は空にできません".to_string()); }
+    Ok(s.to_string())
+}
+
+fn parse_config(host: &str, port: &str) -> Result<(String, u16), String> {
+    let h = parse_host(host)?;
+    let p = parse_port(port)?;
+    Ok((h, p))
+}
+
+fn main() {
+    let cases = [
+        ("localhost", "8080"),
+        ("", "8080"),
+        ("localhost", "abc"),
+        ("localhost", "0"),
+    ];
+    for (host, port) in &cases {
+        match parse_config(host, port) {
+            Ok((h, p)) => println!("OK: {}:{}", h, p),
+            Err(e)     => println!("NG: {}", e),
+        }
+    }
+}`
+  },
+  {
+    id: 5, rank: "GOLD",
+    title: "所有権・借用",
+    description: "move semanticsの理解と活用",
+    question: "所有権・借用・ライフタイムを活用した文字列処理ライブラリを作ってください: split_words（&str→Vec<&str>）、capitalize（&str→String）、word_stats（&str→HashMap）。",
+    requirements: ["split_words は & でライフタイムを伝播させる", "capitalize は新しい String を返す", "word_stats で平均単語長なども計算する"],
+    hint: "fn split_words<'a>(s: &'a str) -> Vec<&'a str> はライフタイム注釈が必要です。",
+    answer:
+`use std::collections::HashMap;
+
+fn split_words(s: &str) -> Vec<&str> {
+    s.split_whitespace().collect()
+}
+
+fn capitalize(s: &str) -> String {
+    let mut chars = s.chars();
+    match chars.next() {
+        None => String::new(),
+        Some(c) => c.to_uppercase().to_string() + chars.as_str(),
+    }
+}
+
+fn word_stats(s: &str) -> HashMap<&str, usize> {
+    let words = split_words(s);
+    let mut map = HashMap::new();
+    for w in words { map.insert(w, w.len()); }
+    map
+}
+
+fn main() {
+    let text = "hello world foo bar";
+    let words = split_words(text);
+    println!("{:?}", words);
+    for w in &words { println!("{}", capitalize(w)); }
+    let stats = word_stats(text);
+    let avg = stats.values().sum::<usize>() as f64 / stats.len() as f64;
+    println!("平均単語長: {:.2}", avg);
+}`
+  },
+  {
+    id: 6, rank: "GOLD",
+    title: "ジェネリクス",
+    description: "トレイト境界付きの汎用データ構造",
+    question: "ジェネリクスを使った MinMax<T> 構造体を実装してください: T: PartialOrd + Copy として、push で要素を追加し、min/max/mean（f64に変換）を返すメソッドを持たせてください。",
+    requirements: ["struct MinMax<T> を定義する", "T: PartialOrd + Copy + Into<f64> 境界を設定", "min/max/mean を実装する"],
+    hint: "fn mean(&self) -> f64 では Into<f64> の境界を使って sum を計算できます。",
+    answer:
+`struct MinMax<T> {
+    data: Vec<T>,
+}
+
+impl<T: PartialOrd + Copy + Into<f64>> MinMax<T> {
+    fn new() -> Self { MinMax { data: Vec::new() } }
+    fn push(&mut self, val: T) { self.data.push(val); }
+    fn min(&self) -> Option<T> { self.data.iter().copied().reduce(|a, b| if a < b { a } else { b }) }
+    fn max(&self) -> Option<T> { self.data.iter().copied().reduce(|a, b| if a > b { a } else { b }) }
+    fn mean(&self) -> Option<f64> {
+        if self.data.is_empty() { return None; }
+        let sum: f64 = self.data.iter().copied().map(Into::into).sum();
+        Some(sum / self.data.len() as f64)
+    }
+}
+
+fn main() {
+    let mut mm: MinMax<i32> = MinMax::new();
+    for x in [5, 3, 8, 1, 9, 2, 7] { mm.push(x); }
+    println!("min: {:?}", mm.min());
+    println!("max: {:?}", mm.max());
+    println!("mean: {:.2}", mm.mean().unwrap());
+}`
+  }
+];
+
+const rustUnitGuides = [
+  {
+    id: "rust-unit01", unit: "UNIT 01", title: "Hello Rust & 変数",
+    summary: "println!、let/let mut、基本型（i32/f64/bool/char）、型注釈を学ぶ。",
+    points: ["println!(\"{}\" , x) でプレースホルダを使った出力", "変数はデフォルト不変（immutable）。変更には mut が必要", "型注釈: let x: i32 = 5 または型推論 let x = 5i32", "Rust は厳密な型システムを持ち、暗黙の型変換をしない"],
+    words: [{ term: "immutable", desc: "変更不可。Rustのデフォルト。安全性の基礎となる設計" }, { term: "let mut", desc: "可変変数の宣言。値を後で変更できる" }, { term: "シャドーイング", desc: "同名の let で変数を再宣言。型も変えられる" }]
+  },
+  {
+    id: "rust-unit02", unit: "UNIT 02", title: "制御フロー",
+    summary: "if（式として使える）、loop/while/for、range を学ぶ。",
+    points: ["if は式なので let x = if ... { v1 } else { v2 } と書ける", "loop は無限ループ。break VALUE で値を返せる", "for x in 1..5（5除く）、1..=5（5含む）でレンジ反復", ".rev() で逆順、.enumerate() でインデックス付き反復"],
+    words: [{ term: "loop", desc: "無限ループ。break で抜け、break VALUE で値を返せる" }, { term: "range", desc: "1..5（排他的）または 1..=5（包括的）の数列" }, { term: "if式", desc: "if を値として使える。両腕の型が一致する必要あり" }]
+  },
+  {
+    id: "rust-unit03", unit: "UNIT 03", title: "コレクション",
+    summary: "Vec<T>、String、HashMap<K,V>、イテレータチェーンを学ぶ。",
+    points: ["Vec<T> は可変長配列。push/pop/len/contains が基本操作", "String は所有権を持つ文字列。&str は参照", "HashMap の entry API で安全に挿入・更新できる", "map/filter/collect でイテレータを変換・収集する"],
+    words: [{ term: "Vec<T>", desc: "ヒープ上の可変長配列。要素の型は一つに固定" }, { term: "&str vs String", desc: "&str はスライス（参照）、String は所有する動的文字列" }, { term: "Iterator", desc: "next()を持つトレイト。map/filter/collect等で変換できる" }]
+  },
+  {
+    id: "rust-unit04", unit: "UNIT 04", title: "関数とクロージャ",
+    summary: "関数定義、クロージャ（環境キャプチャ）、Iterator メソッドを学ぶ。",
+    points: ["fn name(arg: Type) -> RetType { ... } で関数定義", "最後の式が戻り値（return は省略可）", "クロージャ |x| x + 1 は外側の変数をキャプチャできる", "fold/sum/product/max/min など集約系メソッドが豊富"],
+    words: [{ term: "クロージャ", desc: "環境をキャプチャできる無名関数。|引数| 式 の形" }, { term: "fold", desc: "アキュムレータを使って要素を1つの値に畳み込む" }, { term: "デストラクタリング", desc: "パターンマッチで複合型をバラして変数に束縛" }]
+  },
+  {
+    id: "rust-unit05", unit: "UNIT 05", title: "struct と trait",
+    summary: "構造体定義、impl、トレイト、#[derive]を学ぶ。",
+    points: ["struct で関連するデータをまとめる", "impl Struct { ... } でメソッドを実装", "trait でインターフェースを定義。impl Trait for Type で実装", "#[derive(Debug, Clone, PartialEq)] で自動実装を生成"],
+    words: [{ term: "impl", desc: "構造体やトレイトのメソッドを定義するブロック" }, { term: "trait", desc: "型が持つべき振る舞いを定義するインターフェース" }, { term: "#[derive]", desc: "コンパイラが自動でトレイト実装を生成するアトリビュート" }]
+  },
+  {
+    id: "rust-unit06", unit: "UNIT 06", title: "enum と match",
+    summary: "enum、match（パターンマッチング）、Option<T>、Result<T,E>を学ぶ。",
+    points: ["enum で排他的な値の集合を定義。データを持つバリアントも作れる", "match は全パターンを網羅する必要がある（コンパイラが確認）", "Option<T> は Some(T) か None。null が存在しない代わり", "Result<T,E> は Ok(T) か Err(E)。エラー処理の標準的な方法"],
+    words: [{ term: "enum", desc: "複数の可能性を表す型。各バリアントはデータを持てる" }, { term: "match", desc: "パターンマッチング。全バリアントの網羅が必要" }, { term: "Option<T>", desc: "値があるかもしれない型。Some(v) または None" }]
+  },
+  {
+    id: "rust-unit07", unit: "UNIT 07", title: "所有権・借用・ライフタイム",
+    summary: "Rustの最重要概念：所有権システム、借用チェッカー、ライフタイムを学ぶ。",
+    points: ["各値は1つの所有者を持つ。スコープを抜けると自動でドロップ", "& で不変参照、&mut で可変参照。同時に複数の可変参照は不可", "Box<T> はヒープに値を確保する。再帰型に必要", "ライフタイム注釈 <'a> で参照の寿命をコンパイラに伝える"],
+    words: [{ term: "ownership", desc: "各値は必ず1つの変数（所有者）に属する。ムーブで移動" }, { term: "borrow", desc: "所有権を移さず参照で値にアクセスする仕組み" }, { term: "lifetime", desc: "参照の有効期間。'a などで注釈する" }]
+  },
+  {
+    id: "rust-unit08", unit: "UNIT 08", title: "ジェネリクスと高度な機能",
+    summary: "ジェネリクス関数・型、トレイト境界、カスタムイテレータを学ぶ。",
+    points: ["<T> でジェネリクス。T: Trait で境界を指定", "where T: Display + Clone のような複合境界も書ける", "impl Iterator for T で任意の型をイテレータにできる", "dyn Trait でトレイトオブジェクト（動的ディスパッチ）"],
+    words: [{ term: "ジェネリクス", desc: "型パラメータ <T> で汎用的なコードを書く仕組み" }, { term: "トレイト境界", desc: "T: Display のように型パラメータに要件を課す" }, { term: "dyn Trait", desc: "実行時に型が決まるトレイトオブジェクト。Box<dyn Trait>で使う" }]
+  }
+];
+
 // ===== 言語別データ取得ヘルパー =====
 
 function getProblems() {
@@ -6607,6 +9091,10 @@ function getProblems() {
   if (currentLanguage === 'kotlin') return kotlinProblems;
   if (currentLanguage === 'swift') return swiftProblems;
   if (currentLanguage === 'java') return javaProblems;
+  if (currentLanguage === 'csharp') return csharpProblems;
+  if (currentLanguage === 'go') return goProblems;
+  if (currentLanguage === 'c') return cProblems;
+  if (currentLanguage === 'rust') return rustProblems;
   return problems;
 }
 
@@ -6618,6 +9106,10 @@ function getMissions() {
   if (currentLanguage === 'kotlin') return kotlinMissions;
   if (currentLanguage === 'swift') return swiftMissions;
   if (currentLanguage === 'java') return javaMissions;
+  if (currentLanguage === 'csharp') return csharpMissions;
+  if (currentLanguage === 'go') return goMissions;
+  if (currentLanguage === 'c') return cMissions;
+  if (currentLanguage === 'rust') return rustMissions;
   return missions;
 }
 
@@ -6629,6 +9121,10 @@ function getUnitGuides() {
   if (currentLanguage === 'kotlin') return kotlinUnitGuides;
   if (currentLanguage === 'swift') return swiftUnitGuides;
   if (currentLanguage === 'java') return javaUnitGuides;
+  if (currentLanguage === 'csharp') return csharpUnitGuides;
+  if (currentLanguage === 'go') return goUnitGuides;
+  if (currentLanguage === 'c') return cUnitGuides;
+  if (currentLanguage === 'rust') return rustUnitGuides;
   return unitGuides;
 }
 
@@ -6648,6 +9144,10 @@ function getCompiler() {
   if (currentLanguage === 'kotlin') return 'kotlin';
   if (currentLanguage === 'swift') return 'swift-5.10';
   if (currentLanguage === 'java') return 'openjdk-head';
+  if (currentLanguage === 'csharp') return 'mono-6.12.0.206';
+  if (currentLanguage === 'go') return 'go-1.20.6';
+  if (currentLanguage === 'c') return 'gcc-head';
+  if (currentLanguage === 'rust') return 'rust-1.73.0';
   return 'gcc-head';
 }
 
@@ -6659,6 +9159,10 @@ function getAceMode() {
   if (currentLanguage === 'kotlin') return 'ace/mode/kotlin';
   if (currentLanguage === 'swift') return 'ace/mode/swift';
   if (currentLanguage === 'java') return 'ace/mode/java';
+  if (currentLanguage === 'csharp') return 'ace/mode/csharp';
+  if (currentLanguage === 'go') return 'ace/mode/golang';
+  if (currentLanguage === 'c') return 'ace/mode/c_cpp';
+  if (currentLanguage === 'rust') return 'ace/mode/rust';
   return 'ace/mode/c_cpp';
 }
 
@@ -6692,6 +9196,22 @@ function getStarterCode() {
     if (p) return '// [問題] ' + p.question + '\n\nclass Main {\n    public static void main(String[] args) {\n        \n    }\n}\n';
     return 'class Main {\n    public static void main(String[] args) {\n        \n    }\n}\n';
   }
+  if (currentLanguage === 'csharp') {
+    if (p) return '// [問題] ' + p.question + '\n\nusing System;\nclass Program {\n    static void Main() {\n        \n    }\n}\n';
+    return 'using System;\nclass Program {\n    static void Main() {\n        \n    }\n}\n';
+  }
+  if (currentLanguage === 'go') {
+    if (p) return '// [問題] ' + p.question + '\n\npackage main\n\nimport "fmt"\n\nfunc main() {\n    \n}\n';
+    return 'package main\n\nimport "fmt"\n\nfunc main() {\n    \n}\n';
+  }
+  if (currentLanguage === 'c') {
+    if (p) return '// [問題] ' + p.question + '\n\n#include <stdio.h>\n\nint main() {\n    \n    return 0;\n}\n';
+    return '#include <stdio.h>\n\nint main() {\n    \n    return 0;\n}\n';
+  }
+  if (currentLanguage === 'rust') {
+    if (p) return '// [問題] ' + p.question + '\n\nfn main() {\n    \n}\n';
+    return 'fn main() {\n    \n}\n';
+  }
   if (p) return '// [問題] ' + p.question + '\n' + ACE_STARTER;
   return ACE_STARTER;
 }
@@ -6704,6 +9224,10 @@ function getLangName() {
   if (currentLanguage === 'kotlin') return 'Kotlin';
   if (currentLanguage === 'swift') return 'Swift';
   if (currentLanguage === 'java') return 'Java';
+  if (currentLanguage === 'csharp') return 'C#';
+  if (currentLanguage === 'go') return 'Go';
+  if (currentLanguage === 'c') return 'C';
+  if (currentLanguage === 'rust') return 'Rust';
   return 'C++';
 }
 
@@ -7156,9 +9680,11 @@ async function runCode() {
     const controller = new AbortController();
     const _timeout   = setTimeout(function() { controller.abort(); }, _isKotlin ? 30000 : 20000);
     var _fetchUrl  = _isKotlin ? '/api/run-kotlin' : 'https://wandbox.org/api/compile.json';
+    var _wandboxBody = { code: code, compiler: getCompiler(), stdin: stdin };
+    if (currentLanguage === 'c') _wandboxBody.options = 'c11';
     var _fetchBody = _isKotlin
       ? JSON.stringify({ code: code })
-      : JSON.stringify({ code: code, compiler: getCompiler(), stdin: stdin });
+      : JSON.stringify(_wandboxBody);
 
     const res = await fetch(_fetchUrl, {
       method:  "POST",
@@ -7919,7 +10445,11 @@ async function renderProfile() {
     ts:     Math.min(100, stats.ts     / 30 * 100),
     kotlin: Math.min(100, stats.kotlin / 30 * 100),
     swift:  Math.min(100, stats.swift  / 30 * 100),
-    java:   Math.min(100, stats.java   / 30 * 100)
+    java:   Math.min(100, stats.java   / 30 * 100),
+    csharp: Math.min(100, stats.csharp / 30 * 100),
+    go:     Math.min(100, stats.go     / 30 * 100),
+    c:      Math.min(100, stats.c      / 30 * 100),
+    rust:   Math.min(100, stats.rust   / 30 * 100)
   };
 
   // ストリーク状態の判定（今日ログイン済みかどうか）
@@ -7930,13 +10460,19 @@ async function renderProfile() {
   // ─── ジャーニー・アクティビティデータ ───
   var allLoginDays   = localDays.slice().sort();
   var firstLoginDate = allLoginDays.length > 0 ? allLoginDays[0] : null;
-  var cppStartDate   = localStorage.getItem('cpp_started_at');
-  var pyStartDate    = localStorage.getItem('python_started_at');
-  var jsStartDate    = localStorage.getItem('javascript_started_at');
-  var rubyStartDate  = localStorage.getItem('ruby_started_at');
-  var tsStartDate    = localStorage.getItem('typescript_started_at');
+  var cppStartDate    = localStorage.getItem('cpp_started_at');
+  var pyStartDate     = localStorage.getItem('python_started_at');
+  var jsStartDate     = localStorage.getItem('javascript_started_at');
+  var rubyStartDate   = localStorage.getItem('ruby_started_at');
+  var tsStartDate     = localStorage.getItem('typescript_started_at');
   var kotlinStartDate = localStorage.getItem('kotlin_started_at');
-  var totalStudySec  = getTotalStudyTime();
+  var swiftStartDate  = localStorage.getItem('swift_started_at');
+  var javaStartDate   = localStorage.getItem('java_started_at');
+  var csharpStartDate = localStorage.getItem('csharp_started_at');
+  var goStartDate     = localStorage.getItem('go_started_at');
+  var cStartDate      = localStorage.getItem('c_started_at');
+  var rustStartDate   = localStorage.getItem('rust_started_at');
+  var totalStudySec   = getTotalStudyTime();
 
   function _daysAgo(ds) {
     if (!ds) return '';
@@ -7972,8 +10508,8 @@ async function renderProfile() {
         '<div class="profile-rank-badge" style="color:' + rank.color + ';border-color:' + rank.color + ';box-shadow:0 0 12px ' + rank.color + '33">' +
           '◆ ' + rank.name + ' ◆' +
         '</div>' +
-        '<div class="profile-total">' + stats.total + '<span> / 243 CLEARED</span></div>' +
-        '<div class="profile-mission-total">' + stats.totalMissions + ' / 48 MISSIONS</div>' +
+        '<div class="profile-total">' + stats.total + '<span> / 363 CLEARED</span></div>' +
+        '<div class="profile-mission-total">' + stats.totalMissions + ' / 72 MISSIONS</div>' +
       '</div>' +
     '</div>' +
     (currentUserIsAdmin
@@ -8030,6 +10566,12 @@ async function renderProfile() {
         _langStartItem('Ruby',       '#CC342D', rubyStartDate) +
         _langStartItem('TypeScript', '#3178C6', tsStartDate) +
         _langStartItem('Kotlin',     '#7F52FF', kotlinStartDate) +
+        _langStartItem('Swift',      '#FA7343', swiftStartDate) +
+        _langStartItem('Java',       '#ED8B00', javaStartDate) +
+        _langStartItem('C#',         '#9B4F96', csharpStartDate) +
+        _langStartItem('Go',         '#00ADD8', goStartDate) +
+        _langStartItem('C',          '#A8B9CC', cStartDate) +
+        _langStartItem('Rust',       '#CE412B', rustStartDate) +
       '</div>' +
     '</div>' +
 
@@ -8070,6 +10612,10 @@ async function renderProfile() {
         _statCardHTML('Kotlin',     '#7F52FF', stats.kotlin, pct.kotlin, stats.kotlinM, 30) +
         _statCardHTML('Swift',      '#FA7343', stats.swift,  pct.swift,  stats.swiftM,  30) +
         _statCardHTML('Java',       '#ED8B00', stats.java,   pct.java,   stats.javaM,   30) +
+        _statCardHTML('C#',         '#9B4F96', stats.csharp, pct.csharp, stats.csharpM, 30) +
+        _statCardHTML('Go',         '#00ADD8', stats.go,     pct.go,     stats.goM,     30) +
+        _statCardHTML('C',          '#A8B9CC', stats.c,      pct.c,      stats.cM,      30) +
+        _statCardHTML('Rust',       '#CE412B', stats.rust,   pct.rust,   stats.rustM,   30) +
       '</div>' +
     '</div>' +
 
