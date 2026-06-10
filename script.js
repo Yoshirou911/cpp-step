@@ -327,10 +327,10 @@ var BADGES = [
   { id: 'js_master',     name: 'JS MASTER',      desc: 'JavaScript 30問クリア',                   tier: 'diamond',  check: function(s) { return s.js >= 30;     } },
   // ミッション
   { id: 'first_mission', name: 'MISSION START',  desc: '初ミッションクリア',                      tier: 'silver',   check: function(s) { return s.totalMissions >= 1; } },
-  { id: 'mission_all',   name: 'MISSION MASTER', desc: 'いずれかの言語で全ミッションクリア',       tier: 'master',   check: function(s) { return s.cppM >= 6 || s.pyM >= 6 || s.jsM >= 6 || s.rubyM >= 6 || s.tsM >= 6 || s.kotlinM >= 6; } },
+  { id: 'mission_all',   name: 'MISSION MASTER', desc: 'いずれかの言語で全ミッションクリア',       tier: 'master',   check: function(s) { return s.cppM >= 6 || s.pyM >= 6 || s.jsM >= 6 || s.rubyM >= 6 || s.tsM >= 6 || s.kotlinM >= 6 || s.swiftM >= 6; } },
   // 多言語
-  { id: 'bilingual',     name: 'BILINGUAL',      desc: '2言語以上でクリア達成',                   tier: 'gold',     check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin].filter(function(n){return n>0;}).length >= 2; } },
-  { id: 'trilingual',    name: 'TRILINGUAL',     desc: '3言語以上でクリア達成',                   tier: 'platinum', check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin].filter(function(n){return n>0;}).length >= 3; } },
+  { id: 'bilingual',     name: 'BILINGUAL',      desc: '2言語以上でクリア達成',                   tier: 'gold',     check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin, s.swift].filter(function(n){return n>0;}).length >= 2; } },
+  { id: 'trilingual',    name: 'TRILINGUAL',     desc: '3言語以上でクリア達成',                   tier: 'platinum', check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin, s.swift].filter(function(n){return n>0;}).length >= 3; } },
   // ストリーク
   { id: 'streak_3',      name: '3 DAY STREAK',   desc: '3日連続ログイン',                         tier: 'silver',   check: function(s) { return s.currentStreak >= 3;  } },
   { id: 'streak_7',      name: 'WEEKLY',         desc: '7日連続ログイン',                         tier: 'gold',     check: function(s) { return s.currentStreak >= 7;  } },
@@ -345,7 +345,9 @@ var BADGES = [
   { id: 'legend_ts',     name: 'TS LEGEND',      desc: 'TypeScript 超難問クリア',                 tier: 'legend',   check: function(s) { return s.legendTs;     } },
   { id: 'kotlin_master', name: 'KOTLIN MASTER',  desc: 'Kotlin 全30問クリア',                     tier: 'diamond',  check: function(s) { return s.kotlin >= 30; } },
   { id: 'legend_kotlin', name: 'KOTLIN LEGEND',  desc: 'Kotlin 超難問クリア',                     tier: 'legend',   check: function(s) { return s.legendKotlin; } },
-  { id: 'true_legend',   name: 'TRUE LEGEND',    desc: '全言語の超難問クリア',                    tier: 'legend',   check: function(s) { return s.legendCpp && s.legendPython && s.legendJs && s.legendRuby && s.legendTs && s.legendKotlin; } },
+  { id: 'swift_master',  name: 'SWIFT MASTER',   desc: 'Swift 全30問クリア',                      tier: 'diamond',  check: function(s) { return s.swift >= 30; } },
+  { id: 'legend_swift',  name: 'SWIFT LEGEND',   desc: 'Swiftで伝説の称号獲得',                  tier: 'legend',   check: function(s) { return s.legendSwift; } },
+  { id: 'true_legend',   name: 'TRUE LEGEND',    desc: '全言語の超難問クリア',                    tier: 'legend',   check: function(s) { return s.legendCpp && s.legendPython && s.legendJs && s.legendRuby && s.legendTs && s.legendKotlin && s.legendSwift; } },
 ];
 
 // 全言語の進捗を localStorage から集計（言語切替不要）
@@ -364,29 +366,33 @@ function getProfileStats() {
   var rubyArr = getP('ruby');
   var tsArr   = getP('typescript');
   var kotlinArr = getP('kotlin');
+  var swiftArr = getP('swift');
   var cpp    = cppArr.length;
   var python = pythonArr.length;
   var js     = jsArr.length;
   var ruby   = rubyArr.length;
   var ts     = tsArr.length;
   var kotlin = kotlinArr.length;
+  var swift  = swiftArr.length;
   var cppM   = getM('cpp').length;
   var pyM    = getM('python').length;
   var jsM    = getM('javascript').length;
   var rubyM  = getM('ruby').length;
   var tsM    = getM('typescript').length;
   var kotlinM = getM('kotlin').length;
+  var swiftM  = getM('swift').length;
   return {
-    cpp: cpp, python: python, js: js, ruby: ruby, ts: ts, kotlin: kotlin,
-    cppM: cppM, pyM: pyM, jsM: jsM, rubyM: rubyM, tsM: tsM, kotlinM: kotlinM,
-    total: cpp + python + js + ruby + ts + kotlin,
-    totalMissions: cppM + pyM + jsM + rubyM + tsM + kotlinM,
+    cpp: cpp, python: python, js: js, ruby: ruby, ts: ts, kotlin: kotlin, swift: swift,
+    cppM: cppM, pyM: pyM, jsM: jsM, rubyM: rubyM, tsM: tsM, kotlinM: kotlinM, swiftM: swiftM,
+    total: cpp + python + js + ruby + ts + kotlin + swift,
+    totalMissions: cppM + pyM + jsM + rubyM + tsM + kotlinM + swiftM,
     legendCpp:    cppArr.indexOf(31)    !== -1,
     legendPython: pythonArr.indexOf(31) !== -1,
     legendJs:     jsArr.indexOf(31)     !== -1,
     legendRuby:   rubyArr.indexOf(30)   !== -1,
     legendTs:     tsArr.indexOf(30)     !== -1,
     legendKotlin: kotlinArr.indexOf(30) !== -1,
+    legendSwift:  swiftArr.indexOf(30)  !== -1,
     // ストリークは非同期で後から上書きするため初期値0
     currentStreak: 0,
     bestStreak:    0,
@@ -493,14 +499,15 @@ function calculateEXP() {
   var problemExp = 0;
   var missionExp = 0;
 
-  // 問題クリア EXP（全6言語）
+  // 問題クリア EXP（全7言語）
   [
     { key: 'cpp',        get: function() { return problems; } },
     { key: 'python',     get: function() { return pythonProblems; } },
     { key: 'javascript', get: function() { return javascriptProblems; } },
     { key: 'ruby',       get: function() { return rubyProblems; } },
     { key: 'typescript', get: function() { return typescriptProblems; } },
-    { key: 'kotlin',     get: function() { return kotlinProblems; } }
+    { key: 'kotlin',     get: function() { return kotlinProblems; } },
+    { key: 'swift',      get: function() { return swiftProblems; } }
   ].forEach(function(lang) {
     var prog = JSON.parse(localStorage.getItem(lang.key + '_progress') || '[]');
     lang.get().forEach(function(p) {
@@ -510,14 +517,15 @@ function calculateEXP() {
     });
   });
 
-  // ミッションクリア EXP（全6言語）
+  // ミッションクリア EXP（全7言語）
   [
     { key: 'cpp',        get: function() { return missions; } },
     { key: 'python',     get: function() { return pythonMissions; } },
     { key: 'javascript', get: function() { return javascriptMissions; } },
     { key: 'ruby',       get: function() { return rubyMissions; } },
     { key: 'typescript', get: function() { return typescriptMissions; } },
-    { key: 'kotlin',     get: function() { return kotlinMissions; } }
+    { key: 'kotlin',     get: function() { return kotlinMissions; } },
+    { key: 'swift',      get: function() { return swiftMissions; } }
   ].forEach(function(lang) {
     var prog = JSON.parse(localStorage.getItem(lang.key + '_mission_progress') || '[]');
     lang.get().forEach(function(m) {
@@ -688,7 +696,7 @@ var LANGUAGE_GROUPS = [
         uses: ['Androidアプリ', 'サーバーサイド', 'Spring Boot']
       },
       {
-        id: 'swift', name: 'Swift', color: '#FA7343', problems: 0, available: false,
+        id: 'swift', name: 'Swift', color: '#FA7343', problems: 30, available: true,
         uses: ['iOSアプリ', 'macOSアプリ', 'watchOS・tvOS']
       },
     ]
@@ -5481,6 +5489,703 @@ const kotlinUnitGuides = [
   }
 ];
 
+// ===== Swift データ =====
+
+const swiftProblems = [
+  {
+    id: 1, rank: "ROOKIE", unit: "UNIT 01",
+    title: "Hello, Swift!",
+    description: "Swiftで最初のプログラムを書こう。",
+    question: "\"Hello, Swift!\" と出力してください。",
+    requirements: ["print() 関数を使う"],
+    hint: "print(\"文字列\") で出力できます。",
+    answer: `print("Hello, Swift!")`
+  },
+  {
+    id: 2, rank: "ROOKIE", unit: "UNIT 01",
+    title: "変数と定数",
+    description: "letで定数、varで変数を宣言しよう。",
+    question: "定数 name に \"Swift\"、変数 ver に 5 を代入し、\"Swift 5\" と出力してください。",
+    requirements: ["let で定数を宣言", "var で変数を宣言", "文字列補間で出力"],
+    hint: "文字列補間は \\(変数名) を使います。",
+    answer: `let name = "Swift"
+var ver = 5
+print("\\(name) \\(ver)")`
+  },
+  {
+    id: 3, rank: "ROOKIE", unit: "UNIT 01",
+    title: "文字列補間",
+    description: "文字列補間で変数を埋め込もう。",
+    question: "定数 item に \"MacBook\"、price に 198000 を代入し、\"MacBookの価格は198000円です\" と出力してください。",
+    requirements: ["let で定数を宣言", "文字列補間を使う"],
+    hint: "\"\\(item)の価格は\\(price)円です\" のように書きます。",
+    answer: `let item = "MacBook"
+let price = 198000
+print("\\(item)の価格は\\(price)円です")`
+  },
+  {
+    id: 4, rank: "ROOKIE", unit: "UNIT 01",
+    title: "基本演算",
+    description: "四則演算と剰余演算を使おう。",
+    question: "a=17, b=5 として、a+b, a-b, a*b, a/b, a%b をそれぞれ改行して出力してください。",
+    requirements: ["let で定数を宣言", "+, -, *, /, % を使う", "各結果を改行して出力"],
+    hint: "Swiftでは整数同士の / は整数除算になります。",
+    answer: `let a = 17
+let b = 5
+print(a + b)
+print(a - b)
+print(a * b)
+print(a / b)
+print(a % b)`
+  },
+  {
+    id: 5, rank: "ROOKIE", unit: "UNIT 02",
+    title: "型変換",
+    description: "型変換とDouble演算を使おう。",
+    question: "Int型の x=7 を Double に変換して 3.14 を掛け、小数点2桁で出力してください。",
+    requirements: ["Double() で型変換", "String(format:) で書式指定"],
+    hint: "String(format: \"%.2f\", 値) で小数点桁数を指定できます。",
+    answer: `let x: Int = 7
+let y = Double(x) * 3.14
+print(String(format: "%.2f", y))`
+  },
+  {
+    id: 6, rank: "ROOKIE", unit: "UNIT 02",
+    title: "三項演算子",
+    description: "条件式を使って値を決めよう。",
+    question: "score=72 として、60以上なら \"合格\"、未満なら \"不合格\" を出力してください。",
+    requirements: ["三項演算子 ? : を使う"],
+    hint: "条件 ? 真の値 : 偽の値 という形です。",
+    answer: `let score = 72
+let result = score >= 60 ? "合格" : "不合格"
+print(result)`
+  },
+  {
+    id: 7, rank: "ROOKIE", unit: "UNIT 02",
+    title: "タプル",
+    description: "タプルで複数の値をまとめよう。",
+    question: "名前付きタプル (x: 3, y: 4) を作り、\"(3, 4)\" と出力してください。",
+    requirements: ["名前付きタプルを使う", "タプルの要素にアクセス"],
+    hint: "point.x のようにラベルでアクセスできます。",
+    answer: `let point = (x: 3, y: 4)
+print("(\\(point.x), \\(point.y))")`
+  },
+  {
+    id: 8, rank: "ROOKIE", unit: "UNIT 02",
+    title: "範囲演算子",
+    description: "範囲演算子でループしよう。",
+    question: "1 から 5 まで順番に出力してください。",
+    requirements: ["閉じた範囲演算子 ... を使う", "for-in ループを使う"],
+    hint: "for i in 1...5 という形です。",
+    answer: `for i in 1...5 {
+    print(i)
+}`
+  },
+  {
+    id: 9, rank: "BRONZE", unit: "UNIT 03",
+    title: "if-else",
+    description: "条件分岐で体温を判定しよう。",
+    question: "temp=38 として、37以上なら \"発熱\"、36以上なら \"平熱\"、それ以外は \"低体温\" と出力してください。",
+    requirements: ["if / else if / else を使う"],
+    hint: "条件は温度 >= 37 のように書きます。",
+    answer: `let temp = 38
+if temp >= 37 {
+    print("発熱")
+} else if temp >= 36 {
+    print("平熱")
+} else {
+    print("低体温")
+}`
+  },
+  {
+    id: 10, rank: "BRONZE", unit: "UNIT 03",
+    title: "for-in ループ",
+    description: "ループで九九の一部を出力しよう。",
+    question: "1 から 9 まで、\"i × 7 = 結果\" の形式で出力してください。",
+    requirements: ["for-in ループを使う", "文字列補間を使う"],
+    hint: "for i in 1...9 { print(\"\\(i) × 7 = \\(i*7)\") }",
+    answer: `for i in 1...9 {
+    print("\\(i) × 7 = \\(i * 7)")
+}`
+  },
+  {
+    id: 11, rank: "BRONZE", unit: "UNIT 03",
+    title: "while ループ",
+    description: "while でループしよう。",
+    question: "n=1 から始めて、1000 未満の間 3 倍し続けた最終値を出力してください。",
+    requirements: ["while ループを使う", "var で変数を宣言"],
+    hint: "while n < 1000 { n *= 3 } のあとに print(n)。",
+    answer: `var n = 1
+while n < 1000 {
+    n *= 3
+}
+print(n)`
+  },
+  {
+    id: 12, rank: "BRONZE", unit: "UNIT 03",
+    title: "switch",
+    description: "switch文で言語名を判定しよう。",
+    question: "lang=\"Swift\" として、\"Swift\" なら \"Apple製\"、\"Kotlin\" なら \"JetBrains製\"、その他は \"その他\" と出力してください。",
+    requirements: ["switch 文を使う", "default ケースを用意"],
+    hint: "case \"Swift\": print(\"Apple製\") という形です。",
+    answer: `let lang = "Swift"
+switch lang {
+case "Swift":
+    print("Apple製")
+case "Kotlin":
+    print("JetBrains製")
+default:
+    print("その他")
+}`
+  },
+  {
+    id: 13, rank: "BRONZE", unit: "UNIT 03",
+    title: "guard",
+    description: "guard でゼロ除算を防ごう。",
+    question: "divide(_:by:) 関数を定義し、b=0 のとき \"ゼロ除算\" を出力して早期リターンしてください。divide(10, by: 2) と divide(5, by: 0) を呼び出してください。",
+    requirements: ["guard 文を使う", "早期リターン（return）を使う"],
+    hint: "guard b != 0 else { print(\"ゼロ除算\"); return }",
+    answer: `func divide(_ a: Int, by b: Int) {
+    guard b != 0 else {
+        print("ゼロ除算")
+        return
+    }
+    print(a / b)
+}
+divide(10, by: 2)
+divide(5, by: 0)`
+  },
+  {
+    id: 14, rank: "BRONZE", unit: "UNIT 04",
+    title: "Array",
+    description: "配列の基本操作を学ぼう。",
+    question: "[\"red\", \"green\", \"blue\"] に \"yellow\" を追加し、要素数と最初の要素を出力してください。",
+    requirements: ["var で配列を宣言", "append() で要素追加", ".count で要素数取得"],
+    hint: "colors.append(\"yellow\") のあとに colors.count と colors[0] を出力。",
+    answer: `var colors = ["red", "green", "blue"]
+colors.append("yellow")
+print(colors.count)
+print(colors[0])`
+  },
+  {
+    id: 15, rank: "BRONZE", unit: "UNIT 04",
+    title: "Dictionary",
+    description: "辞書の基本操作を学ぼう。",
+    question: "国と首都の辞書を作り、\"Japan\" の値を出力し、\"Italy\":\"Rome\" を追加して要素数を出力してください。",
+    requirements: ["var で辞書を宣言", "! でオプショナルを強制アンラップ", ".count で要素数取得"],
+    hint: "cap[\"Japan\"]! で強制アンラップできます。",
+    answer: `var cap = ["Japan": "Tokyo", "France": "Paris", "Germany": "Berlin"]
+print(cap["Japan"]!)
+cap["Italy"] = "Rome"
+print(cap.count)`
+  },
+  {
+    id: 16, rank: "BRONZE", unit: "UNIT 04",
+    title: "Set",
+    description: "セットの基本操作を学ぼう。",
+    question: "Set に \"swift\", \"ios\", \"xcode\" を入れ、\"apple\" を追加し、\"swift\" が含まれるか確認し、要素数を出力してください。",
+    requirements: ["Set<String> または型アノテーション付きで宣言", "insert() で追加", "contains() で確認"],
+    hint: "var tags: Set = [\"swift\", \"ios\", \"xcode\"] のように宣言。",
+    answer: `var tags: Set = ["swift", "ios", "xcode"]
+tags.insert("apple")
+print(tags.contains("swift"))
+print(tags.count)`
+  },
+  {
+    id: 17, rank: "BRONZE", unit: "UNIT 04",
+    title: "map/filter",
+    description: "高階関数で配列を変換しよう。",
+    question: "[1,2,3,4,5,6,7,8] から偶数だけを filter で取り出し、map で2倍にして出力してください。",
+    requirements: ["filter で偶数を取り出す", "map で2倍にする"],
+    hint: "nums.filter{$0 % 2 == 0}.map{$0 * 2}",
+    answer: `let nums = [1, 2, 3, 4, 5, 6, 7, 8]
+let evens = nums.filter { $0 % 2 == 0 }
+let doubled = evens.map { $0 * 2 }
+print(doubled)`
+  },
+  {
+    id: 18, rank: "SILVER", unit: "UNIT 05",
+    title: "基本関数",
+    description: "関数を定義して呼び出そう。",
+    question: "greet(name:) 関数を定義し、\"こんにちは、○○さん！\" を返して出力してください。greet(name: \"Swift\") を呼び出すこと。",
+    requirements: ["func で関数を定義", "引数ラベルを使う", "String を返す"],
+    hint: "func greet(name: String) -> String { \"こんにちは、\\(name)さん！\" }",
+    answer: `func greet(name: String) -> String {
+    "こんにちは、\\(name)さん！"
+}
+print(greet(name: "Swift"))`
+  },
+  {
+    id: 19, rank: "SILVER", unit: "UNIT 05",
+    title: "引数ラベル",
+    description: "外部引数ラベルと内部引数名を使い分けよう。",
+    question: "calc(from:to:) 関数を定義し、to - from を返してください。calc(from: 10, to: 50) を呼び出して出力してください。",
+    requirements: ["外部引数ラベルと内部引数名を使い分ける"],
+    hint: "func calc(from a: Int, to b: Int) -> Int { b - a }",
+    answer: `func calc(from a: Int, to b: Int) -> Int {
+    b - a
+}
+print(calc(from: 10, to: 50))`
+  },
+  {
+    id: 20, rank: "SILVER", unit: "UNIT 05",
+    title: "クロージャ",
+    description: "クロージャを変数に代入して使おう。",
+    question: "(Int, Int) -> Int 型のクロージャ multiply を定義し、[1,2,3,4,5] の各要素を3倍にして出力してください。",
+    requirements: ["クロージャを変数に代入", "map でクロージャを適用"],
+    hint: "let multiply: (Int, Int) -> Int = { (a, b) in a * b }",
+    answer: `let multiply: (Int, Int) -> Int = { (a, b) in a * b }
+let nums = [1, 2, 3, 4, 5]
+let result = nums.map { multiply($0, 3) }
+print(result)`
+  },
+  {
+    id: 21, rank: "SILVER", unit: "UNIT 05",
+    title: "デフォルト引数",
+    description: "デフォルト引数値を持つ関数を定義しよう。",
+    question: "power(_:exp:) 関数でデフォルト exp=2 を設定し、power(3) と power(2, exp: 8) を出力してください。",
+    requirements: ["デフォルト引数を設定する", "reduce を使って累乗を計算"],
+    hint: "func power(_ base: Int, exp: Int = 2) -> Int",
+    answer: `func power(_ base: Int, exp: Int = 2) -> Int {
+    (0..<exp).reduce(1) { acc, _ in acc * base }
+}
+print(power(3))
+print(power(2, exp: 8))`
+  },
+  {
+    id: 22, rank: "SILVER", unit: "UNIT 06",
+    title: "struct",
+    description: "構造体と計算プロパティを使おう。",
+    question: "Circle 構造体に radius プロパティと area 計算プロパティを定義し、radius=5 の面積を小数点2桁で出力してください。",
+    requirements: ["struct を定義", "計算プロパティを使う", "Double.pi を使う"],
+    hint: "var area: Double { Double.pi * radius * radius }",
+    answer: `struct Circle {
+    let radius: Double
+    var area: Double { Double.pi * radius * radius }
+}
+let c = Circle(radius: 5)
+print(String(format: "%.2f", c.area))`
+  },
+  {
+    id: 23, rank: "SILVER", unit: "UNIT 06",
+    title: "クラスと継承",
+    description: "クラスの継承とオーバーライドを学ぼう。",
+    question: "Shape クラスの area() を Rectangle でオーバーライドし、Rectangle(4, 5) の面積を出力してください。",
+    requirements: ["class を定義", "継承に : を使う", "override を使う"],
+    hint: "override func area() -> Double { w * h }",
+    answer: `class Shape {
+    func area() -> Double { 0 }
+}
+class Rectangle: Shape {
+    let w, h: Double
+    init(_ w: Double, _ h: Double) {
+        self.w = w
+        self.h = h
+    }
+    override func area() -> Double { w * h }
+}
+let r = Rectangle(4, 5)
+print(r.area())`
+  },
+  {
+    id: 24, rank: "SILVER", unit: "UNIT 06",
+    title: "protocol",
+    description: "プロトコルを定義して採用しよう。",
+    question: "Greetable プロトコルに greet() -> String を定義し、Person struct で採用して出力してください。",
+    requirements: ["protocol を定義", "struct で protocol を採用"],
+    hint: "struct Person: Greetable { func greet() -> String { ... } }",
+    answer: `protocol Greetable {
+    func greet() -> String
+}
+struct Person: Greetable {
+    let name: String
+    func greet() -> String {
+        "こんにちは、\\(name)！"
+    }
+}
+let p = Person(name: "Alice")
+print(p.greet())`
+  },
+  {
+    id: 25, rank: "SILVER", unit: "UNIT 06",
+    title: "extension",
+    description: "extensionで型にプロパティを追加しよう。",
+    question: "Int を拡張して isPrime 計算プロパティを追加し、2 から 20 の素数をすべて出力してください。",
+    requirements: ["extension で Int を拡張", "isPrime を Bool 型の計算プロパティとして定義"],
+    hint: "extension Int { var isPrime: Bool { ... } }",
+    answer: `extension Int {
+    var isPrime: Bool {
+        guard self > 1 else { return false }
+        for i in 2..<self {
+            if self % i == 0 { return false }
+        }
+        return true
+    }
+}
+for i in 2...20 {
+    if i.isPrime { print(i) }
+}`
+  },
+  {
+    id: 26, rank: "GOLD", unit: "UNIT 07",
+    title: "Optional",
+    description: "Optionalのアンラップを使いこなそう。",
+    question: "[\"42\", \"hello\", \"7\"] の各要素を Int に変換し、成功したら \"元→変換後の2乗\"、失敗したら \"→変換不可\" と出力してください。",
+    requirements: ["if let でオプショナルバインディング", "Int() の変換失敗を処理"],
+    hint: "if let n = Int(s) { print(\"\\(s)→\\(n*n)\") }",
+    answer: `let inputs = ["42", "hello", "7"]
+for s in inputs {
+    if let n = Int(s) {
+        print("\\(s)→\\(n * n)")
+    } else {
+        print("\\(s)→変換不可")
+    }
+}`
+  },
+  {
+    id: 27, rank: "GOLD", unit: "UNIT 07",
+    title: "エラー処理",
+    description: "throws/try/catch でエラーを処理しよう。",
+    question: "AppError enum を定義し、sqrt(_:) 関数で n<=0 のときエラーを投げ、do-catch で処理してください。sqrt(25) と sqrt(-4) と sqrt(0) を試してください。",
+    requirements: ["enum で Error を定義", "throws/try を使う", "do-catch でエラー処理"],
+    hint: "guard n > 0 else { throw n == 0 ? AppError.zero : AppError.negative }",
+    answer: `enum AppError: Error {
+    case negative, zero
+}
+func sqrt(_ n: Double) throws -> Double {
+    guard n > 0 else {
+        if n == 0 { throw AppError.zero }
+        throw AppError.negative
+    }
+    return n.squareRoot()
+}
+do {
+    print(try sqrt(25))
+} catch AppError.negative {
+    print("負の数")
+} catch AppError.zero {
+    print("ゼロ")
+}
+do {
+    print(try sqrt(-4))
+} catch AppError.negative {
+    print("負の数")
+} catch AppError.zero {
+    print("ゼロ")
+}
+do {
+    print(try sqrt(0))
+} catch AppError.negative {
+    print("負の数")
+} catch AppError.zero {
+    print("ゼロ")
+}`
+  },
+  {
+    id: 28, rank: "GOLD", unit: "UNIT 07",
+    title: "Optional Chaining と nil合体",
+    description: "Optional Chaining と ?? 演算子を使いこなそう。",
+    question: "User struct に address?: Address? を持たせ、address?.city ?? \"不明\" を使って、Alice（Tokyo）と Bob（address=nil）の都市を出力してください。",
+    requirements: ["Optional Chaining ?. を使う", "nil合体演算子 ?? を使う"],
+    hint: "user.address?.city ?? \"不明\"",
+    answer: `struct Address {
+    var city: String
+}
+struct User {
+    var name: String
+    var address: Address?
+}
+let u1 = User(name: "Alice", address: Address(city: "Tokyo"))
+let u2 = User(name: "Bob", address: nil)
+print(u1.address?.city ?? "不明")
+print(u2.address?.city ?? "不明")`
+  },
+  {
+    id: 29, rank: "DIAMOND", unit: "UNIT 07",
+    title: "enum 関連値",
+    description: "enum の関連値と switch で図形の面積を求めよう。",
+    question: "Shape enum に circle(Double) と rectangle(Double, Double) を定義し、area() 関数で面積を計算してください。circle(5) と rectangle(4, 6) を出力してください。",
+    requirements: ["enum で関連値を使う", "switch で全ケースを処理", "Double.pi を使う"],
+    hint: "case .circle(let r): return Double.pi * r * r",
+    answer: `enum Shape {
+    case circle(Double)
+    case rectangle(Double, Double)
+}
+func area(_ s: Shape) -> Double {
+    switch s {
+    case .circle(let r):
+        return Double.pi * r * r
+    case .rectangle(let w, let h):
+        return w * h
+    }
+}
+print(String(format: "%.2f", area(.circle(5))))
+print(area(.rectangle(4, 6)))`
+  },
+  {
+    id: 30, rank: "LEGEND", unit: "UNIT 08",
+    title: "ジェネリクス",
+    description: "型パラメータを使った汎用関数を実装しよう。",
+    question: "findMax<T: Comparable>(_:) 関数を定義し、[3,1,4,1,5,9,2,6] の最大値と [\"banana\",\"apple\",\"cherry\"] の最大値を出力してください。",
+    requirements: ["ジェネリクス関数を定義", "Comparable 制約を使う", "reduce で最大値を求める"],
+    hint: "func findMax<T: Comparable>(_ arr: [T]) -> T?",
+    answer: `func findMax<T: Comparable>(_ arr: [T]) -> T? {
+    arr.isEmpty ? nil : arr.reduce(arr[0]) { $0 > $1 ? $0 : $1 }
+}
+print(findMax([3, 1, 4, 1, 5, 9, 2, 6])!)
+print(findMax(["banana", "apple", "cherry"])!)`
+  }
+];
+
+const swiftMissions = [
+  {
+    id: 1, rank: "BRONZE",
+    title: "文字列マスター",
+    description: "文字列の結合・反転・文字数カウントを行おう。",
+    question: "[\"Swift\", \"is\", \"awesome\"] を空白で結合して出力し、結合文字列を反転させて出力し、文字数を出力してください。",
+    requirements: ["joined(separator:) で結合", "reversed() で反転", "count で文字数"],
+    hint: "words.joined(separator: \" \") で結合できます。",
+    answer: `let words = ["Swift", "is", "awesome"]
+let joined = words.joined(separator: " ")
+print(joined)
+let reversed = String(joined.reversed())
+print(reversed)
+print(joined.count)`
+  },
+  {
+    id: 2, rank: "BRONZE",
+    title: "コレクション操作",
+    description: "配列から最大・最小・平均・条件カウントを求めよう。",
+    question: "[85,62,90,41,78,55,93,67] の最大値、最小値、平均（小数点1桁）、70以上の個数を出力してください。",
+    requirements: ["max() / min() を使う", "reduce で合計を求める", "filter で条件カウント"],
+    hint: "Double(scores.reduce(0, +)) / Double(scores.count) で平均を計算。",
+    answer: `let scores = [85, 62, 90, 41, 78, 55, 93, 67]
+print(scores.max()!)
+print(scores.min()!)
+let avg = Double(scores.reduce(0, +)) / Double(scores.count)
+print(String(format: "%.1f", avg))
+let highCount = scores.filter { $0 >= 70 }.count
+print(highCount)`
+  },
+  {
+    id: 3, rank: "SILVER",
+    title: "関数型プログラミング",
+    description: "filter・map・reduce を連鎖させよう。",
+    question: "[1...10] の配列から奇数だけをfilterし、3倍にmap し、総和をreduceで求め、各ステップの結果を出力してください。",
+    requirements: ["filter で奇数を取り出す", "map で3倍にする", "reduce で合計を求める"],
+    hint: "let odds = nums.filter { $0 % 2 != 0 }",
+    answer: `let nums = Array(1...10)
+let odds = nums.filter { $0 % 2 != 0 }
+print(odds)
+let tripled = odds.map { $0 * 3 }
+print(tripled)
+let sum = tripled.reduce(0, +)
+print(sum)`
+  },
+  {
+    id: 4, rank: "SILVER",
+    title: "プロトコル活用",
+    description: "プロトコルでインターフェースを統一しよう。",
+    question: "Calculable プロトコルに add/subtract/multiply メソッドを定義し、Calculator struct で実装してテストしてください。",
+    requirements: ["protocol を定義", "struct でプロトコルを採用", "各メソッドをテスト"],
+    hint: "protocol Calculable { func add(_ a: Int, _ b: Int) -> Int ... }",
+    answer: `protocol Calculable {
+    func add(_ a: Int, _ b: Int) -> Int
+    func subtract(_ a: Int, _ b: Int) -> Int
+    func multiply(_ a: Int, _ b: Int) -> Int
+}
+struct Calculator: Calculable {
+    func add(_ a: Int, _ b: Int) -> Int { a + b }
+    func subtract(_ a: Int, _ b: Int) -> Int { a - b }
+    func multiply(_ a: Int, _ b: Int) -> Int { a * b }
+}
+let calc = Calculator()
+print(calc.add(10, 3))
+print(calc.subtract(10, 3))
+print(calc.multiply(10, 3))`
+  },
+  {
+    id: 5, rank: "GOLD",
+    title: "エラーハンドリング",
+    description: "バリデーション関数でエラーを処理しよう。",
+    question: "ValidationError enum を定義し、validate(age:name:) 関数で age<0, age>150, name.isEmpty のときエラーを投げ、複数のケースをテストしてください。",
+    requirements: ["enum で複数エラーを定義", "throws/try/catch を使う", "複数のバリデーションを実装"],
+    hint: "guard age >= 0 else { throw ValidationError.negativeAge }",
+    answer: `enum ValidationError: Error {
+    case negativeAge, tooOldAge, emptyName
+}
+func validate(age: Int, name: String) throws {
+    guard age >= 0 else { throw ValidationError.negativeAge }
+    guard age <= 150 else { throw ValidationError.tooOldAge }
+    guard !name.isEmpty else { throw ValidationError.emptyName }
+    print("\\(name) (\\(age)歳) は有効です")
+}
+do { try validate(age: 25, name: "Alice") } catch { print(error) }
+do { try validate(age: -1, name: "Bob") } catch { print(error) }
+do { try validate(age: 200, name: "Carol") } catch { print(error) }
+do { try validate(age: 30, name: "") } catch { print(error) }`
+  },
+  {
+    id: 6, rank: "GOLD",
+    title: "ジェネリクス Stack",
+    description: "ジェネリクスを使ったスタックを実装しよう。",
+    question: "ジェネリクスの Stack<T> 構造体を実装し、push/pop/peek/isEmpty/count を定義して Int と String のスタックでテストしてください。",
+    requirements: ["ジェネリクス struct を定義", "push/pop/peek/isEmpty/count を実装", "Int と String でテスト"],
+    hint: "struct Stack<T> { private var items: [T] = [] ... }",
+    answer: `struct Stack<T> {
+    private var items: [T] = []
+    mutating func push(_ item: T) { items.append(item) }
+    mutating func pop() -> T? { items.popLast() }
+    func peek() -> T? { items.last }
+    var isEmpty: Bool { items.isEmpty }
+    var count: Int { items.count }
+}
+var intStack = Stack<Int>()
+intStack.push(1)
+intStack.push(2)
+intStack.push(3)
+print(intStack.peek()!)
+print(intStack.pop()!)
+print(intStack.count)
+var strStack = Stack<String>()
+strStack.push("Hello")
+strStack.push("Swift")
+print(strStack.pop()!)
+print(strStack.isEmpty)`
+  }
+];
+
+const swiftUnitGuides = [
+  {
+    id: "swift-unit01",
+    unit: "UNIT 01", title: "Hello Swift & 出力",
+    summary: "Swiftの基本構文、print関数、変数・定数の宣言を学ぶ。",
+    points: [
+      "print() 関数で標準出力に文字列を出力できる",
+      "let は定数（再代入不可）、var は変数（再代入可能）",
+      "文字列補間は \\(式) で変数や式を埋め込める",
+      "型推論により多くの場合型アノテーションは省略可能"
+    ],
+    words: [
+      { term: "print()", desc: "改行付きで標準出力に出力する関数" },
+      { term: "let", desc: "定数を宣言するキーワード（再代入不可）" },
+      { term: "var", desc: "変数を宣言するキーワード（再代入可能）" }
+    ]
+  },
+  {
+    id: "swift-unit02",
+    unit: "UNIT 02", title: "変数・定数・型推論",
+    summary: "基本型、型変換、タプル、範囲演算子を学ぶ。",
+    points: [
+      "基本型は Int, Double, String, Bool（大文字始まり）",
+      "Double() や Int() で型を明示的に変換できる",
+      "タプルで複数の値をひとつにまとめられる",
+      "1...5 は閉じた範囲、1..<5 は半開き範囲"
+    ],
+    words: [
+      { term: "Double()", desc: "Int などを Double に変換するイニシャライザ" },
+      { term: "タプル", desc: "複数の値をひとつにまとめる型。名前付きも可" },
+      { term: "...", desc: "両端を含む閉じた範囲演算子" }
+    ]
+  },
+  {
+    id: "swift-unit03",
+    unit: "UNIT 03", title: "制御構文",
+    summary: "if-else、for-in、while、switch、guard を学ぶ。",
+    points: [
+      "if / else if / else で条件分岐できる",
+      "for i in 範囲 または for item in コレクション でループ",
+      "switch は文字列にも使え、default が必要なことが多い",
+      "guard は条件が偽のとき早期リターンするために使う"
+    ],
+    words: [
+      { term: "guard", desc: "条件が偽のとき早期リターンする構文" },
+      { term: "switch", desc: "多分岐を記述する構文。Swift では fall-through しない" },
+      { term: "for-in", desc: "範囲やコレクションを順番に処理するループ" }
+    ]
+  },
+  {
+    id: "swift-unit04",
+    unit: "UNIT 04", title: "コレクション（Array/Dictionary/Set）",
+    summary: "Array, Dictionary, Set の操作と高階関数を学ぶ。",
+    points: [
+      "Array は順序付きリスト。append() で末尾追加",
+      "Dictionary はキーと値のペア。存在しないキーは Optional を返す",
+      "Set は重複なしの集合。contains() で検索が高速",
+      "filter / map / reduce で宣言的にコレクションを処理できる"
+    ],
+    words: [
+      { term: "filter", desc: "条件に合う要素だけの新しい配列を返す高階関数" },
+      { term: "map", desc: "各要素を変換した新しい配列を返す高階関数" },
+      { term: "Set", desc: "順序なし・重複なしのコレクション型" }
+    ]
+  },
+  {
+    id: "swift-unit05",
+    unit: "UNIT 05", title: "関数 & クロージャ",
+    summary: "関数定義、引数ラベル、クロージャ、デフォルト引数を学ぶ。",
+    points: [
+      "func で関数を定義。引数ラベルと内部引数名を分けられる",
+      "_ を引数ラベルにすると呼び出し時にラベルを省略できる",
+      "クロージャは { (引数) in 処理 } の形で書く",
+      "デフォルト引数で呼び出し側の記述を省略できる"
+    ],
+    words: [
+      { term: "クロージャ", desc: "変数に代入できる無名関数。$0/$1 で引数を省略表記" },
+      { term: "引数ラベル", desc: "関数呼び出し時に使う外部向けの名前" },
+      { term: "trailing closure", desc: "最後の引数がクロージャのとき () の外に書ける構文" }
+    ]
+  },
+  {
+    id: "swift-unit06",
+    unit: "UNIT 06", title: "構造体・クラス・プロトコル",
+    summary: "struct, class, protocol, extension を学ぶ。",
+    points: [
+      "struct は値型、class は参照型。Swiftでは struct が推奨されることが多い",
+      "計算プロパティは毎回計算される読み取り専用または読み書き可能なプロパティ",
+      "protocol でインターフェースを定義し、struct/class で採用する",
+      "extension で既存の型にメソッドやプロパティを追加できる"
+    ],
+    words: [
+      { term: "struct", desc: "値型のカスタムデータ型。コピーで渡される" },
+      { term: "protocol", desc: "型が満たすべきメソッドやプロパティを定義するインターフェース" },
+      { term: "extension", desc: "既存の型に機能を追加するキーワード" }
+    ]
+  },
+  {
+    id: "swift-unit07",
+    unit: "UNIT 07", title: "Optional & エラー処理",
+    summary: "Optional、if let、guard let、throws/try/catch、nil合体演算子を学ぶ。",
+    points: [
+      "Optional 型は値が存在しないかもしれないことを表す（? 付き型）",
+      "if let / guard let でアンラップして安全に使える",
+      "?? (nil合体演算子) で nil のときのデフォルト値を指定",
+      "throws/try/catch でエラーを型安全に処理できる"
+    ],
+    words: [
+      { term: "Optional", desc: "値が nil になりうることを示す型。T? と書く" },
+      { term: "??", desc: "nil合体演算子。左がnilなら右の値を使う" },
+      { term: "throws", desc: "エラーを投げる可能性がある関数に付けるキーワード" }
+    ]
+  },
+  {
+    id: "swift-unit08",
+    unit: "UNIT 08", title: "ジェネリクス & 高度な機能",
+    summary: "ジェネリクス関数・型、型制約、Associated Type を学ぶ。",
+    points: [
+      "ジェネリクスで型に依存しない汎用的なコードを書ける",
+      "<T: Comparable> のように型制約を付けられる",
+      "標準ライブラリの Array や Dictionary もジェネリクスで実装されている",
+      "protocol に associatedtype を使うとより柔軟な設計が可能"
+    ],
+    words: [
+      { term: "ジェネリクス", desc: "型パラメータを使って汎用的なコードを書く仕組み" },
+      { term: "Comparable", desc: "< や > で比較できる型が採用するプロトコル" },
+      { term: "associatedtype", desc: "プロトコル内で使う型プレースホルダー" }
+    ]
+  }
+];
+
 // ===== 言語別データ取得ヘルパー =====
 
 function getProblems() {
@@ -5489,6 +6194,7 @@ function getProblems() {
   if (currentLanguage === 'ruby') return rubyProblems;
   if (currentLanguage === 'typescript') return typescriptProblems;
   if (currentLanguage === 'kotlin') return kotlinProblems;
+  if (currentLanguage === 'swift') return swiftProblems;
   return problems;
 }
 
@@ -5498,6 +6204,7 @@ function getMissions() {
   if (currentLanguage === 'ruby') return rubyMissions;
   if (currentLanguage === 'typescript') return typescriptMissions;
   if (currentLanguage === 'kotlin') return kotlinMissions;
+  if (currentLanguage === 'swift') return swiftMissions;
   return missions;
 }
 
@@ -5507,6 +6214,7 @@ function getUnitGuides() {
   if (currentLanguage === 'ruby') return rubyUnitGuides;
   if (currentLanguage === 'typescript') return typescriptUnitGuides;
   if (currentLanguage === 'kotlin') return kotlinUnitGuides;
+  if (currentLanguage === 'swift') return swiftUnitGuides;
   return unitGuides;
 }
 
@@ -5524,6 +6232,7 @@ function getCompiler() {
   if (currentLanguage === 'ruby') return 'ruby-3.4.9';
   if (currentLanguage === 'typescript') return 'typescript-5.6.2';
   if (currentLanguage === 'kotlin') return 'kotlin';
+  if (currentLanguage === 'swift') return 'swift-5.10';
   return 'gcc-head';
 }
 
@@ -5533,6 +6242,7 @@ function getAceMode() {
   if (currentLanguage === 'ruby') return 'ace/mode/ruby';
   if (currentLanguage === 'typescript') return 'ace/mode/typescript';
   if (currentLanguage === 'kotlin') return 'ace/mode/kotlin';
+  if (currentLanguage === 'swift') return 'ace/mode/swift';
   return 'ace/mode/c_cpp';
 }
 
@@ -5558,6 +6268,10 @@ function getStarterCode() {
     if (p) return '// [問題] ' + p.question + '\n\nfun main() {\n    \n}\n';
     return 'fun main() {\n    \n}\n';
   }
+  if (currentLanguage === 'swift') {
+    if (p) return '// [問題] ' + p.question + '\n\n';
+    return '// ここにコードを書いてください\n';
+  }
   if (p) return '// [問題] ' + p.question + '\n' + ACE_STARTER;
   return ACE_STARTER;
 }
@@ -5568,6 +6282,7 @@ function getLangName() {
   if (currentLanguage === 'ruby') return 'Ruby';
   if (currentLanguage === 'typescript') return 'TypeScript';
   if (currentLanguage === 'kotlin') return 'Kotlin';
+  if (currentLanguage === 'swift') return 'Swift';
   return 'C++';
 }
 
@@ -6781,7 +7496,8 @@ async function renderProfile() {
     js:     Math.min(100, stats.js     / 31 * 100),
     ruby:   Math.min(100, stats.ruby   / 30 * 100),
     ts:     Math.min(100, stats.ts     / 30 * 100),
-    kotlin: Math.min(100, stats.kotlin / 30 * 100)
+    kotlin: Math.min(100, stats.kotlin / 30 * 100),
+    swift:  Math.min(100, stats.swift  / 30 * 100)
   };
 
   // ストリーク状態の判定（今日ログイン済みかどうか）
@@ -6834,8 +7550,8 @@ async function renderProfile() {
         '<div class="profile-rank-badge" style="color:' + rank.color + ';border-color:' + rank.color + ';box-shadow:0 0 12px ' + rank.color + '33">' +
           '◆ ' + rank.name + ' ◆' +
         '</div>' +
-        '<div class="profile-total">' + stats.total + '<span> / 183 CLEARED</span></div>' +
-        '<div class="profile-mission-total">' + stats.totalMissions + ' / 36 MISSIONS</div>' +
+        '<div class="profile-total">' + stats.total + '<span> / 213 CLEARED</span></div>' +
+        '<div class="profile-mission-total">' + stats.totalMissions + ' / 42 MISSIONS</div>' +
       '</div>' +
     '</div>' +
     (currentUserIsAdmin
@@ -6930,6 +7646,7 @@ async function renderProfile() {
         _statCardHTML('Ruby',       '#CC342D', stats.ruby,   pct.ruby,   stats.rubyM,   30) +
         _statCardHTML('TypeScript', '#3178C6', stats.ts,     pct.ts,     stats.tsM,     30) +
         _statCardHTML('Kotlin',     '#7F52FF', stats.kotlin, pct.kotlin, stats.kotlinM, 30) +
+        _statCardHTML('Swift',      '#FA7343', stats.swift,  pct.swift,  stats.swiftM,  30) +
       '</div>' +
     '</div>' +
 
