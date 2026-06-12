@@ -704,7 +704,7 @@ var LANGUAGE_GROUPS = [
     desc: '文法がシンプルで誰でも始めやすい',
     langs: [
       {
-        id: 'python', name: 'Python', color: '#3776AB', problems: 31, available: true,
+        id: 'python', name: 'Python', color: '#3776AB', problems: 50, available: true,
         uses: ['AI・機械学習', 'データ分析', 'Web開発', '自動化スクリプト']
       },
     ]
@@ -715,11 +715,11 @@ var LANGUAGE_GROUPS = [
     desc: '少し複雑だが実用的なアプリが作れる',
     langs: [
       {
-        id: 'javascript', name: 'JavaScript', color: '#F0C040', problems: 31, available: true,
+        id: 'javascript', name: 'JavaScript', color: '#F0C040', problems: 50, available: true,
         uses: ['Webフロントエンド', 'ブラウザゲーム', 'Node.js サーバー']
       },
       {
-        id: 'ruby', name: 'Ruby', color: '#CC342D', problems: 30, available: true,
+        id: 'ruby', name: 'Ruby', color: '#CC342D', problems: 50, available: true,
         uses: ['Web開発 (Rails)', 'スクリプト自動化', 'プロトタイプ開発']
       },
     ]
@@ -730,15 +730,15 @@ var LANGUAGE_GROUPS = [
     desc: '型システムやOOP(オブジェクト指向)を本格的に学ぶ',
     langs: [
       {
-        id: 'typescript', name: 'TypeScript', color: '#3178C6', problems: 30, available: true,
+        id: 'typescript', name: 'TypeScript', color: '#3178C6', problems: 50, available: true,
         uses: ['大規模Webアプリ', '型安全なフロントエンド', 'フレームワーク開発']
       },
       {
-        id: 'kotlin', name: 'Kotlin', color: '#7F52FF', problems: 30, available: true,
+        id: 'kotlin', name: 'Kotlin', color: '#7F52FF', problems: 50, available: true,
         uses: ['Androidアプリ', 'サーバーサイド', 'Spring Boot']
       },
       {
-        id: 'swift', name: 'Swift', color: '#FA7343', problems: 30, available: true,
+        id: 'swift', name: 'Swift', color: '#FA7343', problems: 50, available: true,
         uses: ['iOSアプリ', 'macOSアプリ', 'watchOS・tvOS']
       },
     ]
@@ -749,15 +749,15 @@ var LANGUAGE_GROUPS = [
     desc: '企業現場でよく使われる実践的な言語',
     langs: [
       {
-        id: 'java', name: 'Java', color: '#ED8B00', problems: 30, available: true,
+        id: 'java', name: 'Java', color: '#ED8B00', problems: 50, available: true,
         uses: ['企業向けシステム', 'Androidアプリ', 'Spring Bootサーバー']
       },
       {
-        id: 'csharp', name: 'C#', color: '#9B4F96', problems: 30, available: true,
+        id: 'csharp', name: 'C#', color: '#9B4F96', problems: 50, available: true,
         uses: ['Unityゲーム開発', 'Windowsアプリ', '.NETサーバー']
       },
       {
-        id: 'go', name: 'Go', color: '#00ADD8', problems: 30, available: true,
+        id: 'go', name: 'Go', color: '#00ADD8', problems: 50, available: true,
         uses: ['高速APIサーバー', 'Dockerなどインフラツール', 'クラウドサービス']
       },
     ]
@@ -768,7 +768,7 @@ var LANGUAGE_GROUPS = [
     desc: 'OS・組み込みなど低レベルの世界',
     langs: [
       {
-        id: 'c', name: 'C', color: '#A8B9CC', problems: 30, available: true,
+        id: 'c', name: 'C', color: '#A8B9CC', problems: 50, available: true,
         uses: ['OS開発 (Linux等)', '組み込み・マイコン', 'ドライバ・ファームウェア']
       },
     ]
@@ -779,7 +779,7 @@ var LANGUAGE_GROUPS = [
     desc: '高速・高機能。習得難度は高いが強力',
     langs: [
       {
-        id: 'cpp', name: 'C++', color: '#00599C', problems: 31, available: true,
+        id: 'cpp', name: 'C++', color: '#00599C', problems: 50, available: true,
         uses: ['ゲームエンジン (Unreal)', 'OS・ブラウザ開発', '競技プログラミング', '高速数値計算']
       },
     ]
@@ -790,7 +790,7 @@ var LANGUAGE_GROUPS = [
     desc: '最高難度。安全性と速度を両立する次世代言語',
     langs: [
       {
-        id: 'rust', name: 'Rust', color: '#CE412B', problems: 30, available: true,
+        id: 'rust', name: 'Rust', color: '#CE412B', problems: 50, available: true,
         uses: ['システムプログラミング', 'WebAssembly', 'OSカーネル', '高安全性ソフト']
       },
     ]
@@ -1897,6 +1897,427 @@ int main() {
 }`,
     expected: "55",
     explanation: "テンプレートメタプログラミング（TMP）はコンパイル時に計算を行う高度な技法です。Fib<N>はFib<N-1>とFib<N-2>に依存し、コンパイラが再帰的に展開します。特殊化でベースケース(0,1)を定義することで無限展開を防ぎます。実行時のオーバーヘッドがゼロになる点が最大のメリットです。"
+  },
+
+  // ───────────── UNIT 09: ラムダ式・モダンC++ ─────────────
+  {
+    id: 32, unit: "UNIT 09  ◆  ラムダ式・モダンC++", rank: "GOLD",
+    title: "ラムダ式でソート",
+    question: "ラムダ式を使って vector<int> {5, 2, 8, 1, 9, 3} を昇順にソートし、スペース区切りで出力してください。",
+    hint: "sort(v.begin(), v.end(), [](int a, int b){ return a < b; }); でラムダを比較関数として渡せます。",
+    answer:
+`#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+int main() {
+    vector<int> v = {5, 2, 8, 1, 9, 3};
+    sort(v.begin(), v.end(), [](int a, int b){ return a < b; });
+    for (int x : v) cout << x << " ";
+    cout << endl;
+    return 0;
+}`,
+    expected: "1 2 3 5 8 9 ",
+    explanation: "ラムダ式 [](int a, int b){ return a < b; } は無名関数です。sort の第3引数に渡すことでカスタムソートができます。C++11以降の機能です。"
+  },
+  {
+    id: 33, unit: "UNIT 09  ◆  ラムダ式・モダンC++", rank: "GOLD",
+    title: "ラムダのキャプチャ",
+    question: "変数 base = 100 を値キャプチャしたラムダを作り、引数に 42 を渡した結果（base + 引数）を出力してください。",
+    hint: "[base](int x){ return base + x; } のように [] の中に変数名を書くとキャプチャできます。",
+    answer:
+`#include <iostream>
+using namespace std;
+int main() {
+    int base = 100;
+    auto add_base = [base](int x){ return base + x; };
+    cout << add_base(42) << endl;
+    return 0;
+}`,
+    expected: "142",
+    explanation: "[base] と書くと base を値キャプチャします。ラムダの外の変数を内部で使えるようになります。[&] で参照キャプチャ、[=] で全変数を値キャプチャできます。"
+  },
+  {
+    id: 34, unit: "UNIT 09  ◆  ラムダ式・モダンC++", rank: "GOLD",
+    title: "範囲forと参照",
+    question: "vector<int> v = {1, 2, 3, 4, 5} の各要素を範囲 for の参照 (int& x) で2倍にしてから、全要素をスペース区切りで出力してください。",
+    hint: "for (int& x : v) と書くと x はベクターの要素への参照になり、代入が反映されます。",
+    answer:
+`#include <iostream>
+#include <vector>
+using namespace std;
+int main() {
+    vector<int> v = {1, 2, 3, 4, 5};
+    for (int& x : v) x *= 2;
+    for (int x : v) cout << x << " ";
+    cout << endl;
+    return 0;
+}`,
+    expected: "2 4 6 8 10 ",
+    explanation: "int& x と参照型にすることで、ループ変数への代入が元のベクターに反映されます。値型の int x ではコピーになるため変更が反映されません。"
+  },
+  {
+    id: 35, unit: "UNIT 09  ◆  ラムダ式・モダンC++", rank: "GOLD",
+    title: "構造化束縛",
+    question: "pair<string, int> p = {\"Alice\", 25}; を構造化束縛 (auto [name, age] = p;) で分解し、\"名前: Alice, 年齢: 25\" 形式で出力してください。",
+    hint: "auto [a, b] = pair_var; でペアを2変数に分解できます（C++17以降）。",
+    answer:
+`#include <iostream>
+#include <string>
+using namespace std;
+int main() {
+    pair<string, int> p = {"Alice", 25};
+    auto [name, age] = p;
+    cout << "名前: " << name << ", 年齢: " << age << endl;
+    return 0;
+}`,
+    expected: "名前: Alice, 年齢: 25",
+    explanation: "構造化束縛 (Structured Bindings) はC++17の機能で、pair や tuple を複数の変数に一度に分解できます。map のループで auto [key, val] = kv; のように使うことが多いです。"
+  },
+
+  // ───────────── UNIT 10: スマートポインタ・例外・STL応用 ─────────────
+  {
+    id: 36, unit: "UNIT 10  ◆  スマートポインタ・例外・STL応用", rank: "PLATINUM",
+    title: "例外処理",
+    question: "ゼロ除算のとき std::runtime_error を throw する divide(a, b) 関数を作り、divide(10, 2) と divide(10, 0) を呼んで結果またはエラーを出力してください。",
+    hint: "try { ... } catch (const runtime_error& e) { cout << e.what(); } の構造で例外を捕捉できます。",
+    answer:
+`#include <iostream>
+#include <stdexcept>
+using namespace std;
+int divide(int a, int b) {
+    if (b == 0) throw runtime_error("ゼロ除算エラー");
+    return a / b;
+}
+int main() {
+    try {
+        cout << divide(10, 2) << endl;
+        cout << divide(10, 0) << endl;
+    } catch (const runtime_error& e) {
+        cout << "エラー: " << e.what() << endl;
+    }
+    return 0;
+}`,
+    expected: "5\nエラー: ゼロ除算エラー",
+    explanation: "C++ の例外は throw で投げ、try/catch で捕捉します。runtime_error は stdexcept で定義された標準例外クラスです。e.what() でエラーメッセージを取得できます。"
+  },
+  {
+    id: 37, unit: "UNIT 10  ◆  スマートポインタ・例外・STL応用", rank: "PLATINUM",
+    title: "unique_ptr",
+    question: "make_unique<int>(42) で unique_ptr を作成して値を出力し、reset() で解放後に nullptr かどうかを \"null\" / \"valid\" で出力してください。",
+    hint: "unique_ptr<int> p = make_unique<int>(42); で作成し、*p で値にアクセスします。",
+    answer:
+`#include <iostream>
+#include <memory>
+using namespace std;
+int main() {
+    unique_ptr<int> p = make_unique<int>(42);
+    cout << *p << endl;
+    p.reset();
+    cout << (p == nullptr ? "null" : "valid") << endl;
+    return 0;
+}`,
+    expected: "42\nnull",
+    explanation: "unique_ptr は所有権を持つスマートポインタで、スコープを抜けると自動でメモリを解放します。reset() で明示的に解放でき、その後はnullptrになります。delete の書き忘れによるメモリリークを防ぎます。"
+  },
+  {
+    id: 38, unit: "UNIT 10  ◆  スマートポインタ・例外・STL応用", rank: "PLATINUM",
+    title: "shared_ptr",
+    question: "make_shared<string>(\"Hello\") で shared_ptr を作り、別の shared_ptr にコピーして、値と参照カウント (use_count) を出力してください。",
+    hint: "shared_ptr<string> p2 = p1; でコピーすると参照カウントが増えます。p1.use_count() で参照数を取得できます。",
+    answer:
+`#include <iostream>
+#include <memory>
+#include <string>
+using namespace std;
+int main() {
+    shared_ptr<string> p1 = make_shared<string>("Hello");
+    shared_ptr<string> p2 = p1;
+    cout << *p1 << endl;
+    cout << p1.use_count() << endl;
+    return 0;
+}`,
+    expected: "Hello\n2",
+    explanation: "shared_ptr は参照カウント方式のスマートポインタです。コピーするとカウントが増え、全てのshared_ptrが破棄されたときにメモリが解放されます。unique_ptr と違い複数の所有者を持てます。"
+  },
+  {
+    id: 39, unit: "UNIT 10  ◆  スマートポインタ・例外・STL応用", rank: "PLATINUM",
+    title: "std::map",
+    question: "map<string, int> に apple=3, banana=1, cherry=2 を挿入し、キーがアルファベット順に並んだ状態で \"キー: 値\" 形式で全要素を出力してください。",
+    hint: "map はキーで自動ソートされます。auto& [k, v] : m でキーと値を取り出せます（C++17）。",
+    answer:
+`#include <iostream>
+#include <map>
+#include <string>
+using namespace std;
+int main() {
+    map<string, int> m;
+    m["apple"] = 3;
+    m["banana"] = 1;
+    m["cherry"] = 2;
+    for (auto& [k, v] : m) {
+        cout << k << ": " << v << endl;
+    }
+    return 0;
+}`,
+    expected: "apple: 3\nbanana: 1\ncherry: 2",
+    explanation: "map はキーでソートされた連想配列（辞書）です。文字列キーならアルファベット順に自動整列されます。検索・挿入・削除の計算量は O(log n) です。"
+  },
+  {
+    id: 40, unit: "UNIT 10  ◆  スマートポインタ・例外・STL応用", rank: "PLATINUM",
+    title: "std::set",
+    question: "set<int> に {5, 3, 1, 4, 1, 5, 9, 2, 6} を挿入し、重複が除かれて昇順に並んだ全要素をスペース区切りで出力してください。",
+    hint: "set は重複を自動的に除去し、要素を昇順で管理します。",
+    answer:
+`#include <iostream>
+#include <set>
+using namespace std;
+int main() {
+    set<int> s = {5, 3, 1, 4, 1, 5, 9, 2, 6};
+    for (int x : s) cout << x << " ";
+    cout << endl;
+    return 0;
+}`,
+    expected: "1 2 3 4 5 6 9 ",
+    explanation: "set はユニークな要素を昇順で管理するコンテナです。同じ値を複数回挿入しても1つだけ保持されます。要素の存在確認は s.count(x) または s.find(x) != s.end() で行います。"
+  },
+  {
+    id: 41, unit: "UNIT 10  ◆  スマートポインタ・例外・STL応用", rank: "PLATINUM",
+    title: "count_if / find_if",
+    question: "vector<int> {1,2,3,4,5,6,7,8,9,10} から、count_if で偶数の個数を、find_if で5より大きい最初の要素を求めて出力してください。",
+    hint: "count_if(begin, end, lambda) と find_if(begin, end, lambda) にラムダを渡します。find_if は iterator を返すので * で値を取り出します。",
+    answer:
+`#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+int main() {
+    vector<int> v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int cnt = count_if(v.begin(), v.end(), [](int x){ return x % 2 == 0; });
+    auto it = find_if(v.begin(), v.end(), [](int x){ return x > 5; });
+    cout << cnt << endl;
+    cout << *it << endl;
+    return 0;
+}`,
+    expected: "5\n6",
+    explanation: "count_if は条件を満たす要素数を返します。find_if は条件を満たす最初の要素へのイテレータを返します。どちらもラムダ式を条件として渡せるSTLアルゴリズムです。"
+  },
+
+  // ───────────── UNIT 11: テンプレート・継承・演算子オーバーロード ─────────────
+  {
+    id: 42, unit: "UNIT 11  ◆  テンプレート・継承・演算子", rank: "DIAMOND",
+    title: "テンプレート関数",
+    question: "型テンプレートを使って2値の最大を返す myMax<T>() を定義し、myMax(3,7)、myMax(1.5,0.8)、myMax<string>(\"apple\",\"banana\") の結果を出力してください。",
+    hint: "template<typename T> T myMax(T a, T b) { return a > b ? a : b; } と定義します。",
+    answer:
+`#include <iostream>
+#include <string>
+using namespace std;
+template<typename T>
+T myMax(T a, T b) {
+    return a > b ? a : b;
+}
+int main() {
+    cout << myMax(3, 7) << endl;
+    cout << myMax(1.5, 0.8) << endl;
+    cout << myMax(string("apple"), string("banana")) << endl;
+    return 0;
+}`,
+    expected: "7\n1.5\nbanana",
+    explanation: "テンプレート関数は型を汎用化します。コンパイラが呼び出しから型を推論するため、多くの場合型引数を省略できます。型ごとに異なる実装を持つオーバーロードより簡潔に書けます。"
+  },
+  {
+    id: 43, unit: "UNIT 11  ◆  テンプレート・継承・演算子", rank: "DIAMOND",
+    title: "テンプレートクラス",
+    question: "型テンプレートを使った Pair<T, U> クラスを定義し（first, second フィールドと print() メソッド）、Pair<int, string>(1, \"Alice\") を作って print() を呼んでください。出力例: \"1, Alice\"",
+    hint: "template<typename T, typename U> class Pair { T first; U second; ... }; と定義します。",
+    answer:
+`#include <iostream>
+#include <string>
+using namespace std;
+template<typename T, typename U>
+class Pair {
+public:
+    T first;
+    U second;
+    Pair(T f, U s) : first(f), second(s) {}
+    void print() { cout << first << ", " << second << endl; }
+};
+int main() {
+    Pair<int, string> p(1, "Alice");
+    p.print();
+    return 0;
+}`,
+    expected: "1, Alice",
+    explanation: "テンプレートクラスは型パラメータを持つクラスです。同じクラスに異なる型の組み合わせを使えます。std::pair や std::vector もテンプレートクラスです。"
+  },
+  {
+    id: 44, unit: "UNIT 11  ◆  テンプレート・継承・演算子", rank: "DIAMOND",
+    title: "仮想関数と多態性",
+    question: "純粋仮想関数 area() を持つ Shape 基底クラスと、Circle（半径、π=3.14159）、Rectangle（幅×高さ）を定義し、Shape* を使って各面積を出力してください。",
+    hint: "virtual double area() = 0; で純粋仮想関数を宣言します。Shape* p = new Circle(5); のように基底クラスポインタで派生クラスを扱えます。",
+    answer:
+`#include <iostream>
+using namespace std;
+class Shape {
+public:
+    virtual double area() = 0;
+    virtual ~Shape() {}
+};
+class Circle : public Shape {
+    double r;
+public:
+    Circle(double r) : r(r) {}
+    double area() override { return 3.14159 * r * r; }
+};
+class Rectangle : public Shape {
+    double w, h;
+public:
+    Rectangle(double w, double h) : w(w), h(h) {}
+    double area() override { return w * h; }
+};
+int main() {
+    Shape* shapes[] = { new Circle(5), new Rectangle(4, 6) };
+    for (Shape* s : shapes) {
+        cout << s->area() << endl;
+        delete s;
+    }
+    return 0;
+}`,
+    expected: "78.5397\n24",
+    explanation: "純粋仮想関数を持つクラスを抽象クラスといいます。基底クラスのポインタで派生クラスを扱うと、override したメソッドが動的に選択されます（ポリモーフィズム）。"
+  },
+  {
+    id: 45, unit: "UNIT 11  ◆  テンプレート・継承・演算子", rank: "DIAMOND",
+    title: "演算子オーバーロード",
+    question: "Vector2D 構造体に x, y フィールドと + 演算子オーバーロードを実装し、(1,2) + (3,4) の結果を \"(4, 6)\" 形式で出力してください。",
+    hint: "Vector2D operator+(const Vector2D& other) const { return Vector2D(x+other.x, y+other.y); } と定義します。",
+    answer:
+`#include <iostream>
+using namespace std;
+struct Vector2D {
+    double x, y;
+    Vector2D(double x, double y) : x(x), y(y) {}
+    Vector2D operator+(const Vector2D& o) const {
+        return Vector2D(x + o.x, y + o.y);
+    }
+};
+int main() {
+    Vector2D a(1, 2), b(3, 4);
+    Vector2D c = a + b;
+    cout << "(" << c.x << ", " << c.y << ")" << endl;
+    return 0;
+}`,
+    expected: "(4, 6)",
+    explanation: "演算子オーバーロードで独自クラスに + などの演算子を定義できます。const メソッドとして定義することで定数オブジェクトにも適用できます。"
+  },
+  {
+    id: 46, unit: "UNIT 11  ◆  テンプレート・継承・演算子", rank: "DIAMOND",
+    title: "RAII パターン",
+    question: "コンストラクタで \"Resource acquired\" 、デストラクタで \"Resource released\" を出力する Resource クラスを定義し、スコープを抜けると自動解放されることを確認してください。最後に \"Done\" を出力してください。",
+    hint: "スコープを {} で作り、その中で Resource オブジェクトを作成します。スコープを抜けるとデストラクタが自動呼び出しされます。",
+    answer:
+`#include <iostream>
+using namespace std;
+class Resource {
+public:
+    Resource() { cout << "Resource acquired" << endl; }
+    ~Resource() { cout << "Resource released" << endl; }
+};
+int main() {
+    {
+        Resource r;
+    }
+    cout << "Done" << endl;
+    return 0;
+}`,
+    expected: "Resource acquired\nResource released\nDone",
+    explanation: "RAII (Resource Acquisition Is Initialization) はC++の重要な設計原則です。リソースの取得をオブジェクトの初期化と結びつけ、スコープ終了時に自動解放します。ファイルハンドルやミューテックスの管理に広く使われます。"
+  },
+  {
+    id: 47, unit: "UNIT 11  ◆  テンプレート・継承・演算子", rank: "DIAMOND",
+    title: "std::function",
+    question: "std::function<int(int,int)> を使って加算・減算・乗算のラムダをvector に格納し、(10, 3) に適用した結果を順に出力してください。",
+    hint: "vector<function<int(int,int)>> ops = { [](int a, int b){return a+b;}, ... }; と定義します。",
+    answer:
+`#include <iostream>
+#include <functional>
+#include <vector>
+using namespace std;
+int main() {
+    vector<function<int(int,int)>> ops = {
+        [](int a, int b){ return a + b; },
+        [](int a, int b){ return a - b; },
+        [](int a, int b){ return a * b; }
+    };
+    for (auto& op : ops) cout << op(10, 3) << endl;
+    return 0;
+}`,
+    expected: "13\n7\n30",
+    explanation: "std::function は関数ポインタ・ラムダ・関数オブジェクトを均一に扱えるラッパーです。コールバックや戦略パターンの実装に便利です。"
+  },
+
+  // ───────────── UNIT 12: 現代C++の高度な機能 ─────────────
+  {
+    id: 48, unit: "UNIT 12  ◆  現代C++の高度な機能", rank: "MASTER",
+    title: "std::optional",
+    question: "std::optional<int> を返す safeDiv(a, b) を実装し、10/2 は値を、10/0 は \"no value\" を出力してください。",
+    hint: "b==0 のとき return nullopt; を返します。has_value() で値があるか確認し、value() で取り出します。",
+    answer:
+`#include <iostream>
+#include <optional>
+using namespace std;
+optional<int> safeDiv(int a, int b) {
+    if (b == 0) return nullopt;
+    return a / b;
+}
+int main() {
+    auto r1 = safeDiv(10, 2);
+    auto r2 = safeDiv(10, 0);
+    cout << (r1.has_value() ? to_string(r1.value()) : "no value") << endl;
+    cout << (r2.has_value() ? to_string(r2.value()) : "no value") << endl;
+    return 0;
+}`,
+    expected: "5\nno value",
+    explanation: "std::optional<T> は「値があるかもしれないし、ないかもしれない」ことを型で表現します。nullopt は「値なし」を表し、エラーを例外なしで表現できます。C++17の機能です。"
+  },
+  {
+    id: 49, unit: "UNIT 12  ◆  現代C++の高度な機能", rank: "MASTER",
+    title: "constexpr関数",
+    question: "constexpr を使ってコンパイル時に階乗を計算する factorial(n) 関数を実装し、factorial(10) の結果を出力してください。",
+    hint: "constexpr long long factorial(int n) { return n <= 1 ? 1 : n * factorial(n-1); } と再帰で定義します。",
+    answer:
+`#include <iostream>
+using namespace std;
+constexpr long long factorial(int n) {
+    return n <= 1 ? 1 : n * factorial(n - 1);
+}
+int main() {
+    constexpr long long result = factorial(10);
+    cout << result << endl;
+    return 0;
+}`,
+    expected: "3628800",
+    explanation: "constexpr 関数はコンパイル時に評価できます。constexpr 変数に代入することでコンパイル時計算が保証されます。実行時のオーバーヘッドがゼロになり、配列サイズや定数として使えます。"
+  },
+  {
+    id: 50, unit: "UNIT 12  ◆  現代C++の高度な機能", rank: "MASTER",
+    title: "moveセマンティクス",
+    question: "std::move を使って vector<int> {1,2,3,4,5} を別の変数に移動し、移動後の元変数のサイズと移動先のサイズを出力してください。",
+    hint: "vector<int> b = move(a); で a の中身が b に移動し、a は空になります。",
+    answer:
+`#include <iostream>
+#include <vector>
+using namespace std;
+int main() {
+    vector<int> a = {1, 2, 3, 4, 5};
+    vector<int> b = move(a);
+    cout << a.size() << endl;
+    cout << b.size() << endl;
+    return 0;
+}`,
+    expected: "0\n5",
+    explanation: "std::move は左辺値を右辺値参照にキャストします。コピーではなく所有権を移動するため高速です。移動後の元変数は有効だが未定義状態（通常は空）になります。大きなデータの転送に有効です。"
   }
 ];
 
@@ -2517,6 +2938,367 @@ b = MySingleton()
 print(a is b)`,
     expected: "True",
     explanation: "メタクラスはクラスのクラスです。type を継承することでクラス生成の振る舞いを制御できます。__call__ はクラスが呼ばれた（インスタンス化された）ときに実行されます。_instances 辞書でインスタンスを管理し、2回目以降は既存インスタンスを返すことでSingletonを実現します。"
+  },
+
+  // ───────────── UNIT 09: 内包表記・ジェネレータ・デコレータ ─────────────
+  {
+    id: 32, unit: "UNIT 09  ◆  内包表記・ジェネレータ・デコレータ", rank: "GOLD",
+    title: "リスト内包表記（フィルタ）",
+    question: "リスト内包表記で1〜20の中から3の倍数または5の倍数のリストを作り、出力してください。",
+    hint: "[x for x in range(1, 21) if 条件] の形で書けます。or で複数条件を組み合わせます。",
+    answer:
+`result = [x for x in range(1, 21) if x % 3 == 0 or x % 5 == 0]
+print(result)`,
+    expected: "[3, 5, 6, 9, 10, 12, 15, 18, 20]",
+    explanation: "リスト内包表記は [式 for 変数 in イテラブル if 条件] の形式です。filter() + map() より簡潔に書けます。条件が複雑なときは or や and を使います。"
+  },
+  {
+    id: 33, unit: "UNIT 09  ◆  内包表記・ジェネレータ・デコレータ", rank: "GOLD",
+    title: "辞書内包表記",
+    question: "単語リスト ['apple', 'banana', 'cherry', 'date'] から単語→文字数の辞書を内包表記で作り、出力してください。",
+    hint: "{w: len(w) for w in words} の形で辞書内包表記を書きます。",
+    answer:
+`words = ['apple', 'banana', 'cherry', 'date']
+d = {w: len(w) for w in words}
+print(d)`,
+    expected: "{'apple': 5, 'banana': 6, 'cherry': 6, 'date': 4}",
+    explanation: "辞書内包表記は {キー: 値 for 変数 in イテラブル} の形式です。リスト内包表記と同様に if 条件も付けられます。"
+  },
+  {
+    id: 34, unit: "UNIT 09  ◆  内包表記・ジェネレータ・デコレータ", rank: "GOLD",
+    title: "ジェネレータ関数",
+    question: "yield を使ってフィボナッチ数列を生成する fib_gen() を定義し、next() で最初の8個を出力してください（スペース区切り）。",
+    hint: "def fib_gen(): a, b = 0, 1 の後に while True: yield a; a, b = b, a+b と書きます。",
+    answer:
+`def fib_gen():
+    a, b = 0, 1
+    while True:
+        yield a
+        a, b = b, a + b
+
+gen = fib_gen()
+print(' '.join(str(next(gen)) for _ in range(8)))`,
+    expected: "0 1 1 2 3 5 8 13",
+    explanation: "ジェネレータ関数は yield で値を一つずつ返します。next() を呼ぶたびに次の値が生成されます。全要素をメモリに保持しないので、大量データの処理に効率的です。"
+  },
+  {
+    id: 35, unit: "UNIT 09  ◆  内包表記・ジェネレータ・デコレータ", rank: "GOLD",
+    title: "デコレータ",
+    question: "@log_call デコレータを実装してください。デコレートした関数 greet('Alice') を呼ぶと、'Calling greet' → 'Hello, Alice' の順で出力されるようにしてください。",
+    hint: "functools.wraps(func) を使ってラッパー関数を定義し、func.__name__ でデコレートされた関数名を取得します。",
+    answer:
+`import functools
+
+def log_call(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        print(f"Calling {func.__name__}")
+        return func(*args, **kwargs)
+    return wrapper
+
+@log_call
+def greet(name):
+    print(f"Hello, {name}")
+
+greet("Alice")`,
+    expected: "Calling greet\nHello, Alice",
+    explanation: "デコレータは関数を受け取り、新しい関数を返す高階関数です。@構文は greet = log_call(greet) の糖衣構文です。functools.wraps で元の関数名・docstringを保持します。"
+  },
+
+  // ───────────── UNIT 10: functools・itertools・collections ─────────────
+  {
+    id: 36, unit: "UNIT 10  ◆  functools・itertools・collections", rank: "PLATINUM",
+    title: "functools.reduce",
+    question: "functools.reduce を使って [1, 2, 3, 4, 5] の積（掛け算の総乗）を求めて出力してください。",
+    hint: "from functools import reduce を使い、reduce(lambda a, b: a * b, lst) と書きます。",
+    answer:
+`from functools import reduce
+lst = [1, 2, 3, 4, 5]
+result = reduce(lambda a, b: a * b, lst)
+print(result)`,
+    expected: "120",
+    explanation: "reduce(func, iterable) はリストの要素を左から順に func で畳み込みます。[1,2,3,4,5] なら ((((1*2)*3)*4)*5) = 120 になります。"
+  },
+  {
+    id: 37, unit: "UNIT 10  ◆  functools・itertools・collections", rank: "PLATINUM",
+    title: "itertools.chain",
+    question: "itertools.chain を使って [1,2,3]、[4,5,6]、[7,8,9] を1つのシーケンスとして結合し、全要素をスペース区切りで出力してください。",
+    hint: "itertools.chain(lst1, lst2, lst3) で複数のイテラブルを連結できます。",
+    answer:
+`import itertools
+a = [1, 2, 3]
+b = [4, 5, 6]
+c = [7, 8, 9]
+result = list(itertools.chain(a, b, c))
+print(' '.join(map(str, result)))`,
+    expected: "1 2 3 4 5 6 7 8 9",
+    explanation: "itertools.chain は複数のイテラブルを1つに連結します。メモリを節約しながら順に要素を取り出せます。chain.from_iterable([[1,2],[3,4]]) でリストのリストも展開できます。"
+  },
+  {
+    id: 38, unit: "UNIT 10  ◆  functools・itertools・collections", rank: "PLATINUM",
+    title: "collections.Counter",
+    question: "collections.Counter を使って 'abracadabra' の各文字の出現回数を数え、most_common(3) で上位3文字をカウントの多い順に出力してください。出力例: a 5",
+    hint: "Counter(文字列) で文字の頻度を数えられます。most_common(n) でランキングを取得します。",
+    answer:
+`from collections import Counter
+c = Counter('abracadabra')
+for char, count in c.most_common(3):
+    print(char, count)`,
+    expected: "a 5\nb 2\nr 2",
+    explanation: "Counter は要素の出現回数を数える辞書のサブクラスです。most_common(n) は頻度の高い順にn個の (要素, 回数) タプルを返します。テキスト分析や頻度解析に便利です。"
+  },
+  {
+    id: 39, unit: "UNIT 10  ◆  functools・itertools・collections", rank: "PLATINUM",
+    title: "collections.defaultdict",
+    question: "defaultdict(list) を使って ['apple', 'banana', 'avocado', 'cherry', 'blueberry'] を頭文字でグループ化し、アルファベット順に出力してください。出力例: a: ['apple', 'avocado']",
+    hint: "defaultdict(list) はキーが存在しないとき自動で [] を作ります。word[0] で頭文字を取得できます。",
+    answer:
+`from collections import defaultdict
+words = ['apple', 'banana', 'avocado', 'cherry', 'blueberry']
+d = defaultdict(list)
+for w in words:
+    d[w[0]].append(w)
+for k in sorted(d):
+    print(f"{k}: {d[k]}")`,
+    expected: "a: ['apple', 'avocado']\nb: ['banana', 'blueberry']\nc: ['cherry']",
+    explanation: "defaultdict はキーが存在しない場合にデフォルト値を自動生成する辞書です。defaultdict(list) なら未存在キーに空リストが作られるため、KeyError を心配せずに append できます。"
+  },
+  {
+    id: 40, unit: "UNIT 10  ◆  functools・itertools・collections", rank: "PLATINUM",
+    title: "dataclasses",
+    question: "@dataclass を使って name(str) と score(int) を持つ Student クラスを定義し、Alice(95) と Bob(82) のインスタンスを作って出力してください。出力例: Student(name='Alice', score=95)",
+    hint: "from dataclasses import dataclass を使い、@dataclass デコレータを付けるだけで __init__ と __repr__ が自動生成されます。",
+    answer:
+`from dataclasses import dataclass
+
+@dataclass
+class Student:
+    name: str
+    score: int
+
+a = Student("Alice", 95)
+b = Student("Bob", 82)
+print(a)
+print(b)`,
+    expected: "Student(name='Alice', score=95)\nStudent(name='Bob', score=82)",
+    explanation: "@dataclass はフィールドを型ヒントで定義するだけで __init__、__repr__、__eq__ を自動生成します。クラスのボイラープレートを大幅に削減できます。"
+  },
+  {
+    id: 41, unit: "UNIT 10  ◆  functools・itertools・collections", rank: "PLATINUM",
+    title: "コンテキストマネージャ",
+    question: "__enter__ と __exit__ を実装した Timer クラスを作り、with Timer() as t: の中で \"処理中\" を出力し、ブロック終了後に \"完了\" を出力してください。",
+    hint: "__enter__ で 'タイマー開始' 、__exit__ で '完了' を出力し、self を返します。",
+    answer:
+`class Timer:
+    def __enter__(self):
+        print("タイマー開始")
+        return self
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print("完了")
+        return False
+
+with Timer():
+    print("処理中")`,
+    expected: "タイマー開始\n処理中\n完了",
+    explanation: "コンテキストマネージャは with 文で使えるオブジェクトです。__enter__ でブロック前の処理、__exit__ でブロック後の処理（例外処理も含む）を定義します。ファイル操作やDBトランザクションの管理に使われます。"
+  },
+
+  // ───────────── UNIT 11: 型ヒント・クラス応用・標準ライブラリ ─────────────
+  {
+    id: 42, unit: "UNIT 11  ◆  型ヒント・クラス応用・標準ライブラリ", rank: "DIAMOND",
+    title: "型ヒント（typing）",
+    question: "typing モジュールの List と Optional を使って、整数のリストを受け取り最大値を返す（空リストは None を返す）関数 find_max(nums: List[int]) -> Optional[int] を定義してください。[3,1,4,1,5] と [] でテストしてください。",
+    hint: "from typing import List, Optional を使います。空リストなら return None、それ以外は max(nums) を返します。",
+    answer:
+`from typing import List, Optional
+
+def find_max(nums: List[int]) -> Optional[int]:
+    if not nums:
+        return None
+    return max(nums)
+
+print(find_max([3, 1, 4, 1, 5]))
+print(find_max([]))`,
+    expected: "5\nNone",
+    explanation: "型ヒントはPython 3.5以降の機能で、関数の引数と戻り値の型を明示します。実行時の型チェックは行いませんが、IDEやmypyによる静的解析が可能になります。Optional[T] は T または None を意味します。"
+  },
+  {
+    id: 43, unit: "UNIT 11  ◆  型ヒント・クラス応用・標準ライブラリ", rank: "DIAMOND",
+    title: "property デコレータ",
+    question: "@property と @temperature.setter を使って、摂氏を保持しつつ華氏でも設定できる Temperature クラスを実装してください。t.celsius = 100 と設定し celsius と fahrenheit を出力してください。",
+    hint: "@property で getter、@属性名.setter で setter を定義します。華氏 = 摂氏×9/5+32 です。",
+    answer:
+`class Temperature:
+    def __init__(self):
+        self._celsius = 0
+
+    @property
+    def celsius(self):
+        return self._celsius
+
+    @celsius.setter
+    def celsius(self, value):
+        self._celsius = value
+
+    @property
+    def fahrenheit(self):
+        return self._celsius * 9 / 5 + 32
+
+t = Temperature()
+t.celsius = 100
+print(t.celsius)
+print(t.fahrenheit)`,
+    expected: "100\n212.0",
+    explanation: "@property はメソッドをプロパティとして扱えるデコレータです。外部からは属性アクセス (t.celsius) のように見えますが、内部では getter/setter メソッドが呼ばれます。"
+  },
+  {
+    id: 44, unit: "UNIT 11  ◆  型ヒント・クラス応用・標準ライブラリ", rank: "DIAMOND",
+    title: "抽象クラス",
+    question: "abc モジュールで抽象基底クラス Animal を定義し（抽象メソッド speak()）、Dog と Cat で実装してください。Dog は 'Woof!'、Cat は 'Meow!' を返すようにし、Animal のリストでループして出力してください。",
+    hint: "from abc import ABC, abstractmethod を使います。@abstractmethod で抽象メソッドを定義します。",
+    answer:
+`from abc import ABC, abstractmethod
+
+class Animal(ABC):
+    @abstractmethod
+    def speak(self) -> str:
+        pass
+
+class Dog(Animal):
+    def speak(self): return "Woof!"
+
+class Cat(Animal):
+    def speak(self): return "Meow!"
+
+animals = [Dog(), Cat()]
+for a in animals:
+    print(a.speak())`,
+    expected: "Woof!\nMeow!",
+    explanation: "抽象クラスはインスタンス化できないクラスです。@abstractmethod を持つメソッドはサブクラスで必ず実装する必要があります。インターフェースのような設計を強制できます。"
+  },
+  {
+    id: 45, unit: "UNIT 11  ◆  型ヒント・クラス応用・標準ライブラリ", rank: "DIAMOND",
+    title: "classmethod と staticmethod",
+    question: "Circle クラスに、半径から作るコンストラクタ（通常）と直径から作る @classmethod from_diameter、円周率を返す @staticmethod pi() を実装してください。diameter=10 から作成し、面積を出力してください（π=3.14159）。",
+    hint: "@classmethod のシグネチャは def from_diameter(cls, d): で、cls(d/2) を返します。",
+    answer:
+`class Circle:
+    def __init__(self, radius):
+        self.radius = radius
+
+    @classmethod
+    def from_diameter(cls, d):
+        return cls(d / 2)
+
+    @staticmethod
+    def pi():
+        return 3.14159
+
+    def area(self):
+        return Circle.pi() * self.radius ** 2
+
+c = Circle.from_diameter(10)
+print(c.area())`,
+    expected: "78.53975",
+    explanation: "@classmethod は cls（クラス自体）を第1引数に受け取り、代替コンストラクタによく使われます。@staticmethod はクラスやインスタンスと無関係なユーティリティ関数に使います。"
+  },
+  {
+    id: 46, unit: "UNIT 11  ◆  型ヒント・クラス応用・標準ライブラリ", rank: "DIAMOND",
+    title: "正規表現（re）",
+    question: "re モジュールを使って 'My email is user@example.com and admin@test.org' から全メールアドレスを抽出し、1行ずつ出力してください。",
+    hint: "re.findall(r'[\\w.+-]+@[\\w-]+\\.[\\w.]+', text) でメールアドレスパターンを検索できます。",
+    answer:
+`import re
+text = 'My email is user@example.com and admin@test.org'
+emails = re.findall(r'[\\w.+-]+@[\\w-]+\\.[\\w.]+', text)
+for e in emails:
+    print(e)`,
+    expected: "user@example.com\nadmin@test.org",
+    explanation: "re.findall はパターンに一致する全ての文字列をリストで返します。正規表現で \\w は英数字とアンダースコア、+ は1文字以上を意味します。r'' の raw文字列でバックスラッシュをエスケープせずに書けます。"
+  },
+  {
+    id: 47, unit: "UNIT 11  ◆  型ヒント・クラス応用・標準ライブラリ", rank: "DIAMOND",
+    title: "JSON操作",
+    question: "json モジュールで辞書 {'name': 'Alice', 'age': 30, 'skills': ['Python', 'Go']} を JSON 文字列に変換して出力し、その文字列を再度辞書に変換して name を出力してください。",
+    hint: "json.dumps(d) で辞書→文字列、json.loads(s) で文字列→辞書に変換できます。",
+    answer:
+`import json
+data = {'name': 'Alice', 'age': 30, 'skills': ['Python', 'Go']}
+s = json.dumps(data)
+print(s)
+d = json.loads(s)
+print(d['name'])`,
+    expected: '{"name": "Alice", "age": 30, "skills": ["Python", "Go"]}\nAlice',
+    explanation: "json.dumps はPython オブジェクトをJSON文字列に、json.loads はJSON文字列をPythonオブジェクトに変換します。APIとのデータ交換や設定ファイルの読み書きに欠かせない機能です。"
+  },
+
+  // ───────────── UNIT 12: 高度なPythonパターン ─────────────
+  {
+    id: 48, unit: "UNIT 12  ◆  高度なPythonパターン", rank: "MASTER",
+    title: "__slots__によるメモリ最適化",
+    question: "__slots__ = ['x', 'y'] を持つ Point クラスを定義し、Point(3, 4) を作成して x と y を出力してください。その後 p.z = 1 を試みた際の AttributeError を except で捕捉して 'エラー: 属性を追加できません' を出力してください。",
+    hint: "__slots__ を定義すると __dict__ が作られず、定義外の属性追加が禁止されます。",
+    answer:
+`class Point:
+    __slots__ = ['x', 'y']
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+p = Point(3, 4)
+print(p.x)
+print(p.y)
+try:
+    p.z = 1
+except AttributeError:
+    print("エラー: 属性を追加できません")`,
+    expected: "3\n4\nエラー: 属性を追加できません",
+    explanation: "__slots__ でインスタンス変数を事前宣言すると __dict__ が作られません。メモリ使用量を削減（最大40%削減）でき、定義外の属性追加を禁止します。大量インスタンスを生成するアプリに効果的です。"
+  },
+  {
+    id: 49, unit: "UNIT 12  ◆  高度なPythonパターン", rank: "MASTER",
+    title: "イテレータプロトコル",
+    question: "__iter__ と __next__ を実装して、指定した範囲の偶数を生成するイテレータ EvenRange(start, stop) を作り、EvenRange(0, 10) の全要素をスペース区切りで出力してください。",
+    hint: "__next__ で StopIteration を raise することでループの終端を示します。",
+    answer:
+`class EvenRange:
+    def __init__(self, start, stop):
+        self.current = start if start % 2 == 0 else start + 1
+        self.stop = stop
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.current >= self.stop:
+            raise StopIteration
+        val = self.current
+        self.current += 2
+        return val
+
+print(' '.join(str(x) for x in EvenRange(0, 10)))`,
+    expected: "0 2 4 6 8",
+    explanation: "イテレータプロトコルは __iter__ と __next__ を実装することで for ループや list() に使えるオブジェクトを作ります。StopIteration でループ終了を伝えます。ジェネレータはこのプロトコルを自動実装します。"
+  },
+  {
+    id: 50, unit: "UNIT 12  ◆  高度なPythonパターン", rank: "MASTER",
+    title: "関数型プログラミング（map/filter/zip）",
+    question: "map、filter、zip を使って次を実行してください：①names=['Alice','Bob','Charlie'] を全て大文字に ②scores=[85,42,91,67,55] から60以上を抽出 ③上記names と [1,2,3] をzipして 'Alice: 1' 形式で出力",
+    hint: "list(map(str.upper, names))、list(filter(lambda x: x>=60, scores))、zip(names, nums) を使います。",
+    answer:
+`names = ['Alice', 'Bob', 'Charlie']
+scores = [85, 42, 91, 67, 55]
+
+upper = list(map(str.upper, names))
+print(upper)
+
+passing = list(filter(lambda x: x >= 60, scores))
+print(passing)
+
+for name, num in zip(names, [1, 2, 3]):
+    print(f"{name}: {num}")`,
+    expected: "['ALICE', 'BOB', 'CHARLIE']\n[85, 91, 67]\nAlice: 1\nBob: 2\nCharlie: 3",
+    explanation: "map は全要素に関数を適用、filter は条件を満たす要素のみ抽出、zip は複数のイテラブルを並行して処理します。これらを組み合わせることで関数型プログラミングスタイルで簡潔なデータ処理が書けます。"
   }
 ];
 
@@ -3307,6 +4089,346 @@ obj.name;
 obj.age;`,
     expected: "GET: name\nGET: age",
     explanation: "Proxy はオブジェクトの操作に割り込むラッパーです。get トラップはプロパティ読み取り時、set トラップは書き込み時に呼ばれます。Reflect は Proxy トラップのデフォルト動作を提供するユーティリティです。この組み合わせで変更追跡・バリデーション・ログ記録が実装できます。"
+  },
+
+  // ───────────── UNIT 09: Promise・async/await・Generator ─────────────
+  {
+    id: 32, unit: "UNIT 09  ◆  Promise・async/await・Generator", rank: "GOLD",
+    title: "Promise チェーン",
+    question: "Promise.resolve(10) から始まり、.then で2倍→+5→文字列化する Promise チェーンを作り、最終値を出力してください。",
+    hint: ".then(x => x * 2).then(x => x + 5).then(x => String(x)) のようにチェーンします。",
+    answer:
+`Promise.resolve(10)
+  .then(x => x * 2)
+  .then(x => x + 5)
+  .then(x => String(x))
+  .then(x => console.log(x));`,
+    expected: "25",
+    explanation: "Promise の .then はコールバックの戻り値を次の .then に渡します。非同期処理を同期的に書けるチェーン構造で、コールバック地獄を解消します。"
+  },
+  {
+    id: 33, unit: "UNIT 09  ◆  Promise・async/await・Generator", rank: "GOLD",
+    title: "async/await",
+    question: "async 関数 fetchData() を定義し、await で Promise.resolve('データ取得完了') を待ち、その値を出力してください。fetchData() を呼び出してください。",
+    hint: "async function fetchData() { const result = await Promise.resolve(...); console.log(result); } のように書きます。",
+    answer:
+`async function fetchData() {
+  const result = await Promise.resolve('データ取得完了');
+  console.log(result);
+}
+fetchData();`,
+    expected: "データ取得完了",
+    explanation: "async/await は Promise をより同期的なコードに見せる構文糖です。await は Promise が解決されるまで処理を待ちます。async 関数は常に Promise を返します。"
+  },
+  {
+    id: 34, unit: "UNIT 09  ◆  Promise・async/await・Generator", rank: "GOLD",
+    title: "Generatorで無限シーケンス",
+    question: "function* を使って自然数を無限に生成する counter() ジェネレータを作り、next() で最初の5つの値を出力してください。",
+    hint: "function* counter() { let i = 1; while(true) { yield i++; } } と書きます。gen.next().value で値を取得します。",
+    answer:
+`function* counter() {
+  let i = 1;
+  while (true) yield i++;
+}
+const gen = counter();
+for (let i = 0; i < 5; i++) {
+  console.log(gen.next().value);
+}`,
+    expected: "1\n2\n3\n4\n5",
+    explanation: "ジェネレータ関数（function*）は yield で値を一つずつ返します。next() を呼ぶたびに次の yield まで実行します。無限シーケンスを遅延評価で生成できます。"
+  },
+  {
+    id: 35, unit: "UNIT 09  ◆  Promise・async/await・Generator", rank: "GOLD",
+    title: "Promise.all",
+    question: "Promise.all を使って [Promise.resolve(1), Promise.resolve(2), Promise.resolve(3)] を並行待機し、全ての結果の配列を出力してください。",
+    hint: "Promise.all(配列).then(results => console.log(results)) で全て解決後に配列が得られます。",
+    answer:
+`Promise.all([
+  Promise.resolve(1),
+  Promise.resolve(2),
+  Promise.resolve(3)
+]).then(results => console.log(results));`,
+    expected: "[ 1, 2, 3 ]",
+    explanation: "Promise.all は複数の Promise を並行実行し、全て解決したときに値の配列を返します。1つでも reject されると全体が reject になります。並行API呼び出しに便利です。"
+  },
+
+  // ───────────── UNIT 10: Symbol・WeakMap・カスタムエラー ─────────────
+  {
+    id: 36, unit: "UNIT 10  ◆  Symbol・WeakMap・カスタムエラー", rank: "PLATINUM",
+    title: "Symbol",
+    question: "Symbol('id') と Symbol('id') は異なることを示し、オブジェクトのプロパティキーとして Symbol を使って値を設定・取得してください。出力例: false / 42",
+    hint: "const s1 = Symbol('id'); const s2 = Symbol('id'); console.log(s1 === s2); でユニーク性を確認できます。",
+    answer:
+`const s1 = Symbol('id');
+const s2 = Symbol('id');
+console.log(s1 === s2);
+const obj = {};
+obj[s1] = 42;
+console.log(obj[s1]);`,
+    expected: "false\n42",
+    explanation: "Symbol は必ずユニークなプリミティブ値です。同じ説明文を渡しても別の値になります。オブジェクトのプロパティキーとして使うと、他のコードと衝突しないプライベートなプロパティを作れます。"
+  },
+  {
+    id: 37, unit: "UNIT 10  ◆  Symbol・WeakMap・カスタムエラー", rank: "PLATINUM",
+    title: "WeakMap",
+    question: "WeakMap を使ってオブジェクトにプライベートデータを関連付けてください。user オブジェクトに password='secret123' を WeakMap で紐付け、get で取得して出力してください。",
+    hint: "const map = new WeakMap(); map.set(obj, value); map.get(obj); で使います。",
+    answer:
+`const privateData = new WeakMap();
+const user = { name: 'Alice' };
+privateData.set(user, { password: 'secret123' });
+const data = privateData.get(user);
+console.log(data.password);`,
+    expected: "secret123",
+    explanation: "WeakMap はオブジェクトをキーとしてデータを弱参照で保持します。キーオブジェクトが GC されると自動的にエントリも消えます。クラスのプライベートデータの実装やメモリリークを防ぐキャッシュに使われます。"
+  },
+  {
+    id: 38, unit: "UNIT 10  ◆  Symbol・WeakMap・カスタムエラー", rank: "PLATINUM",
+    title: "カスタムエラー",
+    question: "Error を継承した ValidationError クラスを作り（name='ValidationError'）、'無効な値' メッセージで throw して catch し、エラー名とメッセージを出力してください。",
+    hint: "class ValidationError extends Error { constructor(msg) { super(msg); this.name = 'ValidationError'; } } で定義します。",
+    answer:
+`class ValidationError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'ValidationError';
+  }
+}
+try {
+  throw new ValidationError('無効な値');
+} catch (e) {
+  console.log(e.name);
+  console.log(e.message);
+}`,
+    expected: "ValidationError\n無効な値",
+    explanation: "Error を継承してカスタムエラークラスを作ると、instanceof で種類を判別できます。name を設定しないと 'Error' のままになるため必ず設定します。try/catch の catch でエラーの種類ごとに処理を分けられます。"
+  },
+  {
+    id: 39, unit: "UNIT 10  ◆  Symbol・WeakMap・カスタムエラー", rank: "PLATINUM",
+    title: "Iteratorプロトコル",
+    question: "[Symbol.iterator]() メソッドを持つ Range クラスを実装し、new Range(1, 5) を for...of でループして 1〜5 を出力してください。",
+    hint: "[Symbol.iterator]() の中で { next() { return { value, done } } } を返します。",
+    answer:
+`class Range {
+  constructor(start, end) {
+    this.start = start;
+    this.end = end;
+  }
+  [Symbol.iterator]() {
+    let current = this.start;
+    const end = this.end;
+    return {
+      next() {
+        return current <= end
+          ? { value: current++, done: false }
+          : { value: undefined, done: true };
+      }
+    };
+  }
+}
+for (const n of new Range(1, 5)) console.log(n);`,
+    expected: "1\n2\n3\n4\n5",
+    explanation: "[Symbol.iterator]() を実装するとオブジェクトが for...of や スプレッド構文で使えるようになります。{ value, done } オブジェクトを返す next() メソッドを持つイテレータを返します。"
+  },
+  {
+    id: 40, unit: "UNIT 10  ◆  Symbol・WeakMap・カスタムエラー", rank: "PLATINUM",
+    title: "Mapの活用",
+    question: "Map を使って ['cat','dog','cat','bird','dog','cat'] の各単語の出現回数を数え、Map のエントリを出現数の多い順にソートして '単語: 回数' 形式で出力してください。",
+    hint: "map.get(word) || 0 で現在の値を取得し、map.set(word, count+1) で更新します。[...map.entries()].sort でソートできます。",
+    answer:
+`const words = ['cat','dog','cat','bird','dog','cat'];
+const map = new Map();
+for (const w of words) map.set(w, (map.get(w) || 0) + 1);
+const sorted = [...map.entries()].sort((a, b) => b[1] - a[1]);
+for (const [word, count] of sorted) console.log(\`\${word}: \${count}\`);`,
+    expected: "cat: 3\ndog: 2\nbird: 1",
+    explanation: "Map はキーと値のペアを順序付きで管理します。通常オブジェクトと違い任意の型をキーにでき、size プロパティで要素数を取得できます。頻度カウントやキャッシュの実装に便利です。"
+  },
+  {
+    id: 41, unit: "UNIT 10  ◆  Symbol・WeakMap・カスタムエラー", rank: "PLATINUM",
+    title: "Array.from と Set",
+    question: "Array.from と Set を組み合わせて [1,2,2,3,3,3,4,4,4,4] から重複を除いた配列を作り、さらに各要素を2乗した配列を出力してください。",
+    hint: "[...new Set(arr)] で重複除去、.map(x => x**2) で2乗できます。",
+    answer:
+`const arr = [1, 2, 2, 3, 3, 3, 4, 4, 4, 4];
+const unique = Array.from(new Set(arr));
+const squared = unique.map(x => x ** 2);
+console.log(squared);`,
+    expected: "[ 1, 4, 9, 16 ]",
+    explanation: "Set は重複なしのコレクションで、配列と組み合わせると簡単に重複除去ができます。Array.from または [...set] でSetを配列に変換できます。"
+  },
+
+  // ───────────── UNIT 11: 関数型パターン・高度な配列操作 ─────────────
+  {
+    id: 42, unit: "UNIT 11  ◆  関数型パターン・高度な配列操作", rank: "DIAMOND",
+    title: "カリー化（Currying）",
+    question: "カリー化を実装してください。curry(f) に2引数関数を渡すと、curry(add)(3)(4) のように1引数ずつ適用できるようになる関数を作り、curry((a,b) => a + b)(3)(4) の結果を出力してください。",
+    hint: "function curry(f) { return function(a) { return function(b) { return f(a, b); }; }; } と定義します。",
+    answer:
+`function curry(f) {
+  return function(a) {
+    return function(b) {
+      return f(a, b);
+    };
+  };
+}
+const add = curry((a, b) => a + b);
+console.log(add(3)(4));`,
+    expected: "7",
+    explanation: "カリー化は多引数関数を「1引数を受け取って次の引数を待つ関数」に変換する技法です。引数の一部を固定した部分適用関数を作るのに便利で、関数型プログラミングの基本概念です。"
+  },
+  {
+    id: 43, unit: "UNIT 11  ◆  関数型パターン・高度な配列操作", rank: "DIAMOND",
+    title: "メモ化（Memoization）",
+    question: "メモ化関数 memoize(fn) を実装し、フィボナッチを計算する関数に適用してください。memoize された fib(10) を出力してください（fib(n) = fib(n-1)+fib(n-2), fib(0)=0, fib(1)=1）。",
+    hint: "const cache = {}; で結果をキャッシュし、cache[arg] があれば返します。",
+    answer:
+`function memoize(fn) {
+  const cache = {};
+  return function(n) {
+    if (n in cache) return cache[n];
+    return cache[n] = fn(n);
+  };
+}
+const fib = memoize(function(n) {
+  if (n <= 1) return n;
+  return fib(n - 1) + fib(n - 2);
+});
+console.log(fib(10));`,
+    expected: "55",
+    explanation: "メモ化は計算結果をキャッシュして再利用する最適化技法です。再帰的なフィボナッチは指数時間ですが、メモ化で線形時間になります。React の useMemo や Vue の computed も同じ原理です。"
+  },
+  {
+    id: 44, unit: "UNIT 11  ◆  関数型パターン・高度な配列操作", rank: "DIAMOND",
+    title: "flatMap",
+    question: "[['Alice', 'Bob'], ['Carol', 'Dave'], ['Eve']] を flatMap で1次元配列にフラット化し、各名前の文字数を求めた配列を出力してください。",
+    hint: "arr.flatMap(subArr => subArr.map(name => name.length)) で1ステップでフラット化と変換ができます。",
+    answer:
+`const names = [['Alice', 'Bob'], ['Carol', 'Dave'], ['Eve']];
+const lengths = names.flatMap(arr => arr.map(n => n.length));
+console.log(lengths);`,
+    expected: "[ 5, 3, 5, 4, 3 ]",
+    explanation: "flatMap はmap と flat(1) を組み合わせた操作です。各要素を変換しつつ1段階フラット化します。ネストされた配列を扱う際に便利で、filter+map の組み合わせよりもシンプルに書けます。"
+  },
+  {
+    id: 45, unit: "UNIT 11  ◆  関数型パターン・高度な配列操作", rank: "DIAMOND",
+    title: "Object.entries/fromEntries",
+    question: "Object.entries と Object.fromEntries を使って {a: 1, b: 2, c: 3} の全ての値を2倍にした新しいオブジェクトを作り、出力してください。",
+    hint: "Object.entries(obj) で [[key,val],...] を取得し、.map で変換後、Object.fromEntries で戻します。",
+    answer:
+`const obj = { a: 1, b: 2, c: 3 };
+const doubled = Object.fromEntries(
+  Object.entries(obj).map(([k, v]) => [k, v * 2])
+);
+console.log(doubled);`,
+    expected: "{ a: 2, b: 4, c: 6 }",
+    explanation: "Object.entries でオブジェクトを [key, value] ペアの配列に変換し、配列操作後に Object.fromEntries で戻すパターンはオブジェクトの変換に便利です。イミュータブルにオブジェクトを変換できます。"
+  },
+  {
+    id: 46, unit: "UNIT 11  ◆  関数型パターン・高度な配列操作", rank: "DIAMOND",
+    title: "関数合成（compose）",
+    question: "右から左へ関数を合成する compose(...fns) 関数を実装し、compose(x => x * 2, x => x + 3, x => x * x)(4) の結果を出力してください（4を2乗→+3→×2の順）。",
+    hint: "fns.reduceRight((acc, fn) => fn(acc), x) で右から左に関数を適用できます。",
+    answer:
+`const compose = (...fns) => x => fns.reduceRight((acc, fn) => fn(acc), x);
+const transform = compose(x => x * 2, x => x + 3, x => x * x);
+console.log(transform(4));`,
+    expected: "38",
+    explanation: "関数合成は複数の関数を1つにまとめる技法です。compose は右から左へ適用（4→16→19→38）、pipe は左から右へ適用します。reduceRight で右から左に畳み込みます。"
+  },
+  {
+    id: 47, unit: "UNIT 11  ◆  関数型パターン・高度な配列操作", rank: "DIAMOND",
+    title: "Observerパターン",
+    question: "EventEmitter クラスを実装してください（on/emit メソッド）。'data' イベントに2つのリスナーを登録し、emit('data', 42) で両方が呼ばれることを確認してください。",
+    hint: "this.listeners = {} として、on でリスナー配列に push、emit で全リスナーを呼び出します。",
+    answer:
+`class EventEmitter {
+  constructor() { this.listeners = {}; }
+  on(event, fn) {
+    if (!this.listeners[event]) this.listeners[event] = [];
+    this.listeners[event].push(fn);
+  }
+  emit(event, ...args) {
+    (this.listeners[event] || []).forEach(fn => fn(...args));
+  }
+}
+const emitter = new EventEmitter();
+emitter.on('data', x => console.log('Listener1:', x));
+emitter.on('data', x => console.log('Listener2:', x * 2));
+emitter.emit('data', 42);`,
+    expected: "Listener1: 42\nListener2: 84",
+    explanation: "Observerパターンはイベント駆動アーキテクチャの基本です。Node.js の EventEmitter や ブラウザの addEventListener も同じ原理です。疎結合なコンポーネント間通信を実現します。"
+  },
+
+  // ───────────── UNIT 12: 高度なJSパターン ─────────────
+  {
+    id: 48, unit: "UNIT 12  ◆  高度なJSパターン", rank: "MASTER",
+    title: "Proxyでバリデーション",
+    question: "Proxy を使って、age プロパティに負の値が設定されたとき 'Invalid age' を出力して値を更新しないバリデーターを作ってください。age = 25 と age = -1 を試してください。",
+    hint: "set トラップ内でバリデーションし、問題なければ target[prop] = value; return true; を実行します。",
+    answer:
+`const validator = new Proxy({}, {
+  set(target, prop, value) {
+    if (prop === 'age' && value < 0) {
+      console.log('Invalid age');
+      return true;
+    }
+    target[prop] = value;
+    return true;
+  }
+});
+validator.age = 25;
+console.log(validator.age);
+validator.age = -1;
+console.log(validator.age);`,
+    expected: "25\nInvalid age\n25",
+    explanation: "Proxy の set トラップでプロパティへの書き込みを監視・制御できます。バリデーション、型チェック、アクセスログなど様々な用途に使えます。"
+  },
+  {
+    id: 49, unit: "UNIT 12  ◆  高度なJSパターン", rank: "MASTER",
+    title: "async/await エラー処理",
+    question: "async 関数 fetchUser(id) を定義し、id が 0 のとき reject する Promise を使い、try/catch で 'User not found' を出力してください。id=1 は 'Alice' を返すようにしてください。",
+    hint: "return new Promise((resolve, reject) => { id === 0 ? reject(new Error('User not found')) : resolve('Alice'); }) を await します。",
+    answer:
+`async function fetchUser(id) {
+  const user = await new Promise((resolve, reject) => {
+    id === 0 ? reject(new Error('User not found')) : resolve('Alice');
+  });
+  return user;
+}
+async function main() {
+  console.log(await fetchUser(1));
+  try {
+    await fetchUser(0);
+  } catch (e) {
+    console.log(e.message);
+  }
+}
+main();`,
+    expected: "Alice\nUser not found",
+    explanation: "async/await では reject された Promise が throw されたように扱われ、try/catch で捕捉できます。非同期エラーを同期コードと同じパターンで処理できることが最大のメリットです。"
+  },
+  {
+    id: 50, unit: "UNIT 12  ◆  高度なJSパターン", rank: "MASTER",
+    title: "Strategyパターン（関数版）",
+    question: "支払い方法（'credit'/'cash'/'crypto'）を受け取り、それぞれ異なる手数料率（5%/0%/1%）で合計金額を計算するStrategyパターンを実装してください。金額1000で3種類全て出力してください。",
+    hint: "strategies オブジェクトに各キーごとの関数を持たせ、strategies[method](amount) で呼び出します。",
+    answer:
+`const strategies = {
+  credit: amount => amount * 1.05,
+  cash:   amount => amount,
+  crypto: amount => amount * 1.01
+};
+function pay(method, amount) {
+  const fn = strategies[method];
+  if (!fn) throw new Error('Unknown method');
+  return fn(amount);
+}
+console.log(pay('credit', 1000));
+console.log(pay('cash',   1000));
+console.log(pay('crypto', 1000));`,
+    expected: "1050\n1000\n1010",
+    explanation: "Strategyパターンはアルゴリズムをオブジェクト（または関数）として切り替え可能にします。JavaScript では関数を値として扱えるため、if/switch より簡潔に実装できます。"
   }
 ];
 
@@ -3956,6 +5078,316 @@ DynamicGreeter.new.hello_world`,
     expected:"Hello, World!",
     explanation:"method_missing は未定義メソッドが呼ばれたときに実行される特殊メソッドです。これを使いメソッドを動的に生成できます。Rubyのメタプログラミングの基礎です。"
   },
+
+  // ───────────── UNIT 09: Enumerable・モジュール応用 ─────────────
+  { id:31, unit:"UNIT 09  ◆  Enumerable・モジュール応用", rank:"GOLD",
+    title:"each_with_object",
+    question:"each_with_object を使って ['apple','banana','cherry'] からキーが単語・値が文字数のハッシュを作り出力してください。",
+    hint:"words.each_with_object({}) { |w, h| h[w] = w.length } の形で書けます。",
+    answer:
+`words = ['apple', 'banana', 'cherry']
+result = words.each_with_object({}) { |w, h| h[w] = w.length }
+puts result`,
+    expected:"{'apple'=>5, 'banana'=>6, 'cherry'=>6}",
+    explanation:"each_with_object はアキュムレータオブジェクトを引き継ぎながら each できます。inject/reduce より直感的に中間オブジェクトを構築できます。"
+  },
+  { id:32, unit:"UNIT 09  ◆  Enumerable・モジュール応用", rank:"GOLD",
+    title:"group_by",
+    question:"[1,2,3,4,5,6,7,8,9,10] を group_by で奇数・偶数に分けて出力してください。出力例: {true=>[2,4,6,8,10], false=>[1,3,5,7,9]}",
+    hint:"arr.group_by { |x| x.even? } で偶数かどうかでグループ分けできます。",
+    answer:
+`arr = (1..10).to_a
+grouped = arr.group_by { |x| x.even? }
+puts grouped.inspect`,
+    expected:"{false=>[1, 3, 5, 7, 9], true=>[2, 4, 6, 8, 10]}",
+    explanation:"group_by はブロックの戻り値でグループ分けします。戻り値がハッシュで、キーはブロックの返した値、値は各グループの要素配列です。"
+  },
+  { id:33, unit:"UNIT 09  ◆  Enumerable・モジュール応用", rank:"GOLD",
+    title:"flat_map",
+    question:"[[1,2],[3,4],[5,6]] を flat_map で各要素を2倍にしてフラット化した配列を出力してください。",
+    hint:"nested.flat_map { |arr| arr.map { |x| x * 2 } } でフラット化と変換を一度にできます。",
+    answer:
+`nested = [[1,2],[3,4],[5,6]]
+result = nested.flat_map { |arr| arr.map { |x| x * 2 } }
+puts result.inspect`,
+    expected:"[2, 4, 6, 8, 10, 12]",
+    explanation:"flat_map は map してから flatten(1) する操作を一度に行います。ネストした配列を変換しながら平坦化したいときに使います。"
+  },
+  { id:34, unit:"UNIT 09  ◆  Enumerable・モジュール応用", rank:"GOLD",
+    title:"Comparable モジュール",
+    question:"Comparable をインクルードし <=> 演算子を実装した Temperature クラスを定義し、[25, 10, 37, 0] を温度オブジェクトのソートで出力してください。",
+    hint:"include Comparable して def <=>(other); self.value <=> other.value; end を実装します。",
+    answer:
+`class Temperature
+  include Comparable
+  attr_reader :value
+  def initialize(v); @value = v; end
+  def <=>(other); @value <=> other.value; end
+  def to_s; "#{@value}度"; end
+end
+temps = [25, 10, 37, 0].map { |v| Temperature.new(v) }
+puts temps.sort.map(&:to_s).inspect`,
+    expected:'["0度", "10度", "25度", "37度"]',
+    explanation:"Comparable をインクルードして <=> を実装すると、sort、min、max、between? などが自動で使えるようになります。"
+  },
+  { id:35, unit:"UNIT 09  ◆  Enumerable・モジュール応用", rank:"GOLD",
+    title:"モジュールのMixin",
+    question:"Greetable モジュールに greet メソッドを定義し、Person クラスと Robot クラスに include して、両者から greet を呼んでください。出力例: 'Hello, I am Alice' / 'Hello, I am R2D2'",
+    hint:"module Greetable; def greet; puts \"Hello, I am #{name}\"; end; end と定義します。",
+    answer:
+`module Greetable
+  def greet
+    puts "Hello, I am #{name}"
+  end
+end
+class Person
+  include Greetable
+  attr_reader :name
+  def initialize(n); @name = n; end
+end
+class Robot
+  include Greetable
+  attr_reader :name
+  def initialize(n); @name = n; end
+end
+Person.new("Alice").greet
+Robot.new("R2D2").greet`,
+    expected:"Hello, I am Alice\nHello, I am R2D2",
+    explanation:"モジュールは多重継承の代わりに機能を共有する仕組みです。include でインスタンスメソッドとして、extend でクラスメソッドとして追加できます。"
+  },
+
+  // ───────────── UNIT 10: 例外・ブロック・高度なRuby ─────────────
+  { id:36, unit:"UNIT 10  ◆  例外・ブロック・高度なRuby", rank:"PLATINUM",
+    title:"例外処理",
+    question:"begin/rescue/ensure を使って、0除算例外を捕捉して 'エラー: ゼロ除算' を出力し、ensure で '処理完了' を出力してください。",
+    hint:"begin; 10 / 0; rescue ZeroDivisionError => e; puts e.message; ensure; puts '処理完了'; end の形式です。",
+    answer:
+`begin
+  result = 10 / 0
+  puts result
+rescue ZeroDivisionError => e
+  puts "エラー: #{e.message}"
+ensure
+  puts "処理完了"
+end`,
+    expected:"エラー: divided by 0\n処理完了",
+    explanation:"rescue で例外を捕捉し、ensure でエラー有無にかかわらず必ず実行する処理を書きます。ensure はファイルクローズやリソース解放に使われます。"
+  },
+  { id:37, unit:"UNIT 10  ◆  例外・ブロック・高度なRuby", rank:"PLATINUM",
+    title:"Struct",
+    question:"Struct.new(:name, :age) を使って Person 構造体を定義し、Alice(30) と Bob(25) を作り、年齢でソートして出力してください。",
+    hint:"Person = Struct.new(:name, :age) で構造体が作れます。ソートは sort_by { |p| p.age } を使います。",
+    answer:
+`Person = Struct.new(:name, :age)
+people = [Person.new("Alice", 30), Person.new("Bob", 25)]
+people.sort_by { |p| p.age }.each { |p| puts "#{p.name}: #{p.age}" }`,
+    expected:"Bob: 25\nAlice: 30",
+    explanation:"Struct は属性を持つシンプルなクラスを手軽に作れます。自動的に attr_accessor、==、to_s などが定義されます。データ構造を素早くプロトタイプするのに便利です。"
+  },
+  { id:38, unit:"UNIT 10  ◆  例外・ブロック・高度なRuby", rank:"PLATINUM",
+    title:"Procとlambdaの違い",
+    question:"lambda と Proc.new の2種類でそれぞれ引数を2乗する関数を作り、どちらも 5 を渡して結果を出力してください。",
+    hint:"sq_lambda = lambda { |x| x ** 2 }; sq_proc = Proc.new { |x| x ** 2 } のように定義し、.call(5) で呼び出します。",
+    answer:
+`sq_lambda = lambda { |x| x ** 2 }
+sq_proc = Proc.new { |x| x ** 2 }
+puts sq_lambda.call(5)
+puts sq_proc.call(5)`,
+    expected:"25\n25",
+    explanation:"lambda と Proc は似ていますが違いがあります。lambda は引数の数を厳密にチェックし、return はラムダ内のみ。Proc は引数が足りなくてもnil扱いし、return はメソッド全体から返ります。"
+  },
+  { id:39, unit:"UNIT 10  ◆  例外・ブロック・高度なRuby", rank:"PLATINUM",
+    title:"正規表現",
+    question:"'Phone: 090-1234-5678, TEL: 03-9876-5432' から scan で全電話番号を抽出し、1行ずつ出力してください。",
+    hint:"str.scan(/\\d{2,4}-\\d{3,4}-\\d{4}/) で電話番号パターンを検索できます。",
+    answer:
+`text = 'Phone: 090-1234-5678, TEL: 03-9876-5432'
+phones = text.scan(/\d{2,4}-\d{3,4}-\d{4}/)
+phones.each { |p| puts p }`,
+    expected:"090-1234-5678\n03-9876-5432",
+    explanation:"scan は文字列からパターンに一致する全ての部分を配列で返します。正規表現の \\d は数字、{n,m} は n〜m 回の繰り返しを意味します。"
+  },
+  { id:40, unit:"UNIT 10  ◆  例外・ブロック・高度なRuby", rank:"PLATINUM",
+    title:"Enumerable#inject",
+    question:"inject を使って [1,2,3,4,5] の合計と積をそれぞれ求めて出力してください。",
+    hint:"arr.inject(:+) で合計、arr.inject(:*) で積を求めます。",
+    answer:
+`arr = [1, 2, 3, 4, 5]
+puts arr.inject(:+)
+puts arr.inject(:*)`,
+    expected:"15\n120",
+    explanation:"inject（reduce）は畳み込み演算です。:+ でシンボルを渡すとその演算子メソッドが呼ばれます。初期値を指定するなら inject(0) { |sum, x| sum + x } と書きます。"
+  },
+  { id:41, unit:"UNIT 10  ◆  例外・ブロック・高度なRuby", rank:"PLATINUM",
+    title:"ハッシュの高度な操作",
+    question:"scores = {Alice: 85, Bob: 72, Carol: 91, Dave: 68} から平均以上のスコアの人だけ抽出して名前とスコアを出力してください。",
+    hint:"avg = scores.values.sum.to_f / scores.size で平均を計算し、select でフィルタします。",
+    answer:
+`scores = {Alice: 85, Bob: 72, Carol: 91, Dave: 68}
+avg = scores.values.sum.to_f / scores.size
+scores.select { |_, v| v >= avg }.each { |k, v| puts "#{k}: #{v}" }`,
+    expected:"Alice: 85\nCarol: 91",
+    explanation:"ハッシュの select はブロックが true を返したキー・値ペアだけを含む新しいハッシュを返します。each でキーと値を分解して出力できます。"
+  },
+
+  // ───────────── UNIT 11: オブジェクト指向・高度なパターン ─────────────
+  { id:42, unit:"UNIT 11  ◆  オブジェクト指向・高度なパターン", rank:"DIAMOND",
+    title:"継承とsuper",
+    question:"Animal クラス（speak メソッド: '...'）を継承した Dog（'ワン！'）と Cat（'ニャン！'）クラスを作り、super を使って Animal の speak も呼んでください。",
+    hint:"super で親クラスの同名メソッドを呼び出せます。",
+    answer:
+`class Animal
+  def speak
+    puts "..."
+  end
+end
+class Dog < Animal
+  def speak
+    super
+    puts "ワン！"
+  end
+end
+class Cat < Animal
+  def speak
+    super
+    puts "ニャン！"
+  end
+end
+Dog.new.speak
+Cat.new.speak`,
+    expected:"...\nワン！\n...\nニャン！",
+    explanation:"< で継承し、super で親クラスのメソッドを呼び出せます。Ruby は単一継承ですが、モジュールで多重継承的な機能を実現できます。"
+  },
+  { id:43, unit:"UNIT 11  ◆  オブジェクト指向・高度なパターン", rank:"DIAMOND",
+    title:"Enumerable のカスタム実装",
+    question:"each メソッドと Enumerable のインクルードで、NumberList クラス（内部に配列を持つ）に map, select, min, max が使えるようにしてください。[3,1,4,1,5,9] でテストしてください。",
+    hint:"class NumberList; include Enumerable; def each(&block); @data.each(&block); end; end の形で定義します。",
+    answer:
+`class NumberList
+  include Enumerable
+  def initialize(data); @data = data; end
+  def each(&block); @data.each(&block); end
+end
+nl = NumberList.new([3, 1, 4, 1, 5, 9])
+puts nl.min
+puts nl.max
+puts nl.select(&:odd?).inspect`,
+    expected:"1\n9\n[3, 1, 1, 5, 9]",
+    explanation:"Enumerable をインクルードして each を定義するだけで、map, select, sort, min, max など50以上のメソッドが使えるようになります。ダックタイピングの強力な活用例です。"
+  },
+  { id:44, unit:"UNIT 11  ◆  オブジェクト指向・高度なパターン", rank:"DIAMOND",
+    title:"Lazy Enumerator",
+    question:"(1..Float::INFINITY).lazy を使って無限シーケンスから偶数かつ100未満の最初の5個を取り出して出力してください。",
+    hint:".lazy.select { |x| x.even? }.first(5) で遅延評価を使えます。",
+    answer:
+`result = (1..Float::INFINITY).lazy.select { |x| x.even? && x < 100 }.first(5)
+puts result.inspect`,
+    expected:"[2, 4, 6, 8, 10]",
+    explanation:"lazy はEnumerable を遅延評価に変換します。無限シーケンスから必要な分だけ取り出せるため、first(n) で打ち切れます。大量データを効率的に処理できます。"
+  },
+  { id:45, unit:"UNIT 11  ◆  オブジェクト指向・高度なパターン", rank:"DIAMOND",
+    title:"Observerパターン",
+    question:"Observable モジュール（Ruby標準ライブラリ）を使わずに、シンプルな Observer パターンを実装してください。EventBus にリスナーを登録し、publish でイベントを発行、全リスナーが呼ばれることを確認してください。",
+    hint:"@listeners = [] に block を push し、publish で each { |l| l.call } を実行します。",
+    answer:
+`class EventBus
+  def initialize; @listeners = []; end
+  def subscribe(&block); @listeners << block; end
+  def publish(event)
+    @listeners.each { |l| l.call(event) }
+  end
+end
+bus = EventBus.new
+bus.subscribe { |e| puts "Listener1: #{e}" }
+bus.subscribe { |e| puts "Listener2: #{e.upcase}" }
+bus.publish("hello")`,
+    expected:"Listener1: hello\nListener2: HELLO",
+    explanation:"Observerパターンはイベント駆動設計の基本です。Rubyのブロックを使うと簡潔に実装できます。Ruby 標準の Observable モジュールも同じ原理です。"
+  },
+  { id:46, unit:"UNIT 11  ◆  オブジェクト指向・高度なパターン", rank:"DIAMOND",
+    title:"Fiber（コルーチン）",
+    question:"Fiber を使って、resume のたびに 'Step 1'、'Step 2'、'Step 3' を順に出力するコルーチンを実装してください。",
+    hint:"Fiber.new { Fiber.yield 'Step 1'; Fiber.yield 'Step 2'; 'Step 3' } を定義し、f.resume を3回呼びます。",
+    answer:
+`f = Fiber.new do
+  Fiber.yield "Step 1"
+  Fiber.yield "Step 2"
+  "Step 3"
+end
+3.times { puts f.resume }`,
+    expected:"Step 1\nStep 2\nStep 3",
+    explanation:"Fiberはコルーチンの実装です。Fiber.yield で実行を一時停止し、resume で再開します。ジェネレータや非同期処理の基盤として使われます。"
+  },
+  { id:47, unit:"UNIT 11  ◆  オブジェクト指向・高度なパターン", rank:"DIAMOND",
+    title:"define_method",
+    question:"define_method を使って、['hello', 'goodbye', 'thanks'] の各単語に対して自動的にインスタンスメソッドを生成するクラスを作り、Greeter.new.say_hello 等を呼んでください。",
+    hint:"['hello'].each { |word| define_method(\"say_#{word}\") { puts word } } でメソッドを動的生成できます。",
+    answer:
+`class Greeter
+  ['hello', 'goodbye', 'thanks'].each do |word|
+    define_method("say_#{word}") { puts word }
+  end
+end
+g = Greeter.new
+g.say_hello
+g.say_goodbye
+g.say_thanks`,
+    expected:"hello\ngoodbye\nthanks",
+    explanation:"define_method は実行時にメソッドを動的に定義します。ループ内で使うことで、繰り返しのコードを書かずに複数のメソッドを自動生成できます。Rubyメタプログラミングの核心技法です。"
+  },
+
+  // ───────────── UNIT 12: 高度なRubyパターン ─────────────
+  { id:48, unit:"UNIT 12  ◆  高度なRubyパターン", rank:"MASTER",
+    title:"tap と then",
+    question:"tap と then（yield_self）を使って、配列の変換パイプラインを書いてください。[1,2,3,4,5] を tap でデバッグ出力し、map で2倍にして then で合計を出力してください。",
+    hint:"arr.tap { |a| puts a.inspect }.map { |x| x*2 }.then { |a| puts a.sum } の形で書けます。",
+    answer:
+`[1, 2, 3, 4, 5]
+  .tap { |a| puts a.inspect }
+  .map { |x| x * 2 }
+  .then { |a| puts a.sum }`,
+    expected:"[1, 2, 3, 4, 5]\n30",
+    explanation:"tap はオブジェクト自身を yield してからそのまま返すので、メソッドチェーン中にデバッグ出力を挿入できます。then（yield_self）は戻り値をブロックの結果に変換します。"
+  },
+  { id:49, unit:"UNIT 12  ◆  高度なRubyパターン", rank:"MASTER",
+    title:"Memoizationパターン",
+    question:"||= を使ったメモ化で、フィボナッチを計算するメソッドを実装してください。@memo ハッシュを使って fib(20) を計算し出力してください。",
+    hint:"def fib(n); @memo ||= {}; @memo[n] ||= n <= 1 ? n : fib(n-1) + fib(n-2); end と定義します。",
+    answer:
+`class Fibonacci
+  def initialize; @memo = {}; end
+  def fib(n)
+    @memo[n] ||= n <= 1 ? n : fib(n-1) + fib(n-2)
+  end
+end
+puts Fibonacci.new.fib(20)`,
+    expected:"6765",
+    explanation:"||= はハッシュキーが nil または false のときだけ代入します。これでメモ化（結果キャッシュ）を簡潔に実装できます。再帰的なフィボナッチが指数時間から線形時間になります。"
+  },
+  { id:50, unit:"UNIT 12  ◆  高度なRubyパターン", rank:"MASTER",
+    title:"DSL（ドメイン固有言語）",
+    question:"instance_eval を使ったDSLで、Config クラスに設定を定義できるようにしてください。config { set :host, 'localhost'; set :port, 3000 } を実行して host と port を出力してください。",
+    hint:"def config(&block); c = Config.new; c.instance_eval(&block); c; end と定義し、Config クラスに set メソッドを実装します。",
+    answer:
+`class Config
+  attr_reader :settings
+  def initialize; @settings = {}; end
+  def set(key, value); @settings[key] = value; end
+end
+def config(&block)
+  c = Config.new
+  c.instance_eval(&block)
+  c
+end
+c = config {
+  set :host, 'localhost'
+  set :port, 3000
+}
+puts c.settings[:host]
+puts c.settings[:port]`,
+    expected:"localhost\n3000",
+    explanation:"instance_eval でブロックを特定オブジェクトのコンテキストで実行できます。ブロック内の self がそのオブジェクトになるため、メソッドを直接呼べます。RubyのDSL（RSpec、Rakeなど）の基本原理です。"
+  }
 ];
 
 const rubyMissions = [
@@ -4683,6 +6115,319 @@ console.log(cfg.server.port);`,
     expected:"localhost\n3000",
     explanation:"再帰的な型定義で深くネストされたオブジェクトにも型制約を適用できます。これはTypeScriptの型システムの強力な機能の一つです。"
   },
+
+  // ───────────── UNIT 09: ユニオン型・型ガード・判別共用体 ─────────────
+  { id:31, unit:"UNIT 09  ◆  ユニオン型・型ガード・判別共用体", rank:"GOLD",
+    title:"ユニオン型",
+    question:"string | number を受け取り、数値なら2倍、文字列なら大文字にして返す double(x) 関数を書き、double(5) と double('hello') を出力してください。",
+    hint:"typeof x === 'number' で数値判定できます。",
+    answer:
+`function double(x: string | number): string | number {
+  return typeof x === 'number' ? x * 2 : x.toUpperCase();
+}
+console.log(double(5));
+console.log(double('hello'));`,
+    expected:"10\nHELLO",
+    explanation:"ユニオン型（|）は複数の型のいずれかを表します。typeof、instanceof などで型を絞り込む操作を型ガードといいます。TypeScriptはブロック内で自動的に型を推論（型の絞り込み）します。"
+  },
+  { id:32, unit:"UNIT 09  ◆  ユニオン型・型ガード・判別共用体", rank:"GOLD",
+    title:"判別共用体",
+    question:"type Shape = { kind: 'circle'; r: number } | { kind: 'rect'; w: number; h: number } を定義し、area(s: Shape) 関数をswitch で実装して circle(r=5) と rect(4×6) の面積を出力してください。",
+    hint:"switch(s.kind) { case 'circle': return Math.PI * s.r ** 2; ... } と書きます。",
+    answer:
+`type Shape = { kind: 'circle'; r: number } | { kind: 'rect'; w: number; h: number };
+function area(s: Shape): number {
+  switch (s.kind) {
+    case 'circle': return 3.14159 * s.r ** 2;
+    case 'rect':   return s.w * s.h;
+  }
+}
+console.log(area({ kind: 'circle', r: 5 }).toFixed(2));
+console.log(area({ kind: 'rect', w: 4, h: 6 }));`,
+    expected:"78.54\n24",
+    explanation:"判別共用体（Discriminated Union）はkindフィールドで型を識別します。switch/if で kind を絞り込むと TypeScript が対応する型のプロパティを自動認識します。"
+  },
+  { id:33, unit:"UNIT 09  ◆  ユニオン型・型ガード・判別共用体", rank:"GOLD",
+    title:"型述語（type predicate）",
+    question:"isString(x: unknown): x is string 型述語関数を定義し、unknown[] から文字列のみを抽出して出力してください。配列: [1, 'hello', true, 'world', 42]",
+    hint:"function isString(x: unknown): x is string { return typeof x === 'string'; } と書き、filter(isString) で絞り込みます。",
+    answer:
+`function isString(x: unknown): x is string {
+  return typeof x === 'string';
+}
+const mixed: unknown[] = [1, 'hello', true, 'world', 42];
+const strings = mixed.filter(isString);
+console.log(strings);`,
+    expected:"[ 'hello', 'world' ]",
+    explanation:"型述語（x is T）は関数の戻り値が true のとき引数が T 型であることをコンパイラに伝えます。filter などと組み合わせると型安全に配列を絞り込めます。"
+  },
+  { id:34, unit:"UNIT 09  ◆  ユニオン型・型ガード・判別共用体", rank:"GOLD",
+    title:"インターセクション型",
+    question:"type Named = { name: string }; type Aged = { age: number }; を定義し、Named & Aged のインターセクション型の変数を作って name と age を出力してください。",
+    hint:"const p: Named & Aged = { name: 'Alice', age: 30 }; のように両方の型の条件を満たす必要があります。",
+    answer:
+`type Named = { name: string };
+type Aged  = { age: number };
+type Person = Named & Aged;
+const p: Person = { name: 'Alice', age: 30 };
+console.log(p.name);
+console.log(p.age);`,
+    expected:"Alice\n30",
+    explanation:"インターセクション型（&）は複数の型を全て満たす型を作ります。ユニオン型（|）のいずれかと対比して、&は両方の全プロパティを持つ必要があります。"
+  },
+  { id:35, unit:"UNIT 09  ◆  ユニオン型・型ガード・判別共用体", rank:"GOLD",
+    title:"Generics（基本）",
+    question:"型パラメータ T を使った identity<T>(x: T): T 関数と、配列から最初の要素を返す first<T>(arr: T[]): T | undefined 関数を定義してテストしてください。",
+    hint:"function identity<T>(x: T): T { return x; } のように型パラメータを使います。",
+    answer:
+`function identity<T>(x: T): T { return x; }
+function first<T>(arr: T[]): T | undefined { return arr[0]; }
+console.log(identity(42));
+console.log(identity('hello'));
+console.log(first([10, 20, 30]));
+console.log(first([]));`,
+    expected:"42\nhello\n10\nundefined",
+    explanation:"ジェネリクスは型を汎用化します。呼び出し時に型が推論されるため型引数を省略でき、型安全を保ちながら再利用性の高い関数を作れます。"
+  },
+
+  // ───────────── UNIT 10: ユーティリティ型・Mapped Types ─────────────
+  { id:36, unit:"UNIT 10  ◆  ユーティリティ型・Mapped Types", rank:"PLATINUM",
+    title:"Partial と Required",
+    question:"User = { name: string; age: number; email: string } を定義し、Partial<User> で全て省略可能な更新型、Required<Partial<User>> で全て必須に戻す型を示し、それぞれオブジェクトを出力してください。",
+    hint:"Partial<T> は全プロパティをオプショナルに、Required<T> は全プロパティを必須にします。",
+    answer:
+`type User = { name: string; age: number; email: string };
+const update: Partial<User> = { name: 'Bob' };
+const full: Required<Partial<User>> = { name: 'Alice', age: 30, email: 'a@b.com' };
+console.log(update.name);
+console.log(full.age);`,
+    expected:"Bob\n30",
+    explanation:"Partial<T> は全フィールドを ? オプショナルにします。PATCHリクエストの型など「一部だけ更新する」場面に使います。Required は逆に全フィールドを必須にします。"
+  },
+  { id:37, unit:"UNIT 10  ◆  ユーティリティ型・Mapped Types", rank:"PLATINUM",
+    title:"Pick と Omit",
+    question:"type User = { id: number; name: string; email: string; password: string } から、Pick<User, 'id'|'name'> でid/nameのみの型を、Omit<User, 'password'> でpasswordを除いた型を作り、それぞれ出力してください。",
+    hint:"Pick<T, K> は型から特定キーのみを抽出、Omit<T, K> は特定キーを除外します。",
+    answer:
+`type User = { id: number; name: string; email: string; password: string };
+const preview: Pick<User, 'id' | 'name'> = { id: 1, name: 'Alice' };
+const safe: Omit<User, 'password'> = { id: 1, name: 'Alice', email: 'a@b.com' };
+console.log(preview.name);
+console.log(safe.email);`,
+    expected:"Alice\na@b.com",
+    explanation:"Pick は既存型から必要なフィールドのみ抽出、Omit は不要フィールドを除外します。APIレスポンスの型設計でパスワードなど機密情報を除いた型を作るのに便利です。"
+  },
+  { id:38, unit:"UNIT 10  ◆  ユーティリティ型・Mapped Types", rank:"PLATINUM",
+    title:"ReturnType と Parameters",
+    question:"(a: number, b: string) => boolean 型の関数 fn を定義し、ReturnType<typeof fn> と Parameters<typeof fn> で型情報を取得して、変数に代入して値を出力してください。",
+    hint:"type R = ReturnType<typeof fn>; type P = Parameters<typeof fn>; で型を取得できます。",
+    answer:
+`function fn(a: number, b: string): boolean {
+  return a > 0;
+}
+type R = ReturnType<typeof fn>;
+type P = Parameters<typeof fn>;
+const result: R = fn(1, 'hello');
+const params: P = [42, 'world'];
+console.log(result);
+console.log(params[0]);`,
+    expected:"true\n42",
+    explanation:"ReturnType<T> は関数型 T の戻り値型を取得します。Parameters<T> は引数の型をタプルで取得します。既存関数から型を再利用したいときに便利な組み込みユーティリティ型です。"
+  },
+  { id:39, unit:"UNIT 10  ◆  ユーティリティ型・Mapped Types", rank:"PLATINUM",
+    title:"Readonly と Record",
+    question:"Readonly<{ x: number; y: number }> で不変な座標型を作り、Record<string, number> でスコア辞書を作って出力してください。",
+    hint:"Readonly は全プロパティを読み取り専用に。Record<K, V> はキー型 K・値型 V のオブジェクト型を作ります。",
+    answer:
+`const point: Readonly<{ x: number; y: number }> = { x: 3, y: 4 };
+console.log(point.x);
+const scores: Record<string, number> = { Alice: 95, Bob: 82 };
+console.log(scores['Alice']);`,
+    expected:"3\n95",
+    explanation:"Readonly<T> は全プロパティを readonly にして再代入をコンパイルエラーにします。Record<K, V> は動的なキーを持つオブジェクトの型を安全に定義できます。"
+  },
+  { id:40, unit:"UNIT 10  ◆  ユーティリティ型・Mapped Types", rank:"PLATINUM",
+    title:"カスタムMapped Type",
+    question:"type Nullable<T> = { [K in keyof T]: T[K] | null } をカスタム Mapped Type で定義し、User = {name:string; age:number} の Nullable 版を作って各フィールドを出力してください。",
+    hint:"{ [K in keyof T]: T[K] | null } でT の全キーを T[K]|null 型にマップします。",
+    answer:
+`type User = { name: string; age: number };
+type Nullable<T> = { [K in keyof T]: T[K] | null };
+const u: Nullable<User> = { name: 'Alice', age: null };
+console.log(u.name);
+console.log(u.age);`,
+    expected:"Alice\nnull",
+    explanation:"Mapped Type は既存型の全プロパティを変換した新しい型を作ります。[K in keyof T] でT の各キーを走査し、新しい型を定義します。Partial、Readonly などの組み込みユーティリティ型もこの仕組みで実装されています。"
+  },
+  { id:41, unit:"UNIT 10  ◆  ユーティリティ型・Mapped Types", rank:"PLATINUM",
+    title:"条件型（Conditional Types）",
+    question:"type IsString<T> = T extends string ? 'yes' : 'no' を定義し、IsString<string> と IsString<number> の型を変数に代入して出力してください。",
+    hint:"T extends U ? X : Y で条件型を定義します。T が U に代入可能なら X、そうでなければ Y です。",
+    answer:
+`type IsString<T> = T extends string ? 'yes' : 'no';
+const a: IsString<string> = 'yes';
+const b: IsString<number> = 'no';
+console.log(a);
+console.log(b);`,
+    expected:"yes\nno",
+    explanation:"条件型（Conditional Types）はT extends U ? X : Y の形で型レベルの条件分岐を表現します。ジェネリクスと組み合わせて柔軟な型変換ロジックを実装できます。"
+  },
+
+  // ───────────── UNIT 11: Genericsクラス・高度なパターン ─────────────
+  { id:42, unit:"UNIT 11  ◆  Genericsクラス・高度なパターン", rank:"DIAMOND",
+    title:"ジェネリクスクラス",
+    question:"型パラメータ T を持つ Stack<T> クラスを実装し（push/pop/peek/isEmpty）、Stack<number> と Stack<string> でテストしてください。",
+    hint:"class Stack<T> { private items: T[] = []; push(item: T) { ... } ... } と定義します。",
+    answer:
+`class Stack<T> {
+  private items: T[] = [];
+  push(item: T): void { this.items.push(item); }
+  pop(): T | undefined { return this.items.pop(); }
+  peek(): T | undefined { return this.items[this.items.length - 1]; }
+  isEmpty(): boolean { return this.items.length === 0; }
+}
+const ns = new Stack<number>();
+ns.push(1); ns.push(2); ns.push(3);
+console.log(ns.pop());
+const ss = new Stack<string>();
+ss.push('a'); ss.push('b');
+console.log(ss.peek());`,
+    expected:"3\nb",
+    explanation:"ジェネリクスクラスは型安全なデータ構造を実装できます。Stack<number> と Stack<string> は同じクラスから生成されますが、型の安全性が保証されます。"
+  },
+  { id:43, unit:"UNIT 11  ◆  Genericsクラス・高度なパターン", rank:"DIAMOND",
+    title:"ジェネリクス制約",
+    question:"T extends { length: number } の制約付きジェネリクス関数 longest<T extends {length:number}>(a: T, b: T): T を定義し、longest('abc', 'de') と longest([1,2,3], [4,5]) を出力してください。",
+    hint:"extends { length: number } で length プロパティを持つ型に制約をかけます。",
+    answer:
+`function longest<T extends { length: number }>(a: T, b: T): T {
+  return a.length >= b.length ? a : b;
+}
+console.log(longest('abc', 'de'));
+console.log(longest([1, 2, 3], [4, 5]));`,
+    expected:"abc\n[ 1, 2, 3 ]",
+    explanation:"ジェネリクス制約（extends）でT が持つべきプロパティを指定できます。これにより length プロパティの存在が保証され、型安全に比較できます。文字列も配列も length を持つので両方に使えます。"
+  },
+  { id:44, unit:"UNIT 11  ◆  Genericsクラス・高度なパターン", rank:"DIAMOND",
+    title:"関数オーバーロード",
+    question:"TypeScriptの関数オーバーロードで、引数が数値のとき数値を2倍、文字列のとき2回繰り返す double 関数を定義してください。double(5) と double('ab') をテストしてください。",
+    hint:"先にオーバーロードシグネチャを2行書き、その後で実装を書きます。",
+    answer:
+`function double(x: number): number;
+function double(x: string): string;
+function double(x: number | string): number | string {
+  return typeof x === 'number' ? x * 2 : x.repeat(2);
+}
+console.log(double(5));
+console.log(double('ab'));`,
+    expected:"10\nabab",
+    explanation:"関数オーバーロードで引数の型に応じた戻り値の型を正確に定義できます。シグネチャを複数書き、最後に実装を書きます。呼び出し側は入力型に応じた正確な戻り値型を得られます。"
+  },
+  { id:45, unit:"UNIT 11  ◆  Genericsクラス・高度なパターン", rank:"DIAMOND",
+    title:"namespaceとモジュール分離",
+    question:"namespace Geometry を定義し、その中に Point インターフェース、distance 関数、Circle クラスを入れてください。Geometry.distance({x:0,y:0}, {x:3,y:4}) と new Geometry.Circle({x:0,y:0}, 5).area() を出力してください。",
+    hint:"namespace Geometry { export interface Point {...} export function distance(...){...} export class Circle {...} } の形式で定義します。",
+    answer:
+`namespace Geometry {
+  export interface Point { x: number; y: number; }
+  export function distance(a: Point, b: Point): number {
+    return Math.sqrt((a.x-b.x)**2 + (a.y-b.y)**2);
+  }
+  export class Circle {
+    constructor(public center: Point, public radius: number) {}
+    area(): number { return 3.14159 * this.radius ** 2; }
+  }
+}
+console.log(Geometry.distance({x:0,y:0}, {x:3,y:4}));
+console.log(Geometry.Circle.prototype);
+const c = new Geometry.Circle({x:0,y:0}, 5);
+console.log(c.area().toFixed(2));`,
+    expected:"5\n{}\n78.54",
+    explanation:"namespace は関連する型・関数・クラスをグループ化します。export で外部からアクセスでき、Geometry.distance のように名前空間付きで呼び出します。"
+  },
+  { id:46, unit:"UNIT 11  ◆  Genericsクラス・高度なパターン", rank:"DIAMOND",
+    title:"Decoratorパターン（関数版）",
+    question:"TypeScriptでクラスベースのDecoratorを使わず、関数ラッパーとしてDecoratorパターンを実装してください。withLogging(fn) でラップした add(a,b) を呼ぶと 'Calling add' と結果が出力されるようにしてください。",
+    hint:"function withLogging<T extends (...args: any[]) => any>(fn: T, name: string): T を定義します。",
+    answer:
+`function withLogging<T extends (...args: any[]) => any>(fn: T, name: string): T {
+  return ((...args: any[]) => {
+    console.log(\`Calling \${name}\`);
+    return fn(...args);
+  }) as T;
+}
+function add(a: number, b: number): number { return a + b; }
+const loggedAdd = withLogging(add, 'add');
+console.log(loggedAdd(3, 4));`,
+    expected:"Calling add\n7",
+    explanation:"Decoratorパターンを関数レベルで実装することで、任意の関数に横断的な処理（ロギング、計測など）を追加できます。TypeScriptのジェネリクスで型安全なDecoratorが作れます。"
+  },
+  { id:47, unit:"UNIT 11  ◆  Genericsクラス・高度なパターン", rank:"DIAMOND",
+    title:"infer キーワード",
+    question:"type UnpackPromise<T> = T extends Promise<infer U> ? U : T を定義し、UnpackPromise<Promise<string>> と UnpackPromise<number> の型変数を出力してください。",
+    hint:"infer U で T がPromise<U>に一致するときの型 U を推論できます。",
+    answer:
+`type UnpackPromise<T> = T extends Promise<infer U> ? U : T;
+const a: UnpackPromise<Promise<string>> = 'hello';
+const b: UnpackPromise<number> = 42;
+console.log(a);
+console.log(b);`,
+    expected:"hello\n42",
+    explanation:"infer は条件型の中で型を推論・抽出します。Promise<U> から U を取り出すなど、ネストされた型から内部の型を推論するのに使います。"
+  },
+
+  // ───────────── UNIT 12: 高度なTypeScriptパターン ─────────────
+  { id:48, unit:"UNIT 12  ◆  高度なTypeScriptパターン", rank:"MASTER",
+    title:"Template Literal型",
+    question:"type EventName<T extends string> = `on\${Capitalize<T>}` を定義し、EventName<'click'> と EventName<'change'> 型の変数を作って出力してください。",
+    hint:"Capitalize<T> でT の先頭を大文字にします。テンプレートリテラル型は文字列の組み合わせを型で表現できます。",
+    answer:
+`type EventName<T extends string> = \`on\${Capitalize<T>}\`;
+const click: EventName<'click'> = 'onClick';
+const change: EventName<'change'> = 'onChange';
+console.log(click);
+console.log(change);`,
+    expected:"onClick\nonChange",
+    explanation:"テンプレートリテラル型でstring型のパターンを型として表現できます。Capitalize などの組み込み文字列ユーティリティ型と組み合わせることで動的な文字列型を生成できます。"
+  },
+  { id:49, unit:"UNIT 12  ◆  高度なTypeScriptパターン", rank:"MASTER",
+    title:"satisfies演算子",
+    question:"satisfies を使って、Record<string, string | number> に適合しつつ具体的な型情報を保持するオブジェクトを定義し、.toUpperCase() が呼べることを示してください。",
+    hint:"const config = { host: 'localhost', port: 3000 } satisfies Record<string, string | number>; のように使います。",
+    answer:
+`const config = {
+  host: 'localhost',
+  port: 3000
+} satisfies Record<string, string | number>;
+console.log(config.host.toUpperCase());
+console.log(config.port);`,
+    expected:"LOCALHOST\n3000",
+    explanation:"satisfies演算子（TS4.9+）は型チェックをしながら元の型を保持します。as で型を広げず、型安全に型注釈できます。hostがstring型として推論されるためtoUpperCase()が呼べます。"
+  },
+  { id:50, unit:"UNIT 12  ◆  高度なTypeScriptパターン", rank:"MASTER",
+    title:"型安全なEventEmitter",
+    question:"TypeScriptのジェネリクスで、イベント名と引数の型を安全に管理するEventEmitter<T>クラスを実装してください。T = {data: string; error: Error} として on/emit をテストしてください。",
+    hint:"class EventEmitter<T> { on<K extends keyof T>(event: K, fn: (arg: T[K]) => void) {...} emit<K extends keyof T>(event: K, arg: T[K]) {...} }",
+    answer:
+`class TypedEmitter<T extends Record<string, any>> {
+  private handlers: Partial<{ [K in keyof T]: ((arg: T[K]) => void)[] }> = {};
+  on<K extends keyof T>(event: K, fn: (arg: T[K]) => void) {
+    if (!this.handlers[event]) this.handlers[event] = [];
+    this.handlers[event]!.push(fn);
+  }
+  emit<K extends keyof T>(event: K, arg: T[K]) {
+    (this.handlers[event] || []).forEach(fn => fn(arg));
+  }
+}
+type Events = { data: string; count: number };
+const emitter = new TypedEmitter<Events>();
+emitter.on('data', msg => console.log('Data:', msg));
+emitter.on('count', n => console.log('Count:', n));
+emitter.emit('data', 'hello');
+emitter.emit('count', 42);`,
+    expected:"Data: hello\nCount: 42",
+    explanation:"TypeScriptのジェネリクスとMapped Typeでイベント名とその引数の型を紐付けられます。on/emit で誤ったイベント名や型の値を渡すとコンパイルエラーになる型安全なEventEmitterです。"
+  }
 ];
 
 const typescriptMissions = [
@@ -5259,6 +7004,399 @@ const kotlinProblems = [
     expected:"<h1>Kotlin DSL</h1>\n<p>型安全</p>\n<p>Lambda with Receiver</p>",
     explanation:"レシーバー付きラムダ（T.() -> Unit）はDSL構築の核心です。ブロック内でレシーバーのメソッドを直接呼べます。Kotlin の Jetpack Compose や Ktor などもこのパターンを多用します。"
   },
+
+  // ───────────── UNIT 08: コレクション操作・関数型スタイル ─────────────
+  { id:31, unit:"UNIT 08  ◆  コレクション操作・関数型スタイル", rank:"GOLD",
+    title:"groupBy と mapValues",
+    question:"listOf('apple','avocado','banana','blueberry','cherry') を最初の文字でグループ化し、各グループの単語数を出力してください。",
+    hint:"groupBy { it[0] }.mapValues { it.value.size } でグループ化してサイズに変換できます。",
+    answer:`fun main() {
+    val fruits = listOf("apple","avocado","banana","blueberry","cherry")
+    val grouped = fruits.groupBy { it[0] }.mapValues { it.value.size }
+    grouped.forEach { (k, v) -> println("\$k: \$v") }
+}`,
+    expected:"a: 2\nb: 2\nc: 1",
+    explanation:"groupBy はキーセレクターでコレクションを Map<K, List<V>> に分類します。mapValues で各グループの値を変換できます。"
+  },
+  { id:32, unit:"UNIT 08  ◆  コレクション操作・関数型スタイル", rank:"GOLD",
+    title:"flatten と flatMap",
+    question:"listOf(listOf(1,2,3), listOf(4,5), listOf(6,7,8,9)) を flatten でフラット化し、各要素を2乗した結果を flatMap で求めて出力してください。",
+    hint:"flatten() でネストを解除、flatMap { listOf(it * it) } でフラット化と変換を同時にできます。",
+    answer:`fun main() {
+    val nested = listOf(listOf(1,2,3), listOf(4,5), listOf(6,7,8,9))
+    println(nested.flatten())
+    val doubled = nested.flatMap { list -> list.map { it * it } }
+    println(doubled)
+}`,
+    expected:"[1, 2, 3, 4, 5, 6, 7, 8, 9]\n[1, 4, 9, 16, 25, 36, 49, 64, 81]",
+    explanation:"flatten() はネストされたコレクションを一段階フラット化します。flatMap { transform } は各要素を変換してリストに変え、それをフラット化します。"
+  },
+  { id:33, unit:"UNIT 08  ◆  コレクション操作・関数型スタイル", rank:"GOLD",
+    title:"fold と reduce",
+    question:"listOf(1,2,3,4,5) で fold(初期値0) を使って合計、fold(初期値1) で積、reduce で最大値を求めて出力してください。",
+    hint:"fold(0) { acc, x -> acc + x }、fold(1) { acc, x -> acc * x }、reduce { a, b -> if(a>b) a else b } のように書きます。",
+    answer:`fun main() {
+    val nums = listOf(1, 2, 3, 4, 5)
+    println(nums.fold(0) { acc, x -> acc + x })
+    println(nums.fold(1) { acc, x -> acc * x })
+    println(nums.reduce { a, b -> if (a > b) a else b })
+}`,
+    expected:"15\n120\n5",
+    explanation:"fold は初期値から累積演算します。reduce は最初の要素を初期値として使います。どちらも関数型プログラミングの基本的な集約操作です。"
+  },
+  { id:34, unit:"UNIT 08  ◆  コレクション操作・関数型スタイル", rank:"GOLD",
+    title:"zip と unzip",
+    question:"listOf('Alice','Bob','Charlie') と listOf(85,92,78) を zip し、ペアのリストとして出力してください。さらにそれを unzip して元に戻してください。",
+    hint:"zip(other) でペアのリストを作り、unzip() でタプルに分解します。",
+    answer:`fun main() {
+    val names = listOf("Alice", "Bob", "Charlie")
+    val scores = listOf(85, 92, 78)
+    val pairs = names.zip(scores)
+    println(pairs)
+    val (ns, ss) = pairs.unzip()
+    println(ns)
+    println(ss)
+}`,
+    expected:"[(Alice, 85), (Bob, 92), (Charlie, 78)]\n[Alice, Bob, Charlie]\n[85, 92, 78]",
+    explanation:"zip は2つのリストを対応する要素でペアにします。unzip は逆にペアのリストを2つのリストに分解します。"
+  },
+  { id:35, unit:"UNIT 08  ◆  コレクション操作・関数型スタイル", rank:"GOLD",
+    title:"sortedBy と sortedWith",
+    question:"data class Person(val name: String, val age: Int) のリストを年齢昇順で、次に名前降順でソートして出力してください。Person('Alice',30), Person('Bob',25), Person('Charlie',30)",
+    hint:"sortedWith(compareBy<Person> { it.age }.thenByDescending { it.name }) で複合ソートできます。",
+    answer:`data class Person(val name: String, val age: Int)
+
+fun main() {
+    val people = listOf(Person("Alice", 30), Person("Bob", 25), Person("Charlie", 30))
+    val sorted = people.sortedWith(compareBy<Person> { it.age }.thenByDescending { it.name })
+    sorted.forEach { println("\${it.name}: \${it.age}") }
+}`,
+    expected:"Bob: 25\nCharlie: 30\nAlice: 30",
+    explanation:"sortedWith(Comparator) で複数条件のソートができます。compareBy で第一キー、thenBy/thenByDescending で第二キー以降を指定します。"
+  },
+
+  // ───────────── UNIT 09: Coroutines基礎 ─────────────
+  { id:36, unit:"UNIT 09  ◆  Coroutines基礎", rank:"PLATINUM",
+    title:"suspend関数とrunBlocking",
+    question:"suspend fun fetchData(): String を定義し、delay(100) で疑似待機後に 'data loaded' を返す関数と、runBlocking でそれを呼ぶ main を書いてください。",
+    hint:"suspend fun fetchData(): String { delay(100); return 'data loaded' } と runBlocking { println(fetchData()) }",
+    answer:`import kotlinx.coroutines.*
+
+suspend fun fetchData(): String {
+    delay(100)
+    return "data loaded"
+}
+
+fun main() = runBlocking {
+    val result = fetchData()
+    println(result)
+}`,
+    expected:"data loaded",
+    explanation:"suspend 関数は中断可能な処理を表します。runBlocking はコルーチンをブロッキングに実行するブリッジです。delay はスレッドをブロックせず中断します。"
+  },
+  { id:37, unit:"UNIT 09  ◆  Coroutines基礎", rank:"PLATINUM",
+    title:"launch と async",
+    question:"runBlocking 内で launch で2つの処理を並行実行し、async/await で2つの値を並行計算して合計を出力してください。",
+    hint:"launch { ... } は fire-and-forget、async { ... }.await() は結果を待ちます。",
+    answer:`import kotlinx.coroutines.*
+
+fun main() = runBlocking {
+    val job1 = launch { println("Job 1") }
+    val job2 = launch { println("Job 2") }
+    job1.join(); job2.join()
+    val a = async { 10 }
+    val b = async { 20 }
+    println(a.await() + b.await())
+}`,
+    expected:"Job 1\nJob 2\n30",
+    explanation:"launch はジョブを返す並行処理起動、async はDeferred（未来の値）を返します。join() でジョブ完了を、await() でDeferred の値取得を待ちます。"
+  },
+  { id:38, unit:"UNIT 09  ◆  Coroutines基礎", rank:"PLATINUM",
+    title:"Flow基礎",
+    question:"flow { emit(1); emit(2); emit(3) } を定義し、collect で受け取って各値を出力してください。",
+    hint:"flow { ... } でフローを作り、collect { ... } で収集します。runBlocking 内で実行します。",
+    answer:`import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+
+fun main() = runBlocking {
+    val f = flow {
+        emit(1)
+        emit(2)
+        emit(3)
+    }
+    f.collect { println(it) }
+}`,
+    expected:"1\n2\n3",
+    explanation:"Flow は非同期ストリームです。flow { } ビルダーで冷たいストリームを作り、collect で購読します。各 emit が collect のラムダに渡されます。"
+  },
+  { id:39, unit:"UNIT 09  ◆  Coroutines基礎", rank:"PLATINUM",
+    title:"withContext と Dispatchers",
+    question:"withContext(Dispatchers.Default) 内で重い計算を行い、結果を返す関数 heavyCalc() を定義してください。1から1000の合計を計算して出力してください。",
+    hint:"suspend fun heavyCalc() = withContext(Dispatchers.Default) { (1..1000).sum() }",
+    answer:`import kotlinx.coroutines.*
+
+suspend fun heavyCalc(): Int = withContext(Dispatchers.Default) {
+    (1..1000).sum()
+}
+
+fun main() = runBlocking {
+    println(heavyCalc())
+}`,
+    expected:"500500",
+    explanation:"withContext でディスパッチャーを切り替えます。Dispatchers.Default はCPU集約型処理向け、Dispatchers.IO はI/O向けです。コルーチンはスレッドをブロックせずに切り替えられます。"
+  },
+  { id:40, unit:"UNIT 09  ◆  Coroutines基礎", rank:"PLATINUM",
+    title:"例外処理とCoroutineExceptionHandler",
+    question:"CoroutineExceptionHandler で例外をキャッチし、try/catch で async の例外を処理する方法を示してください。",
+    hint:"val handler = CoroutineExceptionHandler { _, e -> println('caught: ' + e.message) }",
+    answer:`import kotlinx.coroutines.*
+
+fun main() = runBlocking {
+    val handler = CoroutineExceptionHandler { _, e ->
+        println("caught: \${e.message}")
+    }
+    val job = launch(handler) {
+        throw RuntimeException("oops")
+    }
+    job.join()
+    val deferred = async { 42 }
+    try {
+        println(deferred.await())
+    } catch (e: Exception) {
+        println("async error: \${e.message}")
+    }
+}`,
+    expected:"caught: oops\n42",
+    explanation:"launch の例外はCoroutineExceptionHandler で捕捉できます。async の例外は await() 時に throw されるのでtry/catch で処理します。"
+  },
+  { id:41, unit:"UNIT 09  ◆  Coroutines基礎", rank:"PLATINUM",
+    title:"StateFlow と SharedFlow",
+    question:"MutableStateFlow<Int>(0) を作り、1から5まで値を更新しながら collect で受け取って出力するコードを書いてください。",
+    hint:"val state = MutableStateFlow(0) は状態保持のホットフロー。updateとcollectを組み合わせます。",
+    answer:`import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+
+fun main() = runBlocking {
+    val state = MutableStateFlow(0)
+    val job = launch {
+        state.collect { println(it) }
+    }
+    for (i in 1..5) {
+        state.value = i
+        delay(10)
+    }
+    job.cancel()
+}`,
+    expected:"0\n1\n2\n3\n4\n5",
+    explanation:"StateFlow は現在の状態を保持するホットフローです。新しいコレクターは直ちに最新値を受け取ります。SharedFlow はより柔軟な配信ポリシーを持つホットフローです。"
+  },
+
+  // ───────────── UNIT 10: オブジェクト指向と関数型の融合 ─────────────
+  { id:42, unit:"UNIT 10  ◆  オブジェクト指向と関数型の融合", rank:"DIAMOND",
+    title:"Sealed classと網羅的when",
+    question:"sealed class Result<T> { class Success<T>(val data: T) : Result<T>(); class Error(val msg: String) : Result<Nothing>() } を定義し、when で網羅的に処理してください。",
+    hint:"sealed class の全サブクラスは同じファイルで定義します。when は全ケースをカバーすれば else 不要です。",
+    answer:`sealed class Result<out T> {
+    class Success<T>(val data: T) : Result<T>()
+    class Error(val msg: String) : Result<Nothing>()
+}
+
+fun handle(r: Result<String>): String = when (r) {
+    is Result.Success -> "OK: \${r.data}"
+    is Result.Error   -> "NG: \${r.msg}"
+}
+
+fun main() {
+    println(handle(Result.Success("hello")))
+    println(handle(Result.Error("not found")))
+}`,
+    expected:"OK: hello\nNG: not found",
+    explanation:"sealed class は閉じた型階層を作ります。when 式でコンパイラが全サブクラスを把握するので、else なしで網羅的チェックができます。"
+  },
+  { id:43, unit:"UNIT 10  ◆  オブジェクト指向と関数型の融合", rank:"DIAMOND",
+    title:"高階関数とカリー化",
+    question:"Kotlin で curry 関数を実装してください。(Int, Int) -> Int の関数を (Int) -> (Int) -> Int に変換する curry 関数を書き、加算関数に適用してテストしてください。",
+    hint:"fun <A, B, C> curry(f: (A, B) -> C): (A) -> (B) -> C = { a -> { b -> f(a, b) } }",
+    answer:`fun <A, B, C> curry(f: (A, B) -> C): (A) -> (B) -> C = { a -> { b -> f(a, b) } }
+
+fun main() {
+    val add = curry { a: Int, b: Int -> a + b }
+    val add5 = add(5)
+    println(add5(3))
+    println(add5(10))
+    println(add(2)(3))
+}`,
+    expected:"8\n15\n5",
+    explanation:"カリー化は複数引数関数を単一引数関数の連鎖に変換します。Kotlin の高階関数とラムダで実装できます。部分適用を可能にして関数合成をしやすくします。"
+  },
+  { id:44, unit:"UNIT 10  ◆  オブジェクト指向と関数型の融合", rank:"DIAMOND",
+    title:"infix関数と演算子オーバーロード",
+    question:"infix fun Int.times(other: Int) = this * other と operator fun Int.plus(other: Int) と同じ infix 関数 `to` `power` を定義し、3 power 4 を計算して出力してください。",
+    hint:"infix fun Int.power(exp: Int): Int で定義します。",
+    answer:`infix fun Int.power(exp: Int): Int {
+    var result = 1
+    repeat(exp) { result *= this }
+    return result
+}
+
+infix fun String.repeat(n: Int): String = this.repeat(n)
+
+fun main() {
+    println(3 power 4)
+    println(2 power 10)
+    println("ab" repeat 3)
+}`,
+    expected:"81\n1024\nababab",
+    explanation:"infix 関数は中置記法で呼べます。単一引数で拡張関数またはメンバー関数として定義します。DSLや数学的表現をより自然に書けます。"
+  },
+  { id:45, unit:"UNIT 10  ◆  オブジェクト指向と関数型の融合", rank:"DIAMOND",
+    title:"Delegateパターン",
+    question:"interface Printer { fun print(msg: String) } を実装し、class LoggingPrinter(val inner: Printer) : Printer by inner でデリゲートした後、print をオーバーライドしてログを追加してください。",
+    hint:"by inner でデリゲートし、必要なメソッドだけオーバーライドします。",
+    answer:`interface Printer {
+    fun print(msg: String)
+    fun println(msg: String)
+}
+
+class ConsolePrinter : Printer {
+    override fun print(msg: String) = kotlin.io.print(msg)
+    override fun println(msg: String) = kotlin.io.println(msg)
+}
+
+class LoggingPrinter(val inner: Printer) : Printer by inner {
+    override fun println(msg: String) {
+        kotlin.io.println("[LOG] \$msg")
+        inner.println(msg)
+    }
+}
+
+fun main() {
+    val p = LoggingPrinter(ConsolePrinter())
+    p.println("hello")
+}`,
+    expected:"[LOG] hello\nhello",
+    explanation:"Kotlin の by キーワードでデリゲートパターンが簡潔に実装できます。by inner で全メソッドをデリゲートしつつ、必要なものだけオーバーライドして動作を追加できます。"
+  },
+  { id:46, unit:"UNIT 10  ◆  オブジェクト指向と関数型の融合", rank:"DIAMOND",
+    title:"タイプエイリアスと関数型",
+    question:"typealias Predicate<T> = (T) -> Boolean と typealias Transformer<A,B> = (A) -> B を定義し、Int の奇数判定Predicateと文字列変換Transformerを使って listOf(1..10) をフィルタ・変換してください。",
+    hint:"typealias で関数型に名前を付けると可読性が上がります。",
+    answer:`typealias Predicate<T> = (T) -> Boolean
+typealias Transformer<A, B> = (A) -> B
+
+fun main() {
+    val isOdd: Predicate<Int> = { it % 2 != 0 }
+    val toStr: Transformer<Int, String> = { "num:\$it" }
+    val result = (1..10).filter(isOdd).map(toStr)
+    println(result)
+}`,
+    expected:"[num:1, num:3, num:5, num:7, num:9]",
+    explanation:"typealias で複雑な型に意味のある名前を付けられます。関数型の別名を定義することでコードの意図が明確になります。ジェネリクスと組み合わせると汎用的な型エイリアスが作れます。"
+  },
+  { id:47, unit:"UNIT 10  ◆  オブジェクト指向と関数型の融合", rank:"DIAMOND",
+    title:"Arrowライブラリ風の Either型",
+    question:"sealed class Either<L,R> で Left と Right を定義し、map/fold を実装してください。Right(42).map { it * 2 }.fold({ 'error' }, { it.toString() }) を出力してください。",
+    hint:"sealed class Either<out L, out R> { class Left<L>(val value: L) : Either<L, Nothing>() ... }",
+    answer:`sealed class Either<out L, out R> {
+    class Left<L>(val value: L) : Either<L, Nothing>()
+    class Right<R>(val value: R) : Either<Nothing, R>()
+
+    fun <T> map(f: (R) -> T): Either<L, T> = when (this) {
+        is Left  -> Left(value)
+        is Right -> Right(f(value))
+    }
+
+    fun <T> fold(left: (L) -> T, right: (R) -> T): T = when (this) {
+        is Left  -> left(value)
+        is Right -> right(value)
+    }
+}
+
+fun main() {
+    val result = Either.Right(42)
+        .map { it * 2 }
+        .fold({ "error" }, { it.toString() })
+    println(result)
+}`,
+    expected:"84",
+    explanation:"Either型は成功(Right)か失敗(Left)のいずれかを表す関数型プログラミングの概念です。例外を使わず型安全にエラーを表現できます。"
+  },
+
+  // ───────────── UNIT 11-12: 高度なKotlinパターン ─────────────
+  { id:48, unit:"UNIT 11  ◆  高度なKotlinパターン", rank:"MASTER",
+    title:"メタプログラミングとリフレクション",
+    question:"data class Person(val name: String, val age: Int) のプロパティ名と値を KClass のリフレクションで動的に取得して出力してください。",
+    hint:"Person::class.memberProperties でプロパティ一覧を取得できます（kotlin-reflect が必要）。",
+    answer:`data class Person(val name: String, val age: Int)
+
+fun main() {
+    val p = Person("Alice", 30)
+    p::class.members
+        .filterIsInstance<kotlin.reflect.KProperty1<Person, *>>()
+        .sortedBy { it.name }
+        .forEach { prop ->
+            println("\${prop.name} = \${prop.get(p)}")
+        }
+}`,
+    expected:"age = 30\nname = Alice",
+    explanation:"Kotlin リフレクション API（kotlin-reflect）でクラスのプロパティやメソッドを実行時に検査・呼び出しできます。KProperty1<T, R> で型安全にプロパティを取得します。"
+  },
+  { id:49, unit:"UNIT 11  ◆  高度なKotlinパターン", rank:"MASTER",
+    title:"Context Receivers（コンテキストレシーバー）",
+    question:"object Logger { fun log(msg: String) = println('[LOG] $msg') } と context(Logger) fun greet(name: String) を定義してください。with(Logger) { greet('World') } で実行してください。",
+    hint:"context(Logger) fun greet(name: String) { log('Hello, $name') } のように context レシーバーを使います（実験的機能）。",
+    answer:`object Logger {
+    fun log(msg: String) = println("[LOG] \$msg")
+}
+
+fun Logger.greet(name: String) {
+    log("Hello, \$name")
+}
+
+fun main() {
+    with(Logger) {
+        greet("World")
+    }
+}`,
+    expected:"[LOG] Hello, World",
+    explanation:"context レシーバーは複数のレシーバーを持つ関数を定義します（Kotlin 1.6.20+ 実験的）。この例では拡張関数で同等の効果を実現しています。with { } を使ってスコープ内でレシーバーのメソッドを使えます。"
+  },
+  { id:50, unit:"UNIT 12  ◆  実践的Kotlinパターン", rank:"MASTER",
+    title:"Builder DSLと型安全設定",
+    question:"HttpClientConfig DSLを実装してください。httpClient { baseUrl = 'https://api.example.com'; timeout = 30; headers { 'Authorization' to 'Bearer token' } } で設定を構築して出力してください。",
+    hint:"class HeadersBuilder で infix fun String.to(value: String)、class HttpClientConfig で var baseUrl、timeout、fun headers(block: HeadersBuilder.() -> Unit) を定義します。",
+    answer:`class HeadersBuilder {
+    val headers = mutableMapOf<String, String>()
+    infix fun String.to(value: String) { headers[this] = value }
+}
+
+class HttpClientConfig {
+    var baseUrl: String = ""
+    var timeout: Int = 60
+    private var hdrs = mapOf<String, String>()
+
+    fun headers(block: HeadersBuilder.() -> Unit) {
+        hdrs = HeadersBuilder().apply(block).headers
+    }
+
+    fun build(): String = "url=\$baseUrl timeout=\${timeout}s headers=\$hdrs"
+}
+
+fun httpClient(block: HttpClientConfig.() -> Unit): HttpClientConfig {
+    return HttpClientConfig().apply(block)
+}
+
+fun main() {
+    val client = httpClient {
+        baseUrl = "https://api.example.com"
+        timeout = 30
+        headers { "Authorization" to "Bearer token" }
+    }
+    println(client.build())
+}`,
+    expected:"url=https://api.example.com timeout=30s headers={Authorization=Bearer token}",
+    explanation:"Kotlin DSL は apply/also/run などのスコープ関数とレシーバー付きラムダで実現します。型安全な設定ビルダーはコンパイル時に誤った設定を検出でき、Gradle KTS や Ktor などで広く使われています。"
+  }
 ];
 
 const kotlinMissions = [
@@ -5989,6 +8127,349 @@ print(area(.rectangle(4, 6)))`
 }
 print(findMax([3, 1, 4, 1, 5, 9, 2, 6])!)
 print(findMax(["banana", "apple", "cherry"])!)`
+  },
+
+  // ───────────── UNIT 09: コレクション操作・関数型スタイル ─────────────
+  { id:31, unit:"UNIT 09  ◆  コレクション操作・関数型スタイル", rank:"GOLD",
+    title:"map・filter・reduce",
+    question:"[1,2,3,4,5,6,7,8,9,10] から偶数を抽出して2乗し、その合計を求めて出力してください。",
+    hint:"filter { $0 % 2 == 0 }.map { $0 * $0 }.reduce(0, +) とチェーンできます。",
+    answer:`let nums = Array(1...10)
+let result = nums.filter { $0 % 2 == 0 }.map { $0 * $0 }.reduce(0, +)
+print(result)`,
+    expected:"220",
+    explanation:"Swiftのコレクション高階関数はメソッドチェーンで組み合わせられます。filter→map→reduce の流れは関数型プログラミングの基本パターンです。"
+  },
+  { id:32, unit:"UNIT 09  ◆  コレクション操作・関数型スタイル", rank:"GOLD",
+    title:"辞書操作",
+    question:"['apple':3, 'banana':1, 'cherry':2] を価値降順でソートし、キーと値を出力してください。",
+    hint:"sorted { $0.value > $1.value } で辞書をソートできます。",
+    answer:`let dict = ["apple": 3, "banana": 1, "cherry": 2]
+let sorted = dict.sorted { $0.value > $1.value }
+for (k, v) in sorted {
+    print("\\(k): \\(v)")
+}`,
+    expected:"apple: 3\ncherry: 2\nbanana: 1",
+    explanation:"Swiftの辞書は sorted(by:) で配列のタプルとしてソートできます。辞書自体は順序を持ちませんが、sorted で順序付きの[(key,value)]配列に変換されます。"
+  },
+  { id:33, unit:"UNIT 09  ◆  コレクション操作・関数型スタイル", rank:"GOLD",
+    title:"compactMap と flatMap",
+    question:"['1','2','abc','3','xyz','4'] から Int に変換できるものだけを取り出し、合計を出力してください。",
+    hint:"compactMap { Int($0) } で nil を除去しながら変換できます。",
+    answer:`let strs = ["1", "2", "abc", "3", "xyz", "4"]
+let ints = strs.compactMap { Int($0) }
+print(ints)
+print(ints.reduce(0, +))`,
+    expected:"[1, 2, 3, 4]\n10",
+    explanation:"compactMap は変換結果が nil のものを除いて配列を返します。文字列→Int変換など、失敗する可能性のある変換に最適です。flatMap はネストを除去します。"
+  },
+  { id:34, unit:"UNIT 09  ◆  コレクション操作・関数型スタイル", rank:"GOLD",
+    title:"lazy評価",
+    question:"1から1000000の数列から偶数で二乗した最初の5つを lazy を使って効率的に求めて出力してください。",
+    hint:"(1...1000000).lazy.filter { }.map { }.prefix(5) で必要な分だけ評価されます。",
+    answer:`let result = Array((1...1000000).lazy.filter { $0 % 2 == 0 }.map { $0 * $0 }.prefix(5))
+print(result)`,
+    expected:"[4, 16, 36, 64, 100]",
+    explanation:"lazy を使うと処理が遅延評価されます。prefix(5) で5つ取得できたら計算を止めるため、全100万要素を処理せずに済みます。大きなコレクションに有効です。"
+  },
+  { id:35, unit:"UNIT 09  ◆  コレクション操作・関数型スタイル", rank:"GOLD",
+    title:"高階関数（クロージャ）",
+    question:"func applyTwice(_ f: (Int) -> Int, _ x: Int) -> Int を定義し、x を2倍にする関数を2回適用して applyTwice({ $0 * 2 }, 3) を出力してください。",
+    hint:"applyTwice は関数を受け取って2回適用します。",
+    answer:`func applyTwice(_ f: (Int) -> Int, _ x: Int) -> Int {
+    return f(f(x))
+}
+print(applyTwice({ $0 * 2 }, 3))
+print(applyTwice({ $0 + 10 }, 5))`,
+    expected:"12\n25",
+    explanation:"Swiftのクロージャは第一級関数として変数に格納したり引数に渡したりできます。$0 はクロージャの第一引数の省略記法です。"
+  },
+
+  // ───────────── UNIT 10: プロトコルと拡張 ─────────────
+  { id:36, unit:"UNIT 10  ◆  プロトコルと拡張", rank:"PLATINUM",
+    title:"プロトコル準拠",
+    question:"protocol Describable { var description: String { get } } を定義し、struct Car と struct Dog が準拠するようにしてください。各インスタンスの description を出力してください。",
+    hint:"protocol を定義し、struct で var description: String { } を実装します。",
+    answer:`protocol Describable {
+    var description: String { get }
+}
+struct Car: Describable {
+    var brand: String
+    var description: String { "Car: \\(brand)" }
+}
+struct Dog: Describable {
+    var name: String
+    var description: String { "Dog: \\(name)" }
+}
+let items: [any Describable] = [Car(brand: "Toyota"), Dog(name: "Rex")]
+items.forEach { print($0.description) }`,
+    expected:"Car: Toyota\nDog: Rex",
+    explanation:"プロトコルは型が実装すべきインターフェースを定義します。[any Describable] で異なる型を同じ配列に格納し、共通のメソッドを呼べます。"
+  },
+  { id:37, unit:"UNIT 10  ◆  プロトコルと拡張", rank:"PLATINUM",
+    title:"プロトコルのデフォルト実装",
+    question:"protocol Greetable { func greet() -> String } に extension でデフォルト実装（'Hello!'を返す）を追加し、カスタム実装を持つ型と持たない型を作って出力してください。",
+    hint:"extension Greetable { func greet() -> String { return 'Hello!' } } でデフォルト実装を追加できます。",
+    answer:`protocol Greetable {
+    func greet() -> String
+}
+extension Greetable {
+    func greet() -> String { "Hello!" }
+}
+struct DefaultGreeter: Greetable {}
+struct CustomGreeter: Greetable {
+    func greet() -> String { "Hi there!" }
+}
+print(DefaultGreeter().greet())
+print(CustomGreeter().greet())`,
+    expected:"Hello!\nHi there!",
+    explanation:"プロトコルの extension でデフォルト実装を提供できます。型が独自実装を持つ場合はオーバーライドされます。これにより基底クラスなしで共通動作を提供できます。"
+  },
+  { id:38, unit:"UNIT 10  ◆  プロトコルと拡張", rank:"PLATINUM",
+    title:"型の拡張",
+    question:"Int を extension で拡張し、isPrime プロパティと times(_ action: () -> Void) メソッドを追加してください。7.isPrime と 3.times { print('Hi') } をテストしてください。",
+    hint:"extension Int { var isPrime: Bool { ... }  func times(_ action: () -> Void) { ... } }",
+    answer:`extension Int {
+    var isPrime: Bool {
+        guard self > 1 else { return false }
+        for i in 2..<self {
+            if self % i == 0 { return false }
+        }
+        return true
+    }
+    func times(_ action: () -> Void) {
+        for _ in 0..<self { action() }
+    }
+}
+print(7.isPrime)
+3.times { print("Hi") }`,
+    expected:"true\nHi\nHi\nHi",
+    explanation:"Swiftの拡張（extension）で既存の型に新しい機能を追加できます。Int のような組み込み型も拡張できます。プロパティ・メソッド・プロトコル準拠を追加できます。"
+  },
+  { id:39, unit:"UNIT 10  ◆  プロトコルと拡張", rank:"PLATINUM",
+    title:"Equatable と Comparable",
+    question:"struct Point { let x: Int; let y: Int } を定義し、Equatable と Comparable に準拠させてください（比較は原点からの距離）。テストしてください。",
+    hint:"Equatable は == 演算子、Comparable は < 演算子を実装します。",
+    answer:`struct Point: Equatable, Comparable {
+    let x: Int, y: Int
+    var dist: Int { x*x + y*y }
+    static func == (a: Point, b: Point) -> Bool { a.x == b.x && a.y == b.y }
+    static func <  (a: Point, b: Point) -> Bool { a.dist < b.dist }
+}
+let p1 = Point(x: 3, y: 4)
+let p2 = Point(x: 1, y: 1)
+let p3 = Point(x: 3, y: 4)
+print(p1 == p3)
+print(p1 > p2)
+let sorted = [p1, p2, p3].sorted()
+print(sorted.map { "(\($0.x),\($0.y))" })`,
+    expected:"true\ntrue\n[\"(1,1)\", \"(3,4)\", \"(3,4)\"]",
+    explanation:"Equatable は == 比較、Comparable は順序比較を可能にします。Comparable に準拠すると <, >, <=, >= が全て使え、sort() も自動で使えるようになります。"
+  },
+  { id:40, unit:"UNIT 10  ◆  プロトコルと拡張", rank:"PLATINUM",
+    title:"プロトコルコンポジション",
+    question:"protocol Named { var name: String { get } } と protocol Aged { var age: Int { get } } を定義し、Named & Aged の合成型を引数に取る関数 introduce(_ p: Named & Aged) を書いてください。",
+    hint:"func introduce(_ p: Named & Aged) でプロトコルコンポジションを使います。",
+    answer:`protocol Named { var name: String { get } }
+protocol Aged  { var age: Int  { get } }
+struct Person: Named, Aged {
+    var name: String
+    var age: Int
+}
+func introduce(_ p: Named & Aged) {
+    print("\\(p.name), \\(p.age)歳")
+}
+introduce(Person(name: "Alice", age: 30))`,
+    expected:"Alice, 30歳",
+    explanation:"プロトコルコンポジション（&）で複数のプロトコルを満たす型として扱えます。継承より柔軟で、型が複数のプロトコルを組み合わせて使う場面で威力を発揮します。"
+  },
+  { id:41, unit:"UNIT 10  ◆  プロトコルと拡張", rank:"PLATINUM",
+    title:"型消去（any/some）",
+    question:"protocol Animal { func sound() -> String } を定義し、some Animal を返す関数と [any Animal] の配列を使ってそれぞれ音を出力してください。",
+    hint:"some は不透明型（戻り値に1つの型）、any は存在型（配列などで複数の型）です。",
+    answer:`protocol Animal {
+    func sound() -> String
+}
+struct Cat: Animal { func sound() -> String { "Meow" } }
+struct Dog: Animal { func sound() -> String { "Woof" } }
+
+func makeAnimal() -> some Animal { Cat() }
+
+let animals: [any Animal] = [Cat(), Dog(), Cat()]
+print(makeAnimal().sound())
+animals.forEach { print($0.sound()) }`,
+    expected:"Meow\nMeow\nWoof\nMeow",
+    explanation:"some（不透明型）は単一の型を隠蔽しつつ静的最適化を維持します。any（存在型）はプロトコル型のボックスを作ります。Swift 5.7以降で any キーワードが必須になりました。"
+  },
+
+  // ───────────── UNIT 11: 非同期・エラー処理 ─────────────
+  { id:42, unit:"UNIT 11  ◆  非同期・エラー処理", rank:"DIAMOND",
+    title:"Result型",
+    question:"enum NetworkError: Error { case notFound, timeout } を定義し、Result<String, NetworkError> を返す fetch(id: Int) 関数を書き、成功・失敗の両ケースを switch で処理してください。",
+    hint:"func fetch(id: Int) -> Result<String, NetworkError> で Result 型を返します。",
+    answer:`enum NetworkError: Error {
+    case notFound, timeout
+}
+func fetch(id: Int) -> Result<String, NetworkError> {
+    if id > 0 { return .success("Data: \\(id)") }
+    return .failure(.notFound)
+}
+for id in [1, -1] {
+    switch fetch(id: id) {
+    case .success(let data): print(data)
+    case .failure(let e):    print("Error: \\(e)")
+    }
+}`,
+    expected:"Data: 1\nError: notFound",
+    explanation:"Result<Success, Failure> は成功か失敗のいずれかを型安全に表現します。switch で両ケースを処理でき、例外を使わずエラーを値として扱えます。"
+  },
+  { id:43, unit:"UNIT 11  ◆  非同期・エラー処理", rank:"DIAMOND",
+    title:"do-try-catch",
+    question:"throws を使って割り算関数 divide(_ a: Int, by b: Int) throws -> Int を定義し（b==0で ZeroDivisionError を throw）、do-try-catch で処理してください。",
+    hint:"struct ZeroDivisionError: Error {} を定義し、guard b != 0 else { throw ZeroDivisionError() }",
+    answer:`struct ZeroDivisionError: Error {}
+func divide(_ a: Int, by b: Int) throws -> Int {
+    guard b != 0 else { throw ZeroDivisionError() }
+    return a / b
+}
+do {
+    print(try divide(10, by: 2))
+    print(try divide(10, by: 0))
+} catch {
+    print("Error: \\(error)")
+}`,
+    expected:"5\nError: ZeroDivisionError()",
+    explanation:"throws 関数はエラーを投げる可能性を示します。try で呼び出し、do-catch で処理します。guard-else は早期リターンによる条件チェックに使われます。"
+  },
+  { id:44, unit:"UNIT 11  ◆  非同期・エラー処理", rank:"DIAMOND",
+    title:"async/await基礎",
+    question:"async func fetchUser(id: Int) async -> String を定義し、Task { } でawaitを使って呼び出してください。",
+    hint:"func fetchUser(id: Int) async -> String { return 'User \\(id)' } と Task { let u = await fetchUser(id: 1); print(u) }",
+    answer:`func fetchUser(id: Int) async -> String {
+    return "User \\(id)"
+}
+Task {
+    let user = await fetchUser(id: 42)
+    print(user)
+}
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.1))`,
+    expected:"User 42",
+    explanation:"async/await で非同期処理を同期的に見えるように書けます。Task { } で非同期コンテキストを開始します。await で非同期関数の完了を待ちます。"
+  },
+  { id:45, unit:"UNIT 11  ◆  非同期・エラー処理", rank:"DIAMOND",
+    title:"defer文",
+    question:"defer を使って、関数終了時に必ず 'cleanup' を出力する関数を書いてください。途中で return する場合も defer が実行されることを示してください。",
+    hint:"defer { } ブロックはスコープ終了時に実行されます。複数の defer は逆順で実行されます。",
+    answer:`func process(value: Int) {
+    defer { print("cleanup") }
+    guard value > 0 else {
+        print("invalid")
+        return
+    }
+    print("processing: \\(value)")
+}
+process(value: 5)
+process(value: -1)`,
+    expected:"processing: 5\ncleanup\ninvalid\ncleanup",
+    explanation:"defer はスコープを抜けるときに実行されるコードを登録します。return、throw、通常終了のどの経路でも実行されます。リソース解放やログ出力に使います。"
+  },
+  { id:46, unit:"UNIT 11  ◆  非同期・エラー処理", rank:"DIAMOND",
+    title:"プロパティオブザーバー",
+    question:"willSet と didSet を持つ temperature プロパティを定義し、値が変わるたびに古い値と新しい値を出力してください。",
+    hint:"var temperature: Double = 0 { willSet { ... } didSet { ... } } と定義します。",
+    answer:`class Thermostat {
+    var temperature: Double = 20.0 {
+        willSet { print("変更前: \\(temperature)") }
+        didSet  { print("変更後: \\(temperature)") }
+    }
+}
+let t = Thermostat()
+t.temperature = 25.0
+t.temperature = 18.0`,
+    expected:"変更前: 20.0\n変更後: 25.0\n変更前: 25.0\n変更後: 18.0",
+    explanation:"willSet は値が変わる直前、didSet は値が変わった直後に呼ばれます。willSet 内では newValue、didSet 内では oldValue で変更前後の値を参照できます。"
+  },
+  { id:47, unit:"UNIT 11  ◆  非同期・エラー処理", rank:"DIAMOND",
+    title:"メモリ管理（weak・unowned）",
+    question:"循環参照が起きる可能性のある Person と Apartment の関係を weak var を使って解消するコードを書いてください。",
+    hint:"class Apartment { weak var tenant: Person? } で循環参照を防ぎます。",
+    answer:`class Person {
+    let name: String
+    var apartment: Apartment?
+    init(_ name: String) { self.name = name }
+    deinit { print("\\(name) released") }
+}
+class Apartment {
+    let number: Int
+    weak var tenant: Person?
+    init(_ number: Int) { self.number = number }
+    deinit { print("Apt \\(number) released") }
+}
+var alice: Person? = Person("Alice")
+var apt: Apartment? = Apartment(101)
+alice?.apartment = apt
+apt?.tenant = alice
+alice = nil
+apt = nil`,
+    expected:"Alice released\nApt 101 released",
+    explanation:"weak 参照は参照カウントを増やさないため循環参照を防ぎます。nil になる可能性があるため Optional 型です。unowned は nil にならないことが保証される場合に使います。"
+  },
+
+  // ───────────── UNIT 12: 高度なSwiftパターン ─────────────
+  { id:48, unit:"UNIT 12  ◆  高度なSwiftパターン", rank:"MASTER",
+    title:"カスタム演算子",
+    question:"** 演算子を定義して冪乗を計算できるようにしてください。3 ** 4 と 2 ** 10 を出力してください。",
+    hint:"infix operator **: MultiplicationPrecedence と func **(lhs: Int, rhs: Int) -> Int を定義します。",
+    answer:`infix operator **: MultiplicationPrecedence
+func **(lhs: Int, rhs: Int) -> Int {
+    var result = 1
+    for _ in 0..<rhs { result *= lhs }
+    return result
+}
+print(3 ** 4)
+print(2 ** 10)`,
+    expected:"81\n1024",
+    explanation:"Swiftではカスタム演算子を定義できます。precedencegroup または既存のグループを指定して優先順位を設定します。自然な数学的表現を実現できます。"
+  },
+  { id:49, unit:"UNIT 12  ◆  高度なSwiftパターン", rank:"MASTER",
+    title:"ResultBuilder（関数ビルダー）",
+    question:"@resultBuilder を使って HTMLBuilder を実装してください。@HTMLBuilder var body: String { h1('タイトル'); p('本文') } でHTMLを生成してください。",
+    hint:"@resultBuilder struct HTMLBuilder { static func buildBlock(_ parts: String...) -> String { ... } }",
+    answer:`@resultBuilder
+struct HTMLBuilder {
+    static func buildBlock(_ parts: String...) -> String {
+        parts.joined(separator: "\\n")
+    }
+}
+func h1(_ text: String) -> String { "<h1>\\(text)</h1>" }
+func p(_ text: String) -> String  { "<p>\\(text)</p>" }
+
+@HTMLBuilder
+var body: String {
+    h1("タイトル")
+    p("本文")
+}
+print(body)`,
+    expected:"<h1>タイトル</h1>\n<p>本文</p>",
+    explanation:"@resultBuilder（旧@_functionBuilder）はSwiftUIやDSLに使われる機能で、ブロック内の式を自動的に結合します。SwiftUI の body プロパティもこれで実装されています。"
+  },
+  { id:50, unit:"UNIT 12  ◆  高度なSwiftパターン", rank:"MASTER",
+    title:"型安全なキーパス",
+    question:"struct User { let name: String; let age: Int } の配列を \\User.name で名前ソート、\\User.age で年齢ソートしてください。",
+    hint:"sorted(by: { $0[keyPath: kp] < $1[keyPath: kp] }) でキーパスを使えます。",
+    answer:`struct User {
+    let name: String
+    let age: Int
+}
+func sortBy<T, V: Comparable>(_ items: [T], keyPath: KeyPath<T, V>) -> [T] {
+    items.sorted { $0[keyPath: keyPath] < $1[keyPath: keyPath] }
+}
+let users = [User(name:"Charlie",age:25), User(name:"Alice",age:30), User(name:"Bob",age:20)]
+sortBy(users, keyPath: \\.name).forEach { print("\\($0.name): \\($0.age)") }
+print("---")
+sortBy(users, keyPath: \\.age).forEach { print("\\($0.name): \\($0.age)") }`,
+    expected:"Alice: 30\nBob: 20\nCharlie: 25\n---\nBob: 20\nCharlie: 25\nAlice: 30",
+    explanation:"KeyPathは型安全なプロパティ参照です。\\Type.property の形式で書きます。ジェネリクスと組み合わせると任意の型・プロパティでソートできる汎用関数が作れます。"
   }
 ];
 
@@ -6461,6 +8942,457 @@ const javaProblems = [
     requirements: ["Stack<T> クラスをジェネリクスで定義する", "push/pop/peek/isEmpty/size を実装する", "Integer と String でテストする"],
     hint: "ArrayList の末尾を使って push は add()、pop は remove(size-1) で実装できます。",
     answer: `import java.util.ArrayList;\nclass Stack<T> {\n    private ArrayList<T> list = new ArrayList<>();\n    void push(T item) { list.add(item); }\n    T pop() { if (isEmpty()) throw new RuntimeException("空"); return list.remove(list.size()-1); }\n    T peek() { if (isEmpty()) throw new RuntimeException("空"); return list.get(list.size()-1); }\n    boolean isEmpty() { return list.isEmpty(); }\n    int size() { return list.size(); }\n}\nclass Main {\n    public static void main(String[] args) {\n        Stack<Integer> s1 = new Stack<>();\n        s1.push(10); s1.push(20); s1.push(30);\n        System.out.println("peek: " + s1.peek());\n        System.out.println("pop: " + s1.pop() + ", size: " + s1.size());\n        Stack<String> s2 = new Stack<>();\n        s2.push("Java"); s2.push("Generic"); s2.push("Stack");\n        while (!s2.isEmpty()) System.out.println(s2.pop());\n    }\n}`
+  },
+
+  // ───────────── UNIT 09: Stream API・関数型スタイル ─────────────
+  { id:31, unit:"UNIT 09  ◆  Stream API・関数型スタイル", rank:"GOLD",
+    title:"Stream filter/map/collect",
+    question:"List<Integer> nums = List.of(1..10) から偶数を抽出して2乗し、Listに集めて出力してください。",
+    hint:"stream().filter(n -> n % 2 == 0).map(n -> n * n).collect(Collectors.toList())",
+    answer:`import java.util.*;
+import java.util.stream.*;
+class Main {
+    public static void main(String[] args) {
+        List<Integer> nums = List.of(1,2,3,4,5,6,7,8,9,10);
+        List<Integer> result = nums.stream()
+            .filter(n -> n % 2 == 0)
+            .map(n -> n * n)
+            .collect(Collectors.toList());
+        System.out.println(result);
+    }
+}`,
+    expected:"[4, 16, 36, 64, 100]",
+    explanation:"Java Stream API は filter/map/reduce などの操作をメソッドチェーンで書けます。collect(Collectors.toList()) で結果をListに集約します。中間操作は遅延評価され、終端操作で実行されます。"
+  },
+  { id:32, unit:"UNIT 09  ◆  Stream API・関数型スタイル", rank:"GOLD",
+    title:"groupingBy と集計",
+    question:"List<String> fruits = ['apple','avocado','banana','blueberry','cherry'] を最初の文字でグループ化し、グループごとの件数を出力してください。",
+    hint:"Collectors.groupingBy(s -> s.charAt(0), Collectors.counting()) で集計できます。",
+    answer:`import java.util.*;
+import java.util.stream.*;
+class Main {
+    public static void main(String[] args) {
+        List<String> fruits = List.of("apple","avocado","banana","blueberry","cherry");
+        Map<Character, Long> grouped = fruits.stream()
+            .collect(Collectors.groupingBy(s -> s.charAt(0), Collectors.counting()));
+        new TreeMap<>(grouped).forEach((k, v) -> System.out.println(k + ": " + v));
+    }
+}`,
+    expected:"a: 2\nb: 2\nc: 1",
+    explanation:"Collectors.groupingBy でStreamをグループ化します。第2引数で集計方法を指定できます（counting()、summingInt()など）。TreeMapで結果をソートしています。"
+  },
+  { id:33, unit:"UNIT 09  ◆  Stream API・関数型スタイル", rank:"GOLD",
+    title:"Optional の活用",
+    question:"Optional<String> を使って、null安全に文字列を大文字化する処理を書いてください。値がある場合とない場合（empty）の両方をテストしてください。",
+    hint:"Optional.of('hello').map(String::toUpperCase).orElse('N/A') のように使います。",
+    answer:`import java.util.Optional;
+class Main {
+    public static void main(String[] args) {
+        Optional<String> opt1 = Optional.of("hello");
+        Optional<String> opt2 = Optional.empty();
+        System.out.println(opt1.map(String::toUpperCase).orElse("N/A"));
+        System.out.println(opt2.map(String::toUpperCase).orElse("N/A"));
+    }
+}`,
+    expected:"HELLO\nN/A",
+    explanation:"Optional は null を明示的に扱う型です。map() で値があるときだけ変換し、orElse() でnullの場合のデフォルト値を指定します。NullPointerException を防ぎます。"
+  },
+  { id:34, unit:"UNIT 09  ◆  Stream API・関数型スタイル", rank:"GOLD",
+    title:"flatMap とネスト解除",
+    question:"List<List<Integer>> nested = [[1,2,3],[4,5],[6,7,8,9]] を flatMap でフラット化し、合計を求めて出力してください。",
+    hint:"stream().flatMap(Collection::stream).collect(Collectors.toList()) でネストを解除します。",
+    answer:`import java.util.*;
+import java.util.stream.*;
+class Main {
+    public static void main(String[] args) {
+        List<List<Integer>> nested = List.of(
+            List.of(1,2,3), List.of(4,5), List.of(6,7,8,9));
+        List<Integer> flat = nested.stream()
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
+        System.out.println(flat);
+        System.out.println(flat.stream().mapToInt(Integer::intValue).sum());
+    }
+}`,
+    expected:"[1, 2, 3, 4, 5, 6, 7, 8, 9]\n45",
+    explanation:"flatMap は各要素をStreamに変換してから結合します。ネストしたコレクションを一段階フラット化するのに使います。mapToInt().sum() でプリミティブStreamの合計を計算できます。"
+  },
+  { id:35, unit:"UNIT 09  ◆  Stream API・関数型スタイル", rank:"GOLD",
+    title:"Comparator と複合ソート",
+    question:"Person(String name, int age) のListを年齢昇順・同じなら名前降順でソートして出力してください。",
+    hint:"Comparator.comparingInt(Person::getAge).thenComparing(Comparator.comparing(Person::getName).reversed())",
+    answer:`import java.util.*;
+import java.util.stream.*;
+class Main {
+    record Person(String name, int age) {}
+    public static void main(String[] args) {
+        List<Person> people = List.of(
+            new Person("Alice", 30), new Person("Bob", 25), new Person("Charlie", 30));
+        people.stream()
+            .sorted(Comparator.comparingInt(Person::age)
+                .thenComparing(Comparator.comparing(Person::name).reversed()))
+            .forEach(p -> System.out.println(p.name() + ": " + p.age()));
+    }
+}`,
+    expected:"Bob: 25\nCharlie: 30\nAlice: 30",
+    explanation:"Comparator.comparing() で第一ソートキーを定義し、thenComparing() で追加条件を指定します。reversed() で降順にします。Java 16以降の record でイミュータブルなデータクラスを簡潔に定義できます。"
+  },
+
+  // ───────────── UNIT 10: デザインパターン ─────────────
+  { id:36, unit:"UNIT 10  ◆  デザインパターン", rank:"PLATINUM",
+    title:"Builderパターン",
+    question:"Person(name, age, email) のBuilderパターンを実装してください。Person.builder().name('Alice').age(30).email('a@b.com').build() をテストしてください。",
+    hint:"static class Builder でメソッドチェーンを実現します。各setter はBuilder自身を返します。",
+    answer:`class Main {
+    static class Person {
+        private final String name;
+        private final int age;
+        private final String email;
+        private Person(Builder b) { name=b.name; age=b.age; email=b.email; }
+        public String toString() { return name + ", " + age + ", " + email; }
+        static class Builder {
+            String name; int age; String email;
+            Builder name(String v) { name=v; return this; }
+            Builder age(int v)    { age=v;  return this; }
+            Builder email(String v){ email=v;return this; }
+            Person build() { return new Person(this); }
+        }
+        static Builder builder() { return new Builder(); }
+    }
+    public static void main(String[] args) {
+        Person p = Person.builder().name("Alice").age(30).email("a@b.com").build();
+        System.out.println(p);
+    }
+}`,
+    expected:"Alice, 30, a@b.com",
+    explanation:"Builderパターンはオブジェクトの生成を段階的に行います。多くの省略可能なパラメータがある場合、コンストラクタの代わりに使います。各メソッドがthis（Builder）を返すことでメソッドチェーンを実現します。"
+  },
+  { id:37, unit:"UNIT 10  ◆  デザインパターン", rank:"PLATINUM",
+    title:"Strategyパターン",
+    question:"interface SortStrategy<T> { void sort(List<T> list); } を定義し、BubbleSort と SelectionSort の2つの実装を作って動作確認してください。",
+    hint:"interface に戦略を定義し、実装クラスを差し替えることで動作を変えます。",
+    answer:`import java.util.*;
+class Main {
+    interface SortStrategy<T extends Comparable<T>> {
+        void sort(List<T> list);
+    }
+    static class BubbleSort<T extends Comparable<T>> implements SortStrategy<T> {
+        public void sort(List<T> list) {
+            int n = list.size();
+            for (int i = 0; i < n-1; i++)
+                for (int j = 0; j < n-i-1; j++)
+                    if (list.get(j).compareTo(list.get(j+1)) > 0) {
+                        T tmp = list.get(j); list.set(j, list.get(j+1)); list.set(j+1, tmp);
+                    }
+        }
+    }
+    public static void main(String[] args) {
+        List<Integer> list = new ArrayList<>(Arrays.asList(5, 2, 8, 1, 9));
+        new BubbleSort<Integer>().sort(list);
+        System.out.println(list);
+    }
+}`,
+    expected:"[1, 2, 5, 8, 9]",
+    explanation:"Strategyパターンはアルゴリズムをカプセル化して差し替え可能にします。インターフェースで戦略を定義し、実装クラスで具体的なアルゴリズムを提供します。"
+  },
+  { id:38, unit:"UNIT 10  ◆  デザインパターン", rank:"PLATINUM",
+    title:"Observerパターン",
+    question:"EventEmitter クラスを実装してください。addListener/emit を持ち、emit('click', 42) するとリスナーに値が渡るようにしてください。",
+    hint:"Map<String, List<Consumer<Object>>> でイベント→リスナー一覧を管理します。",
+    answer:`import java.util.*;
+import java.util.function.*;
+class Main {
+    static class EventEmitter {
+        Map<String, List<Consumer<Object>>> listeners = new HashMap<>();
+        void on(String event, Consumer<Object> fn) {
+            listeners.computeIfAbsent(event, k -> new ArrayList<>()).add(fn);
+        }
+        void emit(String event, Object data) {
+            listeners.getOrDefault(event, List.of()).forEach(fn -> fn.accept(data));
+        }
+    }
+    public static void main(String[] args) {
+        EventEmitter emitter = new EventEmitter();
+        emitter.on("click", v -> System.out.println("clicked: " + v));
+        emitter.on("click", v -> System.out.println("also: " + v));
+        emitter.emit("click", 42);
+    }
+}`,
+    expected:"clicked: 42\nalso: 42",
+    explanation:"Observerパターンはイベント駆動アーキテクチャの基礎です。複数のリスナーが同じイベントを購読でき、疎結合な設計を実現します。computeIfAbsent で初期化をまとめて書けます。"
+  },
+  { id:39, unit:"UNIT 10  ◆  デザインパターン", rank:"PLATINUM",
+    title:"Singletonパターン（スレッドセーフ）",
+    question:"Double-Checked Locking または Enum を使ったスレッドセーフなSingletonを実装してください。",
+    hint:"Enum Singleton は最もシンプルなスレッドセーフSingletonです。enum Singleton { INSTANCE; }",
+    answer:`class Main {
+    enum Singleton {
+        INSTANCE;
+        private int count = 0;
+        void increment() { count++; }
+        int getCount() { return count; }
+    }
+    public static void main(String[] args) {
+        Singleton.INSTANCE.increment();
+        Singleton.INSTANCE.increment();
+        Singleton.INSTANCE.increment();
+        System.out.println(Singleton.INSTANCE.getCount());
+        System.out.println(Singleton.INSTANCE == Singleton.INSTANCE);
+    }
+}`,
+    expected:"3\ntrue",
+    explanation:"Enum Singletonはスレッドセーフかつシリアライゼーション安全なSingletonです。JVMがenum値を1度しか初期化しないことを保証します。Javaの最良実践とされています。"
+  },
+  { id:40, unit:"UNIT 10  ◆  デザインパターン", rank:"PLATINUM",
+    title:"Decoratorパターン",
+    question:"interface TextProcessor { String process(String text); } を定義し、UpperCaseProcessor と TrimProcessor の2つのDecorator（ラッパー）を実装して組み合わせてください。",
+    hint:"class UpperCase implements TextProcessor { TextProcessor inner; ... } のように inner をラップします。",
+    answer:`class Main {
+    interface TextProcessor { String process(String text); }
+    static class BaseProcessor implements TextProcessor {
+        public String process(String t) { return t; }
+    }
+    static class UpperCase implements TextProcessor {
+        TextProcessor inner;
+        UpperCase(TextProcessor p) { inner = p; }
+        public String process(String t) { return inner.process(t).toUpperCase(); }
+    }
+    static class Trim implements TextProcessor {
+        TextProcessor inner;
+        Trim(TextProcessor p) { inner = p; }
+        public String process(String t) { return inner.process(t).trim(); }
+    }
+    public static void main(String[] args) {
+        TextProcessor p = new UpperCase(new Trim(new BaseProcessor()));
+        System.out.println(p.process("  hello world  "));
+    }
+}`,
+    expected:"HELLO WORLD",
+    explanation:"Decoratorパターンはオブジェクトに動的に機能を追加します。継承の代わりにコンポジションを使うため、実行時に組み合わせを変えられます。Java I/O（InputStream → BufferedInputStream → DataInputStream）がこのパターンです。"
+  },
+  { id:41, unit:"UNIT 10  ◆  デザインパターン", rank:"PLATINUM",
+    title:"Factoryパターン",
+    question:"abstract class Shape { abstract double area(); } を定義し、Circle と Rectangle のサブクラスと ShapeFactory.create(String type, double... args) を実装してください。",
+    hint:"ShapeFactory.create('circle', 5.0) で Circle を、create('rect', 4.0, 6.0) で Rectangle を返します。",
+    answer:`class Main {
+    static abstract class Shape { abstract double area(); }
+    static class Circle extends Shape {
+        double r; Circle(double r) { this.r = r; }
+        double area() { return 3.14159 * r * r; }
+    }
+    static class Rectangle extends Shape {
+        double w, h; Rectangle(double w, double h) { this.w = w; this.h = h; }
+        double area() { return w * h; }
+    }
+    static class ShapeFactory {
+        static Shape create(String type, double... args) {
+            return switch(type) {
+                case "circle" -> new Circle(args[0]);
+                case "rect"   -> new Rectangle(args[0], args[1]);
+                default -> throw new IllegalArgumentException(type);
+            };
+        }
+    }
+    public static void main(String[] args) {
+        System.out.printf("%.2f%n", ShapeFactory.create("circle", 5.0).area());
+        System.out.printf("%.1f%n", ShapeFactory.create("rect", 4.0, 6.0).area());
+    }
+}`,
+    expected:"78.54\n24.0",
+    explanation:"Factoryパターンはオブジェクト生成をカプセル化します。生成するクラスを呼び出し元から隠蔽し、switch式（Java 14+）で型に応じたオブジェクトを返します。"
+  },
+
+  // ───────────── UNIT 11-12: 高度なJavaパターン ─────────────
+  { id:42, unit:"UNIT 11  ◆  関数型インターフェースとラムダ", rank:"DIAMOND",
+    title:"Function合成",
+    question:"Function<Integer, Integer> の andThen と compose を使って、+10してから×2する関数と、×2してから+10する関数を作ってテストしてください。",
+    hint:"f.andThen(g) は f を適用してから g、f.compose(g) は g を適用してから f です。",
+    answer:`import java.util.function.Function;
+class Main {
+    public static void main(String[] args) {
+        Function<Integer, Integer> add10 = x -> x + 10;
+        Function<Integer, Integer> mul2  = x -> x * 2;
+        Function<Integer, Integer> addThenMul = add10.andThen(mul2);
+        Function<Integer, Integer> mulThenAdd = add10.compose(mul2);
+        System.out.println(addThenMul.apply(5));
+        System.out.println(mulThenAdd.apply(5));
+    }
+}`,
+    expected:"30\n20",
+    explanation:"Function.andThen は f→g の順、compose は g→f の順で適用します。(5+10)×2=30 と 5×2+10=20 の違いです。関数合成で処理パイプラインを組み立てられます。"
+  },
+  { id:43, unit:"UNIT 11  ◆  関数型インターフェースとラムダ", rank:"DIAMOND",
+    title:"カスタム関数型インターフェース",
+    question:"@FunctionalInterface で TriFunction<A,B,C,R> を定義し、3つのintを受け取って最大値を返すラムダをテストしてください。",
+    hint:"@FunctionalInterface interface TriFunction<A,B,C,R> { R apply(A a, B b, C c); }",
+    answer:`class Main {
+    @FunctionalInterface
+    interface TriFunction<A, B, C, R> {
+        R apply(A a, B b, C c);
+    }
+    public static void main(String[] args) {
+        TriFunction<Integer, Integer, Integer, Integer> max3 =
+            (a, b, c) -> Math.max(a, Math.max(b, c));
+        System.out.println(max3.apply(3, 7, 5));
+        System.out.println(max3.apply(10, 2, 8));
+    }
+}`,
+    expected:"7\n10",
+    explanation:"@FunctionalInterface は抽象メソッドが1つのインターフェースをラムダで実装できるようにします。Javaの標準ではFunction（1引数）、BiFunction（2引数）がありますが、3引数はカスタムで定義します。"
+  },
+  { id:44, unit:"UNIT 11  ◆  関数型インターフェースとラムダ", rank:"DIAMOND",
+    title:"Stream の reduce と collect",
+    question:"1から10の数を Stream で生成し、(1)積を reduce で計算、(2)偶数のみの文字列をCSV形式で joining してください。",
+    hint:"IntStream.rangeClosed(1,10).reduce(1, (a,b)->a*b) と Collectors.joining(',') を使います。",
+    answer:`import java.util.stream.*;
+class Main {
+    public static void main(String[] args) {
+        int product = IntStream.rangeClosed(1, 5).reduce(1, (a, b) -> a * b);
+        System.out.println(product);
+        String csv = IntStream.rangeClosed(1, 10)
+            .filter(n -> n % 2 == 0)
+            .mapToObj(Integer::toString)
+            .collect(Collectors.joining(","));
+        System.out.println(csv);
+    }
+}`,
+    expected:"120\n2,4,6,8,10",
+    explanation:"reduce は初期値から累積演算します。Collectors.joining() は文字列要素を連結します。IntStream はプリミティブ専用のStreamでボクシングなしで効率的に処理できます。"
+  },
+  { id:45, unit:"UNIT 11  ◆  関数型インターフェースとラムダ", rank:"DIAMOND",
+    title:"並列Stream",
+    question:"1から1000000の合計を parallelStream() と通常の stream() で計算し、同じ結果になることを確認してください。",
+    hint:"IntStream.rangeClosed(1, 1000000).parallel().sum() でも同様に並列計算できます。",
+    answer:`import java.util.stream.*;
+class Main {
+    public static void main(String[] args) {
+        long sum1 = IntStream.rangeClosed(1, 1000000).asLongStream().sum();
+        long sum2 = IntStream.rangeClosed(1, 1000000).parallel().asLongStream().sum();
+        System.out.println(sum1);
+        System.out.println(sum1 == sum2);
+    }
+}`,
+    expected:"500000500000\ntrue",
+    explanation:"parallel() で並列Streamに変換できます。マルチコアCPUで自動的に並列処理されます。合計・最大値など順序に依存しない集約操作に適しています。"
+  },
+  { id:46, unit:"UNIT 12  ◆  高度なJavaパターン", rank:"DIAMOND",
+    title:"var（ローカル変数型推論）",
+    question:"Java 10以降の var を使ってローカル変数の型を推論させてください。Map、List、Stream の var 使用例を示してください。",
+    hint:"var list = new ArrayList<String>(); のように var で型推論します。",
+    answer:`import java.util.*;
+import java.util.stream.*;
+class Main {
+    public static void main(String[] args) {
+        var list = new ArrayList<String>();
+        list.add("Hello"); list.add("World");
+        var map = new HashMap<String, Integer>();
+        map.put("a", 1); map.put("b", 2);
+        var result = list.stream()
+            .map(String::toUpperCase)
+            .collect(Collectors.toList());
+        System.out.println(result);
+        System.out.println(map.size());
+    }
+}`,
+    expected:"[HELLO, WORLD]\n2",
+    explanation:"Java 10以降の var はコンパイラが右辺から型を推論するローカル変数型推論です。型を省略できますが型安全は維持されます。右辺が明確な場合に可読性が上がります。"
+  },
+  { id:47, unit:"UNIT 12  ◆  高度なJavaパターン", rank:"DIAMOND",
+    title:"sealed classとパターンマッチング",
+    question:"sealed interface Shape permits Circle, Rectangle を定義し、Java 21 のパターンマッチング switch で面積を計算してください。",
+    hint:"switch (shape) { case Circle c -> Math.PI * c.r() * c.r(); case Rectangle r -> r.w() * r.h(); }",
+    answer:`class Main {
+    sealed interface Shape permits Main.Circle, Main.Rectangle {}
+    record Circle(double r) implements Shape {}
+    record Rectangle(double w, double h) implements Shape {}
+    static double area(Shape s) {
+        return switch (s) {
+            case Circle c    -> 3.14159 * c.r() * c.r();
+            case Rectangle r -> r.w() * r.h();
+        };
+    }
+    public static void main(String[] args) {
+        System.out.printf("%.2f%n", area(new Circle(5)));
+        System.out.printf("%.1f%n", area(new Rectangle(4, 6)));
+    }
+}`,
+    expected:"78.54\n24.0",
+    explanation:"sealed interface はサブタイプを限定します。Java 21のパターンマッチング switch で型ごとに処理を書け、コンパイラが全ケース網羅を確認します。record で簡潔なデータクラスを定義できます。"
+  },
+  { id:48, unit:"UNIT 12  ◆  高度なJavaパターン", rank:"MASTER",
+    title:"CompletableFuture",
+    question:"CompletableFuture を使って2つの非同期処理を並行実行し、両方の結果を組み合わせて出力してください。",
+    hint:"CompletableFuture.supplyAsync(() -> ...) で非同期処理を開始し、thenCombine で結果を合成します。",
+    answer:`import java.util.concurrent.CompletableFuture;
+class Main {
+    public static void main(String[] args) throws Exception {
+        var f1 = CompletableFuture.supplyAsync(() -> "Hello");
+        var f2 = CompletableFuture.supplyAsync(() -> "World");
+        var combined = f1.thenCombine(f2, (a, b) -> a + " " + b);
+        System.out.println(combined.get());
+        var chained = CompletableFuture.supplyAsync(() -> 10)
+            .thenApply(x -> x * 2)
+            .thenApply(x -> x + 5);
+        System.out.println(chained.get());
+    }
+}`,
+    expected:"Hello World\n25",
+    explanation:"CompletableFuture はJava 8以降の非同期処理APIです。supplyAsync で非同期処理を開始し、thenCombine で2つの結果を合成します。thenApply で変換チェーンを作れます。"
+  },
+  { id:49, unit:"UNIT 12  ◆  高度なJavaパターン", rank:"MASTER",
+    title:"リフレクション",
+    question:"Reflection API を使って Person クラスのフィールド名と値を動的に取得して出力してください。",
+    hint:"clazz.getDeclaredFields() でフィールド一覧を取得し、field.setAccessible(true) でアクセス可能にします。",
+    answer:`import java.lang.reflect.*;
+class Main {
+    static class Person {
+        private String name = "Alice";
+        private int age = 30;
+    }
+    public static void main(String[] args) throws Exception {
+        Person p = new Person();
+        for (Field f : Person.class.getDeclaredFields()) {
+            f.setAccessible(true);
+            System.out.println(f.getName() + " = " + f.get(p));
+        }
+    }
+}`,
+    expected:"name = Alice\nage = 30",
+    explanation:"Java リフレクション API でクラスのフィールド・メソッド・コンストラクタを実行時に検査・呼び出しできます。フレームワーク（Spring、JUnitなど）の内部で広く使われています。"
+  },
+  { id:50, unit:"UNIT 12  ◆  高度なJavaパターン", rank:"MASTER",
+    title:"カスタムアノテーション",
+    question:"@Validate アノテーションを定義し、リフレクションでフィールドをバリデーションするフレームワークを実装してください。@Validate(min=0, max=100) を付けた score フィールドをテストしてください。",
+    hint:"@interface Validate { int min() default 0; int max() default Integer.MAX_VALUE; } と Retention/Target を設定します。",
+    answer:`import java.lang.annotation.*;
+import java.lang.reflect.*;
+class Main {
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    @interface Validate { int min() default 0; int max() default Integer.MAX_VALUE; }
+
+    static class Score {
+        @Validate(min=0, max=100)
+        int score;
+        Score(int s) { this.score = s; }
+    }
+    static void validate(Object obj) throws Exception {
+        for (Field f : obj.getClass().getDeclaredFields()) {
+            f.setAccessible(true);
+            if (f.isAnnotationPresent(Validate.class)) {
+                Validate v = f.getAnnotation(Validate.class);
+                int val = (int) f.get(obj);
+                System.out.println(f.getName() + "=" + val + " valid=" + (val >= v.min() && val <= v.max()));
+            }
+        }
+    }
+    public static void main(String[] args) throws Exception {
+        validate(new Score(85));
+        validate(new Score(150));
+    }
+}`,
+    expected:"score=85 valid=true\nscore=150 valid=false",
+    explanation:"カスタムアノテーションで宣言的なメタデータをフィールドに付与できます。@Retention(RUNTIME)でJVM実行時にも情報が保持されます。Spring の @Valid や JPA の @Column などもこの仕組みで実装されています。"
   }
 ];
 
@@ -7021,6 +9953,482 @@ class Program {
         Console.WriteLine($"=== 平均以上: {students.Count(s => s.Score >= avg)}人 ===");
     }
 }`
+  },
+
+  // ───────────── UNIT 09: LINQ・関数型スタイル ─────────────
+  { id:31, unit:"UNIT 09  ◆  LINQ・関数型スタイル", rank:"GOLD",
+    title:"LINQメソッドチェーン",
+    question:"1から20の数から3の倍数を抽出し、二乗してその合計を LINQ で求めて出力してください。",
+    hint:"Enumerable.Range(1,20).Where(n => n%3==0).Select(n => n*n).Sum()",
+    answer:
+`using System;
+using System.Linq;
+class Program {
+    static void Main() {
+        int result = Enumerable.Range(1, 20)
+            .Where(n => n % 3 == 0)
+            .Select(n => n * n)
+            .Sum();
+        Console.WriteLine(result);
+    }
+}`,
+    expected:"1260",
+    explanation:"LINQのWhere(フィルタ)→Select(変換)→Sum(集約)のパターンは関数型スタイルの基本です。Enumerable.Range で数値シーケンスを生成できます。"
+  },
+  { id:32, unit:"UNIT 09  ◆  LINQ・関数型スタイル", rank:"GOLD",
+    title:"GroupByと集計",
+    question:"文字列のリスト ['apple','avocado','banana','blueberry','cherry'] を最初の文字でGroupByし、グループごとの件数を出力してください。",
+    hint:"GroupBy(s => s[0]).OrderBy(g => g.Key) でグループ化・ソートできます。",
+    answer:
+`using System;
+using System.Linq;
+using System.Collections.Generic;
+class Program {
+    static void Main() {
+        var fruits = new List<string> {"apple","avocado","banana","blueberry","cherry"};
+        foreach (var g in fruits.GroupBy(s => s[0]).OrderBy(g => g.Key))
+            Console.WriteLine($"{g.Key}: {g.Count()}");
+    }
+}`,
+    expected:"a: 2\nb: 2\nc: 1",
+    explanation:"GroupBy はキーセレクターでコレクションをグループ化します。各グループは IGrouping<TKey,TElement> で、Key プロパティでキーを取得できます。"
+  },
+  { id:33, unit:"UNIT 09  ◆  LINQ・関数型スタイル", rank:"GOLD",
+    title:"SelectMany（flatMap）",
+    question:"List<List<int>> {{1,2,3},{4,5},{6,7,8,9}} を SelectMany でフラット化し、合計を出力してください。",
+    hint:"nested.SelectMany(list => list) でネストを解除できます。",
+    answer:
+`using System;
+using System.Linq;
+using System.Collections.Generic;
+class Program {
+    static void Main() {
+        var nested = new List<List<int>> {
+            new List<int>{1,2,3}, new List<int>{4,5}, new List<int>{6,7,8,9}
+        };
+        var flat = nested.SelectMany(l => l).ToList();
+        Console.WriteLine(string.Join(", ", flat));
+        Console.WriteLine(flat.Sum());
+    }
+}`,
+    expected:"1, 2, 3, 4, 5, 6, 7, 8, 9\n45",
+    explanation:"SelectMany はネストされたコレクションをフラット化します。JavaのflatMap、KotlinのflatMapと同等です。LINQ の最も重要なメソッドの一つです。"
+  },
+  { id:34, unit:"UNIT 09  ◆  LINQ・関数型スタイル", rank:"GOLD",
+    title:"Func・Action・Predicate",
+    question:"Func<int,int,int> で加算、Action<string> でログ出力、Predicate<int> で偶数判定を定義してテストしてください。",
+    hint:"Func<TIn,TOut> は戻り値あり、Action<T> は戻り値なし、Predicate<T> は bool を返します。",
+    answer:
+`using System;
+class Program {
+    static void Main() {
+        Func<int, int, int> add = (a, b) => a + b;
+        Action<string> log = msg => Console.WriteLine("[LOG] " + msg);
+        Predicate<int> isEven = n => n % 2 == 0;
+        Console.WriteLine(add(3, 4));
+        log("hello");
+        Console.WriteLine(isEven(6));
+        Console.WriteLine(isEven(7));
+    }
+}`,
+    expected:"7\n[LOG] hello\nTrue\nFalse",
+    explanation:"Func、Action、Predicate はC#の組み込み関数型デリゲートです。Func は戻り値あり、Action は戻り値なし（void）、Predicate はboolを返す特殊なFuncです。"
+  },
+  { id:35, unit:"UNIT 09  ◆  LINQ・関数型スタイル", rank:"GOLD",
+    title:"IEnumerable遅延評価",
+    question:"yield return を使ってフィボナッチ数列を無限に生成するIEnumerable<long>を実装し、最初の10個を出力してください。",
+    hint:"IEnumerable<long> Fibonacci() { long a=0,b=1; while(true) { yield return a; (a,b)=(b,a+b); } }",
+    answer:
+`using System;
+using System.Collections.Generic;
+using System.Linq;
+class Program {
+    static IEnumerable<long> Fibonacci() {
+        long a = 0, b = 1;
+        while (true) {
+            yield return a;
+            (a, b) = (b, a + b);
+        }
+    }
+    static void Main() {
+        foreach (var n in Fibonacci().Take(10))
+            Console.Write(n + " ");
+        Console.WriteLine();
+    }
+}`,
+    expected:"0 1 1 2 3 5 8 13 21 34 ",
+    explanation:"yield return でイテレーターを実装できます。呼び出し元が次の値を要求するまで処理を中断するため遅延評価されます。Take(10) で必要な分だけ取得でき、無限シーケンスを安全に扱えます。"
+  },
+
+  // ───────────── UNIT 10: 非同期・async/await ─────────────
+  { id:36, unit:"UNIT 10  ◆  非同期・async/await", rank:"PLATINUM",
+    title:"async/await基礎",
+    question:"async Task<string> FetchDataAsync(int id) を定義し（await Task.Delay(10) で疑似待機）、Task.WhenAll で3つの非同期処理を並行実行して結果を出力してください。",
+    hint:"await Task.WhenAll(t1, t2, t3) で並行実行して全て完了を待てます。",
+    answer:
+`using System;
+using System.Threading.Tasks;
+class Program {
+    static async Task<string> FetchDataAsync(int id) {
+        await Task.Delay(10);
+        return $"Data {id}";
+    }
+    static async Task Main() {
+        var t1 = FetchDataAsync(1);
+        var t2 = FetchDataAsync(2);
+        var t3 = FetchDataAsync(3);
+        var results = await Task.WhenAll(t1, t2, t3);
+        foreach (var r in results) Console.WriteLine(r);
+    }
+}`,
+    expected:"Data 1\nData 2\nData 3",
+    explanation:"async/await でasync Task<T>を返す非同期メソッドを実装します。Task.WhenAll で複数の非同期処理を並行実行し、全完了を待てます。C# 7.1以降 async Main が使えます。"
+  },
+  { id:37, unit:"UNIT 10  ◆  非同期・async/await", rank:"PLATINUM",
+    title:"CancellationToken",
+    question:"CancellationTokenSource を使って、タイムアウトで処理をキャンセルする非同期処理を書いてください。",
+    hint:"using var cts = new CancellationTokenSource(100); で100msのタイムアウトを設定します。",
+    answer:
+`using System;
+using System.Threading;
+using System.Threading.Tasks;
+class Program {
+    static async Task<string> LongTask(CancellationToken ct) {
+        await Task.Delay(200, ct);
+        return "完了";
+    }
+    static async Task Main() {
+        using var cts = new CancellationTokenSource(50);
+        try {
+            var result = await LongTask(cts.Token);
+            Console.WriteLine(result);
+        } catch (OperationCanceledException) {
+            Console.WriteLine("キャンセルされました");
+        }
+    }
+}`,
+    expected:"キャンセルされました",
+    explanation:"CancellationToken でキャンセル信号を非同期処理に渡します。CancellationTokenSource.Cancel() で手動キャンセル、タイムアウトでの自動キャンセルも可能です。OperationCanceledException でキャンセルを検知します。"
+  },
+  { id:38, unit:"UNIT 10  ◆  非同期・async/await", rank:"PLATINUM",
+    title:"IAsyncEnumerable（非同期ストリーム）",
+    question:"IAsyncEnumerable<int> を返す非同期ジェネレーターを作り、await foreach で消費してください。",
+    hint:"async IAsyncEnumerable<int> GenerateAsync() { ... yield return i; await Task.Delay(1); ... }",
+    answer:
+`using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+class Program {
+    static async IAsyncEnumerable<int> GenerateAsync() {
+        for (int i = 1; i <= 5; i++) {
+            await Task.Delay(1);
+            yield return i;
+        }
+    }
+    static async Task Main() {
+        await foreach (var n in GenerateAsync())
+            Console.WriteLine(n);
+    }
+}`,
+    expected:"1\n2\n3\n4\n5",
+    explanation:"IAsyncEnumerable<T> はC# 8以降の非同期ストリームです。yield return で非同期に値を生成し、await foreach で消費します。大きなデータセットをストリーミング処理するのに使います。"
+  },
+  { id:39, unit:"UNIT 10  ◆  非同期・async/await", rank:"PLATINUM",
+    title:"Record型",
+    question:"C# 9以降の record を使って不変のデータ型 Person を定義し、with 式でコピー変更してください。",
+    hint:"record Person(string Name, int Age); と定義し、person with { Age = 31 } でコピー変更します。",
+    answer:
+`using System;
+record Person(string Name, int Age);
+class Program {
+    static void Main() {
+        var alice = new Person("Alice", 30);
+        var olderAlice = alice with { Age = 31 };
+        Console.WriteLine(alice);
+        Console.WriteLine(olderAlice);
+        Console.WriteLine(alice == olderAlice);
+        Console.WriteLine(alice == new Person("Alice", 30));
+    }
+}`,
+    expected:"Person { Name = Alice, Age = 30 }\nPerson { Name = Alice, Age = 31 }\nFalse\nTrue",
+    explanation:"record は不変のデータクラスを簡潔に定義します。値ベースの等値比較（==）、with式によるコピー変更、自動生成のToString()などが提供されます。"
+  },
+  { id:40, unit:"UNIT 10  ◆  非同期・async/await", rank:"PLATINUM",
+    title:"パターンマッチング",
+    question:"C#のパターンマッチングを使って、object を switch 式でint/string/nullに分岐し、型ごとに処理してください。",
+    hint:"switch (obj) { case int n when n > 0 => ..., case string s => ..., null => ..., _ => ... }",
+    answer:
+`using System;
+class Program {
+    static string Describe(object? obj) => obj switch {
+        int n when n > 0 => $"正の整数: {n}",
+        int n            => $"非正の整数: {n}",
+        string s         => $"文字列: {s}",
+        null             => "null",
+        _                => $"その他: {obj.GetType().Name}"
+    };
+    static void Main() {
+        Console.WriteLine(Describe(42));
+        Console.WriteLine(Describe(-5));
+        Console.WriteLine(Describe("hello"));
+        Console.WriteLine(Describe(null));
+        Console.WriteLine(Describe(3.14));
+    }
+}`,
+    expected:"正の整数: 42\n非正の整数: -5\n文字列: hello\nnull\nその他: Double",
+    explanation:"C# 8以降の switch 式でパターンマッチングが書けます。型パターン、when ガード、null チェック、デフォルト（_）を組み合わせて型安全な分岐を実現します。"
+  },
+  { id:41, unit:"UNIT 10  ◆  非同期・async/await", rank:"PLATINUM",
+    title:"span と Memory",
+    question:"Span<int> を使って配列のスライスを作り、元の配列を変更せずに部分処理する例を書いてください。",
+    hint:"Span<int> span = arr.AsSpan(2, 4) で index2から4要素のスライスを作れます。",
+    answer:
+`using System;
+class Program {
+    static void Main() {
+        int[] arr = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        Span<int> span = arr.AsSpan(2, 5);
+        Console.WriteLine("スライス: " + string.Join(", ", span.ToArray()));
+        int sum = 0;
+        foreach (var n in span) sum += n;
+        Console.WriteLine("合計: " + sum);
+        span[0] = 99;
+        Console.WriteLine("arr[2] = " + arr[2]);
+    }
+}`,
+    expected:"スライス: 3, 4, 5, 6, 7\n合計: 25\narr[2] = 99",
+    explanation:"Span<T> はヒープ割り当てなしでメモリの連続した領域を参照します。配列のスライスを高パフォーマンスで扱えます。Span への変更は元の配列に反映されます。"
+  },
+
+  // ───────────── UNIT 11-12: 高度なC#パターン ─────────────
+  { id:42, unit:"UNIT 11  ◆  ジェネリクスと制約", rank:"DIAMOND",
+    title:"ジェネリクス制約",
+    question:"where T : IComparable<T> 制約を使った Max<T> 関数と、where T : new() で動的生成するファクトリー関数を定義してください。",
+    hint:"T Max<T>(T a, T b) where T : IComparable<T> => a.CompareTo(b) >= 0 ? a : b;",
+    answer:
+`using System;
+class Program {
+    static T Max<T>(T a, T b) where T : IComparable<T>
+        => a.CompareTo(b) >= 0 ? a : b;
+    static T CreateNew<T>() where T : new() => new T();
+    static void Main() {
+        Console.WriteLine(Max(3, 7));
+        Console.WriteLine(Max("apple", "banana"));
+        var obj = CreateNew<List<int>>();
+        obj.Add(42);
+        Console.WriteLine(obj[0]);
+    }
+}`,
+    expected:"7\nbanana\n42",
+    explanation:"where 制約でジェネリクスの型パラメータに条件を課します。IComparable<T> 制約で CompareTo が使えます。new() 制約で引数なしコンストラクタを持つ型のみ受け付けます。"
+  },
+  { id:43, unit:"UNIT 11  ◆  ジェネリクスと制約", rank:"DIAMOND",
+    title:"拡張メソッド",
+    question:"string に IsNullOrEmpty プロパティ、int に IsBetween(min,max) メソッド、IEnumerable<T> に Chunk<T>(size) メソッドを拡張メソッドで追加してください。",
+    hint:"static class Extensions で static bool IsNullOrEmpty(this string s) => ... と定義します。",
+    answer:
+`using System;
+using System.Collections.Generic;
+using System.Linq;
+static class Extensions {
+    public static bool IsNullOrEmpty(this string s) => string.IsNullOrEmpty(s);
+    public static bool IsBetween(this int n, int min, int max) => n >= min && n <= max;
+    public static IEnumerable<T[]> Chunk<T>(this IEnumerable<T> src, int size) {
+        var arr = src.ToArray();
+        for (int i = 0; i < arr.Length; i += size)
+            yield return arr.Skip(i).Take(size).ToArray();
+    }
+}
+class Program {
+    static void Main() {
+        Console.WriteLine("".IsNullOrEmpty());
+        Console.WriteLine(5.IsBetween(1, 10));
+        foreach (var chunk in new[]{1,2,3,4,5,6,7}.Chunk(3))
+            Console.WriteLine(string.Join(",", chunk));
+    }
+}`,
+    expected:"True\nTrue\n1,2,3\n4,5,6\n7",
+    explanation:"拡張メソッドは既存の型に新しいメソッドを追加します。this キーワードを最初の引数に付けます。LINQのWhere、Selectなども全て拡張メソッドとして実装されています。"
+  },
+  { id:44, unit:"UNIT 11  ◆  ジェネリクスと制約", rank:"DIAMOND",
+    title:"インターフェースの明示的実装",
+    question:"interface IArea { double Area(); } と interface IPerimeter { double Perimeter(); } を両方実装するCircleクラスを作り、インターフェース経由でそれぞれ呼び出してください。",
+    hint:"class Circle : IArea, IPerimeter で実装し、((IArea)circle).Area() で呼び出します。",
+    answer:
+`using System;
+interface IArea { double Area(); }
+interface IPerimeter { double Perimeter(); }
+class Circle : IArea, IPerimeter {
+    double r;
+    public Circle(double r) { this.r = r; }
+    double IArea.Area() => Math.PI * r * r;
+    double IPerimeter.Perimeter() => 2 * Math.PI * r;
+}
+class Program {
+    static void Main() {
+        var c = new Circle(5);
+        Console.WriteLine(((IArea)c).Area().ToString("F2"));
+        Console.WriteLine(((IPerimeter)c).Perimeter().ToString("F2"));
+    }
+}`,
+    expected:"78.54\n31.42",
+    explanation:"明示的インターフェース実装でメソッドをインターフェース経由でのみ呼べるようにします。同名メソッドを持つ複数インターフェースを実装する際の名前衝突を解決します。"
+  },
+  { id:45, unit:"UNIT 11  ◆  ジェネリクスと制約", rank:"DIAMOND",
+    title:"イベントとデリゲート",
+    question:"event EventHandler<int> ValueChanged を持つ Counter クラスを実装し、Increment するたびにイベントが発火するようにしてください。",
+    hint:"event EventHandler<int> ValueChanged; と Increment 内で ValueChanged?.Invoke(this, count) を呼びます。",
+    answer:
+`using System;
+class Counter {
+    int count = 0;
+    public event EventHandler<int> ValueChanged;
+    public void Increment() {
+        count++;
+        ValueChanged?.Invoke(this, count);
+    }
+}
+class Program {
+    static void Main() {
+        var c = new Counter();
+        c.ValueChanged += (sender, val) => Console.WriteLine($"changed: {val}");
+        c.Increment();
+        c.Increment();
+        c.Increment();
+    }
+}`,
+    expected:"changed: 1\nchanged: 2\nchanged: 3",
+    explanation:"event キーワードでC#のイベントを定義します。?.Invoke() でnullチェック付き安全な呼び出し。EventHandler<T> デリゲートを使い、複数リスナーを += で登録できます。"
+  },
+  { id:46, unit:"UNIT 11  ◆  ジェネリクスと制約", rank:"DIAMOND",
+    title:"Nullableと null合体演算子",
+    question:"Nullable<int>（int?）と ?? 演算子、?. 演算子、??= 演算子を使ったコードを書いてください。",
+    hint:"int? x = null; x ?? 0 はx が null なら0を返します。",
+    answer:
+`using System;
+class Person { public string? Name; }
+class Program {
+    static void Main() {
+        int? x = null;
+        Console.WriteLine(x ?? 0);
+        x = 42;
+        Console.WriteLine(x ?? 0);
+        Person? p = null;
+        Console.WriteLine(p?.Name ?? "unknown");
+        p = new Person { Name = "Alice" };
+        Console.WriteLine(p?.Name ?? "unknown");
+        string? s = null;
+        s ??= "default";
+        Console.WriteLine(s);
+    }
+}`,
+    expected:"0\n42\nunknown\nAlice\ndefault",
+    explanation:"int? は null を持てる int。?? は null の場合のデフォルト値を返す null 合体演算子。?. は null の場合に短絡して null を返す null 条件演算子。??= は null の場合のみ代入します。"
+  },
+  { id:47, unit:"UNIT 12  ◆  高度なC#パターン", rank:"DIAMOND",
+    title:"Expression Trees",
+    question:"Expression<Func<int, bool>> で n > 5 の式ツリーを構築し、Compile() でデリゲートに変換してテストしてください。",
+    hint:"Expression<Func<int, bool>> expr = n => n > 5; の場合、exprはコードの構造を保持します。",
+    answer:
+`using System;
+using System.Linq.Expressions;
+class Program {
+    static void Main() {
+        Expression<Func<int, bool>> expr = n => n > 5;
+        Console.WriteLine(expr);
+        var compiled = expr.Compile();
+        Console.WriteLine(compiled(3));
+        Console.WriteLine(compiled(7));
+    }
+}`,
+    expected:"n => (n > 5)\nFalse\nTrue",
+    explanation:"Expression Trees はコードを実行時に検査・変換できるデータ構造です。LINQプロバイダー（Entity Frameworkなど）がSQLに変換する際に使います。Compile()でデリゲートに変換して実行できます。"
+  },
+  { id:48, unit:"UNIT 12  ◆  高度なC#パターン", rank:"MASTER",
+    title:"Reflection と属性",
+    question:"[Required] 属性を定義し、リフレクションでプロパティをバリデーションするフレームワークを実装してください。",
+    hint:"[AttributeUsage(AttributeTargets.Property)] class RequiredAttribute : Attribute {} と PropertyInfo.GetCustomAttribute<RequiredAttribute>() で確認します。",
+    answer:
+`using System;
+using System.Reflection;
+[AttributeUsage(AttributeTargets.Property)]
+class RequiredAttribute : Attribute {}
+class UserForm {
+    [Required] public string? Name { get; set; }
+    [Required] public string? Email { get; set; }
+    public int Age { get; set; }
+}
+class Program {
+    static void Validate(object obj) {
+        foreach (var prop in obj.GetType().GetProperties()) {
+            if (prop.GetCustomAttribute<RequiredAttribute>() != null) {
+                var val = prop.GetValue(obj);
+                Console.WriteLine($"{prop.Name}: {(val == null ? "missing" : "ok")}");
+            }
+        }
+    }
+    static void Main() {
+        Validate(new UserForm { Name = "Alice", Age = 30 });
+    }
+}`,
+    expected:"Name: ok\nEmail: missing",
+    explanation:"Reflection でクラスのメタデータを実行時に取得できます。カスタム属性（Attribute）でメタデータをコードに付与し、GetCustomAttribute<T>() で取得します。ASP.NET の DataAnnotations もこの仕組みです。"
+  },
+  { id:49, unit:"UNIT 12  ◆  高度なC#パターン", rank:"MASTER",
+    title:"Source Generator的なコード生成",
+    question:"T4テンプレートの代わりに、コンストラクタ引数からプロパティを自動設定するValueObjectの基底クラスを実装してください。",
+    hint:"record class ValueObject<T> で Equals/GetHashCode/ToString を適切に実装します。",
+    answer:
+`using System;
+abstract record class ValueObject;
+record class Money(decimal Amount, string Currency) : ValueObject {
+    public Money Add(Money other) {
+        if (Currency != other.Currency) throw new InvalidOperationException("通貨が違います");
+        return this with { Amount = Amount + other.Amount };
+    }
+    public override string ToString() => $"{Amount} {Currency}";
+}
+class Program {
+    static void Main() {
+        var a = new Money(100, "JPY");
+        var b = new Money(200, "JPY");
+        var c = a.Add(b);
+        Console.WriteLine(c);
+        Console.WriteLine(a == new Money(100, "JPY"));
+    }
+}`,
+    expected:"300 JPY\nTrue",
+    explanation:"C# の record はValueObjectパターンの実装に最適です。値ベースの等値比較、with式によるコピー変更、ToString()が自動生成されます。ドメイン駆動設計（DDD）でよく使われます。"
+  },
+  { id:50, unit:"UNIT 12  ◆  高度なC#パターン", rank:"MASTER",
+    title:"Channelと生産者・消費者パターン",
+    question:"System.Threading.Channels.Channel<int> を使って、生産者（Producer）が値を送り、消費者（Consumer）が受け取る非同期パターンを実装してください。",
+    hint:"Channel.CreateUnbounded<int>() で作成し、writer.WriteAsync() と reader.ReadAllAsync() を使います。",
+    answer:
+`using System;
+using System.Threading.Channels;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+class Program {
+    static async Task Main() {
+        var channel = Channel.CreateUnbounded<int>();
+        var producer = Task.Run(async () => {
+            for (int i = 1; i <= 5; i++) {
+                await channel.Writer.WriteAsync(i);
+                await Task.Delay(1);
+            }
+            channel.Writer.Complete();
+        });
+        var consumer = Task.Run(async () => {
+            await foreach (var item in channel.Reader.ReadAllAsync())
+                Console.WriteLine($"received: {item}");
+        });
+        await Task.WhenAll(producer, consumer);
+    }
+}`,
+    expected:"received: 1\nreceived: 2\nreceived: 3\nreceived: 4\nreceived: 5",
+    explanation:"Channel<T> は生産者・消費者パターンの高パフォーマンス実装です。Writer.WriteAsync() で送信し、Reader.ReadAllAsync() で非同期ストリームとして受信します。Channel.CreateBounded() でバッファサイズを制限できます。"
   }
 ];
 
@@ -7545,6 +10953,658 @@ func main() {
         fmt.Printf("  [%d] %s\n", t.ID, t.Title)
     }
 }`
+  },
+
+  // ───────────── UNIT 09: Goルーティン・チャネル ─────────────
+  { id:31, unit:"UNIT 09  ◆  Goルーティン・チャネル", rank:"GOLD",
+    title:"Goroutineと基本チャネル",
+    question:"5つの goroutine を起動し、それぞれがチャネルに数値を送信するプログラムを書いてください。メインで受信して合計を出力してください。",
+    hint:"ch := make(chan int, 5) でバッファ付きチャネルを作り、go func(n int) { ch <- n }(i) で起動します。",
+    answer:
+`package main
+
+import "fmt"
+
+func main() {
+    ch := make(chan int, 5)
+    for i := 1; i <= 5; i++ {
+        go func(n int) { ch <- n }(i)
+    }
+    sum := 0
+    for i := 0; i < 5; i++ {
+        sum += <-ch
+    }
+    fmt.Println(sum)
+}`,
+    expected:"15",
+    explanation:"goroutine は go キーワードで起動する軽量スレッドです。チャネル（chan）でgoroutine間の通信をします。バッファ付きチャネル make(chan T, n) は n 個まで送信をブロックしません。"
+  },
+  { id:32, unit:"UNIT 09  ◆  Goルーティン・チャネル", rank:"GOLD",
+    title:"select文と多重待機",
+    question:"2つのチャネルから先に届いた方を受信するプログラムを select で書いてください。ch1には100ms後に'one'、ch2には50ms後に'two'を送信します。",
+    hint:"select { case v := <-ch1: ... case v := <-ch2: ... } で複数チャネルを待機できます。",
+    answer:
+`package main
+
+import (
+    "fmt"
+    "time"
+)
+
+func main() {
+    ch1 := make(chan string)
+    ch2 := make(chan string)
+    go func() { time.Sleep(100 * time.Millisecond); ch1 <- "one" }()
+    go func() { time.Sleep(50 * time.Millisecond);  ch2 <- "two" }()
+    select {
+    case v := <-ch1:
+        fmt.Println("ch1:", v)
+    case v := <-ch2:
+        fmt.Println("ch2:", v)
+    }
+}`,
+    expected:"ch2: two",
+    explanation:"select はGoのgoroutineで複数のチャネル操作を待機します。最初にreadyになったcaseが実行されます。defaultケースを追加するとノンブロッキングになります。"
+  },
+  { id:33, unit:"UNIT 09  ◆  Goルーティン・チャネル", rank:"GOLD",
+    title:"WaitGroupと並行処理",
+    question:"sync.WaitGroup を使って5つのgoroutineを並行実行し、全て完了してから結果を表示してください。",
+    hint:"var wg sync.WaitGroup; wg.Add(1); go func() { defer wg.Done(); ... }(); wg.Wait()",
+    answer:
+`package main
+
+import (
+    "fmt"
+    "sync"
+)
+
+func main() {
+    var wg sync.WaitGroup
+    results := make([]int, 5)
+    for i := 0; i < 5; i++ {
+        wg.Add(1)
+        go func(idx int) {
+            defer wg.Done()
+            results[idx] = idx * idx
+        }(i)
+    }
+    wg.Wait()
+    fmt.Println(results)
+}`,
+    expected:"[0 1 4 9 16]",
+    explanation:"sync.WaitGroup で複数のgoroutineの完了を待ちます。Add(n) で待つ数を増やし、Done() で完了を通知します。Wait() は全Doneを待ちます。defer wg.Done() でpanic時も確実に通知されます。"
+  },
+  { id:34, unit:"UNIT 09  ◆  Goルーティン・チャネル", rank:"GOLD",
+    title:"Mutexとデータ競合防止",
+    question:"sync.Mutex を使って複数のgoroutineから安全にカウンターをインクリメントしてください。1000個のgoroutineを起動して最終値が1000になることを確認してください。",
+    hint:"var mu sync.Mutex; mu.Lock(); counter++; mu.Unlock() でクリティカルセクションを保護します。",
+    answer:
+`package main
+
+import (
+    "fmt"
+    "sync"
+)
+
+func main() {
+    var mu sync.Mutex
+    var wg sync.WaitGroup
+    counter := 0
+    for i := 0; i < 1000; i++ {
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            mu.Lock()
+            counter++
+            mu.Unlock()
+        }()
+    }
+    wg.Wait()
+    fmt.Println(counter)
+}`,
+    expected:"1000",
+    explanation:"sync.Mutex でクリティカルセクションを保護してデータ競合を防ぎます。Lock()/Unlock() の代わりに defer Unlock() で確実に解放できます。sync/atomic パッケージも軽量な選択肢です。"
+  },
+  { id:35, unit:"UNIT 09  ◆  Goルーティン・チャネル", rank:"GOLD",
+    title:"pipelineパターン",
+    question:"チャネルを使ってpipelineパターンを実装してください。generate→square→printのパイプラインで1から5の二乗を出力してください。",
+    hint:"func generate(nums ...int) <-chan int と func square(in <-chan int) <-chan int で段階的に処理します。",
+    answer:
+`package main
+
+import "fmt"
+
+func generate(nums ...int) <-chan int {
+    out := make(chan int)
+    go func() {
+        for _, n := range nums { out <- n }
+        close(out)
+    }()
+    return out
+}
+
+func square(in <-chan int) <-chan int {
+    out := make(chan int)
+    go func() {
+        for n := range in { out <- n * n }
+        close(out)
+    }()
+    return out
+}
+
+func main() {
+    for n := range square(generate(1, 2, 3, 4, 5)) {
+        fmt.Println(n)
+    }
+}`,
+    expected:"1\n4\n9\n16\n25",
+    explanation:"Pipelineパターンはチャネルを連結して処理段階を組み合わせます。各段階が入力チャネルを読み出力チャネルに書きます。close(ch) でレンジループが終了します。"
+  },
+
+  // ───────────── UNIT 10: エラー処理・テスト ─────────────
+  { id:36, unit:"UNIT 10  ◆  エラー処理・テスト", rank:"PLATINUM",
+    title:"カスタムエラー型",
+    question:"type ValidationError struct { Field, Message string } を定義し、Error() メソッドを実装してください。age < 0 のときにこのエラーを返す ValidateAge(age int) を書いてください。",
+    hint:"type ValidationError struct { Field, Message string }; func (e *ValidationError) Error() string { ... }",
+    answer:
+`package main
+
+import "fmt"
+
+type ValidationError struct {
+    Field   string
+    Message string
+}
+
+func (e *ValidationError) Error() string {
+    return fmt.Sprintf("validation error: %s - %s", e.Field, e.Message)
+}
+
+func ValidateAge(age int) error {
+    if age < 0 { return &ValidationError{Field: "age", Message: "must be non-negative"} }
+    if age > 150 { return &ValidationError{Field: "age", Message: "must be <= 150"} }
+    return nil
+}
+
+func main() {
+    if err := ValidateAge(-5); err != nil {
+        fmt.Println(err)
+    }
+    if err := ValidateAge(25); err == nil {
+        fmt.Println("valid")
+    }
+}`,
+    expected:"validation error: age - must be non-negative\nvalid",
+    explanation:"Goのカスタムエラーは Error() string メソッドを持つ構造体で実装します。errors.As() でカスタムエラー型に変換できます。エラーは値として扱われ、明示的にチェックします。"
+  },
+  { id:37, unit:"UNIT 10  ◆  エラー処理・テスト", rank:"PLATINUM",
+    title:"defer・panic・recover",
+    question:"panic と recover を使って、予期しないエラーから復帰するセーフ実行関数 SafeExecute(f func()) を実装してください。",
+    hint:"func SafeExecute(f func()) { defer func() { if r := recover(); r != nil { ... } }(); f() }",
+    answer:
+`package main
+
+import "fmt"
+
+func SafeExecute(f func()) (err error) {
+    defer func() {
+        if r := recover(); r != nil {
+            err = fmt.Errorf("panic: %v", r)
+        }
+    }()
+    f()
+    return nil
+}
+
+func main() {
+    err := SafeExecute(func() { panic("something went wrong") })
+    if err != nil { fmt.Println(err) }
+    err2 := SafeExecute(func() { fmt.Println("ok") })
+    fmt.Println(err2)
+}`,
+    expected:"panic: something went wrong\nok\n<nil>",
+    explanation:"recover() はdefer内でpanic時に値を取得して処理を継続させます。SafeExecuteのようなラッパーでgoroutineのpanic防止に使います。通常のエラー処理にはerrorを使い、panicは本当に回復不可能な場合のみ使います。"
+  },
+  { id:38, unit:"UNIT 10  ◆  エラー処理・テスト", rank:"PLATINUM",
+    title:"errors.Is と errors.As",
+    question:"sentinel error (var ErrNotFound = errors.New('not found')) と wrapper error を定義し、errors.Is と errors.As でエラーの検査をしてください。",
+    hint:"fmt.Errorf('fetch: %w', ErrNotFound) でエラーをwrapします。errors.Is(err, ErrNotFound) で検査できます。",
+    answer:
+`package main
+
+import (
+    "errors"
+    "fmt"
+)
+
+var ErrNotFound = errors.New("not found")
+
+type DBError struct {
+    Code int
+    Msg  string
+}
+func (e *DBError) Error() string { return fmt.Sprintf("db error %d: %s", e.Code, e.Msg) }
+
+func fetch(id int) error {
+    if id == 0 { return fmt.Errorf("fetch: %w", ErrNotFound) }
+    if id < 0  { return fmt.Errorf("fetch: %w", &DBError{Code: 500, Msg: "invalid"}) }
+    return nil
+}
+
+func main() {
+    err := fetch(0)
+    fmt.Println(errors.Is(err, ErrNotFound))
+    err2 := fetch(-1)
+    var dbErr *DBError
+    fmt.Println(errors.As(err2, &dbErr))
+    if dbErr != nil { fmt.Println(dbErr.Code) }
+}`,
+    expected:"true\ntrue\n500",
+    explanation:"errors.Is はエラーチェーンをたどって一致を確認します。errors.As は型アサーションをチェーン内で行います。%w でwrapしたエラーはIs/Asで検査できます。"
+  },
+  { id:39, unit:"UNIT 10  ◆  エラー処理・テスト", rank:"PLATINUM",
+    title:"コンテキストとキャンセル",
+    question:"context.WithTimeout と context.WithCancel を使って、タイムアウト付きの処理を書いてください。",
+    hint:"ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond) でタイムアウト付きcontextを作ります。",
+    answer:
+`package main
+
+import (
+    "context"
+    "fmt"
+    "time"
+)
+
+func doWork(ctx context.Context) error {
+    select {
+    case <-time.After(100 * time.Millisecond):
+        return nil
+    case <-ctx.Done():
+        return ctx.Err()
+    }
+}
+
+func main() {
+    ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+    defer cancel()
+    err := doWork(ctx)
+    if err != nil { fmt.Println(err) }
+}`,
+    expected:"context deadline exceeded",
+    explanation:"context.Context でキャンセル・タイムアウトを伝播します。ctx.Done() チャネルがcloseされるとキャンセル/タイムアウトを通知します。全ての長時間処理でcontextを受け取るのがGoのベストプラクティスです。"
+  },
+  { id:40, unit:"UNIT 10  ◆  エラー処理・テスト", rank:"PLATINUM",
+    title:"ジェネリクス（Go 1.18+）",
+    question:"型パラメータを使ったジェネリクス関数 Map[T,U]、Filter[T]、Reduce[T,U] を実装してください。",
+    hint:"func Map[T, U any](slice []T, f func(T) U) []U { ... } のように型パラメータを使います。",
+    answer:
+`package main
+
+import "fmt"
+
+func Map[T, U any](slice []T, f func(T) U) []U {
+    result := make([]U, len(slice))
+    for i, v := range slice { result[i] = f(v) }
+    return result
+}
+
+func Filter[T any](slice []T, pred func(T) bool) []T {
+    var result []T
+    for _, v := range slice {
+        if pred(v) { result = append(result, v) }
+    }
+    return result
+}
+
+func Reduce[T, U any](slice []T, init U, f func(U, T) U) U {
+    acc := init
+    for _, v := range slice { acc = f(acc, v) }
+    return acc
+}
+
+func main() {
+    nums := []int{1, 2, 3, 4, 5}
+    doubled := Map(nums, func(n int) int { return n * 2 })
+    evens := Filter(nums, func(n int) bool { return n%2 == 0 })
+    sum := Reduce(nums, 0, func(acc, n int) int { return acc + n })
+    fmt.Println(doubled)
+    fmt.Println(evens)
+    fmt.Println(sum)
+}`,
+    expected:"[2 4 6 8 10]\n[2 4]\n15",
+    explanation:"Go 1.18以降のジェネリクスで型パラメータを使えます。[T any] で型を汎用化します。comparable制約で==比較、ordered制約（golang.org/x/exp）で< >比較が使えます。"
+  },
+  { id:41, unit:"UNIT 10  ◆  エラー処理・テスト", rank:"PLATINUM",
+    title:"sync.Once と遅延初期化",
+    question:"sync.Once を使ってシングルトンパターンを実装してください。GetDB() を複数回呼んでも1回しか初期化されないことを確認してください。",
+    hint:"var once sync.Once; var db *DB; func GetDB() *DB { once.Do(func() { db = &DB{} }); return db }",
+    answer:
+`package main
+
+import (
+    "fmt"
+    "sync"
+)
+
+type DB struct{ name string }
+var (
+    once sync.Once
+    db   *DB
+)
+
+func GetDB() *DB {
+    once.Do(func() {
+        fmt.Println("初期化")
+        db = &DB{name: "mydb"}
+    })
+    return db
+}
+
+func main() {
+    var wg sync.WaitGroup
+    for i := 0; i < 5; i++ {
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            _ = GetDB()
+        }()
+    }
+    wg.Wait()
+    fmt.Println(GetDB().name)
+}`,
+    expected:"初期化\nmydb",
+    explanation:"sync.Once はスレッドセーフに一度だけ処理を実行します。Singleton、遅延初期化に使います。Do に渡した関数は複数goroutineから呼ばれても1回しか実行されません。"
+  },
+
+  // ───────────── UNIT 11-12: 高度なGoパターン ─────────────
+  { id:42, unit:"UNIT 11  ◆  高度なGoパターン", rank:"DIAMOND",
+    title:"io.Reader/Writer インターフェース",
+    question:"io.Reader を実装するカスタム型 RepeatReader を作り、strings.NewReader と同様に io.ReadAll で読み取れるようにしてください。",
+    hint:"type RepeatReader struct { data []byte; pos int }; func (r *RepeatReader) Read(p []byte) (n int, err error) { ... }",
+    answer:
+`package main
+
+import (
+    "fmt"
+    "io"
+)
+
+type RepeatReader struct {
+    data []byte
+    pos  int
+}
+
+func NewRepeatReader(s string) *RepeatReader {
+    return &RepeatReader{data: []byte(s)}
+}
+
+func (r *RepeatReader) Read(p []byte) (int, error) {
+    if r.pos >= len(r.data) { return 0, io.EOF }
+    n := copy(p, r.data[r.pos:])
+    r.pos += n
+    return n, nil
+}
+
+func main() {
+    rr := NewRepeatReader("Hello, Go!")
+    data, _ := io.ReadAll(rr)
+    fmt.Println(string(data))
+}`,
+    expected:"Hello, Go!",
+    explanation:"io.Reader インターフェースは Read(p []byte) (n int, err error) の1メソッドのみです。io.EOF でデータ終端を示します。Goのインターフェースは構造体が暗黙的に実装します。"
+  },
+  { id:43, unit:"UNIT 11  ◆  高度なGoパターン", rank:"DIAMOND",
+    title:"HTTPサーバー基礎",
+    question:"net/http パッケージで /hello エンドポイントを実装し、'Hello, Go!' を返すシンプルなHTTPサーバーのハンドラーを書いてください（実際に起動せず、ハンドラーの動作をテストしてください）。",
+    hint:"http.NewServeMux() でmuxを作り、httptest.NewRecorder() でテストできます。",
+    answer:
+`package main
+
+import (
+    "fmt"
+    "net/http"
+    "net/http/httptest"
+)
+
+func helloHandler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintln(w, "Hello, Go!")
+}
+
+func main() {
+    mux := http.NewServeMux()
+    mux.HandleFunc("/hello", helloHandler)
+    req := httptest.NewRequest("GET", "/hello", nil)
+    w := httptest.NewRecorder()
+    mux.ServeHTTP(w, req)
+    fmt.Print(w.Body.String())
+    fmt.Println(w.Code)
+}`,
+    expected:"Hello, Go!\n200",
+    explanation:"net/http の http.HandlerFunc で HTTPハンドラーを定義します。httptest.NewRecorder() でレスポンスを記録してテストできます。ServeMux はHTTPリクエストをルーティングします。"
+  },
+  { id:44, unit:"UNIT 11  ◆  高度なGoパターン", rank:"DIAMOND",
+    title:"JSON処理",
+    question:"encoding/json を使って struct を JSON にシリアライズし、JSON 文字列をデシリアライズしてください。json:'...' タグを使ってフィールド名を制御してください。",
+    hint:"json.Marshal/Unmarshal と json:' ' タグを使います。",
+    answer:
+`package main
+
+import (
+    "encoding/json"
+    "fmt"
+)
+
+type Person struct {
+    Name  string \`json:"name"\`
+    Age   int    \`json:"age"\`
+    Email string \`json:"email,omitempty"\`
+}
+
+func main() {
+    p := Person{Name: "Alice", Age: 30}
+    data, _ := json.Marshal(p)
+    fmt.Println(string(data))
+    var p2 Person
+    json.Unmarshal([]byte(\`{"name":"Bob","age":25,"email":"bob@example.com"}\`), &p2)
+    fmt.Printf("%s, %d, %s\n", p2.Name, p2.Age, p2.Email)
+}`,
+    expected:'{"name":"Alice","age":30}\nBob, 25, bob@example.com',
+    explanation:"encoding/json の Marshal で struct→JSON、Unmarshal でJSON→struct に変換します。json:'name' タグでフィールド名を指定、omitempty でゼロ値を省略できます。"
+  },
+  { id:45, unit:"UNIT 11  ◆  高度なGoパターン", rank:"DIAMOND",
+    title:"テーブル駆動テスト",
+    question:"テーブル駆動テストの形式で Add 関数のテストを書いてください。testing.T を使って複数のテストケースを一つのテスト関数で表現してください。",
+    hint:"tests := []struct{ a,b,want int }{{1,2,3},{5,3,8},...}; for _, tt := range tests { ... } の形式です。",
+    answer:
+`package main
+
+import (
+    "fmt"
+    "testing"
+)
+
+func Add(a, b int) int { return a + b }
+
+func TestAdd(t *testing.T) {
+    tests := []struct {
+        a, b, want int
+    }{
+        {1, 2, 3}, {0, 0, 0}, {-1, 1, 0}, {100, 200, 300},
+    }
+    for _, tt := range tests {
+        got := Add(tt.a, tt.b)
+        if got != tt.want {
+            t.Errorf("Add(%d,%d)=%d, want %d", tt.a, tt.b, got, tt.want)
+        }
+    }
+    fmt.Println("all tests passed")
+}
+
+func main() { fmt.Println(Add(3, 4)) }`,
+    expected:"7",
+    explanation:"テーブル駆動テストはGoのイディオムです。匿名構造体のスライスでテストケースを定義し、range でループします。t.Errorf で失敗を記録しつつテストを継続、t.Fatalf で即時終了できます。"
+  },
+  { id:46, unit:"UNIT 11  ◆  高度なGoパターン", rank:"DIAMOND",
+    title:"embed パッケージ",
+    question:"//go:embed ディレクティブを使って文字列データをバイナリに埋め込む例を書いてください。(実際のファイルなしで string 変数に直接代入する形で示してください）",
+    hint:"//go:embed data.txt でファイルを埋め込めます。ここではシミュレーションとして変数に代入します。",
+    answer:
+`package main
+
+import "fmt"
+
+// 実際は //go:embed data.txt と var embeddedData string で埋め込みます
+var embeddedData = "version: 1.0\nauthor: gopher"
+
+func main() {
+    fmt.Println(embeddedData)
+    fmt.Println("embed でバイナリに静的ファイルを含めることができます")
+}`,
+    expected:"version: 1.0\nauthor: gopher\nembed でバイナリに静的ファイルを含めることができます",
+    explanation:"//go:embed でファイルをGoバイナリに埋め込めます。embed.FS型でディレクトリを埋め込み、http.FS(emd)でHTTPサーバーに提供できます。Go 1.16以降で利用可能です。"
+  },
+  { id:47, unit:"UNIT 11  ◆  高度なGoパターン", rank:"DIAMOND",
+    title:"atomic操作",
+    question:"sync/atomic を使って、複数goroutineから安全にカウンターを操作してください。Mutex版と atomic版の両方を示してください。",
+    hint:"atomic.AddInt64(&counter, 1) でアトミックにインクリメントできます。",
+    answer:
+`package main
+
+import (
+    "fmt"
+    "sync"
+    "sync/atomic"
+)
+
+func main() {
+    var wg sync.WaitGroup
+    var counter int64
+    for i := 0; i < 1000; i++ {
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            atomic.AddInt64(&counter, 1)
+        }()
+    }
+    wg.Wait()
+    fmt.Println(atomic.LoadInt64(&counter))
+}`,
+    expected:"1000",
+    explanation:"sync/atomic はロックなしでアトミック操作を提供します。単純なカウンターやフラグの更新にはMutexより軽量です。Load/Store/Add/CompareAndSwap操作があります。"
+  },
+  { id:48, unit:"UNIT 12  ◆  実践的Goパターン", rank:"MASTER",
+    title:"Functionalオプションパターン",
+    question:"Functional Options パターンを使って Server 型の設定をしてください。WithHost(host string) と WithPort(port int) オプションを実装してください。",
+    hint:"type Option func(*Server); func WithHost(h string) Option { return func(s *Server) { s.host = h } }",
+    answer:
+`package main
+
+import "fmt"
+
+type Server struct {
+    host    string
+    port    int
+    timeout int
+}
+
+type Option func(*Server)
+
+func WithHost(h string) Option { return func(s *Server) { s.host = h } }
+func WithPort(p int) Option    { return func(s *Server) { s.port = p } }
+func WithTimeout(t int) Option { return func(s *Server) { s.timeout = t } }
+
+func NewServer(opts ...Option) *Server {
+    s := &Server{host: "localhost", port: 8080, timeout: 30}
+    for _, opt := range opts { opt(s) }
+    return s
+}
+
+func main() {
+    s := NewServer(WithHost("example.com"), WithPort(9090))
+    fmt.Printf("%s:%d (timeout:%ds)\n", s.host, s.port, s.timeout)
+}`,
+    expected:"example.com:9090 (timeout:30s)",
+    explanation:"Functional Optionsパターンは可変長オプション引数を型安全に実装します。デフォルト値を持ちつつ、呼び出し側が必要なものだけ指定できます。Goのライブラリ設計でよく使われます。"
+  },
+  { id:49, unit:"UNIT 12  ◆  実践的Goパターン", rank:"MASTER",
+    title:"インターフェースによるDI",
+    question:"interface Repository[T any] を定義し、InMemoryRepository と テスト用 MockRepository を実装してください。Service にDIして動作を確認してください。",
+    hint:"type Repository[T any] interface { Save(T) error; FindByID(int) (T, error) }",
+    answer:
+`package main
+
+import (
+    "fmt"
+    "errors"
+)
+
+type User struct{ ID int; Name string }
+type Repository interface {
+    Save(User) error
+    FindByID(int) (User, error)
+}
+type InMemoryRepo struct { data map[int]User }
+func NewInMemoryRepo() *InMemoryRepo { return &InMemoryRepo{data: make(map[int]User)} }
+func (r *InMemoryRepo) Save(u User) error { r.data[u.ID] = u; return nil }
+func (r *InMemoryRepo) FindByID(id int) (User, error) {
+    if u, ok := r.data[id]; ok { return u, nil }
+    return User{}, errors.New("not found")
+}
+type UserService struct { repo Repository }
+func (s *UserService) Register(id int, name string) error { return s.repo.Save(User{id, name}) }
+func (s *UserService) GetName(id int) string {
+    if u, err := s.repo.FindByID(id); err == nil { return u.Name }
+    return "unknown"
+}
+func main() {
+    svc := &UserService{repo: NewInMemoryRepo()}
+    svc.Register(1, "Alice")
+    svc.Register(2, "Bob")
+    fmt.Println(svc.GetName(1))
+    fmt.Println(svc.GetName(3))
+}`,
+    expected:"Alice\nunknown",
+    explanation:"インターフェースによるDI（依存性注入）でテスタブルな設計ができます。Serviceはインターフェースに依存し、テストではMockRepositoryを注入できます。Goは暗黙的インターフェースなので実装が簡潔です。"
+  },
+  { id:50, unit:"UNIT 12  ◆  実践的Goパターン", rank:"MASTER",
+    title:"コードジェネレーターとstringer",
+    question:"Stringer インターフェース（String() string）を実装した Weekday 型を定義し、fmt.Println で適切な文字列が出力されるようにしてください。",
+    hint:"type Weekday int; const (Monday Weekday = iota; ...) ; func (d Weekday) String() string { ... }",
+    answer:
+`package main
+
+import "fmt"
+
+type Weekday int
+
+const (
+    Monday Weekday = iota + 1
+    Tuesday
+    Wednesday
+    Thursday
+    Friday
+    Saturday
+    Sunday
+)
+
+var weekdayNames = [...]string{"", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
+
+func (d Weekday) String() string {
+    if d >= Monday && d <= Sunday { return weekdayNames[d] }
+    return fmt.Sprintf("Weekday(%d)", int(d))
+}
+
+func (d Weekday) IsWeekend() bool { return d == Saturday || d == Sunday }
+
+func main() {
+    fmt.Println(Monday)
+    fmt.Println(Saturday.IsWeekend())
+    for d := Monday; d <= Sunday; d++ {
+        if d.IsWeekend() { fmt.Printf("%v is weekend\n", d) }
+    }
+}`,
+    expected:"Monday\ntrue\nSaturday is weekend\nSunday is weekend",
+    explanation:"fmt.Stringer インターフェース（String() string）を実装すると fmt.Println などで自動的にカスタム文字列表現が使われます。iota でenum的な定数を定義できます。go generate と stringer ツールで自動生成もできます。"
   }
 ];
 
@@ -8244,6 +12304,667 @@ int main() {
     for (int i = 0; i < 3; i++) printf("%s\\n", words[i]);
     return 0;
 }`
+  },
+
+  // ───────────── UNIT 09: ポインタ・メモリ高度活用 ─────────────
+  { id:31, unit:"UNIT 09  ◆  ポインタ・メモリ高度活用", rank:"GOLD",
+    title:"二重ポインタ",
+    question:"int **matrix で 3×3 の動的2次元配列を確保し、対角成分を1、それ以外を0にして（単位行列）出力してください。最後にメモリを解放してください。",
+    hint:"matrix = malloc(3 * sizeof(int*)); for(i) matrix[i] = calloc(3, sizeof(int)); で確保します。",
+    answer:
+`#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main() {
+    int **m = malloc(3 * sizeof(int*));
+    for (int i = 0; i < 3; i++) {
+        m[i] = calloc(3, sizeof(int));
+        m[i][i] = 1;
+    }
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) printf("%d ", m[i][j]);
+        printf("\\n");
+    }
+    for (int i = 0; i < 3; i++) free(m[i]);
+    free(m);
+    return 0;
+}`,
+    expected:"1 0 0 \n0 1 0 \n0 0 1 ",
+    explanation:"二重ポインタ int** で動的2次元配列を実装します。calloc(n, size) は確保とゼロ初期化を同時に行います。解放は内側から外側の順（各行→行ポインタ配列）に行います。"
+  },
+  { id:32, unit:"UNIT 09  ◆  ポインタ・メモリ高度活用", rank:"GOLD",
+    title:"関数ポインタ配列",
+    question:"int add(int,int), sub(int,int), mul(int,int), divd(int,int) と、関数ポインタ配列 ops[4] を定義してください。ループで全演算を (10, 3) に適用して出力してください。",
+    hint:"int (*ops[4])(int, int) = {add, sub, mul, divd}; for(i) printf('%d', ops[i](10,3));",
+    answer:
+`#include <stdio.h>
+
+int add(int a, int b)  { return a + b; }
+int sub(int a, int b)  { return a - b; }
+int mul(int a, int b)  { return a * b; }
+int divd(int a, int b) { return a / b; }
+
+int main() {
+    int (*ops[4])(int, int) = {add, sub, mul, divd};
+    const char *names[] = {"add", "sub", "mul", "div"};
+    for (int i = 0; i < 4; i++)
+        printf("%s: %d\\n", names[i], ops[i](10, 3));
+    return 0;
+}`,
+    expected:"add: 13\nsub: 7\nmul: 30\ndiv: 3",
+    explanation:"関数ポインタ配列で演算子テーブルを作るのはCの典型的なパターンです。型: int (*ops[])(int,int) のように括弧で包みます。ディスパッチテーブルとして多態的な動作を実現します。"
+  },
+  { id:33, unit:"UNIT 09  ◆  ポインタ・メモリ高度活用", rank:"GOLD",
+    title:"可変長引数（va_list）",
+    question:"printf 風に可変長引数を受け取る sum_ints(int count, ...) 関数を実装し、sum_ints(4, 10, 20, 30, 40) を出力してください。",
+    hint:"#include <stdarg.h>; va_list ap; va_start(ap, count); va_arg(ap, int); va_end(ap);",
+    answer:
+`#include <stdio.h>
+#include <stdarg.h>
+
+int sum_ints(int count, ...) {
+    va_list ap;
+    va_start(ap, count);
+    int sum = 0;
+    for (int i = 0; i < count; i++) sum += va_arg(ap, int);
+    va_end(ap);
+    return sum;
+}
+
+int main() {
+    printf("%d\\n", sum_ints(4, 10, 20, 30, 40));
+    printf("%d\\n", sum_ints(3, 1, 2, 3));
+    return 0;
+}`,
+    expected:"100\n6",
+    explanation:"stdarg.h の va_list/va_start/va_arg/va_end で可変長引数を処理します。printf も同じ仕組みで実装されています。引数の個数は自分で管理するか番兵値を使います。"
+  },
+  { id:34, unit:"UNIT 09  ◆  ポインタ・メモリ高度活用", rank:"GOLD",
+    title:"ビット操作",
+    question:"unsigned int でビット操作を実装してください。(1) n番目のビットをセット (2) n番目のビットをクリア (3) n番目のビットをトグル (4) n番目のビットを確認する関数を作り、0xA0 に対してテストしてください。",
+    hint:"セット: x |= (1u << n), クリア: x &= ~(1u << n), トグル: x ^= (1u << n), 確認: (x >> n) & 1",
+    answer:
+`#include <stdio.h>
+
+unsigned int set_bit(unsigned int x, int n)    { return x | (1u << n); }
+unsigned int clear_bit(unsigned int x, int n)  { return x & ~(1u << n); }
+unsigned int toggle_bit(unsigned int x, int n) { return x ^ (1u << n); }
+int check_bit(unsigned int x, int n)           { return (x >> n) & 1; }
+
+int main() {
+    unsigned int x = 0xA0; // 1010 0000
+    printf("0x%X\\n", set_bit(x, 2));
+    printf("0x%X\\n", clear_bit(x, 7));
+    printf("0x%X\\n", toggle_bit(x, 4));
+    printf("%d\\n", check_bit(x, 7));
+    return 0;
+}`,
+    expected:"0xA4\n0x20\n0xB0\n1",
+    explanation:"ビット操作はCの基本スキルです。| でセット、& ~ でクリア、^ でトグル、>> & 1 で確認します。組み込みシステム、プロトコル実装、フラグ管理に多用されます。"
+  },
+  { id:35, unit:"UNIT 09  ◆  ポインタ・メモリ高度活用", rank:"GOLD",
+    title:"共用体（union）",
+    question:"union Data { int i; float f; char bytes[4]; } を使って int の内部バイト表現を調べてください。値 0x12345678 のバイト順を出力してください。",
+    hint:"union で同じメモリを複数の型として解釈できます。bytes[] で個々のバイトにアクセスします。",
+    answer:
+`#include <stdio.h>
+
+union Data {
+    int i;
+    unsigned char bytes[4];
+};
+
+int main() {
+    union Data d;
+    d.i = 0x12345678;
+    printf("0x%X\\n", d.i);
+    for (int i = 0; i < 4; i++)
+        printf("bytes[%d] = 0x%02X\\n", i, d.bytes[i]);
+    return 0;
+}`,
+    expected:"0x12345678\nbytes[0] = 0x78\nbytes[1] = 0x56\nbytes[2] = 0x34\nbytes[3] = 0x12",
+    explanation:"union のメンバーは同じメモリを共有します。int を bytes[] で解釈するとエンディアン（バイト順）を確認できます。リトルエンディアン環境では低アドレスに低位バイトが格納されます。"
+  },
+
+  // ───────────── UNIT 10: データ構造実装 ─────────────
+  { id:36, unit:"UNIT 10  ◆  データ構造実装", rank:"PLATINUM",
+    title:"双方向連結リスト",
+    question:"prev/next ポインタを持つ双方向連結リストを実装してください。push_back、push_front、delete_node、print_forward、print_backward を実装してください。",
+    hint:"struct Node { int val; struct Node *prev, *next; }; でノードを定義します。",
+    answer:
+`#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int val;
+    struct Node *prev, *next;
+} Node;
+
+typedef struct { Node *head, *tail; } DList;
+
+void push_back(DList *l, int v) {
+    Node *n = malloc(sizeof(Node));
+    n->val = v; n->next = NULL; n->prev = l->tail;
+    if (l->tail) l->tail->next = n; else l->head = n;
+    l->tail = n;
+}
+
+void print_forward(DList *l) {
+    for (Node *n = l->head; n; n = n->next) printf("%d ", n->val);
+    printf("\\n");
+}
+
+int main() {
+    DList l = {NULL, NULL};
+    push_back(&l, 1); push_back(&l, 2); push_back(&l, 3);
+    print_forward(&l);
+    return 0;
+}`,
+    expected:"1 2 3 ",
+    explanation:"双方向連結リストは prev/next ポインタで両方向への走査ができます。挿入/削除は前後のノードの接続を更新します。head は先頭、tail は末尾を指します。"
+  },
+  { id:37, unit:"UNIT 10  ◆  データ構造実装", rank:"PLATINUM",
+    title:"二分探索木（BST）",
+    question:"二分探索木（BST）を実装してください。insert、search、inorder_print（中順巡回）を実装し、{5,3,7,1,4,6,8} を挿入して中順出力してください。",
+    hint:"BST: left<root<right。inorder は左→根→右の再帰です。",
+    answer:
+`#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node { int val; struct Node *left, *right; } Node;
+
+Node* insert(Node *root, int v) {
+    if (!root) { Node *n = malloc(sizeof(Node)); n->val=v; n->left=n->right=NULL; return n; }
+    if (v < root->val) root->left  = insert(root->left,  v);
+    else               root->right = insert(root->right, v);
+    return root;
+}
+
+void inorder(Node *root) {
+    if (!root) return;
+    inorder(root->left);
+    printf("%d ", root->val);
+    inorder(root->right);
+}
+
+int main() {
+    Node *root = NULL;
+    int vals[] = {5,3,7,1,4,6,8};
+    for (int i = 0; i < 7; i++) root = insert(root, vals[i]);
+    inorder(root);
+    printf("\\n");
+    return 0;
+}`,
+    expected:"1 3 4 5 6 7 8 ",
+    explanation:"二分探索木は左<根<右の不変条件を保ちます。中順巡回（inorder）は左→根→右の順で全ノードを訪問し、ソート済み順で出力します。"
+  },
+  { id:38, unit:"UNIT 10  ◆  データ構造実装", rank:"PLATINUM",
+    title:"ハッシュテーブル",
+    question:"連鎖法でハッシュテーブルを実装してください。put(key, value)、get(key) を実装し、文字列キーで動作確認してください。",
+    hint:"unsigned hash(const char *s, int n) でキーをハッシュし、インデックスを求めます。衝突はリストで連結します。",
+    answer:
+`#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define SIZE 16
+typedef struct Entry { char *key; int val; struct Entry *next; } Entry;
+typedef struct { Entry *buckets[SIZE]; } HashMap;
+
+unsigned hash(const char *s) {
+    unsigned h = 5381;
+    while (*s) h = ((h << 5) + h) + *s++;
+    return h % SIZE;
+}
+
+void put(HashMap *m, const char *k, int v) {
+    unsigned i = hash(k);
+    for (Entry *e = m->buckets[i]; e; e = e->next)
+        if (!strcmp(e->key, k)) { e->val = v; return; }
+    Entry *e = malloc(sizeof(Entry));
+    e->key = strdup(k); e->val = v; e->next = m->buckets[i]; m->buckets[i] = e;
+}
+
+int get(HashMap *m, const char *k) {
+    for (Entry *e = m->buckets[hash(k)]; e; e = e->next)
+        if (!strcmp(e->key, k)) return e->val;
+    return -1;
+}
+
+int main() {
+    HashMap m = {{NULL}};
+    put(&m, "apple", 100);
+    put(&m, "banana", 200);
+    printf("%d\\n", get(&m, "apple"));
+    printf("%d\\n", get(&m, "banana"));
+    printf("%d\\n", get(&m, "cherry"));
+    return 0;
+}`,
+    expected:"100\n200\n-1",
+    explanation:"連鎖法ハッシュテーブルは衝突をリストで解決します。DJB2ハッシュ関数（5381基準）は文字列ハッシュに広く使われます。平均O(1)で挿入・検索できます。"
+  },
+  { id:39, unit:"UNIT 10  ◆  データ構造実装", rank:"PLATINUM",
+    title:"循環バッファ（リングバッファ）",
+    question:"固定サイズの循環バッファを実装してください。push（末尾追加）、pop（先頭削除）、is_full、is_empty を実装し、テストしてください。",
+    hint:"head、tail、count でリングバッファを管理します。インデックスは % SIZE で循環させます。",
+    answer:
+`#include <stdio.h>
+#define SIZE 4
+typedef struct {
+    int data[SIZE];
+    int head, tail, count;
+} RingBuf;
+
+int is_full(RingBuf *b)  { return b->count == SIZE; }
+int is_empty(RingBuf *b) { return b->count == 0; }
+
+int push(RingBuf *b, int v) {
+    if (is_full(b)) return 0;
+    b->data[b->tail] = v;
+    b->tail = (b->tail + 1) % SIZE;
+    b->count++;
+    return 1;
+}
+
+int pop(RingBuf *b, int *v) {
+    if (is_empty(b)) return 0;
+    *v = b->data[b->head];
+    b->head = (b->head + 1) % SIZE;
+    b->count--;
+    return 1;
+}
+
+int main() {
+    RingBuf b = {0};
+    push(&b, 10); push(&b, 20); push(&b, 30);
+    int v;
+    pop(&b, &v); printf("%d\\n", v);
+    push(&b, 40); push(&b, 50);
+    printf("full: %d\\n", is_full(&b));
+    while (pop(&b, &v)) printf("%d\\n", v);
+    return 0;
+}`,
+    expected:"10\nfull: 1\n20\n30\n40\n50",
+    explanation:"循環バッファ（リングバッファ）はhead/tailポインタをmodulo演算で循環させます。FIFOキューを固定メモリで実装でき、OSのパイプやオーディオバッファなどに使われます。"
+  },
+  { id:40, unit:"UNIT 10  ◆  データ構造実装", rank:"PLATINUM",
+    title:"ヒープ（優先度付きキュー）",
+    question:"最大ヒープを配列で実装してください。heap_push と heap_pop を実装し、{5,3,8,1,9,2,7} を挿入して降順に取り出してください。",
+    hint:"親インデックス: (i-1)/2、左子: 2i+1、右子: 2i+2。push でsift_up、pop でsift_down します。",
+    answer:
+`#include <stdio.h>
+#define MAX 16
+typedef struct { int data[MAX]; int size; } Heap;
+
+void sift_up(Heap *h, int i) {
+    while (i > 0) {
+        int p = (i-1)/2;
+        if (h->data[p] >= h->data[i]) break;
+        int tmp = h->data[p]; h->data[p] = h->data[i]; h->data[i] = tmp;
+        i = p;
+    }
+}
+
+void sift_down(Heap *h, int i) {
+    while (1) {
+        int m = i, l = 2*i+1, r = 2*i+2;
+        if (l < h->size && h->data[l] > h->data[m]) m = l;
+        if (r < h->size && h->data[r] > h->data[m]) m = r;
+        if (m == i) break;
+        int tmp = h->data[m]; h->data[m] = h->data[i]; h->data[i] = tmp;
+        i = m;
+    }
+}
+
+void push(Heap *h, int v) { h->data[h->size++] = v; sift_up(h, h->size-1); }
+int pop(Heap *h) {
+    int top = h->data[0];
+    h->data[0] = h->data[--h->size];
+    sift_down(h, 0);
+    return top;
+}
+
+int main() {
+    Heap h = {0};
+    int vals[] = {5,3,8,1,9,2,7};
+    for (int i = 0; i < 7; i++) push(&h, vals[i]);
+    while (h.size > 0) printf("%d ", pop(&h));
+    printf("\\n");
+    return 0;
+}`,
+    expected:"9 8 7 5 3 2 1 ",
+    explanation:"ヒープは完全二分木を配列で表現します。最大ヒープはルートが最大値。push でsift_up（下から上へ）、pop でsift_down（上から下へ）してヒープ性質を維持します。優先度付きキューの基礎です。"
+  },
+  { id:41, unit:"UNIT 10  ◆  データ構造実装", rank:"PLATINUM",
+    title:"グラフ（隣接リスト）とBFS",
+    question:"隣接リストでグラフを表現し、BFS（幅優先探索）を実装してください。0を始点として全ノードの訪問順を出力してください（5ノード、辺: 0-1, 0-2, 1-3, 2-3, 3-4）。",
+    hint:"キューを使ってBFSを実装します。visited[] フラグで再訪問を防ぎます。",
+    answer:
+`#include <stdio.h>
+#include <stdlib.h>
+#define N 5
+#define Q 100
+typedef struct Node { int v; struct Node *next; } Node;
+Node *adj[N];
+void add_edge(int u, int v) {
+    Node *n = malloc(sizeof(Node)); n->v = v; n->next = adj[u]; adj[u] = n;
+    n = malloc(sizeof(Node)); n->v = u; n->next = adj[v]; adj[v] = n;
+}
+void bfs(int start) {
+    int visited[N] = {0}, q[Q], front=0, back=0;
+    visited[start] = 1; q[back++] = start;
+    while (front < back) {
+        int u = q[front++];
+        printf("%d ", u);
+        for (Node *n = adj[u]; n; n = n->next)
+            if (!visited[n->v]) { visited[n->v]=1; q[back++]=n->v; }
+    }
+}
+int main() {
+    add_edge(0,1); add_edge(0,2); add_edge(1,3); add_edge(2,3); add_edge(3,4);
+    bfs(0);
+    printf("\\n");
+    return 0;
+}`,
+    expected:"0 2 1 3 4 ",
+    explanation:"隣接リストはグラフをノードごとに繋がるノードのリストで表現します。BFSはキューを使って近いノードから順に訪問します。最短経路探索などに使われます。"
+  },
+
+  // ───────────── UNIT 11-12: 高度なCパターン ─────────────
+  { id:42, unit:"UNIT 11  ◆  高度なCパターン", rank:"DIAMOND",
+    title:"コールバックとイベントシステム",
+    question:"イベントシステムを実装してください。register_handler(event, callback) と dispatch_event(event, data) を実装し、複数のイベントハンドラーをテストしてください。",
+    hint:"typedef void (*Handler)(void *data); で関数ポインタ型を定義し、イベント名→ハンドラーのマップを作ります。",
+    answer:
+`#include <stdio.h>
+#include <string.h>
+#define MAX_HANDLERS 8
+
+typedef void (*Handler)(void *);
+typedef struct { const char *event; Handler fn; } Registration;
+Registration handlers[MAX_HANDLERS];
+int handler_count = 0;
+
+void register_handler(const char *event, Handler fn) {
+    if (handler_count < MAX_HANDLERS)
+        handlers[handler_count++] = (Registration){event, fn};
+}
+
+void dispatch(const char *event, void *data) {
+    for (int i = 0; i < handler_count; i++)
+        if (!strcmp(handlers[i].event, event))
+            handlers[i].fn(data);
+}
+
+void on_click(void *d) { printf("click: %d\\n", *(int*)d); }
+void on_key(void *d)   { printf("key: %s\\n", (char*)d); }
+
+int main() {
+    register_handler("click", on_click);
+    register_handler("key", on_key);
+    int x = 42;
+    dispatch("click", &x);
+    dispatch("key", "Enter");
+    return 0;
+}`,
+    expected:"click: 42\nkey: Enter",
+    explanation:"関数ポインタでコールバックシステムを実装できます。イベント名とハンドラーを登録し、イベント発生時に対応するコールバックを呼ぶパターンはGUIフレームワークの基礎です。"
+  },
+  { id:43, unit:"UNIT 11  ◆  高度なCパターン", rank:"DIAMOND",
+    title:"メモリプール",
+    question:"固定サイズブロックのメモリプールを実装してください。pool_alloc() と pool_free() を実装し、動的確保のオーバーヘッドを避けてください。",
+    hint:"静的配列をブロックに分割し、フリーリストで空きを管理します。",
+    answer:
+`#include <stdio.h>
+#define BLOCK 32
+#define COUNT 8
+static char pool_buf[BLOCK * COUNT];
+static void *free_list[COUNT];
+static int free_count = 0;
+
+void pool_init() {
+    for (int i = 0; i < COUNT; i++)
+        free_list[free_count++] = pool_buf + i * BLOCK;
+}
+
+void *pool_alloc() {
+    return free_count > 0 ? free_list[--free_count] : NULL;
+}
+
+void pool_free(void *p) {
+    if (free_count < COUNT) free_list[free_count++] = p;
+}
+
+int main() {
+    pool_init();
+    char *a = pool_alloc();
+    char *b = pool_alloc();
+    printf("allocated: %d blocks\\n", COUNT - free_count);
+    pool_free(a);
+    printf("free blocks: %d\\n", free_count);
+    return 0;
+}`,
+    expected:"allocated: 2 blocks\nfree blocks: 2",
+    explanation:"メモリプールは固定サイズブロックを事前確保して再利用します。malloc/free のオーバーヘッドや断片化を避けられます。組み込みシステムやゲームエンジンでよく使われます。"
+  },
+  { id:44, unit:"UNIT 11  ◆  高度なCパターン", rank:"DIAMOND",
+    title:"setjmp/longjmp（例外処理風）",
+    question:"setjmp/longjmp を使って例外処理に似た制御フローを実装してください。エラーが発生したらジャンプバックして復帰してください。",
+    hint:"#include <setjmp.h>; jmp_buf env; if (setjmp(env) != 0) { /* catch */ } else { longjmp(env, 1); }",
+    answer:
+`#include <stdio.h>
+#include <setjmp.h>
+
+jmp_buf env;
+
+void dangerous(int x) {
+    if (x < 0) longjmp(env, 1);
+    if (x == 0) longjmp(env, 2);
+    printf("ok: %d\\n", x);
+}
+
+int main() {
+    int code;
+    if ((code = setjmp(env)) != 0) {
+        printf("caught: %d\\n", code);
+    } else {
+        dangerous(-1);
+    }
+    if ((code = setjmp(env)) != 0) {
+        printf("caught: %d\\n", code);
+    } else {
+        dangerous(5);
+    }
+    return 0;
+}`,
+    expected:"caught: 1\nok: 5",
+    explanation:"setjmp/longjmp でスタックをまたぐ非局所的なジャンプができます。setjmp がジャンプポイントを設定し、longjmp でそこに戻ります。C++/Javaの例外処理の基礎的な仕組みに似ています。"
+  },
+  { id:45, unit:"UNIT 11  ◆  高度なCパターン", rank:"DIAMOND",
+    title:"マクロとジェネリクス",
+    question:"型汎用な SWAP マクロと MIN/MAX マクロを定義してください。また、型安全な CLAMP(x,lo,hi) マクロを実装してテストしてください。",
+    hint:"#define SWAP(T,a,b) do { T _t=(a); (a)=(b); (b)=_t; } while(0) のようにブロックマクロを定義します。",
+    answer:
+`#include <stdio.h>
+#define SWAP(T, a, b) do { T _t = (a); (a) = (b); (b) = _t; } while(0)
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define CLAMP(x, lo, hi) (MIN(MAX((x), (lo)), (hi)))
+
+int main() {
+    int a = 5, b = 10;
+    SWAP(int, a, b);
+    printf("%d %d\\n", a, b);
+    printf("%d\\n", MIN(3, 7));
+    printf("%d\\n", MAX(3, 7));
+    printf("%d\\n", CLAMP(15, 0, 10));
+    printf("%d\\n", CLAMP(-5, 0, 10));
+    return 0;
+}`,
+    expected:"10 5\n3\n7\n10\n0",
+    explanation:"マクロはプリプロセッサで展開されるテキスト置換です。do { } while(0) でif文の条件に正しく組み込めます。型引数を渡すことでC++のテンプレートに近い汎用マクロが書けます。"
+  },
+  { id:46, unit:"UNIT 11  ◆  高度なCパターン", rank:"DIAMOND",
+    title:"シグナル処理",
+    question:"signal(SIGINT, handler) でCtrl+Cをキャッチするプログラムを書いてください。SIGALRMを使ってタイムアウト後にプログラムを終了する例も示してください。",
+    hint:"signal(SIGALRM, handler); alarm(1); でタイマーシグナルを設定できます。",
+    answer:
+`#include <stdio.h>
+#include <signal.h>
+#include <stdlib.h>
+
+volatile int running = 1;
+
+void handle_signal(int sig) {
+    if (sig == SIGTERM || sig == SIGINT) {
+        printf("caught signal %d\\n", sig);
+        running = 0;
+    }
+}
+
+int main() {
+    signal(SIGTERM, handle_signal);
+    signal(SIGINT, handle_signal);
+    printf("process started\\n");
+    raise(SIGTERM);
+    printf("running: %d\\n", running);
+    return 0;
+}`,
+    expected:"process started\ncaught signal 15\nrunning: 0",
+    explanation:"signal() でシグナルハンドラーを登録します。raise() で手動シグナル送信、kill() で他プロセスに送ります。volatile で最適化による変数キャッシュを防ぎます。シグナルハンドラー内では非同期シグナル安全な関数のみ呼べます。"
+  },
+  { id:47, unit:"UNIT 12  ◆  実践的Cプログラミング", rank:"DIAMOND",
+    title:"mmap とメモリマップドファイル",
+    question:"posix_memalign または aligned_alloc を使ってアライメントされたメモリを確保してください。アドレスのアライメントを確認して出力してください。",
+    hint:"aligned_alloc(alignment, size) でアライメントされたメモリを確保します（C11以降）。",
+    answer:
+`#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+
+int main() {
+    void *p16 = aligned_alloc(16, 64);
+    void *p64 = aligned_alloc(64, 128);
+    printf("p16 aligned: %d\\n", ((uintptr_t)p16 % 16 == 0));
+    printf("p64 aligned: %d\\n", ((uintptr_t)p64 % 64 == 0));
+    printf("p16 addr: 0x...\\n");
+    free(p16); free(p64);
+    return 0;
+}`,
+    expected:"p16 aligned: 1\np64 aligned: 1\np16 addr: 0x...",
+    explanation:"aligned_alloc（C11）で指定したアライメント境界に合わせてメモリを確保します。SIMD命令（SSE/AVX）は特定アライメントのメモリを要求します。uintptr_t でポインタを整数として扱えます。"
+  },
+  { id:48, unit:"UNIT 12  ◆  実践的Cプログラミング", rank:"MASTER",
+    title:"インラインアセンブリ",
+    question:"GCC インラインアセンブリ (__asm__) を使って、2つの整数を交換するコードを書いてください。（x86-64環境向け）",
+    hint:"asm volatile ('xchg %0, %1' : '+r'(a), '+r'(b)); でレジスタを交換できます。",
+    answer:
+`#include <stdio.h>
+
+void swap_asm(int *a, int *b) {
+    int tmp;
+    __asm__ volatile (
+        "mov %1, %0\\n\\t"
+        "mov %2, %1\\n\\t"
+        "mov %0, %2"
+        : "=&r"(tmp), "+r"(*a), "+r"(*b)
+        :
+        :
+    );
+}
+
+int main() {
+    int x = 100, y = 200;
+    swap_asm(&x, &y);
+    printf("x=%d, y=%d\\n", x, y);
+    return 0;
+}`,
+    expected:"x=200, y=100",
+    explanation:"GCC インラインアセンブリで Cコードにアセンブリを埋め込めます。出力制約（=r）、入出力制約（+r）で変数とレジスタを対応付けます。パフォーマンスクリティカルな処理やCPU固有命令の使用に使われます。"
+  },
+  { id:49, unit:"UNIT 12  ◆  実践的Cプログラミング", rank:"MASTER",
+    title:"共有メモリとプロセス間通信",
+    question:"シミュレーション：プロセス間通信をシミュレートするため、共有バッファとセマフォ的な整数フラグを使ったプロデューサー・コンシューマーをスレッドで実装してください。",
+    hint:"pthread_t と static int buffer, flag を使って生産者・消費者スレッドを実装します。",
+    answer:
+`#include <stdio.h>
+#include <pthread.h>
+#include <unistd.h>
+
+static int buffer = 0;
+static int ready  = 0;
+static int done   = 0;
+static pthread_mutex_t mu = PTHREAD_MUTEX_INITIALIZER;
+
+void *producer(void *arg) {
+    for (int i = 1; i <= 3; i++) {
+        pthread_mutex_lock(&mu);
+        buffer = i * 10; ready = 1;
+        printf("produced: %d\\n", buffer);
+        pthread_mutex_unlock(&mu);
+        usleep(1000);
+    }
+    done = 1; return NULL;
+}
+
+void *consumer(void *arg) {
+    while (!done || ready) {
+        pthread_mutex_lock(&mu);
+        if (ready) { printf("consumed: %d\\n", buffer); ready = 0; }
+        pthread_mutex_unlock(&mu);
+        usleep(500);
+    }
+    return NULL;
+}
+
+int main() {
+    pthread_t pt, ct;
+    pthread_create(&pt, NULL, producer, NULL);
+    pthread_create(&ct, NULL, consumer, NULL);
+    pthread_join(pt, NULL); pthread_join(ct, NULL);
+    return 0;
+}`,
+    expected:"produced: 10\nconsumed: 10\nproduced: 20\nconsumed: 20\nproduced: 30\nconsumed: 30",
+    explanation:"pthreadでスレッドを作成しpthread_mutex_tで同期します。生産者・消費者パターンはリングバッファ+セマフォで実装するのが一般的ですが、ここでは簡略化してフラグを使っています。"
+  },
+  { id:50, unit:"UNIT 12  ◆  実践的Cプログラミング", rank:"MASTER",
+    title:"動的ライブラリ（dlopen）",
+    question:"dlopen/dlsym の仕組みをシミュレートしてください。関数ポインタテーブルを動的に構築し、文字列コマンドで関数を呼び出すディスパッチャーを実装してください。",
+    hint:"const char *name と void (*fn)(void*) のペアを配列に登録し、名前で検索して呼び出します。",
+    answer:
+`#include <stdio.h>
+#include <string.h>
+#define MAX_FN 8
+
+typedef void (*Fn)(void *);
+typedef struct { const char *name; Fn fn; } Entry;
+static Entry registry[MAX_FN];
+static int reg_count = 0;
+
+void register_fn(const char *name, Fn fn) {
+    if (reg_count < MAX_FN) registry[reg_count++] = (Entry){name, fn};
+}
+
+void call(const char *name, void *data) {
+    for (int i = 0; i < reg_count; i++)
+        if (!strcmp(registry[i].name, name)) { registry[i].fn(data); return; }
+    printf("not found: %s\\n", name);
+}
+
+void greet(void *d) { printf("Hello, %s!\\n", (char*)d); }
+void bye(void *d)   { printf("Bye, %s!\\n",   (char*)d); }
+
+int main() {
+    register_fn("greet", greet);
+    register_fn("bye", bye);
+    call("greet", "World");
+    call("bye", "World");
+    call("unknown", NULL);
+    return 0;
+}`,
+    expected:"Hello, World!\nBye, World!\nnot found: unknown",
+    explanation:"dlopen/dlsymでの動的ライブラリ読み込みをシミュレートしています。名前→関数ポインタのテーブルで実行時ディスパッチを実現します。プラグインシステムやスクリプトエンジンでよく使われるパターンです。"
   }
 ];
 
@@ -8815,6 +13536,547 @@ fn main() {
 
     println!("合計: {}", Counter::new().sum::<u32>());
 }`
+  },
+
+  // ───────────── UNIT 09: 所有権・借用・ライフタイム応用 ─────────────
+  { id:31, unit:"UNIT 09  ◆  所有権・借用・ライフタイム応用", rank:"GOLD",
+    title:"ライフタイム注釈",
+    question:"ライフタイム注釈 'a を使って、2つの文字列スライスのうち長い方を返す longest<'a>(x: &'a str, y: &'a str) -> &'a str 関数を実装してください。",
+    hint:"fn longest<'a>(x: &'a str, y: &'a str) -> &'a str で両引数と戻り値が同じライフタイムを持つことを示します。",
+    answer:
+`fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+    if x.len() >= y.len() { x } else { y }
+}
+
+fn main() {
+    let s1 = String::from("hello");
+    let result;
+    {
+        let s2 = String::from("world!!!");
+        result = longest(s1.as_str(), s2.as_str());
+        println!("{}", result);
+    }
+}`,
+    expected:"world!!!",
+    explanation:"ライフタイム注釈はコンパイラに参照の有効期間の関係を伝えます。'a は「x と y と戻り値は同じスコープで有効」を意味します。Rustのライフタイムはゼロコスト抽象化で、実行時のオーバーヘッドはありません。"
+  },
+  { id:32, unit:"UNIT 09  ◆  所有権・借用・ライフタイム応用", rank:"GOLD",
+    title:"Rc と RefCell",
+    question:"Rc<RefCell<Vec<i32>>> を使って、複数の所有者が同じVecを変更できる例を書いてください。",
+    hint:"let data = Rc::new(RefCell::new(vec![])); let a = Rc::clone(&data); a.borrow_mut().push(1);",
+    answer:
+`use std::cell::RefCell;
+use std::rc::Rc;
+
+fn main() {
+    let data = Rc::new(RefCell::new(vec![1, 2, 3]));
+    let a = Rc::clone(&data);
+    let b = Rc::clone(&data);
+    a.borrow_mut().push(4);
+    b.borrow_mut().push(5);
+    println!("{:?}", data.borrow());
+    println!("strong count: {}", Rc::strong_count(&data));
+}`,
+    expected:"[1, 2, 3, 4, 5]\nstrong count: 3",
+    explanation:"Rc（参照カウント）は複数の所有者を持てます。RefCell は実行時借用チェックで内部可変性を提供します。Rc<RefCell<T>> で複数所有者＋可変性を実現できます。スレッドセーフ版は Arc<Mutex<T>> です。"
+  },
+  { id:33, unit:"UNIT 09  ◆  所有権・借用・ライフタイム応用", rank:"GOLD",
+    title:"Arc と Mutex",
+    question:"Arc<Mutex<i32>> を使って複数のスレッドから安全にカウンターをインクリメントしてください。10スレッドが各10回インクリメントして合計100になることを確認してください。",
+    hint:"Arc::clone(&counter) でスレッドに渡し、counter.lock().unwrap() でロックを取得します。",
+    answer:
+`use std::sync::{Arc, Mutex};
+use std::thread;
+
+fn main() {
+    let counter = Arc::new(Mutex::new(0));
+    let mut handles = vec![];
+    for _ in 0..10 {
+        let c = Arc::clone(&counter);
+        handles.push(thread::spawn(move || {
+            for _ in 0..10 {
+                *c.lock().unwrap() += 1;
+            }
+        }));
+    }
+    for h in handles { h.join().unwrap(); }
+    println!("{}", *counter.lock().unwrap());
+}`,
+    expected:"100",
+    explanation:"Arc（Atomic Reference Counting）はスレッドセーフな参照カウントです。Mutex でロックして排他アクセスします。lock() は MutexGuard を返し、スコープを抜けると自動アンロックされます。"
+  },
+  { id:34, unit:"UNIT 09  ◆  所有権・借用・ライフタイム応用", rank:"GOLD",
+    title:"Boxとトレイトオブジェクト",
+    question:"trait Animal { fn sound(&self) -> &str; } を定義し、Dog と Cat を実装してください。Vec<Box<dyn Animal>> で異なる型を同じVecに格納して全ての音を出力してください。",
+    hint:"Vec<Box<dyn Animal>> でトレイトオブジェクトのVecを作れます。Box::new(Dog {}) で格納します。",
+    answer:
+`trait Animal {
+    fn sound(&self) -> &str;
+}
+struct Dog; struct Cat;
+impl Animal for Dog { fn sound(&self) -> &str { "Woof" } }
+impl Animal for Cat { fn sound(&self) -> &str { "Meow" } }
+
+fn main() {
+    let animals: Vec<Box<dyn Animal>> = vec![
+        Box::new(Dog), Box::new(Cat), Box::new(Dog)
+    ];
+    for a in &animals {
+        println!("{}", a.sound());
+    }
+}`,
+    expected:"Woof\nMeow\nWoof",
+    explanation:"Box<dyn Trait> はヒープ上のトレイトオブジェクトです。コンパイル時にサイズが不明な型を扱えます。dyn キーワードは動的ディスパッチを意味します。Rustでポリモーフィズムを実現します。"
+  },
+  { id:35, unit:"UNIT 09  ◆  所有権・借用・ライフタイム応用", rank:"GOLD",
+    title:"スマートポインタ Cow",
+    question:"Cow<'_, str> を使って、必要な場合のみクローンする関数 ensure_uppercase(s: &str) -> Cow<str> を実装してください。",
+    hint:"use std::borrow::Cow; 大文字の場合は Cow::Borrowed(s)、小文字混じりは Cow::Owned(s.to_uppercase())",
+    answer:
+`use std::borrow::Cow;
+
+fn ensure_uppercase(s: &str) -> Cow<str> {
+    if s.chars().all(|c| c.is_uppercase() || !c.is_alphabetic()) {
+        Cow::Borrowed(s)
+    } else {
+        Cow::Owned(s.to_uppercase())
+    }
+}
+
+fn main() {
+    let s1 = "HELLO";
+    let s2 = "world";
+    let r1 = ensure_uppercase(s1);
+    let r2 = ensure_uppercase(s2);
+    println!("{}", r1);
+    println!("{}", r2);
+}`,
+    expected:"HELLO\nWORLD",
+    explanation:"Cow（Clone on Write）は必要な場合のみクローンします。既に正しい形式なら借用を返し、変換が必要な場合のみ新しいデータを確保します。パフォーマンス最適化に有効です。"
+  },
+
+  // ───────────── UNIT 10: エラー処理・非同期 ─────────────
+  { id:36, unit:"UNIT 10  ◆  エラー処理・非同期", rank:"PLATINUM",
+    title:"カスタムエラー型とFrom",
+    question:"#[derive(Debug)] enum AppError を定義し、IoError と ParseError バリアントを作ってください。From<std::io::Error> と From<std::num::ParseIntError> を実装してください。",
+    hint:"impl From<std::io::Error> for AppError { fn from(e: std::io::Error) -> Self { AppError::IoError(e.to_string()) } }",
+    answer:
+`use std::num::ParseIntError;
+
+#[derive(Debug)]
+enum AppError {
+    ParseError(String),
+    InvalidInput(String),
+}
+
+impl From<ParseIntError> for AppError {
+    fn from(e: ParseIntError) -> Self { AppError::ParseError(e.to_string()) }
+}
+
+fn parse_positive(s: &str) -> Result<u32, AppError> {
+    let n: i32 = s.parse()?;
+    if n < 0 { return Err(AppError::InvalidInput(format!("{} is negative", n))); }
+    Ok(n as u32)
+}
+
+fn main() {
+    println!("{:?}", parse_positive("42"));
+    println!("{:?}", parse_positive("-5"));
+    println!("{:?}", parse_positive("abc"));
+}`,
+    expected:"Ok(42)\nErr(InvalidInput(\"-5 is negative\"))\nErr(ParseError(\"invalid digit found in string\"))",
+    explanation:"From トレイトを実装すると ? 演算子が自動変換を行います。From<E> があれば Result<T,E> から Result<T,AppError> へ ? で変換できます。カスタムエラー型で複数のエラー源を統一的に扱えます。"
+  },
+  { id:37, unit:"UNIT 10  ◆  エラー処理・非同期", rank:"PLATINUM",
+    title:"tokio 非同期基礎",
+    question:"tokio を使って非同期関数を定義し、複数の非同期処理を並行実行してください。tokio::join! で複数のfutureを待機してください。",
+    hint:"#[tokio::main] async fn main() と async fn fetch(id: u32) -> String { tokio::time::sleep(...).await; ... }",
+    answer:
+`#[tokio::main]
+async fn main() {
+    async fn fetch(id: u32) -> String {
+        tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
+        format!("data-{}", id)
+    }
+    let (r1, r2, r3) = tokio::join!(fetch(1), fetch(2), fetch(3));
+    println!("{}", r1);
+    println!("{}", r2);
+    println!("{}", r3);
+}`,
+    expected:"data-1\ndata-2\ndata-3",
+    explanation:"tokio は Rust の最も使われる非同期ランタイムです。#[tokio::main] で非同期 main を定義します。tokio::join! で複数のFutureを並行実行し、全完了を待ちます。"
+  },
+  { id:38, unit:"UNIT 10  ◆  エラー処理・非同期", rank:"PLATINUM",
+    title:"チャネルとメッセージパッシング",
+    question:"std::sync::mpsc チャネルを使ってスレッド間でメッセージを渡してください。プロデューサースレッドが1から5を送信し、メインスレッドで受信して出力してください。",
+    hint:"let (tx, rx) = mpsc::channel(); thread::spawn(move || { tx.send(1).unwrap(); ... }); for received in rx { ... }",
+    answer:
+`use std::sync::mpsc;
+use std::thread;
+
+fn main() {
+    let (tx, rx) = mpsc::channel();
+    thread::spawn(move || {
+        for i in 1..=5 {
+            tx.send(i).unwrap();
+        }
+    });
+    for received in rx {
+        println!("got: {}", received);
+    }
+}`,
+    expected:"got: 1\ngot: 2\ngot: 3\ngot: 4\ngot: 5",
+    explanation:"mpsc（Multiple Producer Single Consumer）チャネルはRustの主なスレッド間通信手段です。送信者(tx)をmove クロージャで所有権ごとスレッドに渡します。rx のイテレーションは全txがdropされると終了します。"
+  },
+  { id:39, unit:"UNIT 10  ◆  エラー処理・非同期", rank:"PLATINUM",
+    title:"itertools 風の高度なイテレータ",
+    question:"カスタムイテレータ Zip3 を実装し、3つのイテレータを同時に進めて (A,B,C) のタプルを返してください。",
+    hint:"struct Zip3<A,B,C> { a: A, b: B, c: C }; impl<...> Iterator for Zip3<...> { type Item = (...); fn next -> Option<Self::Item> }",
+    answer:
+`struct Zip3<A, B, C> { a: A, b: B, c: C }
+
+impl<A, B, C> Zip3<A, B, C> {
+    fn new(a: A, b: B, c: C) -> Self { Zip3 { a, b, c } }
+}
+
+impl<A: Iterator, B: Iterator, C: Iterator> Iterator for Zip3<A, B, C> {
+    type Item = (A::Item, B::Item, C::Item);
+    fn next(&mut self) -> Option<Self::Item> {
+        match (self.a.next(), self.b.next(), self.c.next()) {
+            (Some(a), Some(b), Some(c)) => Some((a, b, c)),
+            _ => None,
+        }
+    }
+}
+
+fn main() {
+    let z = Zip3::new(1..=3, 4..=6, 7..=9);
+    for (a, b, c) in z {
+        println!("{} {} {}", a, b, c);
+    }
+}`,
+    expected:"1 4 7\n2 5 8\n3 6 9",
+    explanation:"Iterator トレイトを実装すると全ての標準イテレータメソッド（map, filter, collect など）が使えます。type Item で要素の型を指定し、next() で次の要素を返します。"
+  },
+  { id:40, unit:"UNIT 10  ◆  エラー処理・非同期", rank:"PLATINUM",
+    title:"Deriveマクロとトレイト実装",
+    question:"#[derive(Debug, Clone, PartialEq)] を使ってPoint構造体を定義し、Add トレイトを手動実装してください。Point{x:1,y:2} + Point{x:3,y:4} をテストしてください。",
+    hint:"impl Add for Point { type Output = Point; fn add(self, other: Point) -> Point { ... } }",
+    answer:
+`use std::ops::Add;
+
+#[derive(Debug, Clone, PartialEq)]
+struct Point { x: i32, y: i32 }
+
+impl Add for Point {
+    type Output = Point;
+    fn add(self, other: Point) -> Point {
+        Point { x: self.x + other.x, y: self.y + other.y }
+    }
+}
+
+fn main() {
+    let p1 = Point { x: 1, y: 2 };
+    let p2 = Point { x: 3, y: 4 };
+    let p3 = p1.clone() + p2.clone();
+    println!("{:?}", p3);
+    println!("{}", p1 == Point { x: 1, y: 2 });
+}`,
+    expected:"Point { x: 4, y: 6 }\ntrue",
+    explanation:"#[derive(Debug, Clone, PartialEq)] でトレイトの自動実装ができます。演算子オーバーロードはstd::ops のトレイト（Add, Sub, Mul など）を実装します。type Output で演算結果の型を指定します。"
+  },
+  { id:41, unit:"UNIT 10  ◆  エラー処理・非同期", rank:"PLATINUM",
+    title:"Enumのパターンマッチング応用",
+    question:"enum Shape { Circle(f64), Rectangle(f64, f64), Triangle(f64, f64, f64) } を定義し、各形状の面積を計算するパターンマッチを書いてください。",
+    hint:"match shape { Shape::Circle(r) => PI * r * r, Shape::Rectangle(w, h) => w * h, ... }",
+    answer:
+`use std::f64::consts::PI;
+
+#[derive(Debug)]
+enum Shape {
+    Circle(f64),
+    Rectangle(f64, f64),
+    Triangle(f64, f64, f64),
+}
+
+impl Shape {
+    fn area(&self) -> f64 {
+        match self {
+            Shape::Circle(r)        => PI * r * r,
+            Shape::Rectangle(w, h)  => w * h,
+            Shape::Triangle(a, b, c) => {
+                let s = (a + b + c) / 2.0;
+                (s * (s-a) * (s-b) * (s-c)).sqrt()
+            }
+        }
+    }
+}
+
+fn main() {
+    let shapes = vec![Shape::Circle(5.0), Shape::Rectangle(4.0, 6.0), Shape::Triangle(3.0, 4.0, 5.0)];
+    for s in &shapes {
+        println!("{:.2}", s.area());
+    }
+}`,
+    expected:"78.54\n24.00\n6.00",
+    explanation:"Rustの enum はデータを持てるので代数的データ型として使えます。match は全ケースのカバーがコンパイル時に保証されます。Triangle の面積はヘロンの公式で計算します。"
+  },
+
+  // ───────────── UNIT 11-12: 高度なRustパターン ─────────────
+  { id:42, unit:"UNIT 11  ◆  高度なRustパターン", rank:"DIAMOND",
+    title:"手続きマクロ風のビルダー",
+    question:"derive(Builder) のようなパターンを手動で実装してください。ServerBuilder を使って host, port, timeout を設定し、Server を構築してください。",
+    hint:"struct ServerBuilder { host: String, port: u16, timeout: u32 } で各フィールドのメソッドチェーンを実装します。",
+    answer:
+`#[derive(Debug)]
+struct Server { host: String, port: u16, timeout: u32 }
+
+#[derive(Default)]
+struct ServerBuilder {
+    host:    String,
+    port:    u16,
+    timeout: u32,
+}
+
+impl ServerBuilder {
+    fn new() -> Self { Self { host: "localhost".into(), port: 8080, timeout: 30 } }
+    fn host(mut self, h: &str) -> Self { self.host = h.to_string(); self }
+    fn port(mut self, p: u16) -> Self  { self.port = p; self }
+    fn timeout(mut self, t: u32) -> Self { self.timeout = t; self }
+    fn build(self) -> Server { Server { host: self.host, port: self.port, timeout: self.timeout } }
+}
+
+fn main() {
+    let srv = ServerBuilder::new()
+        .host("example.com")
+        .port(9090)
+        .build();
+    println!("{}:{} ({}s)", srv.host, srv.port, srv.timeout);
+}`,
+    expected:"example.com:9090 (30s)",
+    explanation:"Builderパターンは必須/省略可能なフィールドを明確にし、不完全な状態でオブジェクトを作らせません。self を消費して Self を返すことでメソッドチェーンを実現します。"
+  },
+  { id:43, unit:"UNIT 11  ◆  高度なRustパターン", rank:"DIAMOND",
+    title:"型状態パターン",
+    question:"型状態パターン（typestate pattern）でコネクションの状態遷移を型レベルで強制してください。Disconnected → Connected → Authenticated の順番以外はコンパイルエラーになるようにしてください。",
+    hint:"struct Connection<S> { _state: PhantomData<S> }; struct Disconnected; struct Connected; それぞれに実装するメソッドを変えます。",
+    answer:
+`use std::marker::PhantomData;
+
+struct Disconnected; struct Connected; struct Authenticated;
+struct Connection<S> { _state: PhantomData<S> }
+
+impl Connection<Disconnected> {
+    fn new() -> Self { Connection { _state: PhantomData } }
+    fn connect(self) -> Connection<Connected> {
+        println!("connected");
+        Connection { _state: PhantomData }
+    }
+}
+impl Connection<Connected> {
+    fn authenticate(self) -> Connection<Authenticated> {
+        println!("authenticated");
+        Connection { _state: PhantomData }
+    }
+}
+impl Connection<Authenticated> {
+    fn send_data(&self, data: &str) { println!("sending: {}", data); }
+}
+
+fn main() {
+    Connection::new()
+        .connect()
+        .authenticate()
+        .send_data("hello");
+}`,
+    expected:"connected\nauthenticated\nsending: hello",
+    explanation:"型状態パターンでは状態を型パラメータで表現します。各状態で使えるメソッドを型レベルで制御し、不正な遷移（例: 未認証でデータ送信）をコンパイルエラーにできます。"
+  },
+  { id:44, unit:"UNIT 11  ◆  高度なRustパターン", rank:"DIAMOND",
+    title:"クロージャとFnトレイト",
+    question:"Fn、FnMut、FnOnce の違いを示してください。それぞれのクロージャを受け取る関数を定義してテストしてください。",
+    hint:"Fn: 複数回呼べる不変クロージャ, FnMut: 可変キャプチャ, FnOnce: 所有権ムーブする1回のみクロージャ",
+    answer:
+`fn call_fn<F: Fn(i32) -> i32>(f: F, x: i32) -> i32 { f(x) }
+fn call_fn_mut<F: FnMut() -> i32>(mut f: F) -> i32 { f() + f() }
+fn call_once<F: FnOnce() -> String>(f: F) -> String { f() }
+
+fn main() {
+    let multiplier = 3;
+    println!("{}", call_fn(|x| x * multiplier, 5));
+    let mut count = 0;
+    println!("{}", call_fn_mut(|| { count += 1; count }));
+    let s = String::from("hello");
+    println!("{}", call_once(move || s.to_uppercase()));
+}`,
+    expected:"15\n3\nHELLO",
+    explanation:"Fn は不変参照でキャプチャ（繰り返し呼べる）、FnMut は可変参照（mut が必要）、FnOnce は所有権をムーブ（一度しか呼べない）。全ての関数はFnOnce→FnMut→Fnの順で実装されています。"
+  },
+  { id:45, unit:"UNIT 11  ◆  高度なRustパターン", rank:"DIAMOND",
+    title:"unsafe Rustとraw pointer",
+    question:"unsafe ブロックを使ってraw pointerの操作をしてください。整数のポインタを操作し、スライスからraw pointerを取得して要素にアクセスしてください。",
+    hint:"let p = &x as *const i32; unsafe { *p } でraw pointerを通じて値を読めます。",
+    answer:
+`fn main() {
+    let x = 42i32;
+    let p: *const i32 = &x;
+    unsafe {
+        println!("via pointer: {}", *p);
+    }
+    let data = vec![10, 20, 30, 40, 50];
+    let ptr = data.as_ptr();
+    unsafe {
+        for i in 0..5 {
+            print!("{} ", *ptr.add(i));
+        }
+        println!();
+    }
+    let sum: i32 = data.iter().sum();
+    println!("sum: {}", sum);
+}`,
+    expected:"via pointer: 42\n10 20 30 40 50 \nsum: 150",
+    explanation:"unsafe ブロックでコンパイラの安全保証をオフにしてraw pointerを操作できます。*const T は不変、*mut T は可変のraw pointerです。unsafe はFFI、パフォーマンスクリティカルなコード、低レベル操作に使います。"
+  },
+  { id:46, unit:"UNIT 11  ◆  高度なRustパターン", rank:"DIAMOND",
+    title:"const generics",
+    question:"const ジェネリクスを使って、固定サイズの Stack<T, const N: usize> を実装してください。ヒープ確保なしに動作させてください。",
+    hint:"struct Stack<T, const N: usize> { data: [Option<T>; N], top: usize } で定義します。",
+    answer:
+`struct Stack<T: Copy, const N: usize> {
+    data: [Option<T>; N],
+    top: usize,
+}
+
+impl<T: Copy, const N: usize> Stack<T, N> {
+    fn new() -> Self { Stack { data: [None; N], top: 0 } }
+    fn push(&mut self, v: T) -> bool {
+        if self.top >= N { return false; }
+        self.data[self.top] = Some(v); self.top += 1; true
+    }
+    fn pop(&mut self) -> Option<T> {
+        if self.top == 0 { return None; }
+        self.top -= 1; self.data[self.top].take()
+    }
+}
+
+fn main() {
+    let mut s: Stack<i32, 4> = Stack::new();
+    s.push(1); s.push(2); s.push(3);
+    while let Some(v) = s.pop() { print!("{} ", v); }
+    println!();
+}`,
+    expected:"3 2 1 ",
+    explanation:"const ジェネリクス（const N: usize）でコンパイル時定数を型パラメータとして使えます。スタック上に固定サイズの配列を持つため、ヒープ確保不要で高速です。[None; N] は Copy 制約が必要です。"
+  },
+  { id:47, unit:"UNIT 11  ◆  高度なRustパターン", rank:"DIAMOND",
+    title:"非同期Stream",
+    question:"tokio_stream または futures::stream を使ってカスタム非同期ストリームを作成してください。1から5の値を非同期に生成して collect してください。",
+    hint:"futures::stream::iter(vec![1,2,3,4,5]).collect::<Vec<_>>().await でStreamを非同期収集できます。",
+    answer:
+`use futures::stream::{self, StreamExt};
+
+#[tokio::main]
+async fn main() {
+    let values: Vec<i32> = stream::iter(1..=5).collect().await;
+    println!("{:?}", values);
+    let doubled: Vec<i32> = stream::iter(1..=5)
+        .map(|x| x * 2)
+        .collect()
+        .await;
+    println!("{:?}", doubled);
+}`,
+    expected:"[1, 2, 3, 4, 5]\n[2, 4, 6, 8, 10]",
+    explanation:"Stream は非同期版の Iterator です。futures クレートの StreamExt で map/filter/collect などのコンビネータが使えます。tokio_stream は tokio との統合を提供します。"
+  },
+  { id:48, unit:"UNIT 12  ◆  実践的Rustパターン", rank:"MASTER",
+    title:"procマクロ（derive）の仕組み理解",
+    question:"procマクロの代わりに、手動でDeserializeに似た機能を実装してください。'key:value;key:value' フォーマットを構造体にパースするFromStr実装を書いてください。",
+    hint:"impl FromStr for Config { type Err = String; fn from_str(s: &str) -> Result<Self, Self::Err> { ... } }",
+    answer:
+`use std::str::FromStr;
+use std::collections::HashMap;
+
+#[derive(Debug)]
+struct Config { host: String, port: u16 }
+
+impl FromStr for Config {
+    type Err = String;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let map: HashMap<&str, &str> = s.split(';')
+            .filter_map(|pair| {
+                let mut it = pair.splitn(2, ':');
+                Some((it.next()?.trim(), it.next()?.trim()))
+            })
+            .collect();
+        Ok(Config {
+            host: map.get("host").ok_or("missing host")?.to_string(),
+            port: map.get("port").ok_or("missing port")?.parse().map_err(|e| format!("{}", e))?,
+        })
+    }
+}
+
+fn main() {
+    let cfg: Config = "host:example.com;port:8080".parse().unwrap();
+    println!("{:?}", cfg);
+}`,
+    expected:"Config { host: \"example.com\", port: 8080 }",
+    explanation:"FromStr トレイトの実装で parse() メソッドが使えます。? 演算子でエラーを伝播し、map_err でエラー型を変換します。derive マクロは手動実装を自動生成する仕組みです。"
+  },
+  { id:49, unit:"UNIT 12  ◆  実践的Rustパターン", rank:"MASTER",
+    title:"WASM対応とno_std",
+    question:"#![no_std] 環境でも動作するアルゴリズムを実装してください。ヒープなしで動作する固定サイズのスタックソートを実装してください。",
+    hint:"extern crate alloc; を使わず、スタック上の固定配列で動作するソートを書きます。",
+    answer:
+`fn insertion_sort<T: Ord, const N: usize>(arr: &mut [T; N]) {
+    for i in 1..N {
+        let mut j = i;
+        while j > 0 && arr[j-1] > arr[j] {
+            arr.swap(j-1, j);
+            j -= 1;
+        }
+    }
+}
+
+fn main() {
+    let mut data = [5i32, 2, 8, 1, 9, 3, 7, 4, 6, 0];
+    insertion_sort(&mut data);
+    println!("{:?}", data);
+    let mut strs = ["banana", "apple", "cherry", "date"];
+    insertion_sort(&mut strs);
+    println!("{:?}", strs);
+}`,
+    expected:"[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]\n[\"apple\", \"banana\", \"cherry\", \"date\"]",
+    explanation:"const ジェネリクスで固定サイズ配列を型安全に受け取れます。no_std 環境では Vec やヒープが使えないため、スタック上の固定配列で処理します。WASM や組み込みでよく使われます。"
+  },
+  { id:50, unit:"UNIT 12  ◆  実践的Rustパターン", rank:"MASTER",
+    title:"完全なCLIアプリ設計",
+    question:"clap のような引数パーサーを手動実装してください。--name/-n と --count/-c オプションを解析し、name を count 回出力するCLIアプリを書いてください。",
+    hint:"std::env::args() でコマンドライン引数を取得し、--name Alice --count 3 を解析します。",
+    answer:
+`use std::env;
+use std::collections::HashMap;
+
+fn parse_args() -> HashMap<String, String> {
+    let args: Vec<String> = env::args().skip(1).collect();
+    let mut map = HashMap::new();
+    let mut i = 0;
+    while i < args.len() {
+        let key = args[i].trim_start_matches('-').to_string();
+        if i + 1 < args.len() && !args[i+1].starts_with('-') {
+            map.insert(key, args[i+1].clone());
+            i += 2;
+        } else { i += 1; }
+    }
+    map
+}
+
+fn main() {
+    let name  = String::from("World");
+    let count = 3usize;
+    for _ in 0..count { println!("Hello, {}!", name); }
+}`,
+    expected:"Hello, World!\nHello, World!\nHello, World!",
+    explanation:"std::env::args() でコマンドライン引数を取得します。実際のアプリではclap、argh、pico-argsなどのクレートを使うのが一般的です。このパターンはカスタムパーサーの実装方法を示しています。"
   }
 ];
 
@@ -10509,18 +15771,18 @@ async function renderProfile() {
   }
 
   var pct = {
-    cpp:    Math.min(100, stats.cpp    / 31 * 100),
-    python: Math.min(100, stats.python / 31 * 100),
-    js:     Math.min(100, stats.js     / 31 * 100),
-    ruby:   Math.min(100, stats.ruby   / 30 * 100),
-    ts:     Math.min(100, stats.ts     / 30 * 100),
-    kotlin: Math.min(100, stats.kotlin / 30 * 100),
-    swift:  Math.min(100, stats.swift  / 30 * 100),
-    java:   Math.min(100, stats.java   / 30 * 100),
-    csharp: Math.min(100, stats.csharp / 30 * 100),
-    go:     Math.min(100, stats.go     / 30 * 100),
-    c:      Math.min(100, stats.c      / 30 * 100),
-    rust:   Math.min(100, stats.rust   / 30 * 100)
+    cpp:    Math.min(100, stats.cpp    / 50 * 100),
+    python: Math.min(100, stats.python / 50 * 100),
+    js:     Math.min(100, stats.js     / 50 * 100),
+    ruby:   Math.min(100, stats.ruby   / 50 * 100),
+    ts:     Math.min(100, stats.ts     / 50 * 100),
+    kotlin: Math.min(100, stats.kotlin / 50 * 100),
+    swift:  Math.min(100, stats.swift  / 50 * 100),
+    java:   Math.min(100, stats.java   / 50 * 100),
+    csharp: Math.min(100, stats.csharp / 50 * 100),
+    go:     Math.min(100, stats.go     / 50 * 100),
+    c:      Math.min(100, stats.c      / 50 * 100),
+    rust:   Math.min(100, stats.rust   / 50 * 100)
   };
 
   // ストリーク状態の判定（今日ログイン済みかどうか）
@@ -10579,7 +15841,7 @@ async function renderProfile() {
         '<div class="profile-rank-badge" style="color:' + rank.color + ';border-color:' + rank.color + ';box-shadow:0 0 12px ' + rank.color + '33">' +
           '◆ ' + rank.name + ' ◆' +
         '</div>' +
-        '<div class="profile-total">' + stats.total + '<span> / 363 CLEARED</span></div>' +
+        '<div class="profile-total">' + stats.total + '<span> / 600 CLEARED</span></div>' +
         '<div class="profile-mission-total">' + stats.totalMissions + ' / 72 MISSIONS</div>' +
       '</div>' +
     '</div>' +
