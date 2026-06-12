@@ -9593,7 +9593,7 @@ inline fun <reified T : Any> toJson(obj: T): String {
             null -> "null"
             else -> """"$v""""
         }
-        """"${p.name}": $vStr"""
+        """"\${p.name}": $vStr"""
     }
     return "{$fields}"
 }
