@@ -9493,6 +9493,7 @@ function renderDetail(id) {
         '<button id="mode-zero"    class="mode-btn"        onclick="editorZero()">⬜ ゼロから</button>' +
         '<button id="mode-scratch" class="mode-btn active" onclick="editorScratch()">📋 テンプレート</button>' +
         '<button id="mode-fill"   class="mode-btn"        onclick="editorFill()">📝 穴埋め</button>' +
+        '<button class="mode-btn basicform-btn"            onclick="showBasicForm()">📖 基本形</button>' +
       '</div>' +
       '<div id="code-editor" class="code-editor-ace"></div>' +
       '<div class="editor-options">' +
@@ -9620,6 +9621,44 @@ function buildSkeleton(p) {
 function editorZero()    { playUIClick(); setEditorMode('zero');    }
 function editorScratch() { playUIClick(); setEditorMode('scratch'); }
 function editorFill()    { playUIClick(); setEditorMode('fill');    }
+
+// ===== 基本形モーダル =====
+
+function getBasicFormCode() {
+  if (currentLanguage === 'python')     return 'print("Hello, World!")';
+  if (currentLanguage === 'javascript') return 'console.log("Hello, World!");';
+  if (currentLanguage === 'ruby')       return 'puts "Hello, World!"';
+  if (currentLanguage === 'typescript') return 'console.log("Hello, World!");';
+  if (currentLanguage === 'kotlin')     return 'fun main() {\n    println("Hello, World!")\n}';
+  if (currentLanguage === 'swift')      return 'print("Hello, World!")';
+  if (currentLanguage === 'java')       return 'class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}';
+  if (currentLanguage === 'csharp')     return 'using System;\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello, World!");\n    }\n}';
+  if (currentLanguage === 'go')         return 'package main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello, World!")\n}';
+  if (currentLanguage === 'c')          return '#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}';
+  if (currentLanguage === 'rust')       return 'fn main() {\n    println!("Hello, World!");\n}';
+  return '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}';
+}
+
+function showBasicForm() {
+  playUIClick();
+  document.getElementById('basicform-title').textContent = getLangName() + ' — 基本形';
+  document.getElementById('basicform-code').textContent = getBasicFormCode();
+  document.getElementById('basicform-copy').textContent = 'コピー';
+  document.getElementById('basicform-modal').classList.remove('hidden');
+}
+
+function closeBasicFormModal() {
+  document.getElementById('basicform-modal').classList.add('hidden');
+}
+
+function copyBasicForm() {
+  var code = document.getElementById('basicform-code').textContent;
+  navigator.clipboard.writeText(code).then(function() {
+    var btn = document.getElementById('basicform-copy');
+    btn.textContent = 'コピー済み ✓';
+    setTimeout(function() { btn.textContent = 'コピー'; }, 2000);
+  });
+}
 
 // ===== エディタモード切り替え =====
 
@@ -10170,6 +10209,7 @@ function renderMissionDetail(id) {
         '<button id="mode-zero"    class="mode-btn"        onclick="editorZero()">⬜ ゼロから</button>' +
         '<button id="mode-scratch" class="mode-btn active" onclick="editorScratch()">📋 テンプレート</button>' +
         '<button id="mode-fill"   class="mode-btn"        onclick="editorFill()">📝 穴埋め</button>' +
+        '<button class="mode-btn basicform-btn"            onclick="showBasicForm()">📖 基本形</button>' +
       '</div>' +
       '<div id="code-editor" class="code-editor-ace"></div>' +
       '<div class="editor-options">' +

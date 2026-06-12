@@ -395,6 +395,19 @@
     </div>
   </div>
 
+  <!-- 基本形モーダル -->
+  <div id="basicform-modal" class="hidden">
+    <div id="basicform-overlay" onclick="closeBasicFormModal()"></div>
+    <div id="basicform-box">
+      <div id="basicform-header">
+        <span id="basicform-title">基本形</span>
+        <button id="basicform-close" onclick="closeBasicFormModal()">✕</button>
+      </div>
+      <pre id="basicform-code"></pre>
+      <button id="basicform-copy" onclick="copyBasicForm()">コピー</button>
+    </div>
+  </div>
+
   <!-- コンフェッティ -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script src="script.js"></script>
