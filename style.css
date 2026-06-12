@@ -4004,6 +4004,70 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 }
 
 /* 言語選択画面の診断ボタン */
+/* 自由入力フォーム */
+.quiz-textarea {
+  width: 100%;
+  min-height: 100px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 10px;
+  color: rgba(255,255,255,0.88);
+  font-size: 0.9rem;
+  font-family: inherit;
+  line-height: 1.6;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.18s;
+  box-sizing: border-box;
+}
+.quiz-textarea:focus {
+  border-color: rgba(255,107,0,0.55);
+  background: rgba(255,107,0,0.04);
+}
+.quiz-textarea::placeholder { color: rgba(255,255,255,0.28); }
+
+.quiz-free-meta {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.3);
+  margin: 4px 2px 0;
+  gap: 1px;
+}
+
+.quiz-free-error {
+  font-size: 0.82rem;
+  color: #FF6060;
+  margin-top: 6px;
+}
+.quiz-free-error.hidden { display: none; }
+
+.quiz-submit-btn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 13px;
+  background: rgba(255,107,0,0.12);
+  border: 1px solid rgba(255,107,0,0.45);
+  border-radius: 10px;
+  color: #FF6B00;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+}
+.quiz-submit-btn:hover:not(:disabled) {
+  background: rgba(255,107,0,0.22);
+  border-color: #FF6B00;
+}
+.quiz-submit-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
 .lang-quiz-btn {
   display: inline-block;
   margin-top: 10px;

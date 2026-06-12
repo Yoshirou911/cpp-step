@@ -24239,7 +24239,8 @@ var QUIZ_STEPS = {
       { icon: '🌐', label: 'Web・アプリを作りたい',        next: 'q2_web',  log: 'Web・アプリ開発' },
       { icon: '🤖', label: 'AI・データ・自動化がしたい',   next: 'q2_data', log: 'AI・データ・自動化' },
       { icon: '🎮', label: 'ゲームを作りたい',             next: 'q2_game', log: 'ゲーム開発' },
-      { icon: '🔧', label: 'システム・インフラ開発',        next: 'q2_sys',  log: 'システム・インフラ' }
+      { icon: '🔧', label: 'システム・インフラ開発',        next: 'q2_sys',  log: 'システム・インフラ' },
+      { icon: '✏️', label: 'よくわからない…自由に入力して AI に聞く', freeInput: true, log: '自由入力' }
     ]
   },
   q2_web: {
@@ -24326,12 +24327,101 @@ function closeQuizModal() {
 function _quizChoose(choice) {
   _quizHistory.push(_quizCurrentStep);
   _quizAnswerLog.push(choice.log);
-  if (choice.result) {
+  if (choice.freeInput) {
+    _renderFreeInputStep();
+  } else if (choice.result) {
     _renderQuizResult(choice.result);
   } else {
     _quizCurrentStep = choice.next;
     _renderQuizStep(choice.next);
   }
+}
+
+function _renderFreeInputStep() {
+  var box = document.getElementById('quiz-box');
+  box.innerHTML =
+    '<div class="quiz-topbar">' +
+      '<button class="quiz-back-btn" id="quiz-back-btn">←</button>' +
+      '<div class="quiz-step-dots">' + _quizDots(2) + '</div>' +
+    '</div>' +
+    '<div class="quiz-q-label">AI 診断</div>' +
+    '<div class="quiz-question">やりたいことを自由に教えてください</div>' +
+    '<div class="quiz-sub">例：「ゲームを作りたい」「仕事で使えるスキルを身につけたい」「データを分析したい」など</div>' +
+    '<textarea id="quiz-free-input" class="quiz-textarea" placeholder="自由に書いてください…" maxlength="300"></textarea>' +
+    '<div class="quiz-free-meta"><span id="quiz-char-count">0</span><span>/300</span></div>' +
+    '<div id="quiz-free-error" class="quiz-free-error hidden"></div>' +
+    '<button class="quiz-submit-btn" id="quiz-submit-btn" disabled>🤖 AIに分析してもらう</button>';
+
+  document.getElementById('quiz-back-btn').addEventListener('click', _quizBack);
+
+  var ta = document.getElementById('quiz-free-input');
+  var cnt = document.getElementById('quiz-char-count');
+  var btn = document.getElementById('quiz-submit-btn');
+  ta.addEventListener('input', function() {
+    cnt.textContent = ta.value.length;
+    btn.disabled = ta.value.trim().length < 5;
+  });
+  btn.addEventListener('click', function() { _submitFreeInput(); });
+}
+
+async function _submitFreeInput() {
+  var ta  = document.getElementById('quiz-free-input');
+  var btn = document.getElementById('quiz-submit-btn');
+  var err = document.getElementById('quiz-free-error');
+  var text = ta.value.trim();
+  if (!text || text.length < 5) return;
+
+  btn.disabled = true;
+  btn.textContent = '🤖 分析中…';
+  err.classList.add('hidden');
+
+  try {
+    var result = await _analyzeWithAI(text);
+    _quizAnswerLog.push('自由入力: ' + text);
+    _renderQuizResultFromAI(result.langId, result.message);
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '🤖 AIに分析してもらう';
+    err.textContent = 'エラーが発生しました。もう一度お試しください。';
+    err.classList.remove('hidden');
+  }
+}
+
+async function _analyzeWithAI(userText) {
+  var system = 'あなたはプログラミング言語推薦AIです。ユーザーの入力を分析して最適な言語を推薦してください。\n\n選択可能な言語ID（必ずこの中から1つ選ぶ）:\npython, javascript, html, php, ruby, typescript, go, swift, kotlin, cpp, csharp, c, rust, sql, bash, regex, java\n\n必ず以下のJSON形式のみで回答してください（余分なテキスト不要）:\n{"lang":"言語ID","message":"推薦理由と激励メッセージ（日本語2〜3文、絵文字OK）"}';
+  var reply = await askAI(system, 'ユーザーの入力: ' + userText);
+  try {
+    var jsonStr = reply.match(/\{[\s\S]*?\}/)[0];
+    var parsed  = JSON.parse(jsonStr);
+    var langId  = QUIZ_RESULTS[parsed.lang] ? parsed.lang : 'python';
+    return { langId: langId, message: parsed.message || '' };
+  } catch(e) {
+    return { langId: 'python', message: reply };
+  }
+}
+
+function _renderQuizResultFromAI(resultId, aiMessage) {
+  var r   = QUIZ_RESULTS[resultId];
+  var box = document.getElementById('quiz-box');
+  box.innerHTML =
+    '<div class="quiz-topbar">' +
+      '<button class="quiz-back-btn" id="quiz-result-back">←</button>' +
+      '<div class="quiz-step-dots">' + _quizDots(4) + '</div>' +
+    '</div>' +
+    '<div class="quiz-result-announce">AIが分析しました！あなたにおすすめの言語は</div>' +
+    '<div class="quiz-result-card" style="border-color:' + r.color + '88">' +
+      '<div class="quiz-result-badge">' + r.badge + '</div>' +
+      '<div class="quiz-result-name" style="color:' + r.color + '">' + r.name + '</div>' +
+      '<div class="quiz-result-tier">◆ ' + r.tier + ' TIER</div>' +
+    '</div>' +
+    '<div class="quiz-ai-msg">' +
+      '<div class="quiz-ai-text">' + aiMessage.replace(/\n/g, '<br>') + '</div>' +
+    '</div>' +
+    '<div class="quiz-result-actions">' +
+      '<button class="quiz-start-btn" onclick="startWithLanguage(\'' + r.id + '\')" style="--qcol:' + r.color + '">▶ ' + r.name + ' で始める</button>' +
+      '<button class="quiz-retry-btn" onclick="openQuizModal()">↩ もう一度診断する</button>' +
+    '</div>';
+  document.getElementById('quiz-result-back').addEventListener('click', _quizBack);
 }
 
 function _quizBack() {
