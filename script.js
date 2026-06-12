@@ -21725,7 +21725,7 @@ const regexProblems = [
     title: "RegExp動的生成とエスケープ",
     question: "ユーザー入力のキーワードを正規表現で安全にエスケープし、\"Hello (World) and [Regex]!\"から\"(World)\"をハイライト（<mark>タグで囲む）して表示してください。",
     hint: "keyword.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')",
-    answer: `function escapeRegex(str) {\n  return str.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&");\n}\nconst text = "Hello (World) and [Regex]!";\nconst keyword = "(World)";\nconst re = new RegExp(escapeRegex(keyword), "g");\nconst result = text.replace(re, "<mark>$&</mark>");\nconsole.log(result);`,
+    answer: `function escapeRegex(str) {\n  return str.replace(/[.*+?^\${}()|[\\]\\\\]/g, "\\\\$&");\n}\nconst text = "Hello (World) and [Regex]!";\nconst keyword = "(World)";\nconst re = new RegExp(escapeRegex(keyword), "g");\nconst result = text.replace(re, "<mark>$&</mark>");\nconsole.log(result);`,
     expected: "Hello <mark>(World)</mark> and [Regex]!",
     explanation: "RegExpのメタ文字をエスケープしてから動的にRegExpを作ることで、ユーザー入力を安全に使えます。" }
 ];
