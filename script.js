@@ -24227,3 +24227,206 @@ initAuth();
   // 12秒ごとに切り替え
   setInterval(next, 12000);
 })();
+
+// ===== 言語診断クイズ =====
+
+var QUIZ_STEPS = {
+  q1: {
+    q: '何に一番興味がありますか？',
+    sub: '直感でOK。後から変更できます。',
+    choices: [
+      { icon: '🌐', label: 'Web・アプリを作りたい',        next: 'q2_web',  log: 'Web・アプリ開発' },
+      { icon: '🤖', label: 'AI・データ・自動化がしたい',   next: 'q2_data', log: 'AI・データ・自動化' },
+      { icon: '🎮', label: 'ゲームを作りたい',             next: 'q2_game', log: 'ゲーム開発' },
+      { icon: '🔧', label: 'システム・インフラ開発',        next: 'q2_sys',  log: 'システム・インフラ' }
+    ]
+  },
+  q2_web: {
+    q: 'Webのどの部分をやりたいですか？',
+    choices: [
+      { icon: '🎨', label: 'デザイン・見た目（HTML/CSS）',    result: 'html',       log: 'Webデザイン・見た目' },
+      { icon: '⚡', label: 'ボタンや動き・インタラクション', result: 'javascript', log: 'Webインタラクション' },
+      { icon: '🛠️', label: 'サーバー・API・バックエンド',    next: 'q3_backend',   log: 'サーバー・バックエンド' },
+      { icon: '🌍', label: 'フロント＋バック全部やりたい',   result: 'php',        log: 'フルスタック志向' }
+    ]
+  },
+  q2_data: {
+    q: '具体的に何をしたいですか？',
+    choices: [
+      { icon: '📊', label: 'データ分析・機械学習・AI開発',    result: 'python', log: 'データ分析・機械学習' },
+      { icon: '🖥️', label: 'サーバー管理・Linux作業の自動化', result: 'bash',   log: 'サーバー・Linux自動化' },
+      { icon: '💾', label: 'データベース設計・SQL操作',       result: 'sql',    log: 'データベース・SQL' },
+      { icon: '🔍', label: 'ログ解析・文字列パターン処理',    result: 'regex',  log: '文字列パターン処理' }
+    ]
+  },
+  q2_game: {
+    q: 'どんなゲームを作りたいですか？',
+    choices: [
+      { icon: '🕹️', label: 'ブラウザ・Webゲーム',           result: 'javascript', log: 'ブラウザゲーム' },
+      { icon: '🎯', label: '3D本格ゲーム（Unreal / Unity）', result: 'cpp',        log: '3D本格ゲーム' },
+      { icon: '📱', label: 'iPhoneアプリ・ゲーム（iOS）',    result: 'swift',      log: 'iOSゲーム' },
+      { icon: '🤖', label: 'Androidアプリ・ゲーム',          result: 'kotlin',     log: 'Androidゲーム' }
+    ]
+  },
+  q2_sys: {
+    q: 'どんな開発がしたいですか？',
+    choices: [
+      { icon: '🔌', label: '組み込み・OS・ハードウェア制御',    result: 'c',    log: '組み込み・OS開発' },
+      { icon: '⚡', label: '安全性と超速さを両立したシステム', result: 'rust', log: '高速・安全システム' },
+      { icon: '🏢', label: '企業システム・大規模バックエンド',  result: 'java', log: '企業システム開発' },
+      { icon: '☁️', label: 'クラウド・マイクロサービス開発',   result: 'go',   log: 'クラウド・マイクロサービス' }
+    ]
+  },
+  q3_backend: {
+    q: 'バックエンドで何を重視しますか？',
+    choices: [
+      { icon: '⚡', label: '短期間でとにかく習得したい',         result: 'php',    log: '素早い習得重視' },
+      { icon: '💎', label: 'きれいで読みやすいコードを書きたい', result: 'ruby',   log: 'コードの美しさ重視' },
+      { icon: '☁️', label: '大規模・高パフォーマンスなAPI',      result: 'go',     log: '大規模・高速API重視' },
+      { icon: '🤖', label: 'AI・機械学習との連携も視野に',       result: 'python', log: 'AI連携バックエンド' }
+    ]
+  }
+};
+
+var QUIZ_RESULTS = {
+  python:     { id: 'python',     name: 'Python',     color: '#3776AB', badge: '🐍', tier: 'ROOKIE' },
+  html:       { id: 'html',       name: 'HTML/CSS',   color: '#E44D26', badge: '🌐', tier: 'ROOKIE' },
+  javascript: { id: 'javascript', name: 'JavaScript', color: '#F0C040', badge: '⚡', tier: 'BRONZE' },
+  ruby:       { id: 'ruby',       name: 'Ruby',       color: '#CC342D', badge: '💎', tier: 'BRONZE' },
+  sql:        { id: 'sql',        name: 'SQL',        color: '#336791', badge: '💾', tier: 'BRONZE' },
+  kotlin:     { id: 'kotlin',     name: 'Kotlin',     color: '#7F52FF', badge: '🤖', tier: 'SILVER' },
+  swift:      { id: 'swift',      name: 'Swift',      color: '#FA7343', badge: '🍎', tier: 'SILVER' },
+  bash:       { id: 'bash',       name: 'Bash',       color: '#4EAA25', badge: '🖥️', tier: 'SILVER' },
+  regex:      { id: 'regex',      name: 'Regex',      color: '#FF6B35', badge: '🔍', tier: 'SILVER' },
+  php:        { id: 'php',        name: 'PHP',        color: '#777BB4', badge: '🐘', tier: 'GOLD' },
+  java:       { id: 'java',       name: 'Java',       color: '#ED8B00', badge: '☕', tier: 'GOLD' },
+  go:         { id: 'go',         name: 'Go',         color: '#00ADD8', badge: '🚀', tier: 'GOLD' },
+  cpp:        { id: 'cpp',        name: 'C++',        color: '#00599C', badge: '⚔️', tier: 'DIAMOND' },
+  c:          { id: 'c',          name: 'C',          color: '#A8B9CC', badge: '🔧', tier: 'PLATINUM' },
+  rust:       { id: 'rust',       name: 'Rust',       color: '#CE412B', badge: '⚙️', tier: 'MASTER' }
+};
+
+var _quizHistory = [];
+var _quizCurrentStep = 'q1';
+var _quizAnswerLog = [];
+
+function openQuizModal() {
+  _quizHistory = [];
+  _quizCurrentStep = 'q1';
+  _quizAnswerLog = [];
+  document.getElementById('quiz-modal').classList.remove('hidden');
+  _renderQuizStep('q1');
+}
+
+function closeQuizModal() {
+  document.getElementById('quiz-modal').classList.add('hidden');
+}
+
+function _quizChoose(choice) {
+  _quizHistory.push(_quizCurrentStep);
+  _quizAnswerLog.push(choice.log);
+  if (choice.result) {
+    _renderQuizResult(choice.result);
+  } else {
+    _quizCurrentStep = choice.next;
+    _renderQuizStep(choice.next);
+  }
+}
+
+function _quizBack() {
+  if (_quizHistory.length === 0) { closeQuizModal(); return; }
+  _quizAnswerLog.pop();
+  _quizCurrentStep = _quizHistory.pop();
+  _renderQuizStep(_quizCurrentStep);
+}
+
+function _quizDots(current) {
+  var total = 3;
+  var html = '';
+  for (var i = 1; i <= total; i++) {
+    if (i < current)      html += '<span class="quiz-dot done"></span>';
+    else if (i === current) html += '<span class="quiz-dot active"></span>';
+    else                  html += '<span class="quiz-dot"></span>';
+  }
+  return html;
+}
+
+function _renderQuizStep(stepId) {
+  var step = QUIZ_STEPS[stepId];
+  var box = document.getElementById('quiz-box');
+  var stepNum = _quizHistory.length + 1;
+  var isFirst = _quizHistory.length === 0;
+
+  var choicesHtml = step.choices.map(function(c, i) {
+    return '<button class="quiz-choice" data-qidx="' + i + '">' +
+      '<span class="quiz-icon">' + c.icon + '</span>' +
+      '<span class="quiz-label">' + c.label + '</span>' +
+      '<span class="quiz-arrow">›</span>' +
+    '</button>';
+  }).join('');
+
+  box.innerHTML =
+    '<div class="quiz-topbar">' +
+      '<button class="quiz-back-btn" id="quiz-back-btn">' + (isFirst ? '✕' : '←') + '</button>' +
+      '<div class="quiz-step-dots">' + _quizDots(stepNum) + '</div>' +
+    '</div>' +
+    '<div class="quiz-q-label">Q' + stepNum + '</div>' +
+    '<div class="quiz-question">' + step.q + '</div>' +
+    (step.sub ? '<div class="quiz-sub">' + step.sub + '</div>' : '') +
+    '<div class="quiz-choices">' + choicesHtml + '</div>';
+
+  document.getElementById('quiz-back-btn').addEventListener('click', _quizBack);
+  box.querySelectorAll('.quiz-choice').forEach(function(btn, i) {
+    btn.style.animationDelay = (i * 0.06) + 's';
+    btn.addEventListener('click', function() { _quizChoose(step.choices[i]); });
+  });
+}
+
+function _renderQuizResult(resultId) {
+  var r = QUIZ_RESULTS[resultId];
+  var box = document.getElementById('quiz-box');
+
+  box.innerHTML =
+    '<div class="quiz-topbar">' +
+      '<button class="quiz-back-btn" id="quiz-result-back">←</button>' +
+      '<div class="quiz-step-dots">' + _quizDots(4) + '</div>' +
+    '</div>' +
+    '<div class="quiz-result-announce">診断完了！あなたにおすすめの言語は</div>' +
+    '<div class="quiz-result-card" style="border-color:' + r.color + '88">' +
+      '<div class="quiz-result-badge">' + r.badge + '</div>' +
+      '<div class="quiz-result-name" style="color:' + r.color + '">' + r.name + '</div>' +
+      '<div class="quiz-result-tier">◆ ' + r.tier + ' TIER</div>' +
+    '</div>' +
+    '<div class="quiz-ai-msg" id="quiz-ai-msg">' +
+      '<div class="quiz-ai-loading"><span class="quiz-spinner"></span> AIコーチがメッセージを生成中…</div>' +
+    '</div>' +
+    '<div class="quiz-result-actions">' +
+      '<button class="quiz-start-btn" id="quiz-start-btn" onclick="startWithLanguage(\'' + r.id + '\')" style="--qcol:' + r.color + '">' +
+        '▶ ' + r.name + ' で始める' +
+      '</button>' +
+      '<button class="quiz-retry-btn" onclick="openQuizModal()">↩ もう一度診断する</button>' +
+    '</div>';
+
+  document.getElementById('quiz-result-back').addEventListener('click', _quizBack);
+
+  var logSnapshot = _quizAnswerLog.slice();
+  _generateQuizMessage(r, logSnapshot).then(function(msg) {
+    var aiBox = document.getElementById('quiz-ai-msg');
+    if (aiBox) aiBox.innerHTML = '<div class="quiz-ai-text">' + msg.replace(/\n/g, '<br>') + '</div>';
+  }).catch(function() {
+    var aiBox = document.getElementById('quiz-ai-msg');
+    if (aiBox) aiBox.innerHTML = '';
+  });
+}
+
+async function _generateQuizMessage(result, answerLog) {
+  var system = 'あなたはプログラミング学習アプリ「CODE STEP」のコーチです。ユーザーの診断回答を受けて、その言語への「ようこそ！」的な短い激励メッセージを日本語で生成してください。2〜3文、熱く前向きに。絵文字OK。箇条書き・コードブロック禁止。';
+  var userMsg = '診断回答: ' + answerLog.join(' → ') + '\n推奨言語: ' + result.name + '\nこのユーザーへの熱い激励メッセージをください。';
+  return await askAI(system, userMsg);
+}
+
+function startWithLanguage(langId) {
+  closeQuizModal();
+  startApp();
+  setTimeout(function() { selectLanguage(langId); }, 80);
+}

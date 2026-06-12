@@ -83,6 +83,7 @@
         <div class="landing-actions">
           <button class="landing-btn-primary" onclick="startApp()">▶ 今すぐ始める（無料）</button>
           <button class="landing-btn-secondary" onclick="openAuthModal()">◆ ログインして続ける</button>
+          <button class="landing-btn-quiz" onclick="openQuizModal()">🧭 どの言語から始めればいい？</button>
         </div>
         <div class="landing-free-note">✓ 完全無料 &nbsp;·&nbsp; ✓ 登録不要で即プレイ &nbsp;·&nbsp; ✓ ブラウザのみで完結</div>
       </div>
@@ -407,6 +408,12 @@
       <pre id="basicform-code"></pre>
       <button id="basicform-copy" onclick="copyBasicForm()">コピー</button>
     </div>
+  </div>
+
+  <!-- 言語診断クイズモーダル -->
+  <div id="quiz-modal" class="hidden">
+    <div id="quiz-overlay" onclick="closeQuizModal()"></div>
+    <div id="quiz-box"></div>
   </div>
 
   <!-- コンフェッティ -->
