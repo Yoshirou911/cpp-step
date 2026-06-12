@@ -327,10 +327,10 @@ var BADGES = [
   { id: 'js_master',     name: 'JS MASTER',      desc: 'JavaScript 30問クリア',                   tier: 'diamond',  check: function(s) { return s.js >= 30;     } },
   // ミッション
   { id: 'first_mission', name: 'MISSION START',  desc: '初ミッションクリア',                      tier: 'silver',   check: function(s) { return s.totalMissions >= 1; } },
-  { id: 'mission_all',   name: 'MISSION MASTER', desc: 'いずれかの言語で全ミッションクリア',       tier: 'master',   check: function(s) { return s.cppM >= 6 || s.pyM >= 6 || s.jsM >= 6 || s.rubyM >= 6 || s.tsM >= 6 || s.kotlinM >= 6 || s.swiftM >= 6 || s.javaM >= 6 || s.csharpM >= 6 || s.goM >= 6 || s.cM >= 6 || s.rustM >= 6; } },
+  { id: 'mission_all',   name: 'MISSION MASTER', desc: 'いずれかの言語で全ミッションクリア',       tier: 'master',   check: function(s) { return s.cppM >= 6 || s.pyM >= 6 || s.jsM >= 6 || s.rubyM >= 6 || s.tsM >= 6 || s.kotlinM >= 6 || s.swiftM >= 6 || s.javaM >= 6 || s.csharpM >= 6 || s.goM >= 6 || s.cM >= 6 || s.rustM >= 6 || s.htmlM >= 6 || s.sqlM >= 6 || s.bashM >= 6 || s.regexM >= 6 || s.phpM >= 6; } },
   // 多言語
-  { id: 'bilingual',     name: 'BILINGUAL',      desc: '2言語以上でクリア達成',                   tier: 'gold',     check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin, s.swift, s.java, s.csharp, s.go, s.c, s.rust].filter(function(n){return n>0;}).length >= 2; } },
-  { id: 'trilingual',    name: 'TRILINGUAL',     desc: '3言語以上でクリア達成',                   tier: 'platinum', check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin, s.swift, s.java, s.csharp, s.go, s.c, s.rust].filter(function(n){return n>0;}).length >= 3; } },
+  { id: 'bilingual',     name: 'BILINGUAL',      desc: '2言語以上でクリア達成',                   tier: 'gold',     check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin, s.swift, s.java, s.csharp, s.go, s.c, s.rust, s.html, s.sql, s.bash, s.regex, s.php].filter(function(n){return n>0;}).length >= 2; } },
+  { id: 'trilingual',    name: 'TRILINGUAL',     desc: '3言語以上でクリア達成',                   tier: 'platinum', check: function(s) { return [s.cpp, s.python, s.js, s.ruby, s.ts, s.kotlin, s.swift, s.java, s.csharp, s.go, s.c, s.rust, s.html, s.sql, s.bash, s.regex, s.php].filter(function(n){return n>0;}).length >= 3; } },
   // ストリーク
   { id: 'streak_3',      name: '3 DAY STREAK',   desc: '3日連続ログイン',                         tier: 'silver',   check: function(s) { return s.currentStreak >= 3;  } },
   { id: 'streak_7',      name: 'WEEKLY',         desc: '7日連続ログイン',                         tier: 'gold',     check: function(s) { return s.currentStreak >= 7;  } },
@@ -357,7 +357,17 @@ var BADGES = [
   { id: 'legend_c',      name: 'C LEGEND',       desc: 'Cで伝説の称号獲得',                       tier: 'legend',   check: function(s) { return s.legendC; } },
   { id: 'rust_master',   name: 'RUST MASTER',    desc: 'Rust 全30問クリア',                       tier: 'diamond',  check: function(s) { return s.rust >= 30; } },
   { id: 'legend_rust',   name: 'RUST LEGEND',    desc: 'Rustで伝説の称号獲得',                    tier: 'legend',   check: function(s) { return s.legendRust; } },
-  { id: 'true_legend',   name: 'TRUE LEGEND',    desc: '全言語の超難問クリア',                    tier: 'legend',   check: function(s) { return s.legendCpp && s.legendPython && s.legendJs && s.legendRuby && s.legendTs && s.legendKotlin && s.legendSwift && s.legendJava && s.legendCsharp && s.legendGo && s.legendC && s.legendRust; } },
+  { id: 'html_master',   name: 'HTML MASTER',    desc: 'HTML/CSS 全30問クリア',                   tier: 'diamond',  check: function(s) { return s.html >= 30; } },
+  { id: 'legend_html',   name: 'HTML LEGEND',    desc: 'HTML/CSS 最難問クリア',                   tier: 'legend',   check: function(s) { return s.legendHtml; } },
+  { id: 'sql_master',    name: 'SQL MASTER',     desc: 'SQL 全30問クリア',                        tier: 'diamond',  check: function(s) { return s.sql >= 30; } },
+  { id: 'legend_sql',    name: 'SQL LEGEND',     desc: 'SQL 最難問クリア',                        tier: 'legend',   check: function(s) { return s.legendSql; } },
+  { id: 'bash_master',   name: 'BASH MASTER',    desc: 'Bash 全30問クリア',                       tier: 'diamond',  check: function(s) { return s.bash >= 30; } },
+  { id: 'legend_bash',   name: 'BASH LEGEND',    desc: 'Bash 最難問クリア',                       tier: 'legend',   check: function(s) { return s.legendBash; } },
+  { id: 'regex_master',  name: 'REGEX MASTER',   desc: 'Regex 全30問クリア',                      tier: 'diamond',  check: function(s) { return s.regex >= 30; } },
+  { id: 'legend_regex',  name: 'REGEX LEGEND',   desc: 'Regex 最難問クリア',                      tier: 'legend',   check: function(s) { return s.legendRegex; } },
+  { id: 'php_master',    name: 'PHP MASTER',     desc: 'PHP 全30問クリア',                        tier: 'diamond',  check: function(s) { return s.php >= 30; } },
+  { id: 'legend_php',    name: 'PHP LEGEND',     desc: 'PHP 最難問クリア',                        tier: 'legend',   check: function(s) { return s.legendPhp; } },
+  { id: 'true_legend',   name: 'TRUE LEGEND',    desc: '全言語の超難問クリア',                    tier: 'legend',   check: function(s) { return s.legendCpp && s.legendPython && s.legendJs && s.legendRuby && s.legendTs && s.legendKotlin && s.legendSwift && s.legendJava && s.legendCsharp && s.legendGo && s.legendC && s.legendRust && s.legendHtml && s.legendSql && s.legendBash && s.legendRegex && s.legendPhp; } },
   // ─── PREDATOR ───
   { id: 'pred_cpp',    name: 'C++ PREDATOR',    desc: 'C++ PREDATORランク問題クリア',            tier: 'predator', check: function(s) { return s.predatorCpp;    } },
   { id: 'pred_py',     name: 'PY PREDATOR',     desc: 'Python PREDATORランク問題クリア',         tier: 'predator', check: function(s) { return s.predatorPython; } },
@@ -396,6 +406,11 @@ function getProfileStats() {
   var goArr     = getP('go');
   var cArr      = getP('c');
   var rustArr   = getP('rust');
+  var htmlArr   = getP('html');
+  var sqlArr    = getP('sql');
+  var bashArr   = getP('bash');
+  var regexArr  = getP('regex');
+  var phpArr    = getP('php');
   var cpp    = cppArr.length;
   var python = pythonArr.length;
   var js     = jsArr.length;
@@ -408,6 +423,11 @@ function getProfileStats() {
   var go     = goArr.length;
   var c      = cArr.length;
   var rust   = rustArr.length;
+  var html   = htmlArr.length;
+  var sql    = sqlArr.length;
+  var bash   = bashArr.length;
+  var regex  = regexArr.length;
+  var php    = phpArr.length;
   var cppM    = getM('cpp').length;
   var pyM     = getM('python').length;
   var jsM     = getM('javascript').length;
@@ -420,13 +440,18 @@ function getProfileStats() {
   var goM     = getM('go').length;
   var cM      = getM('c').length;
   var rustM   = getM('rust').length;
+  var htmlM   = getM('html').length;
+  var sqlM    = getM('sql').length;
+  var bashM   = getM('bash').length;
+  var regexM  = getM('regex').length;
+  var phpM    = getM('php').length;
   return {
     cpp: cpp, python: python, js: js, ruby: ruby, ts: ts, kotlin: kotlin, swift: swift, java: java,
-    csharp: csharp, go: go, c: c, rust: rust,
+    csharp: csharp, go: go, c: c, rust: rust, html: html, sql: sql, bash: bash, regex: regex, php: php,
     cppM: cppM, pyM: pyM, jsM: jsM, rubyM: rubyM, tsM: tsM, kotlinM: kotlinM, swiftM: swiftM, javaM: javaM,
-    csharpM: csharpM, goM: goM, cM: cM, rustM: rustM,
-    total: cpp + python + js + ruby + ts + kotlin + swift + java + csharp + go + c + rust,
-    totalMissions: cppM + pyM + jsM + rubyM + tsM + kotlinM + swiftM + javaM + csharpM + goM + cM + rustM,
+    csharpM: csharpM, goM: goM, cM: cM, rustM: rustM, htmlM: htmlM, sqlM: sqlM, bashM: bashM, regexM: regexM, phpM: phpM,
+    total: cpp + python + js + ruby + ts + kotlin + swift + java + csharp + go + c + rust + html + sql + bash + regex + php,
+    totalMissions: cppM + pyM + jsM + rubyM + tsM + kotlinM + swiftM + javaM + csharpM + goM + cM + rustM + htmlM + sqlM + bashM + regexM + phpM,
     legendCpp:    cppArr.indexOf(31)    !== -1,
     legendPython: pythonArr.indexOf(31) !== -1,
     legendJs:     jsArr.indexOf(31)     !== -1,
@@ -439,6 +464,11 @@ function getProfileStats() {
     legendGo:     goArr.indexOf(30)     !== -1,
     legendC:      cArr.indexOf(30)      !== -1,
     legendRust:   rustArr.indexOf(30)   !== -1,
+    legendHtml:   htmlArr.indexOf(30)   !== -1,
+    legendSql:    sqlArr.indexOf(30)    !== -1,
+    legendBash:   bashArr.indexOf(30)   !== -1,
+    legendRegex:  regexArr.indexOf(30)  !== -1,
+    legendPhp:    phpArr.indexOf(30)    !== -1,
     predatorCpp:    cppArr.indexOf(58)    !== -1,
     predatorPython: pythonArr.indexOf(58) !== -1,
     predatorJs:     jsArr.indexOf(58)     !== -1,
@@ -558,7 +588,7 @@ function calculateEXP() {
   var problemExp = 0;
   var missionExp = 0;
 
-  // 問題クリア EXP（全12言語）
+  // 問題クリア EXP（全言語）
   [
     { key: 'cpp',        get: function() { return problems; } },
     { key: 'python',     get: function() { return pythonProblems; } },
@@ -571,7 +601,12 @@ function calculateEXP() {
     { key: 'csharp',     get: function() { return csharpProblems; } },
     { key: 'go',         get: function() { return goProblems; } },
     { key: 'c',          get: function() { return cProblems; } },
-    { key: 'rust',       get: function() { return rustProblems; } }
+    { key: 'rust',       get: function() { return rustProblems; } },
+    { key: 'html',       get: function() { return htmlProblems; } },
+    { key: 'sql',        get: function() { return sqlProblems; } },
+    { key: 'bash',       get: function() { return bashProblems; } },
+    { key: 'regex',      get: function() { return regexProblems; } },
+    { key: 'php',        get: function() { return phpProblems; } }
   ].forEach(function(lang) {
     var prog = JSON.parse(localStorage.getItem(lang.key + '_progress') || '[]');
     lang.get().forEach(function(p) {
@@ -581,7 +616,7 @@ function calculateEXP() {
     });
   });
 
-  // ミッションクリア EXP（全12言語）
+  // ミッションクリア EXP（全言語）
   [
     { key: 'cpp',        get: function() { return missions; } },
     { key: 'python',     get: function() { return pythonMissions; } },
@@ -594,7 +629,12 @@ function calculateEXP() {
     { key: 'csharp',     get: function() { return csharpMissions; } },
     { key: 'go',         get: function() { return goMissions; } },
     { key: 'c',          get: function() { return cMissions; } },
-    { key: 'rust',       get: function() { return rustMissions; } }
+    { key: 'rust',       get: function() { return rustMissions; } },
+    { key: 'html',       get: function() { return htmlMissions; } },
+    { key: 'sql',        get: function() { return sqlMissions; } },
+    { key: 'bash',       get: function() { return bashMissions; } },
+    { key: 'regex',      get: function() { return regexMissions; } },
+    { key: 'php',        get: function() { return phpMissions; } }
   ].forEach(function(lang) {
     var prog = JSON.parse(localStorage.getItem(lang.key + '_mission_progress') || '[]');
     lang.get().forEach(function(m) {
@@ -734,6 +774,10 @@ var LANGUAGE_GROUPS = [
         id: 'python', name: 'Python', color: '#3776AB', problems: 58, available: true,
         uses: ['AI・機械学習', 'データ分析', 'Web開発', '自動化スクリプト']
       },
+      {
+        id: 'html', name: 'HTML/CSS', color: '#E44D26', problems: 30, available: true,
+        uses: ['Webページ作成', 'UIデザイン', 'フロントエンド基礎']
+      },
     ]
   },
   {
@@ -748,6 +792,10 @@ var LANGUAGE_GROUPS = [
       {
         id: 'ruby', name: 'Ruby', color: '#CC342D', problems: 58, available: true,
         uses: ['Web開発 (Rails)', 'スクリプト自動化', 'プロトタイプ開発']
+      },
+      {
+        id: 'sql', name: 'SQL', color: '#336791', problems: 30, available: true,
+        uses: ['データベース操作', 'データ分析', 'バックエンド開発']
       },
     ]
   },
@@ -768,6 +816,14 @@ var LANGUAGE_GROUPS = [
         id: 'swift', name: 'Swift', color: '#FA7343', problems: 58, available: true,
         uses: ['iOSアプリ', 'macOSアプリ', 'watchOS・tvOS']
       },
+      {
+        id: 'bash', name: 'Bash', color: '#4EAA25', problems: 30, available: true,
+        uses: ['自動化スクリプト', 'サーバー管理', 'DevOps・CI/CD']
+      },
+      {
+        id: 'regex', name: 'Regex', color: '#FF6B35', problems: 30, available: true,
+        uses: ['パターンマッチング', '文字列処理', 'バリデーション']
+      },
     ]
   },
   {
@@ -786,6 +842,10 @@ var LANGUAGE_GROUPS = [
       {
         id: 'go', name: 'Go', color: '#00ADD8', problems: 58, available: true,
         uses: ['高速APIサーバー', 'Dockerなどインフラツール', 'クラウドサービス']
+      },
+      {
+        id: 'php', name: 'PHP', color: '#777BB4', problems: 30, available: true,
+        uses: ['Web開発 (Laravel)', 'WordPress', 'サーバーサイド']
       },
     ]
   },
@@ -19650,6 +19710,2473 @@ const rustUnitGuides = [
   }
 ];
 
+// ===== HTML/CSS データ =====
+const htmlProblems = [
+  { id: 1, unit: "UNIT 01  ◆  HTML基礎構造", rank: "ROOKIE",
+    title: "Hello World HTML",
+    question: "「Hello, World!」と表示するHTMLページを作成してください。DOCTYPE宣言・html・head・bodyタグを含む基本構造を書いてください。",
+    hint: "<!DOCTYPE html> → <html> → <head> → <body> の順で書きます。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Hello</title>
+</head>
+<body>
+  <h1>Hello, World!</h1>
+</body>
+</html>`,
+    explanation: "HTMLの基本構造です。<!DOCTYPE html>でHTML5宣言、<head>にはメタ情報、<body>に表示内容を書きます。" },
+
+  { id: 2, unit: "UNIT 01  ◆  HTML基礎構造", rank: "ROOKIE",
+    title: "見出しと段落",
+    question: "h1で「プログラミング入門」、h2で「変数とは」を表示し、pタグで「変数はデータを格納する箱です。」と表示するHTMLを書いてください。",
+    hint: "<h1>〜</h1>、<h2>〜</h2>、<p>〜</p>を使います。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head><meta charset="UTF-8"><title>見出し</title></head>
+<body>
+  <h1>プログラミング入門</h1>
+  <h2>変数とは</h2>
+  <p>変数はデータを格納する箱です。</p>
+</body>
+</html>`,
+    explanation: "見出しタグはh1〜h6まであり、数字が大きいほど小さい見出しになります。<p>は段落（パラグラフ）を表します。" },
+
+  { id: 3, unit: "UNIT 01  ◆  HTML基礎構造", rank: "ROOKIE",
+    title: "リンクと画像",
+    question: "「Googleへ」というテキストリンク（href='https://www.google.com'）と、alt='サンプル'のimgタグ（src='sample.jpg'）を持つHTMLを書いてください。",
+    hint: "<a href='URL'>テキスト</a>でリンク、<img src='URL' alt='説明'>で画像を表示します。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head><meta charset="UTF-8"><title>リンクと画像</title></head>
+<body>
+  <a href="https://www.google.com">Googleへ</a>
+  <br>
+  <img src="sample.jpg" alt="サンプル">
+</body>
+</html>`,
+    explanation: "<a>タグはhref属性にURLを指定してリンクを作ります。<img>タグはsrc属性に画像パス、alt属性に代替テキストを指定します。" },
+
+  { id: 4, unit: "UNIT 01  ◆  HTML基礎構造", rank: "ROOKIE",
+    title: "リスト",
+    question: "「好きな果物」というh2の後に、「りんご」「バナナ」「みかん」の順不同リスト（ul）と、「第1位」「第2位」「第3位」の順序付きリスト（ol）を作成してください。",
+    hint: "<ul>は順不同リスト、<ol>は番号付きリスト。各項目は<li>で囲みます。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head><meta charset="UTF-8"><title>リスト</title></head>
+<body>
+  <h2>好きな果物</h2>
+  <ul>
+    <li>りんご</li>
+    <li>バナナ</li>
+    <li>みかん</li>
+  </ul>
+  <ol>
+    <li>第1位</li>
+    <li>第2位</li>
+    <li>第3位</li>
+  </ol>
+</body>
+</html>`,
+    explanation: "<ul>（unordered list）は箇条書き、<ol>（ordered list）は番号付きリストを作ります。どちらも<li>タグで各項目を囲みます。" },
+
+  { id: 5, unit: "UNIT 01  ◆  HTML基礎構造", rank: "ROOKIE",
+    title: "テーブル",
+    question: "「名前」「年齢」「職業」のヘッダーを持つテーブルを作り、「田中太郎/25/エンジニア」と「山田花子/30/デザイナー」の行を追加してください。",
+    hint: "<table><tr><th>でヘッダー、<tr><td>でデータ行を作ります。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head><meta charset="UTF-8"><title>テーブル</title></head>
+<body>
+  <table border="1">
+    <tr><th>名前</th><th>年齢</th><th>職業</th></tr>
+    <tr><td>田中太郎</td><td>25</td><td>エンジニア</td></tr>
+    <tr><td>山田花子</td><td>30</td><td>デザイナー</td></tr>
+  </table>
+</body>
+</html>`,
+    explanation: "<table>がテーブル全体、<tr>が行、<th>がヘッダーセル（太字・中央揃え）、<td>がデータセルです。" },
+
+  { id: 6, unit: "UNIT 01  ◆  HTML基礎構造", rank: "ROOKIE",
+    title: "フォーム",
+    question: "名前入力欄（type='text'）、メール入力欄（type='email'）、送信ボタン（type='submit'）を含むformを作成してください。",
+    hint: "<form>の中に<input>や<button>を配置します。labelタグでラベルも付けましょう。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head><meta charset="UTF-8"><title>フォーム</title></head>
+<body>
+  <form>
+    <label>名前: <input type="text" placeholder="名前を入力"></label><br><br>
+    <label>メール: <input type="email" placeholder="example@mail.com"></label><br><br>
+    <input type="submit" value="送信">
+  </form>
+</body>
+</html>`,
+    explanation: "<form>はデータ送信の容れ物です。<input>はtype属性でテキスト・メール・パスワードなど様々な入力形式を指定できます。" },
+
+  { id: 7, unit: "UNIT 02  ◆  CSS基礎スタイリング", rank: "BRONZE",
+    title: "CSSセレクタと色",
+    question: ".blue-textクラスに青色テキストを適用し、#titleというIDに赤色・太字・中央揃えを適用してください。",
+    hint: ".クラス名はclass属性、#ID名はid属性に対応します。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>セレクタ</title>
+  <style>
+    .blue-text { color: blue; }
+    #title { color: red; font-weight: bold; text-align: center; }
+  </style>
+</head>
+<body>
+  <h1 id="title">メインタイトル</h1>
+  <p class="blue-text">青いテキストです</p>
+  <p class="blue-text">こちらも青です</p>
+</body>
+</html>`,
+    explanation: "クラスセレクタ（.className）は複数要素に適用できます。IDセレクタ（#idName）は1ページに1つだけ使う一意の識別子です。" },
+
+  { id: 8, unit: "UNIT 02  ◆  CSS基礎スタイリング", rank: "BRONZE",
+    title: "ボックスモデル",
+    question: ".boxクラスに背景色lightblue、padding: 20px、margin: 30px auto、border: 2px solid navy、width: 300pxを設定したボックスを作ってください。",
+    hint: "CSSのボックスモデルはcontent・padding・border・marginの4層構造です。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ボックスモデル</title>
+  <style>
+    .box {
+      background-color: lightblue;
+      padding: 20px;
+      margin: 30px auto;
+      border: 2px solid navy;
+      width: 300px;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">ボックスモデルの例です。padding・margin・borderを確認してください。</div>
+</body>
+</html>`,
+    explanation: "padding: 内側の余白、border: 枠線、margin: 外側の余白です。margin: 30px autoで上下30px・左右自動（中央揃え）になります。" },
+
+  { id: 9, unit: "UNIT 02  ◆  CSS基礎スタイリング", rank: "BRONZE",
+    title: "フォントスタイリング",
+    question: "bodyのfont-familyをArial sans-serifに設定し、h1のfont-sizeを2em、pのline-heightを1.8、.boldクラスにfont-weight: boldを設定してください。",
+    hint: "font-family, font-size, line-height, font-weightを使います。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>フォント</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    h1 { font-size: 2em; }
+    p { line-height: 1.8; }
+    .bold { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>フォントスタイリング</h1>
+  <p>通常のテキストです。<span class="bold">重要</span>な部分は太字です。</p>
+</body>
+</html>`,
+    explanation: "emは親要素のフォントサイズを基準にした相対単位（1em=親と同サイズ）。line-heightは行間の比率です。" },
+
+  { id: 10, unit: "UNIT 02  ◆  CSS基礎スタイリング", rank: "BRONZE",
+    title: "テキスト装飾",
+    question: "h2にtext-align: center、pにletter-spacing: 2px、.underlineクラスにtext-decoration: underline、.strikeクラスにtext-decoration: line-throughを設定してください。",
+    hint: "text-align, text-decoration, letter-spacing プロパティを使います。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>テキスト装飾</title>
+  <style>
+    h2 { text-align: center; }
+    p { letter-spacing: 2px; }
+    .underline { text-decoration: underline; }
+    .strike { text-decoration: line-through; }
+  </style>
+</head>
+<body>
+  <h2>中央揃えの見出し</h2>
+  <p class="underline">下線付きテキスト</p>
+  <p class="strike">取り消し線のテキスト</p>
+</body>
+</html>`,
+    explanation: "text-alignでテキストの水平位置を設定します。text-decorationはunderline（下線）、line-through（取り消し線）、none（装飾なし）などを指定できます。" },
+
+  { id: 11, unit: "UNIT 02  ◆  CSS基礎スタイリング", rank: "BRONZE",
+    title: "displayプロパティ",
+    question: "display: inline-blockを使って、幅100px・高さ60pxの横並びボックスを3つ作ってください。各ボックスに異なる背景色を付けてください。",
+    hint: "display: inline-blockは横並びで幅・高さを指定できます。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>display</title>
+  <style>
+    .box {
+      display: inline-block;
+      width: 100px;
+      height: 60px;
+      line-height: 60px;
+      text-align: center;
+      color: white;
+      margin: 5px;
+    }
+    .box1 { background: #e74c3c; }
+    .box2 { background: #3498db; }
+    .box3 { background: #2ecc71; }
+  </style>
+</head>
+<body>
+  <div class="box box1">Box 1</div>
+  <div class="box box2">Box 2</div>
+  <div class="box box3">Box 3</div>
+</body>
+</html>`,
+    explanation: "display: blockは改行あり・幅100%。display: inlineは改行なし・幅/高さ指定不可。display: inline-blockは改行なし・幅/高さ指定可能。" },
+
+  { id: 12, unit: "UNIT 02  ◆  CSS基礎スタイリング", rank: "BRONZE",
+    title: "背景と角丸",
+    question: "background-color, background-image（linear-gradient）、border-radius: 12px、box-shadowを組み合わせた見栄えのいいカードを作ってください。",
+    hint: "border-radiusで角を丸く、box-shadowで影を付けます。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>背景と角丸</title>
+  <style>
+    body { background: #f0f2f5; display: flex; justify-content: center; padding: 40px; }
+    .card {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      padding: 30px;
+      color: white;
+      width: 250px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>グラデーションカード</h2>
+    <p>角丸と影の組み合わせ</p>
+  </div>
+</body>
+</html>`,
+    explanation: "border-radiusで角を丸く、box-shadowで立体感を出します。linear-gradient()でグラデーション背景を作れます。" },
+
+  { id: 13, unit: "UNIT 03  ◆  レイアウト", rank: "SILVER",
+    title: "Flexbox基礎",
+    question: "3つのdivを横並びにするFlexboxレイアウトを作ってください。コンテナにdisplay: flexを設定し、各アイテムにflex: 1で均等幅にしてください。",
+    hint: "親要素にdisplay: flexを設定するだけで子要素が横並びになります。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Flexbox</title>
+  <style>
+    .container { display: flex; gap: 10px; padding: 20px; }
+    .item {
+      flex: 1;
+      background: #3498db;
+      color: white;
+      padding: 30px;
+      text-align: center;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="item">Item 1</div>
+    <div class="item">Item 2</div>
+    <div class="item">Item 3</div>
+  </div>
+</body>
+</html>`,
+    explanation: "display: flexを親要素に設定すると、子要素がフレックスアイテムになり横並びになります。flex: 1は利用可能スペースを均等分配することを意味します。" },
+
+  { id: 14, unit: "UNIT 03  ◆  レイアウト", rank: "SILVER",
+    title: "Flex整列",
+    question: "justify-content: space-betweenで3つのボタンを左・中央・右に配置し、align-items: centerでコンテナ高さ80px内に垂直中央揃えしてください。",
+    hint: "justify-contentは主軸方向、align-itemsは交差軸方向の揃えを制御します。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Flex整列</title>
+  <style>
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 80px;
+      background: #2c3e50;
+      padding: 0 20px;
+    }
+    button {
+      padding: 8px 18px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <button>左</button>
+    <button>中央</button>
+    <button>右</button>
+  </div>
+</body>
+</html>`,
+    explanation: "justify-content: space-betweenはアイテム間を等間隔にし、両端のアイテムはコンテナ端に配置されます。align-items: centerは交差軸（縦方向）の中央揃えです。" },
+
+  { id: 15, unit: "UNIT 03  ◆  レイアウト", rank: "SILVER",
+    title: "CSS Grid基礎",
+    question: "3列×2行のグリッドレイアウトを作成してください。grid-template-columns: repeat(3, 1fr)で3等分し、6つのカードを並べてください。",
+    hint: "display: gridとgrid-template-columnsでグリッドを定義します。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>CSS Grid</title>
+  <style>
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      padding: 20px;
+    }
+    .card {
+      background: #6c5ce7;
+      color: white;
+      padding: 30px;
+      text-align: center;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid">
+    <div class="card">Card 1</div>
+    <div class="card">Card 2</div>
+    <div class="card">Card 3</div>
+    <div class="card">Card 4</div>
+    <div class="card">Card 5</div>
+    <div class="card">Card 6</div>
+  </div>
+</body>
+</html>`,
+    explanation: "display: gridでグリッドコンテナを作成します。repeat(3, 1fr)は3列を均等幅で定義します。gapはセル間の余白です。frは利用可能スペースの分数単位です。" },
+
+  { id: 16, unit: "UNIT 03  ◆  レイアウト", rank: "SILVER",
+    title: "Gridエリア配置",
+    question: "ヘッダー・サイドバー・メイン・フッターの4エリアを持つページレイアウトをgrid-template-areasで実装してください。",
+    hint: "grid-template-areasで名前を付け、各要素にgrid-areaで配置します。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Gridエリア</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    .layout {
+      display: grid;
+      grid-template-areas:
+        'header header'
+        'sidebar main'
+        'footer footer';
+      grid-template-columns: 180px 1fr;
+      grid-template-rows: 60px 1fr 50px;
+      height: 100vh;
+      gap: 4px;
+    }
+    .header  { grid-area: header;  background: #2d3436; color: white; display: flex; align-items: center; padding: 0 20px; }
+    .sidebar { grid-area: sidebar; background: #636e72; color: white; padding: 15px; }
+    .main    { grid-area: main;    background: #dfe6e9; padding: 20px; }
+    .footer  { grid-area: footer;  background: #b2bec3; display: flex; align-items: center; justify-content: center; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="header">ヘッダー</div>
+    <div class="sidebar">サイドバー</div>
+    <div class="main">メインコンテンツ</div>
+    <div class="footer">フッター</div>
+  </div>
+</body>
+</html>`,
+    explanation: "grid-template-areasで視覚的にレイアウト構造を定義できます。各セルに名前を付け、grid-areaで要素を配置します。" },
+
+  { id: 17, unit: "UNIT 03  ◆  レイアウト", rank: "SILVER",
+    title: "ポジショニング",
+    question: "position: relativeの親要素の中に、position: absoluteで右上に配置した「New」バッジを実装してください。また画面右下にposition: fixedで固定されたボタンも追加してください。",
+    hint: "absoluteは最近のpositioned親要素を基準に、fixedはビューポートを基準に配置されます。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ポジショニング</title>
+  <style>
+    .card {
+      position: relative;
+      width: 200px;
+      height: 100px;
+      background: #74b9ff;
+      border-radius: 8px;
+      margin: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+    .badge {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: red;
+      color: white;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .fab {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #00b894;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 25px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    カード
+    <div class="badge">New</div>
+  </div>
+  <button class="fab">+ 追加</button>
+</body>
+</html>`,
+    explanation: "position: relativeは通常の位置から相対的にずらします（子のabsoluteの基準点にもなります）。position: absoluteは最も近いpositioned祖先を基準に配置。position: fixedはスクロールしても同じ位置に固定されます。" },
+
+  { id: 18, unit: "UNIT 03  ◆  レイアウト", rank: "SILVER",
+    title: "CSSトランジション",
+    question: "ボタンにhover時に背景色が変わるトランジション（0.3秒）と、カードにhover時にtransform: translateY(-5px)で浮き上がるエフェクトを実装してください。",
+    hint: "transitionプロパティで変化にかかる時間と対象プロパティを指定します。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>トランジション</title>
+  <style>
+    button {
+      padding: 12px 25px;
+      background: #0984e3;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s ease;
+      margin: 10px;
+    }
+    button:hover { background: #74b9ff; }
+    .card {
+      width: 180px;
+      height: 100px;
+      background: #a29bfe;
+      border-radius: 10px;
+      margin: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <button>ホバーしてみて</button>
+  <br>
+  <div class="card">カード</div>
+</body>
+</html>`,
+    explanation: "transition: プロパティ 時間 イージング;で指定します。easeは自然な加速・減速です。transformのtranslateY(-5px)は上方向に5px移動します。" },
+
+  { id: 19, unit: "UNIT 03  ◆  レイアウト", rank: "SILVER",
+    title: "擬似クラスと擬似要素",
+    question: ":hover・:first-child・:nth-child(odd)の擬似クラスと、::beforeで追加コンテンツを実装してください。リストの奇数行に背景色を付け、最初の行を太字にしてください。",
+    hint: ":nth-child(odd)は奇数番目の要素に適用されます。::beforeは要素の前にコンテンツを追加します。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>擬似クラス</title>
+  <style>
+    ul { list-style: none; padding: 0; width: 250px; }
+    li { padding: 10px 15px; border-bottom: 1px solid #ddd; transition: background 0.2s; }
+    li:hover { background: #e8f4fd; cursor: pointer; }
+    li:first-child { font-weight: bold; }
+    li:nth-child(odd) { background: #f8f9fa; }
+    li:nth-child(odd):hover { background: #e8f4fd; }
+    li::before { content: '▶ '; color: #0984e3; }
+  </style>
+</head>
+<body>
+  <ul>
+    <li>アイテム1（太字・奇数）</li>
+    <li>アイテム2（偶数）</li>
+    <li>アイテム3（奇数）</li>
+    <li>アイテム4（偶数）</li>
+    <li>アイテム5（奇数）</li>
+  </ul>
+</body>
+</html>`,
+    explanation: ":hover はマウスが乗ったとき、:first-child は最初の子要素、:nth-child(odd)は奇数番目の子要素に適用されます。::before は要素の前にcontentを挿入する擬似要素です。" },
+
+  { id: 20, unit: "UNIT 03  ◆  レイアウト", rank: "SILVER",
+    title: "レスポンシブデザイン",
+    question: "metaビューポートタグを使用し、デフォルト3列グリッド・768px以下で2列・480px以下で1列になるレスポンシブレイアウトをメディアクエリで実装してください。",
+    hint: "@media (max-width: 768px) { } でメディアクエリを使います。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>レスポンシブ</title>
+  <style>
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 20px; }
+    .card { background: #fd79a8; color: white; padding: 25px; border-radius: 8px; text-align: center; }
+    @media (max-width: 768px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="grid">
+    <div class="card">Card 1</div>
+    <div class="card">Card 2</div>
+    <div class="card">Card 3</div>
+    <div class="card">Card 4</div>
+    <div class="card">Card 5</div>
+    <div class="card">Card 6</div>
+  </div>
+</body>
+</html>`,
+    explanation: "<meta viewport>タグはモバイルでのスケールを制御します。@mediaクエリでブレークポイントごとにスタイルを切り替えます。max-widthは「〜px以下の時」という意味です。" },
+
+  { id: 21, unit: "UNIT 04  ◆  CSS応用テクニック", rank: "GOLD",
+    title: "CSSアニメーション",
+    question: "@keyframesを使って、左から右へ移動しながら色が変わるボールのアニメーションを作成してください。animation: 2s infinite alternateを使いましょう。",
+    hint: "@keyframes 名前 { from {} to {} }でアニメーションを定義し、animationプロパティで適用します。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>アニメーション</title>
+  <style>
+    .track {
+      width: 400px;
+      height: 80px;
+      background: #dfe6e9;
+      border-radius: 40px;
+      margin: 40px auto;
+      position: relative;
+      overflow: hidden;
+    }
+    .ball {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      position: absolute;
+      top: 10px;
+      animation: move 2s infinite alternate ease-in-out;
+    }
+    @keyframes move {
+      from { left: 10px; background: #e17055; }
+      to   { left: 330px; background: #6c5ce7; }
+    }
+  </style>
+</head>
+<body>
+  <div class="track"><div class="ball"></div></div>
+</body>
+</html>`,
+    explanation: "@keyframesでアニメーションの各段階を定義します。alternateは交互に逆方向再生します。infiniteで無限ループ、ease-in-outで自然な加速/減速になります。" },
+
+  { id: 22, unit: "UNIT 04  ◆  CSS応用テクニック", rank: "GOLD",
+    title: "CSS変数（カスタムプロパティ）",
+    question: ":rootで--primary-color・--secondary-color・--border-radiusなどのCSS変数を定義し、複数の要素でvar()を使って参照してください。",
+    hint: "--変数名: 値;で定義し、var(--変数名)で使用します。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>CSS変数</title>
+  <style>
+    :root {
+      --primary: #6c5ce7;
+      --secondary: #00b894;
+      --text: #2d3436;
+      --bg: #f8f9fa;
+      --radius: 8px;
+    }
+    body { background: var(--bg); color: var(--text); font-family: Arial, sans-serif; }
+    .btn-primary { background: var(--primary); color: white; padding: 10px 20px; border: none; border-radius: var(--radius); cursor: pointer; margin: 5px; }
+    .btn-secondary { background: var(--secondary); color: white; padding: 10px 20px; border: none; border-radius: var(--radius); cursor: pointer; margin: 5px; }
+    .card { background: white; border: 2px solid var(--primary); border-radius: var(--radius); padding: 20px; margin: 20px; max-width: 350px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>CSS変数の活用</h2>
+    <p>変数を変えるだけでサイト全体のカラーを変えられます。</p>
+    <button class="btn-primary">プライマリ</button>
+    <button class="btn-secondary">セカンダリ</button>
+  </div>
+</body>
+</html>`,
+    explanation: "CSS変数（カスタムプロパティ）は:rootで定義してサイト全体で使えます。テーマカラー変更・ダークモード実装などに便利です。" },
+
+  { id: 23, unit: "UNIT 04  ◆  CSS応用テクニック", rank: "GOLD",
+    title: "ナビゲーションバー",
+    question: "Flexboxを使ってロゴとナビリンクを含む横並びナビゲーションバーを作成してください。スクロール時も固定（position: sticky）し、リンクにhoverエフェクトを付けてください。",
+    hint: "position: stickyはスクロール時に指定位置で固定になります。top: 0で上部固定。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ナビバー</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #2d3436;
+      padding: 0 30px;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    .logo { color: #00b894; font-size: 1.4rem; font-weight: bold; }
+    .nav-links { display: flex; list-style: none; gap: 10px; }
+    .nav-links a { color: #dfe6e9; text-decoration: none; padding: 8px 12px; border-radius: 4px; transition: background 0.2s; }
+    .nav-links a:hover { background: #00b894; color: white; }
+    .content { padding: 20px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">MyApp</div>
+    <ul class="nav-links">
+      <li><a href="#">ホーム</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">サービス</a></li>
+      <li><a href="#">お問い合わせ</a></li>
+    </ul>
+  </nav>
+  <div class="content"><h1>コンテンツ</h1><p>スクロールしてもナビバーが固定されます。</p></div>
+</body>
+</html>`,
+    explanation: "position: stickyは通常フローに従いながら、スクロール時にtopに達すると固定になります。z-indexは重なり順序を指定します。" },
+
+  { id: 24, unit: "UNIT 04  ◆  CSS応用テクニック", rank: "GOLD",
+    title: "CSSグラデーション",
+    question: "linear-gradientを使った斜めのヒーロー背景と、radial-gradientを使った円形グラデーションのカードを作成してください。",
+    hint: "linear-gradient(角度, 色1, 色2)、radial-gradient(circle, 色1, 色2)を使います。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>グラデーション</title>
+  <style>
+    .hero {
+      height: 180px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+    .cards { display: flex; gap: 15px; padding: 20px; }
+    .card { width: 150px; height: 100px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.85rem; text-align: center; }
+    .c1 { background: radial-gradient(circle, #f093fb, #f5576c); }
+    .c2 { background: radial-gradient(ellipse, #4facfe, #00f2fe); }
+    .c3 { background: linear-gradient(to right, #43e97b, #38f9d7); }
+  </style>
+</head>
+<body>
+  <div class="hero">グラデーションヒーロー</div>
+  <div class="cards">
+    <div class="card c1">Radial<br>Circle</div>
+    <div class="card c2">Radial<br>Ellipse</div>
+    <div class="card c3">Linear<br>Right</div>
+  </div>
+</body>
+</html>`,
+    explanation: "linear-gradient(角度, 色...)は直線グラデーション。radial-gradient(形, 色...)は円形グラデーションです。グラデーションはbackgroundプロパティに設定します。" },
+
+  { id: 25, unit: "UNIT 04  ◆  CSS応用テクニック", rank: "GOLD",
+    title: "プロフィールカード",
+    question: "丸いアバター（border-radius: 50%）、名前、役職、フォローボタンを含む洗練されたプロフィールカードを実装してください。",
+    hint: "border-radius: 50%で完全な円を作れます。box-shadowでカードに立体感を出しましょう。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>プロフィールカード</title>
+  <style>
+    body { background: #f0f2f5; display: flex; justify-content: center; padding: 40px; font-family: Arial, sans-serif; }
+    .card { background: white; border-radius: 16px; padding: 30px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 240px; }
+    .avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+    .name { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; }
+    .role { color: #636e72; font-size: 0.9rem; margin-bottom: 20px; }
+    .btn { background: #0984e3; color: white; border: none; padding: 10px 28px; border-radius: 20px; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: #74b9ff; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="avatar">👤</div>
+    <div class="name">田中太郎</div>
+    <div class="role">フロントエンドエンジニア</div>
+    <button class="btn">フォロー</button>
+  </div>
+</body>
+</html>`,
+    explanation: "border-radius: 50%で完全な円を作れます。box-shadowで立体感を出します。コンポーネント設計はCSSの重要な概念で、再利用可能なUIパーツを作ります。" },
+
+  { id: 26, unit: "UNIT 04  ◆  CSS応用テクニック", rank: "GOLD",
+    title: "フィルターと変形",
+    question: "画像にfilter: grayscale(100%)を適用しhoverでカラー化するエフェクトと、transform: rotate(45deg)で要素を回転させるデモを作ってください。",
+    hint: "filterプロパティで視覚エフェクト、transformプロパティで変形ができます。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>フィルター・変形</title>
+  <style>
+    .demo { display: flex; gap: 30px; padding: 30px; align-items: center; flex-wrap: wrap; }
+    .img-box {
+      width: 150px; height: 100px;
+      background: linear-gradient(135deg, #fd79a8, #e17055);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: bold;
+      filter: grayscale(100%);
+      transition: filter 0.5s;
+      cursor: pointer;
+    }
+    .img-box:hover { filter: none; }
+    .rotate-box {
+      width: 70px; height: 70px;
+      background: #6c5ce7;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 0.8rem;
+      transform: rotate(45deg);
+    }
+    .skew-box {
+      height: 50px; width: 140px;
+      background: #00b894;
+      display: flex; align-items: center; justify-content: center;
+      color: white;
+      transform: skewX(-20deg);
+    }
+  </style>
+</head>
+<body>
+  <div class="demo">
+    <div class="img-box">ホバーでカラー化</div>
+    <div class="rotate-box">回転45°</div>
+    <div class="skew-box">傾き -20°</div>
+  </div>
+</body>
+</html>`,
+    explanation: "filter: grayscale()でグレースケール、blur()でぼかし。transform: rotate()で回転、skewX()で傾き、scale()で拡大縮小ができます。これらはGPUで処理されるため高速です。" },
+
+  { id: 27, unit: "UNIT 05  ◆  CSS高度テクニック", rank: "PLATINUM",
+    title: "Magazine Gridレイアウト",
+    question: "grid-column: span 2やgrid-row: span 2を使った非対称グリッドレイアウトを作ってください。大きいアイテムと小さいアイテムが混在するマガジン風レイアウトです。",
+    hint: "grid-column: span 2 でセルを複数列にまたがらせます。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Magazine Grid</title>
+  <style>
+    .magazine {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 140px);
+      gap: 8px;
+      padding: 15px;
+    }
+    .item { border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+    .item1 { background: #e17055; grid-column: span 2; grid-row: span 2; font-size: 1.3rem; }
+    .item2 { background: #0984e3; }
+    .item3 { background: #6c5ce7; }
+    .item4 { background: #00b894; grid-column: span 3; }
+    .item5 { background: #fdcb6e; color: #2d3436; }
+    .item6 { background: #fd79a8; grid-column: span 2; }
+  </style>
+</head>
+<body>
+  <div class="magazine">
+    <div class="item item1">メイン記事</div>
+    <div class="item item2">記事2</div>
+    <div class="item item3">記事3</div>
+    <div class="item item4">フィーチャー記事（全幅）</div>
+    <div class="item item5">記事5</div>
+    <div class="item item6">記事6（2列）</div>
+  </div>
+</body>
+</html>`,
+    explanation: "grid-column: span Nで要素をN列にまたがらせ、grid-row: span Nで複数行を占有します。これで雑誌のような複雑レイアウトが実現できます。" },
+
+  { id: 28, unit: "UNIT 05  ◆  CSS高度テクニック", rank: "PLATINUM",
+    title: "clamp()流体タイポグラフィ",
+    question: "clamp(最小値, 推奨値, 最大値)を使って、ウィンドウ幅に応じて滑らかにスケールするタイポグラフィと、min()で制御するコンテナを実装してください。",
+    hint: "clamp(1rem, 2vw, 2rem)で最小1rem・最大2rem・推奨は2vwになります。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>流体タイポグラフィ</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f8f9fa; }
+    .container {
+      width: min(100%, 800px);
+      margin: 0 auto;
+      background: white;
+      padding: clamp(15px, 4vw, 40px);
+      border-radius: 12px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    }
+    h1 { font-size: clamp(1.5rem, 4vw, 3rem); color: #2d3436; }
+    p  { font-size: clamp(0.9rem, 2vw, 1.1rem); line-height: 1.8; }
+    .btn {
+      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      padding: clamp(8px, 2vw, 14px) clamp(18px, 4vw, 30px);
+      background: #6c5ce7; color: white; border: none; border-radius: 6px; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>流体タイポグラフィ</h1>
+    <p>clamp()を使うと、画面サイズに応じて滑らかにスケールするテキストを作れます。ウィンドウを縮小・拡大してみてください。</p>
+    <button class="btn">ボタン</button>
+  </div>
+</body>
+</html>`,
+    explanation: "clamp(min, preferred, max)はCSS数学関数で、最小値〜最大値の範囲内で推奨値を返します。min()は最小値を選択します。vwはビューポート幅の1%を表す単位です。" },
+
+  { id: 29, unit: "UNIT 05  ◆  CSS高度テクニック", rank: "PLATINUM",
+    title: "スクロールスナップ",
+    question: "scroll-snap-typeとscroll-snap-alignを使ったフルページスクロールを実装してください。縦方向に5つのセクションが、スクロール時にぴたりと停まるようにしてください。",
+    hint: "コンテナにscroll-snap-type: y mandatory、子要素にscroll-snap-align: startを設定します。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Scroll Snap</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    .container { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; }
+    .section {
+      height: 100vh;
+      scroll-snap-align: start;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem; font-weight: bold; color: white;
+    }
+    .s1 { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .s2 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .s3 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+    .s4 { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+    .s5 { background: linear-gradient(135deg, #fa709a, #fee140); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="section s1">Section 1</div>
+    <div class="section s2">Section 2</div>
+    <div class="section s3">Section 3</div>
+    <div class="section s4">Section 4</div>
+    <div class="section s5">Section 5</div>
+  </div>
+</body>
+</html>`,
+    explanation: "scroll-snap-typeでスクロールのスナップ方向（x/y）とモード（mandatory=必ずスナップ）を指定します。scroll-snap-alignで各スナップポイントの整列位置を指定します。" },
+
+  { id: 30, unit: "UNIT 05  ◆  CSS高度テクニック", rank: "PLATINUM",
+    title: "ダークモード対応",
+    question: "prefers-color-schemeメディアクエリとCSS変数を組み合わせて、システムのダーク/ライトモードに自動対応するUIを実装してください。",
+    hint: "@media (prefers-color-scheme: dark) { }でダークモード時のスタイルを指定します。",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ダークモード</title>
+  <style>
+    :root { --bg: #ffffff; --surface: #f8f9fa; --text: #2d3436; --text-sub: #636e72; --border: #dee2e6; --primary: #6c5ce7; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1a1a2e; --surface: #16213e; --text: #e8ecef; --text-sub: #a0aab4; --border: #2d3748; --primary: #a29bfe; }
+    }
+    body { background: var(--bg); color: var(--text); font-family: Arial, sans-serif; transition: all 0.3s; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin: 20px; max-width: 380px; }
+    h2 { color: var(--primary); margin-bottom: 10px; }
+    p { color: var(--text-sub); line-height: 1.7; }
+    button { background: var(--primary); color: var(--bg); border: none; padding: 10px 20px; border-radius: 6px; margin-top: 15px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>ダークモード対応 UI</h2>
+    <p>このUIはOSのカラースキーム設定を検知し、自動でライト/ダークモードを切り替えます。</p>
+    <button>ボタン</button>
+  </div>
+</body>
+</html>`,
+    explanation: "prefers-color-schemeメディアクエリはOSのダーク/ライトモード設定を検知します。:rootのCSS変数を書き換えるだけでテーマ全体が切り替わります。" },
+];
+
+const htmlMissions = [
+  { id: 1, rank: "SILVER",
+    title: "シンプルなWebページ",
+    description: "ヘッダー・メインコンテンツ・フッターを持つシンプルなWebページをHTMLとCSSで作成してください。",
+    requirements: ["<header>・<main>・<footer>のセマンティックタグを使う", "ナビゲーションリンクを3つ以上含む", "メインに画像・見出し・テキストを含む", "フッターに著作権表示を含む", "CSSで全体のスタイルを整える"],
+    sampleIO: `ページ構成:\n[ヘッダー: ロゴ + ナビ]\n[メイン: 画像 + 見出し + テキスト]\n[フッター: © 2025 MyPage]`,
+    hint: "HTMLのセマンティックタグ（header, nav, main, footer）を使って意味のある構造を作りましょう。" },
+  { id: 2, rank: "GOLD",
+    title: "レスポンシブカードグリッド",
+    description: "商品カードのグリッドレイアウトを作成してください。PCでは3列、タブレットで2列、スマホで1列になるレスポンシブデザインを実装してください。",
+    requirements: ["CSS Gridまたはflexboxでカードを配置", "各カードに画像・タイトル・説明・価格・ボタンを含む", "@mediaクエリで3段階レスポンシブ対応", "ホバー時にカードが浮き上がるエフェクト", "ボタンにhoverエフェクトを付ける"],
+    sampleIO: `PC(3列): [Card1][Card2][Card3]\nタブレット(2列): [Card1][Card2]\n             [Card3][Card4]\nスマホ(1列): [Card1]\n           [Card2]`,
+    hint: "CSS Gridのrepeat()とauto-fillを組み合わせると@mediaなしでもある程度レスポンシブになります。" },
+  { id: 3, rank: "GOLD",
+    title: "アニメーションローディング画面",
+    description: "CSSアニメーションのみを使ったローディングスピナーと、フェードインで表示されるコンテンツを作成してください。",
+    requirements: ["@keyframesでスピナーアニメーションを実装", "rotation回転アニメーション使用", "別のアニメーションでテキストを点滅させる", "進捗バーのアニメーションを実装", "ページロード後にスピナーが消えてコンテンツが表示される（JS使用可）"],
+    sampleIO: `[ローディング中]\n  ○ (回転するスピナー)\n  読み込み中...\n  ████████░░ 80%\n↓\n[完了]\n  コンテンツ表示`,
+    hint: "transform: rotate(360deg)とanimation: spin 1s linear infiniteでスピナーを作れます。" },
+  { id: 4, rank: "PLATINUM",
+    title: "CSSアートイラスト",
+    description: "HTMLとCSSのみ（画像なし）で、動物や風景などのイラストを作成してください。",
+    requirements: ["JavaScriptを使わない", "純粋なHTMLとCSSのみで描く", "border-radius・グラデーション・疑似要素などを活用", "最低3つの異なる形状（丸・四角・三角など）を使う", "アニメーションを1つ以上含む"],
+    sampleIO: `CSSで描いた猫や太陽など\n（テキストではなく視覚的なイラスト）`,
+    hint: "border-radius: 50%で円、transform: rotateで三角（border trick）、::beforeと::afterで追加の形状を作れます。" },
+  { id: 5, rank: "PLATINUM",
+    title: "インタラクティブなランディングページ",
+    description: "製品のランディングページを作成してください。スクロールアニメーション・カウントアップ・タブUIを含む。",
+    requirements: ["ヒーローセクション（フルスクリーン、CSSアニメーション背景）", "特徴セクション（3つのカード、スクロール時フェードイン）", "統計カウントアップ（IntersectionObserver + JS）", "タブで切り替えるQ&Aセクション", "フォームバリデーション付きCTAセクション"],
+    sampleIO: `[ヒーロー: フルスクリーン + アニメーション]\n[特徴: カード3つ, スクロールでフェードイン]\n[統計: 0→100 カウントアップ]\n[タブ: Q1|Q2|Q3 切り替え]\n[フォーム: 入力+バリデーション]`,
+    hint: "IntersectionObserverでスクロール時の要素表示を検知できます。requestAnimationFrameでカウントアップを実装できます。" },
+  { id: 6, rank: "DIAMOND",
+    title: "ダークモード・テーマシステム",
+    description: "CSS変数とJavaScriptを使って、ライト・ダーク・カスタムの3つのテーマを切り替えられるUIシステムを構築してください。",
+    requirements: ["CSS変数で全色を管理", "ライト/ダーク/カスタムテーマの3種類", "テーマ選択をlocalStorageに保存・復元", "テーマ切り替えにトランジションアニメーション", "prefers-color-schemeでデフォルトテーマを自動判定", "カスタムテーマはカラーピッカーで色を選択"],
+    sampleIO: `[ライトテーマ] ← → [ダークテーマ] ← → [カスタム]\nリロードしてもテーマが保持される`,
+    hint: "document.documentElement.style.setProperty('--primary', value)でCSS変数をJSから変更できます。" },
+];
+
+const htmlUnitGuides = [
+  { id: "html-unit01", name: "UNIT 01  ◆  HTML基礎構造",
+    summary: "HTMLはWebページの骨格を作る言語です。タグと属性を使って文書の構造を表現します。ブラウザはHTMLを解析して画面に表示します。",
+    points: ["<!DOCTYPE html>でHTML5として宣言する", "<html>がルート要素、<head>にメタ情報、<body>に表示内容を書く", "タグは<開始タグ>内容</終了タグ>の形。<img>など終了タグ不要の空要素もある", "属性はタグ内にkey=\"value\"の形で記述する", "セマンティックタグ（header/nav/main/footer/article）で意味のある構造を作る"],
+    words: [
+      { term: "DOCTYPE", desc: "<!DOCTYPE html>でHTML5として宣言。ブラウザの描画モードを標準モードにする。" },
+      { term: "属性", desc: "タグに追加情報を付ける。href（リンク先）、src（ソース）、alt（代替テキスト）、class、idなど。" },
+      { term: "セマンティックタグ", desc: "意味を持つHTML要素。<header>・<nav>・<main>・<footer>・<article>など。SEOや可読性に貢献。" },
+      { term: "インライン要素", desc: "<span>・<a>・<strong>など、文中に配置できる要素。改行されずに流れる。" },
+      { term: "ブロック要素", desc: "<div>・<p>・<h1>など、独立した行を占有する要素。幅は親要素いっぱいに広がる。" }
+    ]
+  },
+  { id: "html-unit02", name: "UNIT 02  ◆  CSS基礎スタイリング",
+    summary: "CSSはHTMLに見た目を付ける言語です。セレクタで対象要素を選び、プロパティと値でスタイルを指定します。",
+    points: ["セレクタ { プロパティ: 値; }の形でスタイルを記述する", "タグセレクタ・クラス（.class）・ID（#id）・疑似クラス（:hover）などがある", "ボックスモデル: content + padding + border + marginの4層構造", "CSSの優先度: !important > インライン > ID > クラス > タグ", "色の指定: 色名（red）、16進数（#FF0000）、rgb()、rgba()、hsl()など"],
+    words: [
+      { term: "カスケード", desc: "CSSの「C」。スタイルが上から下に流れ、複数のルールが競合した場合に優先度を決める仕組み。" },
+      { term: "継承", desc: "親要素のスタイルが子要素に引き継がれる仕組み。color・font-sizeなどが継承される。" },
+      { term: "ボックスモデル", desc: "全HTML要素はボックスとして扱われる。content→padding→border→marginの4層構造。" },
+      { term: "specificity（詳細度）", desc: "CSSルールの優先度。ID(0,1,0,0) > クラス(0,0,1,0) > タグ(0,0,0,1)の計算式で決まる。" },
+      { term: "box-sizing", desc: "border-boxを設定するとpadding・borderがwidth/heightに含まれる。直感的に扱えるためよく使われる。" }
+    ]
+  },
+  { id: "html-unit03", name: "UNIT 03  ◆  レイアウト",
+    summary: "CSSのレイアウトシステムを学びます。Flexboxは1次元のレイアウト、CSS Gridは2次元のレイアウトに適しています。",
+    points: ["Flexbox: 親にdisplay:flexを設定。justify-content（主軸）とalign-items（交差軸）で整列", "CSS Grid: grid-template-columns/rowsで格子状レイアウト。gapで間隔を設定", "position: static（デフォルト）/ relative / absolute / fixed / sticky", "z-indexで要素の重なり順を制御", "viewport単位: vw（ビューポート幅の1%）/ vh（ビューポート高さの1%）"],
+    words: [
+      { term: "Flexbox", desc: "1次元レイアウトシステム。横一列・縦一列の配置に強い。justify-contentとalign-itemsで整列。" },
+      { term: "CSS Grid", desc: "2次元レイアウトシステム。行と列を同時に制御できる。複雑なページレイアウトに適している。" },
+      { term: "position: absolute", desc: "最も近いpositioned祖先要素を基準に絶対配置。通常フローから外れる。" },
+      { term: "position: sticky", desc: "通常フローに従いながら、スクロール時にtop等の位置で固定になる。ナビバーによく使う。" },
+      { term: "gap", desc: "flex/gridアイテム間の余白をまとめて指定するプロパティ。column-gapとrow-gapの短縮形。" }
+    ]
+  },
+  { id: "html-unit04", name: "UNIT 04  ◆  CSS応用テクニック",
+    summary: "CSSの高度な機能を学びます。アニメーション・カスタムプロパティ・グラデーションなどでリッチなUIを作れます。",
+    points: ["@keyframes + animationプロパティでCSSアニメーションを定義・適用", "CSS変数（カスタムプロパティ）: --変数名で定義、var()で使用", "linear-gradient()・radial-gradient()でグラデーション背景を作成", "filter: blur/brightness/grayscale/contrastで視覚エフェクト", "transform: translate/rotate/scale/skewで要素を変形"],
+    words: [
+      { term: "@keyframes", desc: "アニメーションの各段階を定義するルール。from/toまたは0%〜100%で状態を指定。" },
+      { term: "CSS変数", desc: "--name: valueで定義し、var(--name)で参照。テーマカラー管理・ダークモードに便利。" },
+      { term: "transition", desc: "プロパティの変化を滑らかにするプロパティ。transition: property duration timing-function。" },
+      { term: "transform", desc: "要素を変形させるプロパティ。translate（移動）・rotate（回転）・scale（拡縮）・skew（傾き）。" },
+      { term: "filter", desc: "要素に視覚エフェクトを適用。blur()・brightness()・grayscale()・contrast()など。GPUで処理。" }
+    ]
+  },
+  { id: "html-unit05", name: "UNIT 05  ◆  CSS高度テクニック",
+    summary: "CSS Grid の高度な機能、数学関数、Scroll Snap、ダークモードなど、モダンなCSS開発で必須の技術を習得します。",
+    points: ["grid-column: span N / grid-row: span Nで複数セルを占有", "clamp(min, preferred, max)で最小〜最大の範囲内で推奨値を使う流体デザイン", "scroll-snap-typeとscroll-snap-alignでスクロールのスナップポイントを設定", "@media (prefers-color-scheme: dark)でシステムのダーク/ライトモードを検知", "CSS containment・aspect-ratio・logicプロパティなどの最新機能"],
+    words: [
+      { term: "clamp()", desc: "clamp(最小, 推奨, 最大)。推奨値をmin/maxの範囲内に収める数学関数。流体タイポグラフィに使う。" },
+      { term: "scroll-snap", desc: "scroll-snap-typeとscroll-snap-alignでスクロール位置をスナップ。フルページスクロールに使う。" },
+      { term: "prefers-color-scheme", desc: "OSのカラースキーム設定を検知するメディアクエリ。ダークモード自動対応に使う。" },
+      { term: "aspect-ratio", desc: "要素の縦横比を指定するプロパティ。aspect-ratio: 16/9で映像比率を保持できる。" },
+      { term: "subgrid", desc: "子グリッドが親グリッドのトラックに参加できる機能。入れ子グリッドの整列が簡単になる。" }
+    ]
+  }
+];
+
+// ===== SQL =====
+const sqlProblems = [
+  { id: 1, unit: "UNIT 01  ◆  データベース基礎", rank: "ROOKIE",
+    title: "テーブル作成とデータ挿入",
+    question: "sqlite3を使ってusersテーブル（id INTEGER, name TEXT, age INTEGER）を作成し、Alice(25)とBob(30)を挿入して全件取得してください。",
+    hint: "CREATE TABLE → INSERT → SELECT * の順で実行します。",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE users (id INTEGER, name TEXT, age INTEGER)')\ncur.execute("INSERT INTO users VALUES (1, 'Alice', 25)")\ncur.execute("INSERT INTO users VALUES (2, 'Bob', 30)")\ncur.execute('SELECT * FROM users')\nfor row in cur.fetchall():\n    print(row[0], row[1], row[2])\nconn.close()`,
+    expected: "1 Alice 25\n2 Bob 30",
+    explanation: "CREATE TABLEでテーブルを定義し、INSERTで行を追加、SELECT *で全列を取得します。" },
+
+  { id: 2, unit: "UNIT 01  ◆  データベース基礎", rank: "ROOKIE",
+    title: "WHERE句でフィルタリング",
+    question: "usersテーブル（id, name, age）を作成してAlice(25)、Bob(30)、Carol(22)を挿入し、ageが25以上のユーザーをname順で取得してください。",
+    hint: "WHERE age >= 25 ORDER BY name",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE users (id INTEGER, name TEXT, age INTEGER)')\ncur.executemany('INSERT INTO users VALUES (?,?,?)', [(1,'Alice',25),(2,'Bob',30),(3,'Carol',22)])\ncur.execute('SELECT name, age FROM users WHERE age >= 25 ORDER BY name')\nfor row in cur.fetchall():\n    print(row[0], row[1])\nconn.close()`,
+    expected: "Alice 25\nBob 30",
+    explanation: "WHERE句で条件を指定し、ORDER BY nameでアルファベット順に並べます。" },
+
+  { id: 3, unit: "UNIT 01  ◆  データベース基礎", rank: "ROOKIE",
+    title: "ORDER BYとLIMIT",
+    question: "productsテーブル（id, name, price）を作成して5件挿入し、priceが高い順に上位3件のnameとpriceを取得してください。",
+    hint: "ORDER BY price DESC LIMIT 3",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE products (id INTEGER, name TEXT, price INTEGER)')\ncur.executemany('INSERT INTO products VALUES (?,?,?)', [(1,'Apple',150),(2,'Banana',80),(3,'Cherry',200),(4,'Date',350),(5,'Elderberry',120)])\ncur.execute('SELECT name, price FROM products ORDER BY price DESC LIMIT 3')\nfor row in cur.fetchall():\n    print(row[0], row[1])\nconn.close()`,
+    expected: "Date 350\nCherry 200\nApple 150",
+    explanation: "ORDER BY price DESCで降順ソート、LIMITで取得行数を制限します。" },
+
+  { id: 4, unit: "UNIT 01  ◆  データベース基礎", rank: "ROOKIE",
+    title: "UPDATE文",
+    question: "usersテーブル（id, name, age）を作成してAlice(25)とBob(30)を挿入し、BobのageをUPDATEで35に変更してから全件取得してください。",
+    hint: "UPDATE users SET age = 35 WHERE name = 'Bob'",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE users (id INTEGER, name TEXT, age INTEGER)')\ncur.executemany('INSERT INTO users VALUES (?,?,?)', [(1,'Alice',25),(2,'Bob',30)])\ncur.execute("UPDATE users SET age = 35 WHERE name = 'Bob'")\ncur.execute('SELECT id, name, age FROM users')\nfor row in cur.fetchall():\n    print(row[0], row[1], row[2])\nconn.close()`,
+    expected: "1 Alice 25\n2 Bob 35",
+    explanation: "UPDATE SET で列の値を更新します。WHERE句を忘れると全行が更新されるので注意。" },
+
+  { id: 5, unit: "UNIT 01  ◆  データベース基礎", rank: "ROOKIE",
+    title: "DELETE文",
+    question: "usersテーブル（id, name, age）を作成してAlice(25)、Bob(30)、Carol(22)を挿入し、ageが25未満のユーザーをDELETEして残ったユーザーをid順に取得してください。",
+    hint: "DELETE FROM users WHERE age < 25",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE users (id INTEGER, name TEXT, age INTEGER)')\ncur.executemany('INSERT INTO users VALUES (?,?,?)', [(1,'Alice',25),(2,'Bob',30),(3,'Carol',22)])\ncur.execute('DELETE FROM users WHERE age < 25')\ncur.execute('SELECT id, name, age FROM users ORDER BY id')\nfor row in cur.fetchall():\n    print(row[0], row[1], row[2])\nconn.close()`,
+    expected: "1 Alice 25\n2 Bob 30",
+    explanation: "DELETE FROM ... WHERE で条件に合う行を削除します。" },
+
+  { id: 6, unit: "UNIT 01  ◆  データベース基礎", rank: "ROOKIE",
+    title: "COUNT集計",
+    question: "ordersテーブル（id, customer, amount）を作成して5件挿入し、全注文数をCOUNT、合計金額をSUMで求めてください。",
+    hint: "SELECT COUNT(*), SUM(amount) FROM orders",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE orders (id INTEGER, customer TEXT, amount INTEGER)')\ncur.executemany('INSERT INTO orders VALUES (?,?,?)', [(1,'Alice',1000),(2,'Bob',2000),(3,'Alice',1500),(4,'Carol',3000),(5,'Bob',500)])\ncur.execute('SELECT COUNT(*), SUM(amount) FROM orders')\nrow = cur.fetchone()\nprint(row[0], row[1])\nconn.close()`,
+    expected: "5 8000",
+    explanation: "COUNT(*)は行数、SUM(列)は合計を求める集計関数です。" },
+
+  { id: 7, unit: "UNIT 02  ◆  集計と絞り込み", rank: "BRONZE",
+    title: "GROUP BYで顧客別集計",
+    question: "ordersテーブル（id, customer, amount）を作成して5件挿入し、顧客ごとの注文合計をcustomer順で取得してください。",
+    hint: "SELECT customer, SUM(amount) ... GROUP BY customer ORDER BY customer",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE orders (id INTEGER, customer TEXT, amount INTEGER)')\ncur.executemany('INSERT INTO orders VALUES (?,?,?)', [(1,'Alice',1000),(2,'Bob',2000),(3,'Alice',1500),(4,'Carol',3000),(5,'Bob',500)])\ncur.execute('SELECT customer, SUM(amount) FROM orders GROUP BY customer ORDER BY customer')\nfor row in cur.fetchall():\n    print(row[0], row[1])\nconn.close()`,
+    expected: "Alice 2500\nBob 2500\nCarol 3000",
+    explanation: "GROUP BYで指定列でグループ化し、各グループに集計関数を適用します。" },
+
+  { id: 8, unit: "UNIT 02  ◆  集計と絞り込み", rank: "BRONZE",
+    title: "HAVING句でグループフィルタ",
+    question: "ordersテーブルを使って顧客ごとの注文合計を求め、合計が2000以上の顧客のみをcustomer順で表示してください。",
+    hint: "GROUP BY customer HAVING SUM(amount) >= 2000",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE orders (id INTEGER, customer TEXT, amount INTEGER)')\ncur.executemany('INSERT INTO orders VALUES (?,?,?)', [(1,'Alice',1000),(2,'Bob',2000),(3,'Alice',1500),(4,'Carol',3000),(5,'Bob',500)])\ncur.execute('SELECT customer, SUM(amount) FROM orders GROUP BY customer HAVING SUM(amount) >= 2000 ORDER BY customer')\nfor row in cur.fetchall():\n    print(row[0], row[1])\nconn.close()`,
+    expected: "Alice 2500\nBob 2500\nCarol 3000",
+    explanation: "HAVINGはGROUP BY後のグループに対する条件。WHEREはグループ化前の行に対する条件です。" },
+
+  { id: 9, unit: "UNIT 02  ◆  集計と絞り込み", rank: "BRONZE",
+    title: "DISTINCTで重複除去",
+    question: "ordersテーブル（id, customer, amount）から重複なしの顧客名一覧をアルファベット順で取得してください。",
+    hint: "SELECT DISTINCT customer FROM orders ORDER BY customer",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE orders (id INTEGER, customer TEXT, amount INTEGER)')\ncur.executemany('INSERT INTO orders VALUES (?,?,?)', [(1,'Alice',1000),(2,'Bob',2000),(3,'Alice',1500),(4,'Carol',3000),(5,'Bob',500)])\ncur.execute('SELECT DISTINCT customer FROM orders ORDER BY customer')\nfor row in cur.fetchall():\n    print(row[0])\nconn.close()`,
+    expected: "Alice\nBob\nCarol",
+    explanation: "DISTINCTを使うと重複行を除いてユニークな値だけを取得できます。" },
+
+  { id: 10, unit: "UNIT 02  ◆  集計と絞り込み", rank: "BRONZE",
+    title: "LIKEでパターン検索",
+    question: "productsテーブル（id, name, price）を作成して6件挿入し、nameが'B'で始まる商品をname順で取得してください。",
+    hint: "WHERE name LIKE 'B%'",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE products (id INTEGER, name TEXT, price INTEGER)')\ncur.executemany('INSERT INTO products VALUES (?,?,?)', [(1,'Apple',150),(2,'Banana',80),(3,'Blueberry',220),(4,'Cherry',200),(5,'Berry Mix',180),(6,'Elderberry',120)])\ncur.execute("SELECT name, price FROM products WHERE name LIKE 'B%' ORDER BY name")\nfor row in cur.fetchall():\n    print(row[0], row[1])\nconn.close()`,
+    expected: "Banana 80\nBerry Mix 180\nBlueberry 220",
+    explanation: "LIKE演算子の%は任意の文字列にマッチします。_は任意の1文字にマッチします。" },
+
+  { id: 11, unit: "UNIT 02  ◆  集計と絞り込み", rank: "BRONZE",
+    title: "BETWEEN と IN",
+    question: "productsテーブルを使って、priceが100以上300以下の商品と、nameが('Apple','Cherry','Date')のいずれかの商品を別々のSELECTで取得してください（それぞれname順）。",
+    hint: "WHERE price BETWEEN 100 AND 300 / WHERE name IN ('Apple','Cherry','Date')",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE products (id INTEGER, name TEXT, price INTEGER)')\ncur.executemany('INSERT INTO products VALUES (?,?,?)', [(1,'Apple',150),(2,'Banana',80),(3,'Cherry',200),(4,'Date',350),(5,'Elderberry',120)])\ncur.execute('SELECT name, price FROM products WHERE price BETWEEN 100 AND 300 ORDER BY name')\nfor row in cur.fetchall():\n    print(row[0], row[1])\ncur.execute("SELECT name, price FROM products WHERE name IN ('Apple','Cherry','Date') ORDER BY name")\nfor row in cur.fetchall():\n    print(row[0], row[1])\nconn.close()`,
+    expected: "Apple 150\nCherry 200\nElderberry 120\nApple 150\nCherry 200\nDate 350",
+    explanation: "BETWEENは範囲条件（両端含む）、INはリスト内のいずれかに一致する条件です。" },
+
+  { id: 12, unit: "UNIT 02  ◆  集計と絞り込み", rank: "BRONZE",
+    title: "AVGとMIN/MAX",
+    question: "scoresテーブル（id, student, score）を作成して5件挿入し、平均点・最高点・最低点を1行で出力してください。",
+    hint: "SELECT AVG(score), MAX(score), MIN(score) FROM scores",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE scores (id INTEGER, student TEXT, score INTEGER)')\ncur.executemany('INSERT INTO scores VALUES (?,?,?)', [(1,'Alice',85),(2,'Bob',92),(3,'Carol',78),(4,'Dave',95),(5,'Eve',88)])\ncur.execute('SELECT AVG(score), MAX(score), MIN(score) FROM scores')\nrow = cur.fetchone()\nprint(row[0], row[1], row[2])\nconn.close()`,
+    expected: "87.6 95 78",
+    explanation: "AVG・MAX・MINはそれぞれ平均・最大・最小を返す集計関数です。" },
+
+  { id: 13, unit: "UNIT 03  ◆  テーブル結合", rank: "SILVER",
+    title: "INNER JOIN",
+    question: "usersテーブル（id, name）とordersテーブル（id, user_id, amount）を作成し、INNER JOINでユーザー名と注文額を取得してください（name順）。",
+    hint: "JOIN orders ON users.id = orders.user_id",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE users (id INTEGER, name TEXT)')\ncur.execute('CREATE TABLE orders (id INTEGER, user_id INTEGER, amount INTEGER)')\ncur.executemany('INSERT INTO users VALUES (?,?)', [(1,'Alice'),(2,'Bob'),(3,'Carol')])\ncur.executemany('INSERT INTO orders VALUES (?,?,?)', [(1,1,1000),(2,2,2000),(3,1,1500)])\ncur.execute('SELECT users.name, orders.amount FROM users INNER JOIN orders ON users.id = orders.user_id ORDER BY users.name')\nfor row in cur.fetchall():\n    print(row[0], row[1])\nconn.close()`,
+    expected: "Alice 1000\nAlice 1500\nBob 2000",
+    explanation: "INNER JOINは両テーブルに一致するレコードのみ返します。Carolは注文がないので結果に含まれません。" },
+
+  { id: 14, unit: "UNIT 03  ◆  テーブル結合", rank: "SILVER",
+    title: "LEFT JOIN",
+    question: "usersとordersテーブルを使って、LEFT JOINで全ユーザーと注文額（注文なしはNULL）を取得してください（name順）。NULLは'なし'と表示してください。",
+    hint: "LEFT JOIN ... COALESCE(orders.amount, 'なし')",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE users (id INTEGER, name TEXT)')\ncur.execute('CREATE TABLE orders (id INTEGER, user_id INTEGER, amount INTEGER)')\ncur.executemany('INSERT INTO users VALUES (?,?)', [(1,'Alice'),(2,'Bob'),(3,'Carol')])\ncur.executemany('INSERT INTO orders VALUES (?,?,?)', [(1,1,1000),(2,2,2000),(3,1,1500)])\ncur.execute("SELECT users.name, COALESCE(CAST(orders.amount AS TEXT), 'なし') FROM users LEFT JOIN orders ON users.id = orders.user_id ORDER BY users.name")\nfor row in cur.fetchall():\n    print(row[0], row[1])\nconn.close()`,
+    expected: "Alice 1000\nAlice 1500\nBob 2000\nCarol なし",
+    explanation: "LEFT JOINは左テーブル（users）の全行を返し、右テーブルに一致がなければNULLになります。" },
+
+  { id: 15, unit: "UNIT 03  ◆  テーブル結合", rank: "SILVER",
+    title: "3テーブル結合",
+    question: "users(id,name)、orders(id,user_id,product_id,amount)、products(id,name,price)の3テーブルを作成し、3テーブルJOINでuser名・product名・amountを取得してください（user名順）。",
+    hint: "JOIN orders ON ... JOIN products ON ...",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE users (id INTEGER, name TEXT)')\ncur.execute('CREATE TABLE products (id INTEGER, name TEXT, price INTEGER)')\ncur.execute('CREATE TABLE orders (id INTEGER, user_id INTEGER, product_id INTEGER, amount INTEGER)')\ncur.executemany('INSERT INTO users VALUES (?,?)', [(1,'Alice'),(2,'Bob')])\ncur.executemany('INSERT INTO products VALUES (?,?,?)', [(1,'Apple',150),(2,'Banana',80)])\ncur.executemany('INSERT INTO orders VALUES (?,?,?,?)', [(1,1,1,1000),(2,2,2,500),(3,1,2,300)])\ncur.execute('SELECT users.name, products.name, orders.amount FROM orders JOIN users ON orders.user_id = users.id JOIN products ON orders.product_id = products.id ORDER BY users.name')\nfor row in cur.fetchall():\n    print(row[0], row[1], row[2])\nconn.close()`,
+    expected: "Alice Apple 1000\nAlice Banana 300\nBob Banana 500",
+    explanation: "複数のJOINを連続して書くことで3テーブル以上を結合できます。" },
+
+  { id: 16, unit: "UNIT 03  ◆  テーブル結合", rank: "SILVER",
+    title: "サブクエリ",
+    question: "ordersテーブル（id, customer, amount）を作成して5件挿入し、サブクエリを使ってamountが平均以上の注文をcustomer順で取得してください。",
+    hint: "WHERE amount >= (SELECT AVG(amount) FROM orders)",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE orders (id INTEGER, customer TEXT, amount INTEGER)')\ncur.executemany('INSERT INTO orders VALUES (?,?,?)', [(1,'Alice',1000),(2,'Bob',2000),(3,'Carol',1500),(4,'Dave',3000),(5,'Eve',800)])\ncur.execute('SELECT customer, amount FROM orders WHERE amount >= (SELECT AVG(amount) FROM orders) ORDER BY customer')\nfor row in cur.fetchall():\n    print(row[0], row[1])\nconn.close()`,
+    expected: "Bob 2000\nCarol 1500\nDave 3000",
+    explanation: "サブクエリ（副問い合わせ）はSELECT内に別のSELECTを入れる技法です。平均は(1000+2000+1500+3000+800)/5=1660。" },
+
+  { id: 17, unit: "UNIT 03  ◆  テーブル結合", rank: "SILVER",
+    title: "テーブル別名（エイリアス）",
+    question: "usersとordersテーブルをエイリアスu, oを使ってJOINし、u.name, o.amountを取得してください（name順）。",
+    hint: "FROM users u JOIN orders o ON u.id = o.user_id",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE users (id INTEGER, name TEXT)')\ncur.execute('CREATE TABLE orders (id INTEGER, user_id INTEGER, amount INTEGER)')\ncur.executemany('INSERT INTO users VALUES (?,?)', [(1,'Alice'),(2,'Bob')])\ncur.executemany('INSERT INTO orders VALUES (?,?,?)', [(1,1,1000),(2,2,2000),(3,1,1500)])\ncur.execute('SELECT u.name, o.amount FROM users u JOIN orders o ON u.id = o.user_id ORDER BY u.name')\nfor row in cur.fetchall():\n    print(row[0], row[1])\nconn.close()`,
+    expected: "Alice 1000\nAlice 1500\nBob 2000",
+    explanation: "テーブルにエイリアスをつけるとSQLが短くなり、自己結合でも区別できます。" },
+
+  { id: 18, unit: "UNIT 03  ◆  テーブル結合", rank: "SILVER",
+    title: "CASE WHEN",
+    question: "scoresテーブル（id, student, score）を作成して5件挿入し、CASE WHENでscoreが90以上なら'A'、80以上なら'B'、それ以外なら'C'として student・score・gradeをstudent順で表示してください。",
+    hint: "CASE WHEN score >= 90 THEN 'A' WHEN score >= 80 THEN 'B' ELSE 'C' END",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE scores (id INTEGER, student TEXT, score INTEGER)')\ncur.executemany('INSERT INTO scores VALUES (?,?,?)', [(1,'Alice',85),(2,'Bob',92),(3,'Carol',78),(4,'Dave',95),(5,'Eve',88)])\ncur.execute("SELECT student, score, CASE WHEN score >= 90 THEN 'A' WHEN score >= 80 THEN 'B' ELSE 'C' END AS grade FROM scores ORDER BY student")\nfor row in cur.fetchall():\n    print(row[0], row[1], row[2])\nconn.close()`,
+    expected: "Alice 85 B\nBob 92 A\nCarol 78 C\nDave 95 A\nEve 88 B",
+    explanation: "CASE WHENはSQLの条件分岐です。IF-ELIFに相当します。" },
+
+  { id: 19, unit: "UNIT 03  ◆  テーブル結合", rank: "SILVER",
+    title: "NULL と COALESCE",
+    question: "employeesテーブル（id, name, manager_id INTEGER or NULL）を作成して4件挿入し、COALESCEでmanager_idがNULLなら'トップ'そうでなければmanager_idを文字列として表示してください（name順）。",
+    hint: "COALESCE(CAST(manager_id AS TEXT), 'トップ')",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE employees (id INTEGER, name TEXT, manager_id INTEGER)')\ncur.executemany('INSERT INTO employees VALUES (?,?,?)', [(1,'Alice',None),(2,'Bob',1),(3,'Carol',1),(4,'Dave',2)])\ncur.execute("SELECT name, COALESCE(CAST(manager_id AS TEXT), 'トップ') FROM employees ORDER BY name")\nfor row in cur.fetchall():\n    print(row[0], row[1])\nconn.close()`,
+    expected: "Alice トップ\nBob 1\nCarol 1\nDave 2",
+    explanation: "COALESCEは最初のNULLでない値を返します。IS NULLでNULLかどうかを判定できます。" },
+
+  { id: 20, unit: "UNIT 03  ◆  テーブル結合", rank: "SILVER",
+    title: "複合条件WHERE",
+    question: "productsテーブル（id, name, price, category）を作成して6件挿入し、categoryが'fruit'かつprice<200、またはcategoryが'vegetable'の商品をname順で取得してください。",
+    hint: "WHERE (category='fruit' AND price<200) OR category='vegetable'",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE products (id INTEGER, name TEXT, price INTEGER, category TEXT)')\ncur.executemany('INSERT INTO products VALUES (?,?,?,?)', [(1,'Apple',150,'fruit'),(2,'Banana',80,'fruit'),(3,'Cherry',200,'fruit'),(4,'Carrot',100,'vegetable'),(5,'Daikon',120,'vegetable'),(6,'Elderberry',350,'fruit')])\ncur.execute("SELECT name, price, category FROM products WHERE (category='fruit' AND price < 200) OR category='vegetable' ORDER BY name")\nfor row in cur.fetchall():\n    print(row[0], row[1], row[2])\nconn.close()`,
+    expected: "Apple 150 fruit\nBanana 80 fruit\nCarrot 100 vegetable\nDaikon 120 vegetable",
+    explanation: "ANDとORを括弧で明示的にグループ化することで複雑な条件を組み合わせられます。" },
+
+  { id: 21, unit: "UNIT 04  ◆  ウィンドウ関数", rank: "GOLD",
+    title: "ROW_NUMBER",
+    question: "scoresテーブル（id, student, score）を作成して5件挿入し、ROW_NUMBER()でscore降順の順位をstudent・score・rankで表示してください（rank順）。",
+    hint: "ROW_NUMBER() OVER (ORDER BY score DESC) AS rank",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE scores (id INTEGER, student TEXT, score INTEGER)')\ncur.executemany('INSERT INTO scores VALUES (?,?,?)', [(1,'Alice',85),(2,'Bob',92),(3,'Carol',78),(4,'Dave',95),(5,'Eve',88)])\ncur.execute('SELECT student, score, ROW_NUMBER() OVER (ORDER BY score DESC) AS rank FROM scores ORDER BY rank')\nfor row in cur.fetchall():\n    print(row[0], row[1], row[2])\nconn.close()`,
+    expected: "Dave 95 1\nBob 92 2\nEve 88 3\nAlice 85 4\nCarol 78 5",
+    explanation: "ROW_NUMBER()はウィンドウ関数の一つで、指定した順序で連番を振ります。" },
+
+  { id: 22, unit: "UNIT 04  ◆  ウィンドウ関数", rank: "GOLD",
+    title: "RANK と DENSE_RANK",
+    question: "scoresテーブル（id, student, score）を作成して6件挿入（Dave=95, Bob=92, Eve=92, Alice=85, Carol=78, Frank=78）し、RANK()とDENSE_RANK()を比較してscore降順で表示してください。",
+    hint: "RANK() OVER (ORDER BY score DESC), DENSE_RANK() OVER (ORDER BY score DESC)",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE scores (id INTEGER, student TEXT, score INTEGER)')\ncur.executemany('INSERT INTO scores VALUES (?,?,?)', [(1,'Dave',95),(2,'Bob',92),(3,'Eve',92),(4,'Alice',85),(5,'Carol',78),(6,'Frank',78)])\ncur.execute('SELECT student, score, RANK() OVER (ORDER BY score DESC) AS r, DENSE_RANK() OVER (ORDER BY score DESC) AS dr FROM scores ORDER BY score DESC, student')\nfor row in cur.fetchall():\n    print(row[0], row[1], row[2], row[3])\nconn.close()`,
+    expected: "Dave 95 1 1\nBob 92 2 2\nEve 92 2 2\nAlice 85 4 3\nCarol 78 5 4\nFrank 78 5 4",
+    explanation: "RANKは同順位の後を飛ばし、DENSE_RANKは連続した順位を付けます。" },
+
+  { id: 23, unit: "UNIT 04  ◆  ウィンドウ関数", rank: "GOLD",
+    title: "CTE（WITH句）",
+    question: "ordersテーブル（id, customer, amount）を使ってCTE(WITH句)で顧客別合計を求め、合計が2000以上のユーザーをcustomer順で表示してください。",
+    hint: "WITH totals AS (SELECT customer, SUM(amount) as total FROM orders GROUP BY customer) SELECT ...",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE orders (id INTEGER, customer TEXT, amount INTEGER)')\ncur.executemany('INSERT INTO orders VALUES (?,?,?)', [(1,'Alice',1000),(2,'Bob',2000),(3,'Alice',1500),(4,'Carol',3000),(5,'Bob',500)])\ncur.execute('WITH totals AS (SELECT customer, SUM(amount) AS total FROM orders GROUP BY customer) SELECT customer, total FROM totals WHERE total >= 2000 ORDER BY customer')\nfor row in cur.fetchall():\n    print(row[0], row[1])\nconn.close()`,
+    expected: "Alice 2500\nBob 2500\nCarol 3000",
+    explanation: "CTEはWITH句で一時的な名前付き結果セットを作り、可読性を高めます。" },
+
+  { id: 24, unit: "UNIT 04  ◆  ウィンドウ関数", rank: "GOLD",
+    title: "EXISTS",
+    question: "usersとordersテーブルを作成し、EXISTSサブクエリで1件以上注文があるユーザーのname一覧をname順で取得してください。",
+    hint: "WHERE EXISTS (SELECT 1 FROM orders WHERE orders.user_id = users.id)",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE users (id INTEGER, name TEXT)')\ncur.execute('CREATE TABLE orders (id INTEGER, user_id INTEGER, amount INTEGER)')\ncur.executemany('INSERT INTO users VALUES (?,?)', [(1,'Alice'),(2,'Bob'),(3,'Carol')])\ncur.executemany('INSERT INTO orders VALUES (?,?,?)', [(1,1,1000),(2,2,2000),(3,1,1500)])\ncur.execute('SELECT name FROM users WHERE EXISTS (SELECT 1 FROM orders WHERE orders.user_id = users.id) ORDER BY name')\nfor row in cur.fetchall():\n    print(row[0])\nconn.close()`,
+    expected: "Alice\nBob",
+    explanation: "EXISTSはサブクエリが1行以上返す場合にTRUEになります。IN()より大きなデータで効率的なことがあります。" },
+
+  { id: 25, unit: "UNIT 04  ◆  ウィンドウ関数", rank: "GOLD",
+    title: "UNION",
+    question: "customersテーブル（id, name）とemployeesテーブル（id, name）を作成してそれぞれ3件挿入し、UNIONで全員のname一覧（重複除去）をname順で取得してください。",
+    hint: "SELECT name FROM customers UNION SELECT name FROM employees ORDER BY name",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE customers (id INTEGER, name TEXT)')\ncur.execute('CREATE TABLE employees (id INTEGER, name TEXT)')\ncur.executemany('INSERT INTO customers VALUES (?,?)', [(1,'Alice'),(2,'Bob'),(3,'Carol')])\ncur.executemany('INSERT INTO employees VALUES (?,?)', [(1,'Bob'),(2,'Dave'),(3,'Eve')])\ncur.execute('SELECT name FROM customers UNION SELECT name FROM employees ORDER BY name')\nfor row in cur.fetchall():\n    print(row[0])\nconn.close()`,
+    expected: "Alice\nBob\nCarol\nDave\nEve",
+    explanation: "UNIONは2つのSELECT結果を結合し重複を除きます。UNION ALLは重複を含めます。" },
+
+  { id: 26, unit: "UNIT 04  ◆  ウィンドウ関数", rank: "GOLD",
+    title: "GROUP_CONCAT",
+    question: "usersとordersテーブルを使って、ユーザーごとの注文額をカンマ区切りで連結し、user名・金額リストをname順で表示してください。",
+    hint: "GROUP_CONCAT(orders.amount) ... GROUP BY users.name",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE users (id INTEGER, name TEXT)')\ncur.execute('CREATE TABLE orders (id INTEGER, user_id INTEGER, amount INTEGER)')\ncur.executemany('INSERT INTO users VALUES (?,?)', [(1,'Alice'),(2,'Bob'),(3,'Carol')])\ncur.executemany('INSERT INTO orders VALUES (?,?,?)', [(1,1,1000),(2,2,2000),(3,1,1500),(4,3,3000)])\ncur.execute('SELECT users.name, GROUP_CONCAT(orders.amount) FROM users JOIN orders ON users.id = orders.user_id GROUP BY users.name ORDER BY users.name')\nfor row in cur.fetchall():\n    print(row[0], row[1])\nconn.close()`,
+    expected: "Alice 1000,1500\nBob 2000\nCarol 3000",
+    explanation: "GROUP_CONCATはグループ内の値を文字列として連結します。区切り文字はGROUP_CONCAT(col, '/')で変更できます。" },
+
+  { id: 27, unit: "UNIT 05  ◆  高度なSQL", rank: "PLATINUM",
+    title: "再帰CTE",
+    question: "再帰CTEを使って1から10までの連番を生成し、1行ずつ出力してください。",
+    hint: "WITH RECURSIVE seq(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM seq WHERE n < 10)",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('WITH RECURSIVE seq(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM seq WHERE n < 10) SELECT n FROM seq')\nfor row in cur.fetchall():\n    print(row[0])\nconn.close()`,
+    expected: "1\n2\n3\n4\n5\n6\n7\n8\n9\n10",
+    explanation: "再帰CTEはWITH RECURSIVEで定義し、ベースケースと再帰ケースをUNION ALLで組み合わせます。" },
+
+  { id: 28, unit: "UNIT 05  ◆  高度なSQL", rank: "PLATINUM",
+    title: "トランザクション",
+    question: "accountsテーブル（id, name, balance）を作成してAlice(1000)とBob(500)を挿入し、トランザクション内でAliceから200をBobへ送金（UPDATE 2回）してから残高を表示してください。",
+    hint: "conn.execute('BEGIN') ... conn.commit()",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE accounts (id INTEGER, name TEXT, balance INTEGER)')\ncur.executemany('INSERT INTO accounts VALUES (?,?,?)', [(1,'Alice',1000),(2,'Bob',500)])\ncur.execute('BEGIN')\ncur.execute("UPDATE accounts SET balance = balance - 200 WHERE name = 'Alice'")\ncur.execute("UPDATE accounts SET balance = balance + 200 WHERE name = 'Bob'")\nconn.commit()\ncur.execute('SELECT name, balance FROM accounts ORDER BY name')\nfor row in cur.fetchall():\n    print(row[0], row[1])\nconn.close()`,
+    expected: "Alice 800\nBob 700",
+    explanation: "トランザクションはBEGIN～COMMITで複数の操作を原子的に実行します。失敗時はROLLBACKで巻き戻せます。" },
+
+  { id: 29, unit: "UNIT 05  ◆  高度なSQL", rank: "PLATINUM",
+    title: "ビュー（VIEW）",
+    question: "usersとordersテーブルを作成し、VIEWを使ってユーザー名と注文合計のビューを作成し、そのビューから全件取得してください（name順）。",
+    hint: "CREATE VIEW user_totals AS SELECT ... / SELECT * FROM user_totals",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE users (id INTEGER, name TEXT)')\ncur.execute('CREATE TABLE orders (id INTEGER, user_id INTEGER, amount INTEGER)')\ncur.executemany('INSERT INTO users VALUES (?,?)', [(1,'Alice'),(2,'Bob'),(3,'Carol')])\ncur.executemany('INSERT INTO orders VALUES (?,?,?)', [(1,1,1000),(2,2,2000),(3,1,1500),(4,3,3000)])\ncur.execute('CREATE VIEW user_totals AS SELECT users.name, SUM(orders.amount) AS total FROM users JOIN orders ON users.id = orders.user_id GROUP BY users.name')\ncur.execute('SELECT name, total FROM user_totals ORDER BY name')\nfor row in cur.fetchall():\n    print(row[0], row[1])\nconn.close()`,
+    expected: "Alice 2500\nBob 2000\nCarol 3000",
+    explanation: "VIEWは名前付きのクエリで、テーブルのように参照できます。実データは持ちません。" },
+
+  { id: 30, unit: "UNIT 05  ◆  高度なSQL", rank: "PLATINUM",
+    title: "インデックスと実行計画",
+    question: "usersテーブル（id, name, age）を作成して3件挿入し、nameにインデックスを作成してEXPLAIN QUERY PLANでクエリ計画を確認し、インデックス名が出力に含まれるかチェックしてください。",
+    hint: "CREATE INDEX idx_name ON users(name) / EXPLAIN QUERY PLAN SELECT ...",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE users (id INTEGER, name TEXT, age INTEGER)')\ncur.executemany('INSERT INTO users VALUES (?,?,?)', [(1,'Alice',25),(2,'Bob',30),(3,'Carol',22)])\ncur.execute('CREATE INDEX idx_name ON users(name)')\nplan = cur.execute("EXPLAIN QUERY PLAN SELECT * FROM users WHERE name = 'Alice'").fetchall()\nhas_index = any('idx_name' in str(row) for row in plan)\nprint('インデックス使用:', has_index)\ncur.execute("SELECT name, age FROM users WHERE name = 'Alice'")\nfor row in cur.fetchall():\n    print(row[0], row[1])\nconn.close()`,
+    expected: "インデックス使用: True\nAlice 25",
+    explanation: "INDEXを作成するとWHERE句の検索が高速化されます。EXPLAIN QUERY PLANで実行計画を確認できます。" }
+];
+
+const sqlMissions = [
+  { id: 1, rank: "BRONZE",
+    title: "図書館データベース",
+    description: "books(id, title, author, year, genre)テーブルを作成して10冊以上登録し、様々な集計クエリを実装してください。",
+    requirements: ["10冊以上のbooksテーブル作成", "genre別の冊数と平均yearを表示", "yearが2000以降の本をtitle順で表示", "authorごとの冊数を多い順で表示"],
+    sampleIO: { input: "なし", output: "各集計結果" },
+    hint: "GROUP BY genre, GROUP BY author ORDER BY COUNT(*) DESC" },
+
+  { id: 2, rank: "SILVER",
+    title: "社員・部署管理",
+    description: "departments(id,name)とemployees(id,name,dept_id,salary)テーブルを使って部署別給与分析を行ってください。",
+    requirements: ["部署と社員のテーブル作成（各3件以上）", "部署名と社員数をJOINで取得", "部署別平均給与をGROUP BYで計算", "給与が部署平均以上の社員をサブクエリで抽出"],
+    sampleIO: { input: "なし", output: "各分析結果" },
+    hint: "LEFT JOIN ... GROUP BY / WHERE salary >= (SELECT AVG...)" },
+
+  { id: 3, rank: "SILVER",
+    title: "ECサイト売上分析",
+    description: "customers、products、orders（注文日付含む）の3テーブルを結合して売上レポートを生成してください。",
+    requirements: ["3テーブル作成・データ挿入", "商品別売上合計（GROUP BY+JOIN）", "顧客別購入回数（HAVING 2回以上）", "月別売上推移（strftime使用）"],
+    sampleIO: { input: "なし", output: "各レポート結果" },
+    hint: "strftime('%Y-%m', date_col) でYYYY-MM形式に変換" },
+
+  { id: 4, rank: "GOLD",
+    title: "ランキングシステム",
+    description: "scoresテーブル（subject列含む）で科目別・全体のランキングをウィンドウ関数で実装してください。",
+    requirements: ["student・subject・score含むテーブル作成（10件以上）", "全体スコアのRANK()ランキング", "科目別RANK() PARTITION BYランキング", "上位3名のみ抽出"],
+    sampleIO: { input: "なし", output: "各ランキング結果" },
+    hint: "RANK() OVER (PARTITION BY subject ORDER BY score DESC)" },
+
+  { id: 5, rank: "PLATINUM",
+    title: "階層データ（組織図）",
+    description: "再帰CTEを使って従業員の階層構造（上司→部下）を表示するクエリを実装してください。",
+    requirements: ["employees(id,name,manager_id)テーブル作成（5件以上）", "再帰CTEで全階層を展開", "各従業員の深さ（level）を計算", "インデント付きで階層表示"],
+    sampleIO: { input: "なし", output: "階層構造テキスト" },
+    hint: "WITH RECURSIVE org(id,name,level) AS (...)" },
+
+  { id: 6, rank: "PLATINUM",
+    title: "データ品質チェック",
+    description: "複数テーブルでNULL・重複・整合性チェックを行うSQLクエリ群を実装してください。",
+    requirements: ["意図的にNULLや重複を含むテーブル作成", "NULL値の件数をカウント", "重複レコードの検出（GROUP BY + HAVING > 1）", "外部キー整合性チェック（LEFT JOIN + IS NULL）"],
+    sampleIO: { input: "なし", output: "各チェック結果" },
+    hint: "COUNT(*) HAVING COUNT(*) > 1 で重複検出" }
+];
+
+const sqlUnitGuides = [
+  { id: 1, name: "UNIT 01  ◆  データベース基礎",
+    summary: "テーブルの作成・操作と基本的なSELECT文を学びます。",
+    points: ["CREATE TABLEでテーブル定義", "INSERT/UPDATE/DELETEでデータ操作", "SELECT + WHERE + ORDER BY + LIMITで取得"],
+    words: [
+      { term: "DDL", desc: "Data Definition Language。CREATE/ALTER/DROPなどテーブル構造を操作するSQL。" },
+      { term: "DML", desc: "Data Manipulation Language。SELECT/INSERT/UPDATE/DELETEなどデータを操作するSQL。" },
+      { term: "WHERE", desc: "SELECTの絞り込み条件。=, >, <, >=, <=, !=などの比較演算子を使う。" },
+      { term: "ORDER BY", desc: "結果の並び順を指定。ASCが昇順（省略可）、DESCが降順。" },
+      { term: "LIMIT", desc: "取得行数の上限を指定。OFFSET nでn行目から取得できる。" }
+    ]
+  },
+  { id: 2, name: "UNIT 02  ◆  集計と絞り込み",
+    summary: "集計関数とGROUP BYでデータを分析するクエリを学びます。",
+    points: ["COUNT/SUM/AVG/MAX/MINで集計", "GROUP BYでグループ化、HAVINGで絞り込み", "DISTINCT, LIKE, BETWEEN, INで条件指定"],
+    words: [
+      { term: "GROUP BY", desc: "指定列の値が同じ行をグループにまとめる。集計関数と組み合わせて使う。" },
+      { term: "HAVING", desc: "GROUP BY後のグループに対する条件。WHEREと異なり集計後に評価される。" },
+      { term: "DISTINCT", desc: "重複行を除いたユニークな値を取得する。SELECT DISTINCT col FROM t。" },
+      { term: "LIKE", desc: "文字列パターンマッチ。%は任意文字列、_は任意1文字にマッチ。" },
+      { term: "BETWEEN", desc: "範囲条件。BETWEEN a AND bはa以上b以下（両端含む）。" }
+    ]
+  },
+  { id: 3, name: "UNIT 03  ◆  テーブル結合",
+    summary: "複数テーブルを結合してデータを取得する方法を学びます。",
+    points: ["INNER JOINで両テーブルに一致する行を取得", "LEFT JOINで左テーブル全行を保持", "サブクエリ・CASE WHEN・COALESCEで高度な処理"],
+    words: [
+      { term: "INNER JOIN", desc: "両テーブルのON条件が一致する行のみ返す。単にJOINとも書ける。" },
+      { term: "LEFT JOIN", desc: "左テーブルの全行＋右テーブルの一致行。不一致はNULL。" },
+      { term: "サブクエリ", desc: "SELECT内に入れ子にした別のSELECT文。WHERE/FROM/SELECT句で使える。" },
+      { term: "CASE WHEN", desc: "条件分岐。CASE WHEN 条件 THEN 値 ... ELSE デフォルト END。" },
+      { term: "COALESCE", desc: "引数の中で最初のNULLでない値を返す関数。NULL代替値の設定に使う。" }
+    ]
+  },
+  { id: 4, name: "UNIT 04  ◆  ウィンドウ関数",
+    summary: "ウィンドウ関数・CTE・EXISTS・UNIONなど高度なSQLを学びます。",
+    points: ["ROW_NUMBER/RANK/DENSE_RANKでランキング生成", "WITH句（CTE）でクエリを分割・再利用", "EXISTS・UNION・GROUP_CONCATで高度な集計"],
+    words: [
+      { term: "ウィンドウ関数", desc: "OVER()句で行のセット（ウィンドウ）に対して集計する関数。ROW_NUMBER, RANK, LAG, LEADなど。" },
+      { term: "PARTITION BY", desc: "ウィンドウ関数内でのグループ分け。GROUP BYと異なり行を消さない。" },
+      { term: "CTE (WITH)", desc: "Common Table Expression。クエリに名前をつけて再利用できる一時ビュー。" },
+      { term: "EXISTS", desc: "サブクエリが1行以上返すならTRUE。大量データではINより効率的なことがある。" },
+      { term: "UNION", desc: "2つのSELECT結果を縦に結合。UNION ALLは重複を保持、UNIONは重複除去。" }
+    ]
+  },
+  { id: 5, name: "UNIT 05  ◆  高度なSQL",
+    summary: "再帰CTE・トランザクション・VIEW・インデックスを学びます。",
+    points: ["再帰CTEで階層データ・連番を生成", "トランザクションでデータ整合性を保つ", "VIEWとINDEXでパフォーマンス・保守性を向上"],
+    words: [
+      { term: "再帰CTE", desc: "WITH RECURSIVEで自己参照するCTE。階層データの走査や連番生成に使う。" },
+      { term: "トランザクション", desc: "BEGIN～COMMITで複数操作を一つの原子的処理にまとめる。失敗時はROLLBACK。" },
+      { term: "VIEW", desc: "名前付きのSELECT文。テーブルのように参照でき、実データは持たない仮想テーブル。" },
+      { term: "INDEX", desc: "列に作成する検索高速化構造。WHERE/ORDER BY/JOINの対象列に有効。" },
+      { term: "EXPLAIN QUERY PLAN", desc: "SQLiteでクエリの実行計画を表示するコマンド。インデックス使用有無などを確認できる。" }
+    ]
+  }
+];
+
+// ===== Bash =====
+const bashProblems = [
+  { id: 1, unit: "UNIT 01  ◆  Bash基礎", rank: "ROOKIE",
+    title: "Hello World",
+    question: "echoコマンドで「Hello, World!」と表示するシェルスクリプトを書いてください。",
+    hint: "echo \"Hello, World!\"",
+    answer: `echo "Hello, World!"`,
+    expected: "Hello, World!",
+    explanation: "echoはその後の文字列を標準出力に表示するコマンドです。" },
+
+  { id: 2, unit: "UNIT 01  ◆  Bash基礎", rank: "ROOKIE",
+    title: "変数の使い方",
+    question: "変数nameに「Taro」を代入し、echo「Hello, Taro!」と表示してください。",
+    hint: "name=\"Taro\" / echo \"Hello, $name!\"",
+    answer: `name="Taro"\necho "Hello, $name!"`,
+    expected: "Hello, Taro!",
+    explanation: "変数は「変数名=値」で代入し、$変数名や${変数名}で参照します。スペースを入れてはいけません。" },
+
+  { id: 3, unit: "UNIT 01  ◆  Bash基礎", rank: "ROOKIE",
+    title: "if文による条件分岐",
+    question: "変数xに10を代入し、xが5より大きければ「big」、そうでなければ「small」と表示してください。",
+    hint: "if [ $x -gt 5 ]; then ... fi",
+    answer: `x=10\nif [ $x -gt 5 ]; then\n  echo "big"\nelse\n  echo "small"\nfi`,
+    expected: "big",
+    explanation: "[ 条件 ]はtestコマンドと同等。-gtは「greater than（より大きい）」を意味します。" },
+
+  { id: 4, unit: "UNIT 01  ◆  Bash基礎", rank: "ROOKIE",
+    title: "forループ",
+    question: "forループで1から5の数字を1行ずつ表示してください。",
+    hint: "for i in 1 2 3 4 5; do ... done",
+    answer: `for i in 1 2 3 4 5; do\n  echo $i\ndone`,
+    expected: "1\n2\n3\n4\n5",
+    explanation: "for変数 in リスト; do ... doneでリストの各要素を処理します。seq 1 5でも同様です。" },
+
+  { id: 5, unit: "UNIT 01  ◆  Bash基礎", rank: "ROOKIE",
+    title: "whileループ",
+    question: "whileループを使って1から3を表示してください。",
+    hint: "while [ $i -le 3 ]; do ... done",
+    answer: `i=1\nwhile [ $i -le 3 ]; do\n  echo $i\n  i=$((i + 1))\ndone`,
+    expected: "1\n2\n3",
+    explanation: "-leは「less than or equal（以下）」。算術演算は$((式))を使います。" },
+
+  { id: 6, unit: "UNIT 01  ◆  Bash基礎", rank: "ROOKIE",
+    title: "コマンド置換",
+    question: "dateコマンドの出力を変数todayに格納してecho「Today: (日付)」と表示してください。（dateコマンドの出力をそのまま使用）",
+    hint: "today=$(date)",
+    answer: `today=$(date)\necho "Today: $today"`,
+    expected: "Today: ",
+    explanation: "$(コマンド)はコマンド置換。コマンドの実行結果を変数に代入できます。バッククォートでも同様です。" },
+
+  { id: 7, unit: "UNIT 02  ◆  文字列と演算", rank: "BRONZE",
+    title: "文字列操作",
+    question: "変数str=\"Hello, World!\"を定義し、文字列長・大文字変換・「World」を「Bash」に置換した結果を各1行で表示してください。",
+    hint: "${#str} / ${str^^} / ${str//World/Bash}",
+    answer: `str="Hello, World!"\necho ${#str}\necho ${str^^}\necho ${str//World/Bash}`,
+    expected: "13\nHELLO, WORLD!\nHello, Bash!",
+    explanation: "${#変数}は文字列長、${変数^^}は大文字変換、${変数//旧/新}は全置換のパラメータ展開です。" },
+
+  { id: 8, unit: "UNIT 02  ◆  文字列と演算", rank: "BRONZE",
+    title: "算術演算",
+    question: "変数a=15, b=4を定義し、a+b, a-b, a*b, a/b, a%bをそれぞれechoで表示してください。",
+    hint: "echo $((a + b))",
+    answer: `a=15\nb=4\necho $((a + b))\necho $((a - b))\necho $((a * b))\necho $((a / b))\necho $((a % b))`,
+    expected: "19\n11\n60\n3\n3",
+    explanation: "$((式))でシェル内算術演算ができます。/は整数除算です。" },
+
+  { id: 9, unit: "UNIT 02  ◆  文字列と演算", rank: "BRONZE",
+    title: "配列",
+    question: "fruits配列に(apple banana cherry)を格納し、全要素・要素数・インデックス1の要素を表示してください。",
+    hint: "fruits=(apple banana cherry) / ${fruits[@]} / ${#fruits[@]} / ${fruits[1]}",
+    answer: `fruits=(apple banana cherry)\necho "${fruits[@]}"\necho ${#fruits[@]}\necho ${fruits[1]}`,
+    expected: "apple banana cherry\n3\nbanana",
+    explanation: "Bashの配列は0始まりインデックス。[@]で全要素、#[@]で要素数を取得します。" },
+
+  { id: 10, unit: "UNIT 02  ◆  文字列と演算", rank: "BRONZE",
+    title: "関数の定義",
+    question: "引数の2乗を返すsquare関数を定義し、square 5とsquare 12を呼び出して結果を表示してください。",
+    hint: "square() { echo $(($1 * $1)); }",
+    answer: `square() {\n  echo $(($1 * $1))\n}\nsquare 5\nsquare 12`,
+    expected: "25\n144",
+    explanation: "関数はfunction名(){}またはシンプルに名前(){}で定義。$1, $2...が引数です。" },
+
+  { id: 11, unit: "UNIT 02  ◆  文字列と演算", rank: "BRONZE",
+    title: "標準入力の読み取り",
+    question: "echoで「Enter name:」を表示し、readで変数nameを受け取り「Hello, (name)!」と表示するスクリプトを書いてください。入力は「Alice」とします。",
+    hint: "echo -n \"Enter name: \" / read name",
+    answer: `echo "Alice" | (read name; echo "Hello, $name!")`,
+    expected: "Hello, Alice!",
+    explanation: "readコマンドで標準入力から変数に値を受け取ります。パイプでテスト入力を渡せます。" },
+
+  { id: 12, unit: "UNIT 02  ◆  文字列と演算", rank: "BRONZE",
+    title: "case文",
+    question: "変数dayに\"Monday\"を代入し、case文でMonday→「weekday」、Saturday/Sunday→「weekend」、その他→「unknown」と表示してください。",
+    hint: "case $day in Monday) ... ;; Sat*|Sun*) ... ;; *) ... ;; esac",
+    answer: `day="Monday"\ncase $day in\n  Monday|Tuesday|Wednesday|Thursday|Friday)\n    echo "weekday"\n    ;;\n  Saturday|Sunday)\n    echo "weekend"\n    ;;\n  *)\n    echo "unknown"\n    ;;\nesac`,
+    expected: "weekday",
+    explanation: "case文はシェルスクリプトの多分岐処理。|でORパターン、*でワイルドカードが使えます。" },
+
+  { id: 13, unit: "UNIT 03  ◆  ファイル操作", rank: "SILVER",
+    title: "ファイルの作成と読み取り",
+    question: "echoで「Line 1」「Line 2」「Line 3」をtest.txtに書き込み（>と>>を使用）、catで内容を表示してください。",
+    hint: "echo \"Line 1\" > test.txt / echo \"Line 2\" >> test.txt",
+    answer: `echo "Line 1" > /tmp/test.txt\necho "Line 2" >> /tmp/test.txt\necho "Line 3" >> /tmp/test.txt\ncat /tmp/test.txt`,
+    expected: "Line 1\nLine 2\nLine 3",
+    explanation: ">はリダイレクト（上書き）、>>はリダイレクト（追記）。catでファイル内容を標準出力に表示します。" },
+
+  { id: 14, unit: "UNIT 03  ◆  ファイル操作", rank: "SILVER",
+    title: "grep でパターン検索",
+    question: "hereドキュメントで複数行テキストを作成し、grepで「error」を含む行を抽出して表示してください。",
+    hint: "cat <<EOF ... EOF | grep error",
+    answer: `cat <<EOF | grep "error"\nInfo: system started\nError: disk full\nerror: connection failed\nInfo: shutdown\nEOF`,
+    expected: "Error: disk full\nerror: connection failed",
+    explanation: "grepは正規表現でテキストからパターンに一致する行を抽出します。-iで大文字小文字無視。" },
+
+  { id: 15, unit: "UNIT 03  ◆  ファイル操作", rank: "SILVER",
+    title: "sed でテキスト置換",
+    question: "変数textに「Hello World World」を代入し、sedで「World」を「Bash」に全置換して表示してください。",
+    hint: "echo $text | sed 's/World/Bash/g'",
+    answer: `text="Hello World World"\necho $text | sed 's/World/Bash/g'`,
+    expected: "Hello Bash Bash",
+    explanation: "sed 's/旧/新/g'はストリームエディタで全置換。gフラグがないと最初の1つだけ置換します。" },
+
+  { id: 16, unit: "UNIT 03  ◆  ファイル操作", rank: "SILVER",
+    title: "awk でフィールド処理",
+    question: "カンマ区切りのデータをechoで出力し、awkでフィールド区切りを,としてフィールド1と3を表示してください。",
+    hint: "echo \"data\" | awk -F',' '{print $1, $3}'",
+    answer: `echo "Alice,25,Engineer\nBob,30,Designer\nCarol,22,Developer" | awk -F',' '{print $1, $3}'`,
+    expected: "Alice Engineer\nBob Designer\nCarol Developer",
+    explanation: "awkは-Fでフィールドセパレータを指定。$1, $2...でフィールドを参照します。" },
+
+  { id: 17, unit: "UNIT 03  ◆  ファイル操作", rank: "SILVER",
+    title: "パイプラインとフィルタ",
+    question: "echoで10行のテキストを出力し、grepとsortとuniqを組み合わせてユニークな行をソート順で表示してください。",
+    hint: "echo ... | grep ... | sort | uniq",
+    answer: `printf "apple\nbanana\napple\ncherry\nbanana\ndate\ncherry\napple\nbanana\ndate\n" | sort | uniq`,
+    expected: "apple\nbanana\ncherry\ndate",
+    explanation: "Unixパイプライン: sortで整列してからuniqで隣接重複を除去します。" },
+
+  { id: 18, unit: "UNIT 03  ◆  ファイル操作", rank: "SILVER",
+    title: "終了コードと&&, ||",
+    question: "test.txtが存在するかtestコマンドで確認し、存在すれば「exists」、なければ「not found」と表示するワンライナーを書いてください。/tmp/test.txtを使ってください。",
+    hint: "[ -f /tmp/test.txt ] && echo exists || echo \"not found\"",
+    answer: `touch /tmp/test.txt\n[ -f /tmp/test.txt ] && echo "exists" || echo "not found"`,
+    expected: "exists",
+    explanation: "&&は前のコマンドが成功（終了コード0）のとき実行、||は失敗のとき実行します。" },
+
+  { id: 19, unit: "UNIT 03  ◆  ファイル操作", rank: "SILVER",
+    title: "for ループでファイル処理",
+    question: "/tmp/にtest1.txt, test2.txt, test3.txtを作成し、forループでそれぞれのファイル名をechoで表示してから削除してください。",
+    hint: "for f in /tmp/test*.txt; do echo $f; rm $f; done",
+    answer: `touch /tmp/test1.txt /tmp/test2.txt /tmp/test3.txt\nfor f in /tmp/test1.txt /tmp/test2.txt /tmp/test3.txt; do\n  echo $f\n  rm $f\ndone`,
+    expected: "/tmp/test1.txt\n/tmp/test2.txt\n/tmp/test3.txt",
+    explanation: "globパターン（/tmp/test*.txt）でファイル一覧をforのリストに使えます。" },
+
+  { id: 20, unit: "UNIT 03  ◆  ファイル操作", rank: "SILVER",
+    title: "heredocとプロセス置換",
+    question: "heredocで3行のCSVデータを作成し、awkで合計金額を計算して「Total: (合計)」と表示してください（データ: 100,200,300）。",
+    hint: "cat <<EOF | awk -F',' ... EOF",
+    answer: `cat <<EOF | awk -F',' '{sum += $2} END {print "Total:", sum}'\nAlice,100\nBob,200\nCarol,300\nEOF`,
+    expected: "Total: 600",
+    explanation: "heredocは<<EOFから始まりEOFまでの複数行テキストを入力として使います。awkのENDブロックは全行処理後に実行。" },
+
+  { id: 21, unit: "UNIT 04  ◆  スクリプト実践", rank: "GOLD",
+    title: "引数処理",
+    question: "スクリプトに2つの引数を受け取り、その和と積を表示してください。3と4を引数として実行してください。",
+    hint: "$1, $2 で引数取得 / $# で引数数",
+    answer: `add() { echo $(($1 + $2)); }\nmul() { echo $(($1 * $2)); }\nadd 3 4\nmul 3 4`,
+    expected: "7\n12",
+    explanation: "$1, $2...はスクリプトの位置パラメータ（引数）。$#は引数の数、$@は全引数です。" },
+
+  { id: 22, unit: "UNIT 04  ◆  スクリプト実践", rank: "GOLD",
+    title: "エラーハンドリングと trap",
+    question: "set -eとtrapを使ってスクリプトのエラーハンドリングを実装してください。わざと失敗するコマンドを実行し、「Script failed!」と表示されることを確認してください。",
+    hint: "set -e / trap 'echo Script failed!' ERR",
+    answer: `trap 'echo "Script failed!"' ERR\nset -e\nls /nonexistent 2>/dev/null`,
+    expected: "Script failed!",
+    explanation: "set -eはエラーで即終了。trapはシグナル(ERR, EXIT, INTなど)を捕捉してコマンドを実行します。" },
+
+  { id: 23, unit: "UNIT 04  ◆  スクリプト実践", rank: "GOLD",
+    title: "正規表現マッチ",
+    question: "=~演算子を使って変数emailがメールアドレスの形式（.*@.*\\..*）かどうかチェックし、「valid」または「invalid」と表示してください。",
+    hint: "if [[ $email =~ ^[^@]+@[^@]+\\.[^@]+$ ]]",
+    answer: `email="user@example.com"\nif [[ $email =~ ^[^@]+@[^@]+\\.[^@]+$ ]]; then\n  echo "valid"\nelse\n  echo "invalid"\nfi`,
+    expected: "valid",
+    explanation: "[[ 式 ]]はBash拡張テスト。=~で右辺をBASH_REMATCHにマッチする正規表現として評価します。" },
+
+  { id: 24, unit: "UNIT 04  ◆  スクリプト実践", rank: "GOLD",
+    title: "連想配列",
+    question: "連想配列colorsに(apple→red, banana→yellow, cherry→red)を定義し、全キーと値をkey: valueの形式で表示してください（ソート順）。",
+    hint: "declare -A colors / ${!colors[@]}でキー一覧",
+    answer: `declare -A colors\ncolors[apple]="red"\ncolors[banana]="yellow"\ncolors[cherry]="red"\nfor key in $(echo "${!colors[@]}" | tr ' ' '\\n' | sort); do\n  echo "$key: ${colors[$key]}"\ndone`,
+    expected: "apple: red\nbanana: yellow\ncherry: red",
+    explanation: "declare -Aで連想配列（ハッシュ）を宣言。${!配列[@]}でキー一覧、${配列[@]}で値一覧を取得します。" },
+
+  { id: 25, unit: "UNIT 04  ◆  スクリプト実践", rank: "GOLD",
+    title: "プロセスとバックグラウンド実行",
+    question: "2つのsleepコマンドをバックグラウンドで実行し、waitで両方の終了を待ってから「All done」と表示してください。",
+    hint: "sleep 1 & / sleep 2 & / wait",
+    answer: `sleep 0.1 &\npid1=$!\nsleep 0.2 &\npid2=$!\nwait $pid1 $pid2\necho "All done"`,
+    expected: "All done",
+    explanation: "&でバックグラウンド実行。$!で直前のバックグラウンドプロセスのPIDを取得。waitで終了を待ちます。" },
+
+  { id: 26, unit: "UNIT 04  ◆  スクリプト実践", rank: "GOLD",
+    title: "xargsとfind",
+    question: "/tmp/に.tmpファイルを3つ作成し、find+xargsで全.tmpファイルを検索して表示（ソート順）してから削除してください。",
+    hint: "find /tmp -name '*.tmp' | sort | xargs ...",
+    answer: `touch /tmp/a.tmp /tmp/b.tmp /tmp/c.tmp\nfind /tmp -maxdepth 1 -name '*.tmp' | sort\nfind /tmp -maxdepth 1 -name '*.tmp' | xargs rm`,
+    expected: "/tmp/a.tmp\n/tmp/b.tmp\n/tmp/c.tmp",
+    explanation: "findはファイルを検索するコマンド。xargsはパイプから渡された引数でコマンドを実行します。" },
+
+  { id: 27, unit: "UNIT 05  ◆  上級テクニック", rank: "PLATINUM",
+    title: "再帰関数",
+    question: "再帰関数を使ってn!（階乗）を計算するfactorial関数を実装し、5!と10!を表示してください。",
+    hint: "factorial() { if [ $1 -le 1 ]; then echo 1; else ... fi }",
+    answer: `factorial() {\n  if [ $1 -le 1 ]; then\n    echo 1\n  else\n    prev=$(factorial $(($1 - 1)))\n    echo $(($1 * prev))\n  fi\n}\nfactorial 5\nfactorial 10`,
+    expected: "120\n3628800",
+    explanation: "Bashでも関数の再帰呼び出しができます。$(関数呼び出し)でコマンド置換として結果を受け取ります。" },
+
+  { id: 28, unit: "UNIT 05  ◆  上級テクニック", rank: "PLATINUM",
+    title: "文字列のパース",
+    question: "変数log=\"2024-01-15 ERROR: disk full (90%)\"からdateとmessageを抽出して別々の行に表示してください。",
+    hint: "date=${log%% *} / ${log#* }などのパラメータ展開",
+    answer: `log="2024-01-15 ERROR: disk full (90%)"\ndate="${log%% *}"\nmessage="${log#* }"\necho "$date"\necho "$message"`,
+    expected: "2024-01-15\nERROR: disk full (90%)",
+    explanation: "${変数%% パターン}は末尾からの最長削除、${変数# パターン}は先頭からの最短削除です。" },
+
+  { id: 29, unit: "UNIT 05  ◆  上級テクニック", rank: "PLATINUM",
+    title: "ロックファイルと排他制御",
+    question: "lockファイルを使った排他制御を実装してください。ロック取得→処理（echo「working」）→ロック解放の流れを示してください。",
+    hint: "mkdir /tmp/mylock (atomicなロック取得) / trap でクリーンアップ",
+    answer: `LOCKDIR="/tmp/mylock_$$"\nmkdir "$LOCKDIR" 2>/dev/null && {\n  trap "rmdir $LOCKDIR" EXIT\n  echo "working"\n}`,
+    expected: "working",
+    explanation: "mkdirはアトミックなのでロックに使えます。trapのEXITシグナルでスクリプト終了時に必ずクリーンアップします。" },
+
+  { id: 30, unit: "UNIT 05  ◆  上級テクニック", rank: "PLATINUM",
+    title: "自動リトライ",
+    question: "コマンドが失敗した場合に最大3回リトライするretry関数を実装し、ランダムで失敗するコマンド（exit $((RANDOM % 2))）をリトライしてください。成功時「success」、全失敗時「failed」を表示。",
+    hint: "for i in 1 2 3; do コマンド && return 0; done; return 1",
+    answer: `retry() {\n  local cmd="$1"\n  local max=3\n  for i in $(seq 1 $max); do\n    eval "$cmd" && echo "success" && return 0\n    echo "retry $i failed"\n  done\n  echo "failed"\n  return 1\n}\nretry "exit 0"`,
+    expected: "success",
+    explanation: "evalは文字列をコマンドとして実行します。&&で成功時のみ次の処理を行う短絡評価です。" }
+];
+
+const bashMissions = [
+  { id: 1, rank: "BRONZE",
+    title: "ファイル整理スクリプト",
+    description: "指定ディレクトリのファイルを拡張子別にサブディレクトリへ自動振り分けするスクリプトを書いてください。",
+    requirements: ["/tmp/test_files/に異なる拡張子のファイルを作成", "拡張子ごとのサブディレクトリに移動", "処理したファイル数をカウントして表示", "エラーハンドリング（ディレクトリが存在しない場合）"],
+    sampleIO: { input: "なし", output: "Moved 5 files" },
+    hint: "拡張子は${file##*.}で取得" },
+
+  { id: 2, rank: "SILVER",
+    title: "ログ分析スクリプト",
+    description: "アクセスログ（IPアドレス、ステータスコード、パス）を生成し、grepとawkで分析するスクリプトを書いてください。",
+    requirements: ["サンプルアクセスログを生成", "エラー(4xx,5xx)の件数をカウント", "アクセス数上位3 IPアドレスを表示", "パスごとのアクセス数をソートして表示"],
+    sampleIO: { input: "なし", output: "各分析結果" },
+    hint: "awk '{print $1}' log | sort | uniq -c | sort -rn | head -3" },
+
+  { id: 3, rank: "SILVER",
+    title: "バックアップスクリプト",
+    description: "指定ディレクトリをtarでアーカイブし、タイムスタンプ付きバックアップを作成するスクリプトを書いてください。",
+    requirements: ["/tmp/source/にサンプルファイル作成", "tar.gzでアーカイブを作成（タイムスタンプ付きファイル名）", "古いバックアップ（3個より古い）を自動削除", "バックアップ完了メッセージと容量を表示"],
+    sampleIO: { input: "なし", output: "Backup created: backup_20240115.tar.gz (1.2KB)" },
+    hint: "date +%Y%m%d / ls -t | tail -n +4 | xargs rm" },
+
+  { id: 4, rank: "GOLD",
+    title: "システム監視スクリプト",
+    description: "CPU使用率・メモリ・ディスク使用量を定期的に監視してアラートを出すスクリプトを書いてください。",
+    requirements: ["CPU/メモリ/ディスク使用率を取得", "閾値（例: 80%）を超えたらアラート出力", "結果をファイルにログ保存", "3秒間隔で3回チェックして終了"],
+    sampleIO: { input: "なし", output: "監視ログ出力" },
+    hint: "free | awk / df | awk / uptime / ループでsleep" },
+
+  { id: 5, rank: "PLATINUM",
+    title: "CI/CDパイプラインスクリプト",
+    description: "コードのビルド・テスト・デプロイをシミュレートするパイプラインスクリプトを書いてください。",
+    requirements: ["各ステージ（build/test/deploy）を関数で実装", "ステージ失敗時にパイプライン停止・ロールバック", "実行時間をtimeで計測", "最終レポート（成功/失敗/所要時間）を出力"],
+    sampleIO: { input: "なし", output: "Pipeline PASSED (3 stages, 0.5s)" },
+    hint: "SECONDS変数でスクリプト起動からの秒数が取得できる" },
+
+  { id: 6, rank: "PLATINUM",
+    title: "テキスト処理ツールチェーン",
+    description: "CSVデータをawkとsedとソートで処理して集計レポートを生成するパイプラインを書いてください。",
+    requirements: ["CSVファイル（名前,部署,給与）を生成（10件以上）", "部署別平均給与を計算（awk）", "給与の高い順にソートして表示", "レポートをファイルに出力"],
+    sampleIO: { input: "なし", output: "CSV分析レポート" },
+    hint: "awk -F',' '{dept[$2]+=$3; count[$2]++} END{...}'" }
+];
+
+const bashUnitGuides = [
+  { id: 1, name: "UNIT 01  ◆  Bash基礎",
+    summary: "変数・制御構造・コマンド置換などBashの基本を学びます。",
+    points: ["変数は代入時スペース不可・参照は$変数名", "[ ] / [[ ]]でテスト条件を記述", "$(コマンド)でコマンド置換"],
+    words: [
+      { term: "シェバン", desc: "#!/bin/bashはスクリプトの1行目に書くインタープリタ指定。" },
+      { term: "変数", desc: "name=valueで代入（スペース不可）。$nameまたは${name}で参照。" },
+      { term: "[ ]", desc: "testコマンドと同等。-eq(数値等号), -gt/-lt, -f(ファイル存在), -z(空文字)など。" },
+      { term: "[[ ]]", desc: "Bash拡張テスト。=~で正規表現、&&や||が使える。[ ]より安全。" },
+      { term: "コマンド置換", desc: "$(コマンド)でコマンドの出力を文字列として使う。`cmd`の旧形式より推奨。" }
+    ]
+  },
+  { id: 2, name: "UNIT 02  ◆  文字列と演算",
+    summary: "文字列操作・算術演算・配列・関数を学びます。",
+    points: ["${#変数}で文字列長、${変数//旧/新}で置換", "$((式))で整数算術演算", "declare -Aで連想配列"],
+    words: [
+      { term: "パラメータ展開", desc: "${変数#prefix}(先頭削除), ${変数%suffix}(末尾削除), ${変数^^}(大文字)など豊富な文字列操作。" },
+      { term: "$((式))", desc: "算術演算。+,-,*,/,%のほか ** べき乗も使える。" },
+      { term: "配列", desc: "arr=(a b c)で定義。${arr[0]}, ${arr[@]}(全要素), ${#arr[@]}(要素数)。" },
+      { term: "関数", desc: "fname() { ...; }で定義。$1, $2が引数、returnで整数終了コードを返す。" },
+      { term: "local", desc: "関数内でlocalを使うと変数のスコープを関数内に限定できる。" }
+    ]
+  },
+  { id: 3, name: "UNIT 03  ◆  ファイル操作",
+    summary: "ファイル操作・grep・sed・awk・パイプラインを学びます。",
+    points: [">は上書き、>>は追記リダイレクト", "grep/sed/awkはUNIXテキスト処理の三種の神器", "パイプ|でコマンドを連結"],
+    words: [
+      { term: "リダイレクト", desc: "> ファイル(上書き), >> ファイル(追記), < ファイル(入力), 2>(標準エラー)。" },
+      { term: "grep", desc: "パターンにマッチする行を抽出。-i(大文字小文字無視), -v(反転), -E(拡張正規表現)。" },
+      { term: "sed", desc: "ストリームエディタ。sed 's/旧/新/g'で置換、dで行削除、pで行表示。" },
+      { term: "awk", desc: "フィールド処理言語。-F,でCSV処理。$1,$2でフィールド参照。BEGIN/ENDブロック。" },
+      { term: "xargs", desc: "パイプからの入力を引数としてコマンドに渡す。find | xargs rmなど。" }
+    ]
+  },
+  { id: 4, name: "UNIT 04  ◆  スクリプト実践",
+    summary: "引数処理・エラーハンドリング・プロセス管理・上級機能を学びます。",
+    points: ["$1,$2...$#,$@で引数を操作", "set -eとtrapでエラー処理を堅牢に", "&でバックグラウンド実行、waitで同期"],
+    words: [
+      { term: "$@", desc: "全引数をリストとして展開。\"$@\"で空白を含む引数も安全に扱える。" },
+      { term: "set -e", desc: "エラー発生時に即座にスクリプトを終了させるオプション。" },
+      { term: "trap", desc: "シグナルやEXIT/ERRイベントを捕捉してコマンドを実行。cleanup処理に使う。" },
+      { term: "&とwait", desc: "&でバックグラウンド実行。waitで特定または全バックグラウンドジョブの終了を待つ。" },
+      { term: "eval", desc: "文字列をコマンドとして実行。動的コマンド生成に使うが、セキュリティに注意。" }
+    ]
+  },
+  { id: 5, name: "UNIT 05  ◆  上級テクニック",
+    summary: "再帰・文字列パース・排他制御・リトライなど上級テクニックを学びます。",
+    points: ["関数の再帰呼び出しでフィボナッチや階乗を実装", "パラメータ展開で文字列を分割・抽出", "mkdirとtrapで堅牢な排他制御"],
+    words: [
+      { term: "再帰関数", desc: "Bashでも関数を再帰呼び出しできる。$(関数名 引数)でコマンド置換として呼ぶ。" },
+      { term: "RANDOM", desc: "0〜32767のランダムな整数を返すBash組み込み変数。" },
+      { term: "SECONDS", desc: "スクリプト起動からの経過秒数を返すBash組み込み変数。計測に便利。" },
+      { term: "IFS", desc: "Internal Field Separator。デフォルトはスペース/タブ/改行でフィールド分割に使われる。" },
+      { term: "mkdirによるロック", desc: "mkdir はアトミック操作なのでロックファイルより信頼性が高い排他制御に使える。" }
+    ]
+  }
+];
+
+// ===== Regex =====
+const regexProblems = [
+  { id: 1, unit: "UNIT 01  ◆  Regex基礎", rank: "ROOKIE",
+    title: "固定文字列マッチ",
+    question: "文字列\"Hello, World!\"に対してRegexで「World」が含まれるかテストし、結果をtrueかfalseで表示してください。",
+    hint: "const re = /World/; console.log(re.test(str));",
+    answer: `const str = "Hello, World!";\nconst re = /World/;\nconsole.log(re.test(str));`,
+    expected: "true",
+    explanation: "RegExpオブジェクトのtest()メソッドはパターンにマッチすればtrue、しなければfalseを返します。" },
+
+  { id: 2, unit: "UNIT 01  ◆  Regex基礎", rank: "ROOKIE",
+    title: "大文字小文字無視フラグ",
+    question: "\"Hello World\"に対して「hello」を大文字小文字無視でマッチし、結果をtrueで表示してください。",
+    hint: "const re = /hello/i;",
+    answer: `const str = "Hello World";\nconst re = /hello/i;\nconsole.log(re.test(str));`,
+    expected: "true",
+    explanation: "フラグiはcase-insensitive（大文字小文字無視）を意味します。/pattern/iのように記述します。" },
+
+  { id: 3, unit: "UNIT 01  ◆  Regex基礎", rank: "ROOKIE",
+    title: "メタ文字 . と *",
+    question: "\"cat\"\"bat\"\"hat\"\"sat\"の配列から、「.at」パターンにマッチする要素をfilterで抽出して表示してください。",
+    hint: "arr.filter(s => /^.at$/.test(s))",
+    answer: `const arr = ["cat", "bat", "hat", "sat", "flat", "at"];\nconst result = arr.filter(s => /^.at$/.test(s));\nconsole.log(result.join("\\n"));`,
+    expected: "cat\nbat\nhat\nsat",
+    explanation: ".は任意の1文字にマッチします。^は行頭、$は行末のアンカーです。flatは2文字前にあるのでマッチしません。" },
+
+  { id: 4, unit: "UNIT 01  ◆  Regex基礎", rank: "ROOKIE",
+    title: "文字クラス []",
+    question: "\"a1b2c3d4\"から数字だけをmatch()で抽出し、カンマ区切りで表示してください。",
+    hint: "str.match(/[0-9]/g)",
+    answer: `const str = "a1b2c3d4";\nconst result = str.match(/[0-9]/g);\nconsole.log(result.join(","));`,
+    expected: "1,2,3,4",
+    explanation: "[0-9]は0から9の任意の1文字にマッチします。\\dも同等です。gフラグで全マッチを取得します。" },
+
+  { id: 5, unit: "UNIT 01  ◆  Regex基礎", rank: "ROOKIE",
+    title: "量指定子 + と ?",
+    question: "\"color\"と\"colour\"を含む配列から、どちらにもマッチするパターン「colou?r」でfilterして表示してください。",
+    hint: "/colou?r/ → uが0回か1回",
+    answer: `const arr = ["color", "colour", "colouur", "clr"];\nconst result = arr.filter(s => /^colou?r$/.test(s));\nconsole.log(result.join("\\n"));`,
+    expected: "color\ncolour",
+    explanation: "?は直前の文字の0回または1回マッチ。+は1回以上、*は0回以上を意味します。" },
+
+  { id: 6, unit: "UNIT 01  ◆  Regex基礎", rank: "ROOKIE",
+    title: "アンカー ^ と $",
+    question: "メールアドレスの配列から、@を含み末尾が.comで終わるものをfilterして表示してください。",
+    hint: "/^[^@]+@[^@]+\\.com$/",
+    answer: `const arr = ["user@example.com", "invalid-email", "test@test.org", "hello@world.com"];\nconst result = arr.filter(s => /^[^@]+@[^@]+\\.com$/.test(s));\nconsole.log(result.join("\\n"));`,
+    expected: "user@example.com\nhello@world.com",
+    explanation: "^は文字列の先頭、$は末尾にマッチするアンカー。\\.は.をリテラルとしてマッチします。" },
+
+  { id: 7, unit: "UNIT 02  ◆  グループとキャプチャ", rank: "BRONZE",
+    title: "キャプチャグループ",
+    question: "\"2024-01-15\"から年・月・日をキャプチャグループで抽出し、「Year: 2024, Month: 01, Day: 15」と表示してください。",
+    hint: "const m = str.match(/(\\d{4})-(\\d{2})-(\\d{2})/);",
+    answer: `const str = "2024-01-15";\nconst m = str.match(/(\\d{4})-(\\d{2})-(\\d{2})/);\nconsole.log(\`Year: \${m[1]}, Month: \${m[2]}, Day: \${m[3]}\`);`,
+    expected: "Year: 2024, Month: 01, Day: 15",
+    explanation: "(...)はキャプチャグループ。match()の返値の[1],[2]...にキャプチャされた文字列が入ります。" },
+
+  { id: 8, unit: "UNIT 02  ◆  グループとキャプチャ", rank: "BRONZE",
+    title: "名前付きキャプチャグループ",
+    question: "\"John Smith, age 30\"から名前と年齢を名前付きキャプチャグループで取得し、「Name: John Smith, Age: 30」と表示してください。",
+    hint: "/(?<name>[A-Za-z ]+), age (?<age>\\d+)/",
+    answer: `const str = "John Smith, age 30";\nconst m = str.match(/(?<name>[A-Za-z ]+), age (?<age>\\d+)/);\nconsole.log(\`Name: \${m.groups.name}, Age: \${m.groups.age}\`);`,
+    expected: "Name: John Smith, Age: 30",
+    explanation: "(?<名前>パターン)で名前付きキャプチャグループ。match().groupsからアクセスできます。" },
+
+  { id: 9, unit: "UNIT 02  ◆  グループとキャプチャ", rank: "BRONZE",
+    title: "非キャプチャグループ",
+    question: "\"footbar\"\"foobar\"\"foo123bar\"の配列から、「foo」の後に数字または「t」が続くものをfilterして表示してください。",
+    hint: "/foo(?:\\d+|t)bar/",
+    answer: `const arr = ["footbar", "foobar", "foo123bar", "fooXbar"];\nconst result = arr.filter(s => /foo(?:\\d+|t)bar/.test(s));\nconsole.log(result.join("\\n"));`,
+    expected: "footbar\nfoo123bar",
+    explanation: "(?:...)は非キャプチャグループ。グループ化するがキャプチャしません。|は選択（OR）です。" },
+
+  { id: 10, unit: "UNIT 02  ◆  グループとキャプチャ", rank: "BRONZE",
+    title: "後方参照",
+    question: "\"abcabc\"\"abcdef\"\"xyzxyz\"の中から、同じ3文字が繰り返されるものを後方参照でマッチしてfilterして表示してください。",
+    hint: "/^(.{3})\\1$/",
+    answer: `const arr = ["abcabc", "abcdef", "xyzxyz", "aaabbb"];\nconst result = arr.filter(s => /^(.{3})\\1$/.test(s));\nconsole.log(result.join("\\n"));`,
+    expected: "abcabc\nxyzxyz",
+    explanation: "\\1は最初のキャプチャグループと同じ内容を参照します。後方参照（backreference）と呼びます。" },
+
+  { id: 11, unit: "UNIT 02  ◆  グループとキャプチャ", rank: "BRONZE",
+    title: "replace() と置換",
+    question: "\"Hello World Foo Bar\"の各単語の先頭を小文字にしてcamelCase風に変換し表示してください（最初の単語は除く）。",
+    hint: "str.replace(/ (\\w)/g, (m, c) => c.toUpperCase())",
+    answer: `const str = "hello world foo bar";\nconst result = str.replace(/ (\\w)/g, (_, c) => c.toUpperCase());\nconsole.log(result);`,
+    expected: "hello World Foo Bar",
+    explanation: "replace()の第2引数に関数を渡すと、マッチした部分をプログラムで変換できます。" },
+
+  { id: 12, unit: "UNIT 02  ◆  グループとキャプチャ", rank: "BRONZE",
+    title: "グローバルマッチと exec()",
+    question: "\"cat bat hat\"からすべての\"?at\"パターンをexec()のループで取得し、インデックスと一致した文字列を表示してください。",
+    hint: "while ((m = re.exec(str)) !== null) { ... }",
+    answer: `const str = "cat bat hat";\nconst re = /[a-z]at/g;\nlet m;\nwhile ((m = re.exec(str)) !== null) {\n  console.log(\`\${m.index}: \${m[0]}\`);\n}`,
+    expected: "0: cat\n4: bat\n8: hat",
+    explanation: "exec()はgフラグと組み合わせてwhile文で繰り返すと全マッチを順番に取得できます。" },
+
+  { id: 13, unit: "UNIT 03  ◆  先読みと後読み", rank: "SILVER",
+    title: "肯定先読み",
+    question: "\"100px\"\"200em\"\"300px\"\"400rem\"から、「px」の前の数字だけをmatch()で取得して表示してください。",
+    hint: "/\\d+(?=px)/g",
+    answer: `const str = "100px 200em 300px 400rem";\nconst result = str.match(/\\d+(?=px)/g);\nconsole.log(result.join("\\n"));`,
+    expected: "100\n300",
+    explanation: "(?=パターン)は肯定先読み。パターンが後続するときにマッチするが、パターン自体はキャプチャしません。" },
+
+  { id: 14, unit: "UNIT 03  ◆  先読みと後読み", rank: "SILVER",
+    title: "否定先読み",
+    question: "\"foo1\"\"foo2\"\"foobar\"\"foo123\"から、数字が後続しない「foo」をfilterして表示してください。",
+    hint: "/foo(?!\\d)/",
+    answer: `const arr = ["foo1", "foo2", "foobar", "foo123"];\nconst result = arr.filter(s => /^foo(?!\\d)/.test(s));\nconsole.log(result.join("\\n"));`,
+    expected: "foobar",
+    explanation: "(?!パターン)は否定先読み。後続にパターンがない場合にマッチします。" },
+
+  { id: 15, unit: "UNIT 03  ◆  先読みと後読み", rank: "SILVER",
+    title: "肯定後読み",
+    question: "\"$100\"\"€200\"\"$300\"から、「$」の後の数字だけをmatch()で取得して表示してください。",
+    hint: "/(?<=\\$)\\d+/g",
+    answer: `const str = "$100 €200 $300";\nconst result = str.match(/(?<=\\$)\\d+/g);\nconsole.log(result.join("\\n"));`,
+    expected: "100\n300",
+    explanation: "(?<=パターン)は肯定後読み。パターンが先行するときにマッチ。JavaScriptはES2018以降でサポート。" },
+
+  { id: 16, unit: "UNIT 03  ◆  先読みと後読み", rank: "SILVER",
+    title: "貪欲vs非貪欲マッチ",
+    question: "\"<b>Bold</b> and <i>Italic</i>\"からHTMLタグを貪欲と非貪欲の両方でmatch()して、違いを確認してください（各1行で表示）。",
+    hint: "/\\<.*\\>/  vs  /\\<.*?\\>/g",
+    answer: `const str = "<b>Bold</b> and <i>Italic</i>";\nconst greedy = str.match(/<.*>/)[0];\nconst lazy = str.match(/<.*?>/g);\nconsole.log(greedy);\nconsole.log(lazy.join(","));`,
+    expected: "<b>Bold</b> and <i>Italic</i>\n<b>,</b>,<i>,</i>",
+    explanation: "デフォルトは貪欲マッチ（できるだけ長くマッチ）。?を付けると非貪欲（最短マッチ）になります。" },
+
+  { id: 17, unit: "UNIT 03  ◆  先読みと後読み", rank: "SILVER",
+    title: "複数行フラグ m",
+    question: "\"Line1\\nLine2\\nLine3\"の各行の先頭にある\"L\"をmフラグで全て取得し、マッチ数を表示してください。",
+    hint: "/^L/gm",
+    answer: `const str = "Line1\\nLine2\\nLine3";\nconst result = str.match(/^L/gm);\nconsole.log(result.length);`,
+    expected: "3",
+    explanation: "mフラグ（multiline）を使うと^と$が各行の先頭と末尾にマッチします。" },
+
+  { id: 18, unit: "UNIT 03  ◆  先読みと後読み", rank: "SILVER",
+    title: "Unicode と u フラグ",
+    question: "絵文字を含む文字列\"Hello 🌍 World\"からUnicode文字（絵文字含む）の数をuフラグを使って正確に数えてください。",
+    hint: "[...str].length または /./gsu",
+    answer: `const str = "Hello \\u{1F30D} World";\nconst chars = [...str];\nconsole.log(chars.length);\nconst emojiCount = str.match(/\\p{Emoji}/gu);\nconsole.log(emojiCount.length);`,
+    expected: "13\n1",
+    explanation: "uフラグでUnicodeモード。\\p{...}はUnicodeプロパティエスケープ。スプレッド構文でサロゲートペアも正確に扱えます。" },
+
+  { id: 19, unit: "UNIT 03  ◆  先読みと後読み", rank: "SILVER",
+    title: "splitと正規表現",
+    question: "\"one1two2three3four\"を数字で分割（split）してアルファベット部分の配列を表示してください。",
+    hint: "str.split(/\\d/)",
+    answer: `const str = "one1two2three3four";\nconst result = str.split(/\\d/);\nconsole.log(result.join("\\n"));`,
+    expected: "one\ntwo\nthree\nfour",
+    explanation: "String.split()はRegExpも使えます。split(/\\d/)は数字で分割します。" },
+
+  { id: 20, unit: "UNIT 03  ◆  先読みと後読み", rank: "SILVER",
+    title: "matchAll()",
+    question: "\"2024-01-15 and 2024-03-22\"から全日付をmatchAll()で取得し、年・月・日を「2024/01/15」「2024/03/22」と表示してください。",
+    hint: "const matches = [...str.matchAll(/(\\d{4})-(\\d{2})-(\\d{2})/g)]",
+    answer: `const str = "2024-01-15 and 2024-03-22";\nconst matches = [...str.matchAll(/(\\d{4})-(\\d{2})-(\\d{2})/g)];\nfor (const m of matches) {\n  console.log(\`\${m[1]}/\${m[2]}/\${m[3]}\`);\n}`,
+    expected: "2024/01/15\n2024/03/22",
+    explanation: "matchAll()はgフラグのRegExpで全マッチのイテレータを返します。各マッチはexec()と同じ構造です。" },
+
+  { id: 21, unit: "UNIT 04  ◆  実践パターン", rank: "GOLD",
+    title: "URLパース",
+    question: "\"https://user:pass@example.com:8080/path?key=value#hash\"からプロトコル・ホスト・ポート・パスをキャプチャして表示してください。",
+    hint: "/^(https?):\\/\\/(?:[^@]+@)?([^:/?]+)(?::(\\d+))?(\\/[^?#]*)/",
+    answer: `const url = "https://user:pass@example.com:8080/path?key=value#hash";\nconst m = url.match(/^(https?):\\/\\/(?:[^@]+@)?([^:/?#]+)(?::(\\d+))?(\\/[^?#]*)/);\nconsole.log(\`Protocol: \${m[1]}\`);\nconsole.log(\`Host: \${m[2]}\`);\nconsole.log(\`Port: \${m[3]}\`);\nconsole.log(\`Path: \${m[4]}\`);`,
+    expected: "Protocol: https\nHost: example.com\nPort: 8080\nPath: /path",
+    explanation: "URLを正規表現でパースする例。(?:...)で非キャプチャグループを使い不要な部分を除外します。" },
+
+  { id: 22, unit: "UNIT 04  ◆  実践パターン", rank: "GOLD",
+    title: "パスワード強度チェック",
+    question: "パスワードが「8文字以上・大文字・小文字・数字・記号を各1つ以上含む」かチェックする関数を実装し、3つのパスワードを検証してください。",
+    hint: "lookaheadで各条件をチェック: /(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$]).{8,}/",
+    answer: `function checkPassword(pwd) {\n  const re = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,}$/;\n  return re.test(pwd);\n}\nconsole.log(checkPassword("Abc123!@"));\nconsole.log(checkPassword("weakpass"));\nconsole.log(checkPassword("Strong1!"));`,
+    expected: "true\nfalse\ntrue",
+    explanation: "先読みを複数組み合わせることで「〇〇を含む」という条件を並列にチェックできます。" },
+
+  { id: 23, unit: "UNIT 04  ◆  実践パターン", rank: "GOLD",
+    title: "HTMLタグの除去",
+    question: "\"<h1>Hello</h1><p>World <b>!</b></p>\"からHTMLタグを全て除去してテキストのみを表示してください。",
+    hint: "str.replace(/<[^>]*>/g, '')",
+    answer: `const html = "<h1>Hello</h1><p>World <b>!</b></p>";\nconst text = html.replace(/<[^>]*>/g, "");\nconsole.log(text);`,
+    expected: "Hello\nWorld !",
+    explanation: "<[^>]*>はHTMLタグにマッチ。[^>]は>以外の任意文字。replaceで空文字に置換して除去します。" },
+
+  { id: 24, unit: "UNIT 04  ◆  実践パターン", rank: "GOLD",
+    title: "数値フォーマット",
+    question: "1234567890を正規表現を使って\"1,234,567,890\"（3桁ごとのカンマ区切り）に変換してください。",
+    hint: "str.replace(/(\\B(?=(\\d{3})+(?!\\d)))/g, ',')",
+    answer: `const num = "1234567890";\nconst formatted = num.replace(/\\B(?=(\\d{3})+(?!\\d))/g, ",");\nconsole.log(formatted);`,
+    expected: "1,234,567,890",
+    explanation: "\\Bは非単語境界、(?=(\\d{3})+(?!\\d))は3の倍数個の数字が後続する位置の先読みです。" },
+
+  { id: 25, unit: "UNIT 04  ◆  実践パターン", rank: "GOLD",
+    title: "テンプレートエンジン",
+    question: "「{{name}}さん、{{age}}歳のお誕生日おめでとう！」テンプレートにdataオブジェクトの値を埋め込んで表示してください。",
+    hint: "template.replace(/{{(\\w+)}}/g, (_, key) => data[key])",
+    answer: `const template = "{{name}}さん、{{age}}歳のお誕生日おめでとう！";\nconst data = { name: "太郎", age: 20 };\nconst result = template.replace(/{{(\\w+)}}/g, (_, key) => data[key] || "");\nconsole.log(result);`,
+    expected: "太郎さん、20歳のお誕生日おめでとう！",
+    explanation: "replace()の置換関数でキャプチャグループを使い、マッチした{{key}}をdataオブジェクトの値に置換します。" },
+
+  { id: 26, unit: "UNIT 04  ◆  実践パターン", rank: "GOLD",
+    title: "CSVパーサー",
+    question: "CSVの1行\"Alice,\\\"Smith, Jr.\\\",30,Tokyo\"を正規表現でパースし、フィールドを1行ずつ表示してください（引用符フィールドは引用符を除去）。",
+    hint: "/(?:\"([^\"]*)\"|([^,]+))/g",
+    answer: `const line = 'Alice,"Smith, Jr.",30,Tokyo';\nconst re = /(?:"([^"]*)"|([^,]*))/g;\nconst fields = [];\nlet m;\nwhile ((m = re.exec(line)) !== null) {\n  if (m[0] !== "") fields.push(m[1] !== undefined ? m[1] : m[2]);\n}\nconsole.log(fields.join("\\n"));`,
+    expected: "Alice\nSmith, Jr.\n30\nTokyo",
+    explanation: "引用符で囲まれたフィールドと通常フィールドを|で分けてパースします。CSVのコンマ内コンマに対応。" },
+
+  { id: 27, unit: "UNIT 05  ◆  高度なRegex", rank: "PLATINUM",
+    title: "再帰的パターン（ネスト括弧）",
+    question: "JavaScriptでは再帰的正規表現は使えませんが、再帰的処理で\"(a(b(c)d)e)\"のネスト括弧をパースする関数を実装して最も内側の括弧内を表示してください。",
+    hint: "再帰関数で括弧のネストを処理する",
+    answer: `function innermost(str) {\n  const m = str.match(/\\([^()]*\\)/);\n  if (!m) return str.replace(/[()]/g, "");\n  return innermost(str.replace(m[0], m[0].slice(1, -1)));\n}\nconsole.log(innermost("(a(b(c)d)e)"));`,
+    expected: "abcde",
+    explanation: "正規表現は再帰できませんが、「最内括弧を繰り返し展開する」アルゴリズムで対応できます。" },
+
+  { id: 28, unit: "UNIT 05  ◆  高度なRegex", rank: "PLATINUM",
+    title: "Atomicグループ代替（possessive量指定子の模倣）",
+    question: "\"aaaaab\"に対して、バックトラックを防ぐために先読みでatomicグループを模倣してaの最長マッチをとり、後続にbがあるかチェックしてください。",
+    hint: "/(?=(a+))\\1b/ という先読みでキャプチャ後に後方参照",
+    answer: `const str = "aaaaab";\nconst m = str.match(/(?=(a+))\\1b/);\nconsole.log(m ? "matched: " + m[1] : "no match");`,
+    expected: "matched: aaaaa",
+    explanation: "先読みでキャプチャしてから後方参照することでバックトラックを最小化できます。" },
+
+  { id: 29, unit: "UNIT 05  ◆  高度なRegex", rank: "PLATINUM",
+    title: "正規表現でトークナイザー",
+    question: "\"x = 42 + y * 3\"を正規表現でトークン（識別子・数値・演算子・空白を除く）に分割して各トークンを表示してください。",
+    hint: "/[a-zA-Z_]\\w*|\\d+|[+\\-*\\/=]/g",
+    answer: `const code = "x = 42 + y * 3";\nconst tokens = code.match(/[a-zA-Z_]\\w*|\\d+|[+\\-*\\/=]/g);\nconsole.log(tokens.join("\\n"));`,
+    expected: "x\n=\n42\n+\ny\n*\n3",
+    explanation: "|で複数パターンを優先順に試します。最初にマッチしたパターンが使われます。字句解析（tokenizer）の基本です。" },
+
+  { id: 30, unit: "UNIT 05  ◆  高度なRegex", rank: "PLATINUM",
+    title: "RegExp動的生成とエスケープ",
+    question: "ユーザー入力のキーワードを正規表現で安全にエスケープし、\"Hello (World) and [Regex]!\"から\"(World)\"をハイライト（<mark>タグで囲む）して表示してください。",
+    hint: "keyword.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')",
+    answer: `function escapeRegex(str) {\n  return str.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&");\n}\nconst text = "Hello (World) and [Regex]!";\nconst keyword = "(World)";\nconst re = new RegExp(escapeRegex(keyword), "g");\nconst result = text.replace(re, "<mark>$&</mark>");\nconsole.log(result);`,
+    expected: "Hello <mark>(World)</mark> and [Regex]!",
+    explanation: "RegExpのメタ文字をエスケープしてから動的にRegExpを作ることで、ユーザー入力を安全に使えます。" }
+];
+
+const regexMissions = [
+  { id: 1, rank: "BRONZE",
+    title: "フォームバリデーター",
+    description: "メール・電話番号・郵便番号のバリデーション関数を正規表現で実装してください。",
+    requirements: ["メールアドレスのバリデーション（RFC準拠の簡易版）", "日本の電話番号バリデーション（ハイフンあり/なし両対応）", "日本の郵便番号バリデーション（123-4567形式）", "各関数のテストケース（有効・無効）を3つずつ実行"],
+    sampleIO: { input: "なし", output: "valid/invalidの判定結果" },
+    hint: "電話番号: /^0\\d{1,4}-?\\d{1,4}-?\\d{4}$/" },
+
+  { id: 2, rank: "SILVER",
+    title: "ログパーサー",
+    description: "Apacheスタイルのアクセスログを正規表現でパースして分析してください。",
+    requirements: ["サンプルログ文字列を準備（5行以上）", "IPアドレス・メソッド・パス・ステータスコード・バイト数を抽出", "ステータス別件数を集計して表示", "特定パス（/api/）へのアクセスのみ抽出"],
+    sampleIO: { input: "なし", output: "解析結果" },
+    hint: "Combined Log Format: IP - - [date] \"METHOD path HTTP/1.1\" status bytes" },
+
+  { id: 3, rank: "SILVER",
+    title: "Markdown→HTMLコンバーター",
+    description: "簡易Markdownをregex+replaceでHTMLに変換するコンバーターを実装してください。",
+    requirements: ["# ## ### → h1 h2 h3変換", "**太字** → <strong>変換", "*斜体* → <em>変換", "[text](url) → <a href>変換"],
+    sampleIO: { input: "# Hello\\n**bold** and *italic*\\n[link](https://example.com)", output: "<h1>Hello</h1>\\n<strong>bold</strong> and <em>italic</em>\\n<a href=\"https://example.com\">link</a>" },
+    hint: "replace()を順番に適用する" },
+
+  { id: 4, rank: "GOLD",
+    title: "差分ハイライター",
+    description: "2つのテキストを比較して変更部分を正規表現と差分アルゴリズムで検出してください。",
+    requirements: ["行単位での追加・削除・変更を検出", "追加行はPLUS:、削除行はMINUS:でマーク", "変更された単語をWORD_CHANGED:でマーク", "最終的な差分サマリーを出力"],
+    sampleIO: { input: "なし", output: "差分結果" },
+    hint: "行をsplit('\\n')して比較、単語の差分はsplit(/\\s+/)で" },
+
+  { id: 5, rank: "PLATINUM",
+    title: "簡易テンプレートエンジン",
+    description: "{{変数}}・{{#if}}・{{#each}}をサポートするテンプレートエンジンを正規表現で実装してください。",
+    requirements: ["{{変数名}}を値で置換", "{{#if 条件}}...{{/if}}で条件分岐", "{{#each 配列}}...{{/each}}でリスト展開", "テンプレートを使ったHTMLリスト生成"],
+    sampleIO: { input: "なし", output: "レンダリングされたHTML" },
+    hint: "replace()を再帰的に適用して{{#each}}を展開する" },
+
+  { id: 6, rank: "PLATINUM",
+    title: "コードハイライター",
+    description: "JavaScriptの簡易シンタックスハイライターを正規表現で実装してください。",
+    requirements: ["キーワード(const,let,var,function,return,if,else)をKEYWORD:でマーク", "文字列リテラル(シングル・ダブルクォート)をSTRING:でマーク", "数値リテラルをNUMBER:でマーク", "コメント(//)をCOMMENT:でマーク"],
+    sampleIO: { input: "const x = 42; // comment", output: "KEYWORD:const x = NUMBER:42; COMMENT:// comment" },
+    hint: "優先順位を保つため文字列→コメント→数値→キーワードの順で処理" }
+];
+
+const regexUnitGuides = [
+  { id: 1, name: "UNIT 01  ◆  Regex基礎",
+    summary: "正規表現の基本文法（メタ文字・量指定子・アンカー）を学びます。",
+    points: ["test()でマッチ判定、match()でマッチ取得", ". * + ? は量指定子・ワイルドカード", "^ $ は行頭・行末アンカー"],
+    words: [
+      { term: "正規表現", desc: "文字列のパターンを記述する形式言語。/pattern/flagsの形式で書く。" },
+      { term: "メタ文字", desc: "特別な意味を持つ文字。. * + ? ^ $ { } [ ] | ( ) \\ など。" },
+      { term: "文字クラス", desc: "[abc]はa,b,cのいずれか。[a-z]は小文字アルファベット。[^a]はa以外。" },
+      { term: "量指定子", desc: "*は0回以上、+は1回以上、?は0か1回、{n,m}はn〜m回。" },
+      { term: "フラグ", desc: "i(大小文字無視), g(全マッチ), m(複数行), s(dotall), u(unicode), d(インデックス)など。" }
+    ]
+  },
+  { id: 2, name: "UNIT 02  ◆  グループとキャプチャ",
+    summary: "キャプチャグループ・後方参照・matchAll()を学びます。",
+    points: ["(...)でキャプチャ、match()[1]で参照", "(?<name>...)で名前付きキャプチャ", "(?:...)は非キャプチャグループ"],
+    words: [
+      { term: "キャプチャグループ", desc: "(...)で囲んだ部分はmatch()[1]などで参照できる。グループ化と同時にキャプチャ。" },
+      { term: "名前付きキャプチャ", desc: "(?<name>...)で名前を付けると.groups.nameでアクセス可能。" },
+      { term: "後方参照", desc: "\\1, \\2... で既にマッチしたキャプチャグループと同じ内容を参照。" },
+      { term: "matchAll()", desc: "gフラグのRegExpで全マッチのイテレータを返す。ES2020以降。" },
+      { term: "replace()関数", desc: "replace(re, fn)でfnはマッチ・グループ・インデックスを引数に受け取る。" }
+    ]
+  },
+  { id: 3, name: "UNIT 03  ◆  先読みと後読み",
+    summary: "先読み・後読み・貪欲/非貪欲マッチ・各種フラグを学びます。",
+    points: ["(?=...)肯定先読み、(?!...)否定先読み", "(?<=...)肯定後読み（ES2018）", "?を付けると非貪欲（最短マッチ）"],
+    words: [
+      { term: "先読み", desc: "(?=pat)は後続にpatがある位置にマッチ（消費しない）。(?!pat)は否定。" },
+      { term: "後読み", desc: "(?<=pat)は先行にpatがある位置にマッチ。(?<!pat)は否定。ES2018以降。" },
+      { term: "貪欲マッチ", desc: "デフォルト。できるだけ長くマッチしようとする。<.*>は全体をマッチ。" },
+      { term: "非貪欲マッチ", desc: "量指定子に?を付ける。<.*?>は最短マッチ。各タグ個別にマッチ。" },
+      { term: "mフラグ", desc: "multiline。^/$が文字列全体の先頭末尾でなく各行の先頭末尾にマッチ。" }
+    ]
+  },
+  { id: 4, name: "UNIT 04  ◆  実践パターン",
+    summary: "URL・バリデーション・テンプレート・CSV等の実践的な正規表現を学びます。",
+    points: ["先読みを組み合わせた複雑なバリデーション", "replace(re, fn)で動的な文字列変換", "RegExpコンストラクタで動的パターン生成"],
+    words: [
+      { term: "URLパース", desc: "プロトコル・ホスト・パスをキャプチャグループで分割するパターン。" },
+      { term: "メタ文字エスケープ", desc: "動的なRegExpを作る際は.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&')でエスケープ。" },
+      { term: "lookaheadバリデーション", desc: "(?=.*[A-Z])(?=.*\\d)のように先読みを並べて「全て含む」条件を表現。" },
+      { term: "数値フォーマット", desc: "\\B(?=(\\d{3})+(?!\\d))で3桁ごとの区切り位置を検出するテクニック。" },
+      { term: "CSVパース", desc: "引用符付きフィールドは\"([^\"]*)\"、通常フィールドは([^,]*)でパース。" }
+    ]
+  },
+  { id: 5, name: "UNIT 05  ◆  高度なRegex",
+    summary: "トークナイザー・動的RegExp・限界と代替手段を学びます。",
+    points: ["|でパターンを優先順に組み合わせてトークナイズ", "ユーザー入力は必ずエスケープしてからRegExpに渡す", "JSは再帰的正規表現非対応→代替アルゴリズムで対処"],
+    words: [
+      { term: "トークナイザー", desc: "ソースコードを種類別のトークン列に分解する処理。/キーワード|数値|演算子/gで実装。" },
+      { term: "RegExpコンストラクタ", desc: "new RegExp(pattern, flags)で動的にRegExpを生成できる。" },
+      { term: "バックトラック", desc: "マッチ失敗時に前の位置に戻って別のパターンを試す動作。複雑なパターンで遅くなる原因。" },
+      { term: "ReDos", desc: "巧妙な入力でバックトラックを爆発的に増やすDoS攻撃。貪欲な量指定子の重ねに注意。" },
+      { term: "Unicodeプロパティ", desc: "\\p{Letter}や\\p{Emoji}などUnicode属性でマッチ。uフラグが必要。" }
+    ]
+  }
+];
+
+// ===== PHP =====
+const phpProblems = [
+  { id: 1, unit: "UNIT 01  ◆  PHP基礎", rank: "ROOKIE",
+    title: "Hello World",
+    question: "PHPでHello, World!を表示してください。",
+    hint: "<?php echo \"Hello, World!\";",
+    answer: `<?php\necho "Hello, World!\\n";`,
+    expected: "Hello, World!",
+    explanation: "<?phpタグでPHPコードを開始。echoで文字列を出力します。\\nは改行です。" },
+
+  { id: 2, unit: "UNIT 01  ◆  PHP基礎", rank: "ROOKIE",
+    title: "変数と型",
+    question: "整数・浮動小数点・文字列・論理値の変数を定義し、gettype()で型を表示してください。",
+    hint: "$n = 42; echo gettype($n);",
+    answer: `<?php\n$i = 42;\n$f = 3.14;\n$s = "hello";\n$b = true;\necho gettype($i) . "\\n";\necho gettype($f) . "\\n";\necho gettype($s) . "\\n";\necho gettype($b) . "\\n";`,
+    expected: "integer\ndouble\nstring\nboolean",
+    explanation: "PHPの変数は$で始まり、型は動的。gettype()で実際の型を確認できます。" },
+
+  { id: 3, unit: "UNIT 01  ◆  PHP基礎", rank: "ROOKIE",
+    title: "if-elseと比較演算子",
+    question: "変数$xに15を代入し、10より大きければ「big」、5より大きければ「medium」、それ以外は「small」と表示してください。",
+    hint: "if ($x > 10) { ... } elseif ($x > 5) { ... } else { ... }",
+    answer: `<?php\n$x = 15;\nif ($x > 10) {\n    echo "big\\n";\n} elseif ($x > 5) {\n    echo "medium\\n";\n} else {\n    echo "small\\n";\n}`,
+    expected: "big",
+    explanation: "PHPではelseifまたはelse ifを使います。==は型変換あり比較、===は厳密比較です。" },
+
+  { id: 4, unit: "UNIT 01  ◆  PHP基礎", rank: "ROOKIE",
+    title: "forループとwhile",
+    question: "forループで1から5を表示し、whileループで5から1（逆順）を表示してください。",
+    hint: "for ($i = 1; $i <= 5; $i++) / while ($i >= 1)",
+    answer: `<?php\nfor ($i = 1; $i <= 5; $i++) {\n    echo $i . "\\n";\n}\n$i = 5;\nwhile ($i >= 1) {\n    echo $i . "\\n";\n    $i--;\n}`,
+    expected: "1\n2\n3\n4\n5\n5\n4\n3\n2\n1",
+    explanation: "forとwhileは他言語と同様。$i++/$i--でインクリメント/デクリメントできます。" },
+
+  { id: 5, unit: "UNIT 01  ◆  PHP基礎", rank: "ROOKIE",
+    title: "配列の基本",
+    question: "fruits配列に['apple', 'banana', 'cherry']を定義し、foreach で各要素を表示してください。",
+    hint: "$fruits = ['apple', 'banana', 'cherry']; foreach ($fruits as $f) { echo $f; }",
+    answer: `<?php\n$fruits = ['apple', 'banana', 'cherry'];\nforeach ($fruits as $fruit) {\n    echo $fruit . "\\n";\n}`,
+    expected: "apple\nbanana\ncherry",
+    explanation: "PHPの配列は[]または array()で定義。foreachでイテレートできます。" },
+
+  { id: 6, unit: "UNIT 01  ◆  PHP基礎", rank: "ROOKIE",
+    title: "関数の定義",
+    question: "2つの数値の最大値を返すmax_of関数を定義し、max_of(3, 7)とmax_of(10, 4)を表示してください。",
+    hint: "function max_of($a, $b) { return $a > $b ? $a : $b; }",
+    answer: `<?php\nfunction max_of($a, $b) {\n    return $a > $b ? $a : $b;\n}\necho max_of(3, 7) . "\\n";\necho max_of(10, 4) . "\\n";`,
+    expected: "7\n10",
+    explanation: "functionキーワードで関数定義。三項演算子$a > $b ? $a : $bで簡潔に書けます。" },
+
+  { id: 7, unit: "UNIT 02  ◆  文字列と配列", rank: "BRONZE",
+    title: "文字列操作",
+    question: "\"Hello, World!\"に対してstrlen・strtoupper・str_replace・substrを使ってそれぞれの結果を表示してください。",
+    hint: "strlen($s) / strtoupper($s) / str_replace('World','PHP',$s) / substr($s,0,5)",
+    answer: `<?php\n$s = "Hello, World!";\necho strlen($s) . "\\n";\necho strtoupper($s) . "\\n";\necho str_replace("World", "PHP", $s) . "\\n";\necho substr($s, 0, 5) . "\\n";`,
+    expected: "13\nHELLO, WORLD!\nHello, PHP!\nHello",
+    explanation: "PHPの文字列関数はstrで始まるものが多い。strlenは長さ、substrは部分文字列取得です。" },
+
+  { id: 8, unit: "UNIT 02  ◆  文字列と配列", rank: "BRONZE",
+    title: "配列操作",
+    question: "[3,1,4,1,5,9,2,6]の配列に対してsort・array_unique・array_sum・count を使って各結果を表示してください。",
+    hint: "sort($arr); array_unique($arr); array_sum($arr); count($arr);",
+    answer: `<?php\n$arr = [3, 1, 4, 1, 5, 9, 2, 6];\nsort($arr);\necho implode(",", $arr) . "\\n";\n$arr2 = [3, 1, 4, 1, 5, 9, 2, 6];\n$unique = array_unique($arr2);\nsort($unique);\necho implode(",", $unique) . "\\n";\necho array_sum($arr2) . "\\n";\necho count($arr2) . "\\n";`,
+    expected: "1,1,2,3,4,5,6,9\n1,2,3,4,5,6,9\n31\n8",
+    explanation: "sort()は破壊的ソート。array_unique()で重複除去。implode()で配列を文字列に結合します。" },
+
+  { id: 9, unit: "UNIT 02  ◆  文字列と配列", rank: "BRONZE",
+    title: "連想配列",
+    question: "連想配列$person = ['name'=>'Alice', 'age'=>25, 'city'=>'Tokyo']を定義し、foreach でkey: valueの形式で表示してください（キー順）。",
+    hint: "foreach ($arr as $key => $value) { echo \"$key: $value\\n\"; }",
+    answer: `<?php\n$person = ['name' => 'Alice', 'age' => 25, 'city' => 'Tokyo'];\nksort($person);\nforeach ($person as $key => $value) {\n    echo "$key: $value\\n";\n}`,
+    expected: "age: 25\ncity: Tokyo\nname: Alice",
+    explanation: "PHPの連想配列はキーと値のペア。foreach ($arr as $k => $v)でキーと値を取得できます。" },
+
+  { id: 10, unit: "UNIT 02  ◆  文字列と配列", rank: "BRONZE",
+    title: "array_map と array_filter",
+    question: "[1,2,3,4,5,6,7,8,9,10]に対してarray_mapで各要素を2倍にし、array_filterで偶数のみ取り出して表示してください。",
+    hint: "array_map(fn($x) => $x * 2, $arr) / array_filter($arr, fn($x) => $x % 2 === 0)",
+    answer: `<?php\n$arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];\n$doubled = array_map(fn($x) => $x * 2, $arr);\necho implode(",", $doubled) . "\\n";\n$evens = array_filter($arr, fn($x) => $x % 2 === 0);\necho implode(",", $evens) . "\\n";`,
+    expected: "2,4,6,8,10,12,14,16,18,20\n2,4,6,8,10",
+    explanation: "array_mapは全要素を変換、array_filterは条件に合う要素だけを残します。PHPの高階関数です。" },
+
+  { id: 11, unit: "UNIT 02  ◆  文字列と配列", rank: "BRONZE",
+    title: "スプレッド演算子とarray_reduce",
+    question: "[1,2,3,4,5]の積（全要素の掛け算）をarray_reduceで計算して表示してください。",
+    hint: "array_reduce($arr, fn($carry, $item) => $carry * $item, 1)",
+    answer: `<?php\n$arr = [1, 2, 3, 4, 5];\n$product = array_reduce($arr, fn($carry, $item) => $carry * $item, 1);\necho $product . "\\n";`,
+    expected: "120",
+    explanation: "array_reduceは配列を1つの値に畳み込みます。第3引数が初期値（ここでは1）です。" },
+
+  { id: 12, unit: "UNIT 02  ◆  文字列と配列", rank: "BRONZE",
+    title: "正規表現",
+    question: "\"Hello World 123\"から数字のみをpreg_matchで取得し、preg_replaceで数字を「#」に置換した結果を表示してください。",
+    hint: "preg_match('/\\d+/', $str, $m) / preg_replace('/\\d/', '#', $str)",
+    answer: `<?php\n$str = "Hello World 123";\npreg_match('/\\d+/', $str, $m);\necho $m[0] . "\\n";\necho preg_replace('/\\d/', '#', $str) . "\\n";`,
+    expected: "123\nHello World ###",
+    explanation: "PHPの正規表現はpreg_*関数を使います。デリミタ（/）で囲んでパターンを記述します。" },
+
+  { id: 13, unit: "UNIT 03  ◆  クラスとOOP", rank: "SILVER",
+    title: "クラスの基本",
+    question: "Animalクラス（name, sound プロパティ、speak()メソッド）を定義し、Dog(\"Buddy\", \"Woof\")とCat(\"Luna\", \"Meow\")を作ってspeak()を呼んでください。",
+    hint: "class Animal { public function __construct($name,$sound){...} public function speak(){...} }",
+    answer: `<?php\nclass Animal {\n    public function __construct(\n        private string $name,\n        private string $sound\n    ) {}\n    public function speak(): string {\n        return "{$this->name} says {$this->sound}";\n    }\n}\n$dog = new Animal("Buddy", "Woof");\n$cat = new Animal("Luna", "Meow");\necho $dog->speak() . "\\n";\necho $cat->speak() . "\\n";`,
+    expected: "Buddy says Woof\nLuna says Meow",
+    explanation: "__constructはコンストラクタ。PHP8のコンストラクタプロパティプロモーションでprivate宣言と代入を同時にできます。" },
+
+  { id: 14, unit: "UNIT 03  ◆  クラスとOOP", rank: "SILVER",
+    title: "継承",
+    question: "Shapeクラス（area()メソッド）を継承したCircleクラスとRectangleクラスを定義し、各面積を表示してください（π=3.14159）。",
+    hint: "class Circle extends Shape { ... } / override area()",
+    answer: `<?php\nabstract class Shape {\n    abstract public function area(): float;\n}\nclass Circle extends Shape {\n    public function __construct(private float $r) {}\n    public function area(): float { return 3.14159 * $this->r ** 2; }\n}\nclass Rectangle extends Shape {\n    public function __construct(private float $w, private float $h) {}\n    public function area(): float { return $this->w * $this->h; }\n}\n$c = new Circle(5);\n$r = new Rectangle(4, 6);\necho round($c->area(), 2) . "\\n";\necho $r->area() . "\\n";`,
+    expected: "78.54\n24",
+    explanation: "abstractクラスは直接インスタンス化できず、継承してabstractメソッドをオーバーライドする必要があります。" },
+
+  { id: 15, unit: "UNIT 03  ◆  クラスとOOP", rank: "SILVER",
+    title: "インターフェース",
+    question: "Printableインターフェース（printInfo()メソッド）を定義し、BookとMovieクラスに実装してそれぞれのprintInfo()を呼んでください。",
+    hint: "interface Printable { public function printInfo(): void; } class Book implements Printable { ... }",
+    answer: `<?php\ninterface Printable {\n    public function printInfo(): void;\n}\nclass Book implements Printable {\n    public function __construct(private string $title, private string $author) {}\n    public function printInfo(): void {\n        echo "Book: {$this->title} by {$this->author}\\n";\n    }\n}\nclass Movie implements Printable {\n    public function __construct(private string $title, private int $year) {}\n    public function printInfo(): void {\n        echo "Movie: {$this->title} ({$this->year})\\n";\n    }\n}\n$b = new Book("PHP Manual", "PHP Team");\n$m = new Movie("Matrix", 1999);\n$b->printInfo();\n$m->printInfo();`,
+    expected: "Book: PHP Manual by PHP Team\nMovie: Matrix (1999)",
+    explanation: "interfaceはメソッドのシグネチャを定義し、implementsで実装を強制します。Javaと同様の概念です。" },
+
+  { id: 16, unit: "UNIT 03  ◆  クラスとOOP", rank: "SILVER",
+    title: "トレイト",
+    question: "Timestampableトレイト（createdAt, updatedAt プロパティとsetTimestamps()メソッド）を定義し、PostクラスとCommentクラスで使ってください。",
+    hint: "trait Timestampable { ... } class Post { use Timestampable; }",
+    answer: `<?php\ntrait Timestampable {\n    private string $createdAt;\n    private string $updatedAt;\n    public function setTimestamps(): void {\n        $this->createdAt = "2024-01-01";\n        $this->updatedAt = "2024-01-15";\n    }\n    public function getCreatedAt(): string { return $this->createdAt; }\n    public function getUpdatedAt(): string { return $this->updatedAt; }\n}\nclass Post {\n    use Timestampable;\n    public function __construct(public string $title) {}\n}\nclass Comment {\n    use Timestampable;\n    public function __construct(public string $body) {}\n}\n$p = new Post("Hello");\n$p->setTimestamps();\necho $p->title . ": " . $p->getCreatedAt() . "\\n";\n$c = new Comment("Great!");\n$c->setTimestamps();\necho $c->body . ": " . $c->getUpdatedAt() . "\\n";`,
+    expected: "Hello: 2024-01-01\nGreat!: 2024-01-15",
+    explanation: "traitはPHPの多重継承の代替。複数クラスに共通機能を横断的に追加できます。" },
+
+  { id: 17, unit: "UNIT 03  ◆  クラスとOOP", rank: "SILVER",
+    title: "例外処理",
+    question: "0での除算を試み、例外をthrow/catchして「Division by zero」とメッセージを表示してください。finallyで「Done」を表示してください。",
+    hint: "throw new InvalidArgumentException(...) / try { } catch (Exception $e) { } finally { }",
+    answer: `<?php\nfunction divide($a, $b) {\n    if ($b === 0) {\n        throw new InvalidArgumentException("Division by zero");\n    }\n    return $a / $b;\n}\ntry {\n    echo divide(10, 2) . "\\n";\n    echo divide(5, 0) . "\\n";\n} catch (InvalidArgumentException $e) {\n    echo $e->getMessage() . "\\n";\n} finally {\n    echo "Done\\n";\n}`,
+    expected: "5\nDivision by zero\nDone",
+    explanation: "throwで例外を投げ、catchで捕捉します。finallyは例外の有無に関わらず実行されます。" },
+
+  { id: 18, unit: "UNIT 03  ◆  クラスとOOP", rank: "SILVER",
+    title: "静的メソッドとプロパティ",
+    question: "Counterクラスに静的プロパティ$countと静的メソッドincrement()/getCount()を定義し、3回incrementしてgetCount()を表示してください。",
+    hint: "static $count = 0; public static function increment() { self::$count++; }",
+    answer: `<?php\nclass Counter {\n    private static int $count = 0;\n    public static function increment(): void {\n        self::$count++;\n    }\n    public static function getCount(): int {\n        return self::$count;\n    }\n}\nCounter::increment();\nCounter::increment();\nCounter::increment();\necho Counter::getCount() . "\\n";`,
+    expected: "3",
+    explanation: "staticメンバーはクラスに属し、インスタンスなしでクラス名::メソッド()でアクセスします。selfで自クラスを参照します。" },
+
+  { id: 19, unit: "UNIT 03  ◆  クラスとOOP", rank: "SILVER",
+    title: "マジックメソッド",
+    question: "__toString, __get, __set マジックメソッドを実装したMagicクラスを定義してください。プロパティへのget/setとecho時の文字列表現を実装してください。",
+    hint: "public function __toString() / public function __get($name) / public function __set($name, $value)",
+    answer: `<?php\nclass Magic {\n    private array $data = [];\n    public function __get(string $name): mixed {\n        return $this->data[$name] ?? null;\n    }\n    public function __set(string $name, mixed $value): void {\n        $this->data[$name] = $value;\n    }\n    public function __toString(): string {\n        return json_encode($this->data);\n    }\n}\n$m = new Magic();\n$m->name = "Alice";\n$m->age = 25;\necho $m->name . "\\n";\necho $m->age . "\\n";\necho $m . "\\n";`,
+    expected: 'Alice\n25\n{"name":"Alice","age":25}',
+    explanation: "マジックメソッド（__で始まるメソッド）はPHPが特定の操作時に自動的に呼び出します。" },
+
+  { id: 20, unit: "UNIT 03  ◆  クラスとOOP", rank: "SILVER",
+    title: "ジェネレータ",
+    question: "1からnまでのフィボナッチ数列を生成するジェネレータ関数を定義し、最初の10項を表示してください。",
+    hint: "function fibonacci() { yield $a; ... }",
+    answer: `<?php\nfunction fibonacci(int $limit) {\n    $a = 0;\n    $b = 1;\n    $count = 0;\n    while ($count < $limit) {\n        yield $a;\n        [$a, $b] = [$b, $a + $b];\n        $count++;\n    }\n}\nforeach (fibonacci(10) as $n) {\n    echo $n . "\\n";\n}`,
+    expected: "0\n1\n1\n2\n3\n5\n8\n13\n21\n34",
+    explanation: "yieldを使った関数はジェネレータ。値を一つずつ生成するためメモリ効率が良いです。" },
+
+  { id: 21, unit: "UNIT 04  ◆  高度なPHP", rank: "GOLD",
+    title: "クロージャと高階関数",
+    question: "クロージャを使って乗数を受け取り「その数にn倍する関数」を返すmultiplier関数を実装し、3倍と5倍の関数を作って使ってください。",
+    hint: "function multiplier($n) { return fn($x) => $x * $n; }",
+    answer: `<?php\nfunction multiplier(int $n): Closure {\n    return fn(int $x) => $x * $n;\n}\n$triple = multiplier(3);\n$quintuple = multiplier(5);\necho $triple(4) . "\\n";\necho $quintuple(4) . "\\n";\necho $triple(10) . "\\n";`,
+    expected: "12\n20\n30",
+    explanation: "PHPのクロージャはfunctionまたはアロー関数fn()で作成。useで外部変数をキャプチャできます。" },
+
+  { id: 22, unit: "UNIT 04  ◆  高度なPHP", rank: "GOLD",
+    title: "列挙型（Enum）",
+    question: "StatusというBackedEnumをstring型で定義（pending/active/inactive）し、Statusクラスに状態遷移メソッドを追加してください。",
+    hint: "enum Status: string { case Pending = 'pending'; ... }",
+    answer: `<?php\nenum Status: string {\n    case Pending = 'pending';\n    case Active = 'active';\n    case Inactive = 'inactive';\n    public function label(): string {\n        return match($this) {\n            Status::Pending => '保留中',\n            Status::Active => '有効',\n            Status::Inactive => '無効',\n        };\n    }\n}\n$s = Status::Active;\necho $s->value . "\\n";\necho $s->label() . "\\n";\n$s2 = Status::from('pending');\necho $s2->label() . "\\n";`,
+    expected: "active\n有効\n保留中",
+    explanation: "PHP8.1のEnum。Backed Enumはfrom()でstringやintから変換できます。matchで分岐できます。" },
+
+  { id: 23, unit: "UNIT 04  ◆  高度なPHP", rank: "GOLD",
+    title: "ファイル入出力",
+    question: "file_put_contentsで/tmp/test.txtに3行書き込み、file_get_contentsで読み込んでexpodeで分割し各行を表示してください。",
+    hint: "file_put_contents('/tmp/test.txt', ...) / file_get_contents() / explode(\"\\n\", ...)",
+    answer: `<?php\n$content = "Line 1\\nLine 2\\nLine 3";\nfile_put_contents('/tmp/test.txt', $content);\n$read = file_get_contents('/tmp/test.txt');\n$lines = explode("\\n", $read);\nforeach ($lines as $line) {\n    echo $line . "\\n";\n}`,
+    expected: "Line 1\nLine 2\nLine 3",
+    explanation: "file_put_contentsとfile_get_contentsはファイルの書き込み・読み込みの簡便な方法です。" },
+
+  { id: 24, unit: "UNIT 04  ◆  高度なPHP", rank: "GOLD",
+    title: "名前空間",
+    question: "App\\Models名前空間のUserクラスとApp\\Services名前空間のUserServiceクラスを定義し、UserServiceでUserを使ってください。",
+    hint: "namespace App\\Models; class User { ... } / namespace App\\Services; use App\\Models\\User;",
+    answer: `<?php\nnamespace App\\Models {\n    class User {\n        public function __construct(public string $name) {}\n    }\n}\nnamespace App\\Services {\n    use App\\Models\\User;\n    class UserService {\n        public function create(string $name): User {\n            return new User($name);\n        }\n    }\n}\nnamespace {\n    $service = new App\\Services\\UserService();\n    $user = $service->create("Alice");\n    echo $user->name . "\\n";\n}`,
+    expected: "Alice",
+    explanation: "namespaceでコードを論理的に分離。useで他の名前空間のクラスをインポートします。" },
+
+  { id: 25, unit: "UNIT 04  ◆  高度なPHP", rank: "GOLD",
+    title: "デザインパターン（Singleton）",
+    question: "Singletonパターンを実装したDatabaseクラスを作り、2回取得したインスタンスが同一であることを確認してください。",
+    hint: "private static $instance = null; public static function getInstance() { ... }",
+    answer: `<?php\nclass Database {\n    private static ?Database $instance = null;\n    private int $queryCount = 0;\n    private function __construct() {}\n    public static function getInstance(): Database {\n        if (self::$instance === null) {\n            self::$instance = new Database();\n        }\n        return self::$instance;\n    }\n    public function query(string $sql): void {\n        $this->queryCount++;\n        echo "Query #{$this->queryCount}: $sql\\n";\n    }\n}\n$db1 = Database::getInstance();\n$db2 = Database::getInstance();\necho ($db1 === $db2 ? 'same' : 'different') . "\\n";\n$db1->query("SELECT 1");\n$db2->query("SELECT 2");`,
+    expected: "same\nQuery #1: SELECT 1\nQuery #2: SELECT 2",
+    explanation: "Singletonはアプリケーション全体で1つのインスタンスのみ保証するパターン。コンストラクタをprivateにして外部からのnewを禁止します。" },
+
+  { id: 26, unit: "UNIT 04  ◆  高度なPHP", rank: "GOLD",
+    title: "インターフェースと依存注入",
+    question: "LoggerInterfaceを定義し、FileLoggerとConsoleLoggerを実装して、どちらのロガーでも動くApplicationクラスを作ってください。",
+    hint: "interface LoggerInterface { public function log(string $msg): void; }",
+    answer: `<?php\ninterface LoggerInterface {\n    public function log(string $message): void;\n}\nclass ConsoleLogger implements LoggerInterface {\n    public function log(string $message): void {\n        echo "[Console] $message\\n";\n    }\n}\nclass FileLogger implements LoggerInterface {\n    public function log(string $message): void {\n        echo "[File] $message\\n";\n    }\n}\nclass Application {\n    public function __construct(private LoggerInterface $logger) {}\n    public function run(): void {\n        $this->logger->log("Application started");\n    }\n}\n$app1 = new Application(new ConsoleLogger());\n$app1->run();\n$app2 = new Application(new FileLogger());\n$app2->run();`,
+    expected: "[Console] Application started\n[File] Application started",
+    explanation: "依存注入（DI）はコンストラクタでインターフェース型を受け取ることで実装を差し替え可能にするパターンです。" },
+
+  { id: 27, unit: "UNIT 05  ◆  モダンPHP", rank: "PLATINUM",
+    title: "ファイバー（Fiber）",
+    question: "PHP8.1のFiberを使って、メインの処理とFiberの処理を交互に実行してください。",
+    hint: "new Fiber(function() { Fiber::suspend('value'); }) / $fiber->start() / $fiber->resume()",
+    answer: `<?php\n$fiber = new Fiber(function(): void {\n    $value = Fiber::suspend('first');\n    echo "Fiber got: $value\\n";\n    Fiber::suspend('second');\n    echo "Fiber ending\\n";\n});\n$v1 = $fiber->start();\necho "Main got: $v1\\n";\n$v2 = $fiber->resume('hello');\necho "Main got: $v2\\n";\n$fiber->resume('bye');`,
+    expected: "Main got: first\nFiber got: hello\nMain got: second\nFiber ending",
+    explanation: "FiberはPHP8.1の軽量コルーチン。suspend()で一時停止、resume()で再開して値を双方向に受け渡せます。" },
+
+  { id: 28, unit: "UNIT 05  ◆  モダンPHP", rank: "PLATINUM",
+    title: "カスタムコレクションクラス",
+    question: "ArrayAccessとIteratorを実装したコレクションクラスを作り、配列のようにアクセスしforeachで反復できるようにしてください。",
+    hint: "implements ArrayAccess, Iterator / offsetGet, current, next, rewind, valid, key",
+    answer: `<?php\nclass Collection implements ArrayAccess, Iterator {\n    private array $data = [];\n    private int $position = 0;\n    public function __construct(array $data = []) { $this->data = array_values($data); }\n    public function offsetExists(mixed $offset): bool { return isset($this->data[$offset]); }\n    public function offsetGet(mixed $offset): mixed { return $this->data[$offset]; }\n    public function offsetSet(mixed $offset, mixed $value): void {\n        if ($offset === null) $this->data[] = $value;\n        else $this->data[$offset] = $value;\n    }\n    public function offsetUnset(mixed $offset): void { unset($this->data[$offset]); }\n    public function current(): mixed { return $this->data[$this->position]; }\n    public function key(): int { return $this->position; }\n    public function next(): void { $this->position++; }\n    public function rewind(): void { $this->position = 0; }\n    public function valid(): bool { return isset($this->data[$this->position]); }\n}\n$col = new Collection([1, 2, 3]);\n$col[] = 4;\necho $col[0] . "\\n";\nforeach ($col as $v) echo $v . " ";\necho "\\n";`,
+    expected: "1\n1 2 3 4 ",
+    explanation: "ArrayAccessとIteratorインターフェースを実装することで、カスタムクラスを配列のように扱えます。" },
+
+  { id: 29, unit: "UNIT 05  ◆  モダンPHP", rank: "PLATINUM",
+    title: "メタプログラミング（Reflection）",
+    question: "ReflectionClassを使ってクラスのメソッド名とプロパティ名を動的に取得して表示してください。",
+    hint: "new ReflectionClass($obj) / getMethods() / getProperties()",
+    answer: `<?php\nclass Sample {\n    public string $name;\n    private int $age;\n    public function __construct(string $name, int $age) {\n        $this->name = $name;\n        $this->age = $age;\n    }\n    public function greet(): string { return "Hello, {$this->name}"; }\n    private function secret(): void {}\n}\n$ref = new ReflectionClass(Sample::class);\necho "Methods:\\n";\nforeach ($ref->getMethods() as $m) {\n    echo "  " . $m->getName() . "\\n";\n}\necho "Properties:\\n";\nforeach ($ref->getProperties() as $p) {\n    echo "  " . $p->getName() . "\\n";\n}`,
+    expected: "Methods:\n  __construct\n  greet\n  secret\nProperties:\n  name\n  age",
+    explanation: "ReflectionAPIを使うとクラスの構造を実行時に調べることができます。DIコンテナやORMで活用されます。" },
+
+  { id: 30, unit: "UNIT 05  ◆  モダンPHP", rank: "PLATINUM",
+    title: "カスタム属性（Attribute）",
+    question: "PHP8.0のAttributeを使って#[Route]アノテーションを定義し、コントローラーメソッドに付与してReflectionで読み取ってください。",
+    hint: "#[Attribute] class Route { ... } / new ReflectionMethod() / getAttributes()",
+    answer: `<?php\n#[Attribute(Attribute::TARGET_METHOD)]\nclass Route {\n    public function __construct(\n        public string $path,\n        public string $method = 'GET'\n    ) {}\n}\nclass UserController {\n    #[Route('/users', 'GET')]\n    public function index(): void {}\n    #[Route('/users', 'POST')]\n    public function store(): void {}\n}\n$ref = new ReflectionClass(UserController::class);\nforeach ($ref->getMethods() as $method) {\n    $attrs = $method->getAttributes(Route::class);\n    foreach ($attrs as $attr) {\n        $route = $attr->newInstance();\n        echo "{$route->method} {$route->path} -> {$method->getName()}\\n";\n    }\n}`,
+    expected: "GET /users -> index\nPOST /users -> store",
+    explanation: "PHP8.0のAttributeはクラス・メソッドなどにメタデータを付与できます。Reflection APIで読み取ります。" }
+];
+
+const phpMissions = [
+  { id: 1, rank: "BRONZE",
+    title: "ToDoリストAPI（配列版）",
+    description: "配列をデータストアとしてToDoリストのCRUD操作を実装してください。",
+    requirements: ["Todoクラス（id, title, done）を定義", "TodoRepository（add/find/update/delete/listAll）を実装", "5件追加・1件完了・1件削除・全件表示の操作", "各操作の結果を表示"],
+    sampleIO: { input: "なし", output: "CRUD操作結果" },
+    hint: "array_filter + array_values でインデックスを詰める" },
+
+  { id: 2, rank: "SILVER",
+    title: "CSVパーサーとレポート生成",
+    description: "CSVデータを読み込んでPHPで集計レポートを生成してください。",
+    requirements: ["CSVデータ文字列を定義（名前,部署,給与 10件以上）", "str_getcsv()でパース", "部署別平均給与を計算して表示", "給与上位3名を表示"],
+    sampleIO: { input: "なし", output: "集計レポート" },
+    hint: "array_column() でカラムを抽出, usort() でカスタムソート" },
+
+  { id: 3, rank: "SILVER",
+    title: "デザインパターン実装",
+    description: "Observerパターンを使ってイベントシステムを実装してください。",
+    requirements: ["EventEmitterクラスとListenerインターフェースを定義", "on(event, callback)でリスナー登録", "emit(event, data)でイベント発火", "user.created、order.placedイベントを使ったデモ"],
+    sampleIO: { input: "なし", output: "イベントログ" },
+    hint: "private array $listeners = []; / array_key_exists で確認" },
+
+  { id: 4, rank: "GOLD",
+    title: "簡易ORMの実装",
+    description: "PHPでActiveRecordパターンの簡易ORMを実装してください（SQLiteを使用可）。",
+    requirements: ["Modelクラスのベース（find/save/delete）", "Userモデルの定義", "CRUD操作のデモ", "クエリビルダー（where/orderBy）の実装"],
+    sampleIO: { input: "なし", output: "ORM操作結果" },
+    hint: "PDOでSQLiteに接続 / __callStatic() でfindBy動的メソッド" },
+
+  { id: 5, rank: "PLATINUM",
+    title: "依存注入コンテナ",
+    description: "シンプルなDIコンテナをReflection APIを使って実装してください。",
+    requirements: ["Containerクラスのbind()/make()メソッド実装", "ReflectionClassで依存関係を自動解決", "シングルトン登録のサポート", "インターフェースとコンクリートクラスのバインド"],
+    sampleIO: { input: "なし", output: "DI解決結果" },
+    hint: "ReflectionClass::getConstructor()→getParameters()→getType() で型を取得" },
+
+  { id: 6, rank: "PLATINUM",
+    title: "非同期風タスクキュー",
+    description: "Fiberを使ってタスクキューの並行実行をシミュレートしてください。",
+    requirements: ["Fiberでタスクを定義（各タスクはsuspendで区切る）", "TaskQueueクラスでFiberを管理", "複数タスクを順次実行・完了まで継続", "各タスクの開始・完了ログを表示"],
+    sampleIO: { input: "なし", output: "タスク実行ログ" },
+    hint: "while (!$fiber->isTerminated()) { $fiber->resume(); } で全タスクをラウンドロビン" }
+];
+
+const phpUnitGuides = [
+  { id: 1, name: "UNIT 01  ◆  PHP基礎",
+    summary: "PHPの基本文法（変数・制御構造・関数・配列）を学びます。",
+    points: ["変数は$で始まる・型は動的", "<?php タグでPHPコードを開始", "echo/printで出力、.で文字列連結"],
+    words: [
+      { term: "<?php", desc: "PHPコードの開始タグ。?>で終了タグ（ファイル末尾は省略推奨）。" },
+      { term: "echo", desc: "文字列を出力するコンストラクト。printと違い複数引数可。速度はほぼ同じ。" },
+      { term: "型ジャグリング", desc: "PHPは比較時に自動型変換する。\"1\" == 1はtrue。===は厳密比較。" },
+      { term: "null合体演算子", desc: "??演算子。$a ?? $bは$aがnullでなければ$a、そうでなければ$b。" },
+      { term: "match式", desc: "PHP8のswitch代替。厳密比較、値を返す、exhaustive。fallthroughなし。" }
+    ]
+  },
+  { id: 2, name: "UNIT 02  ◆  文字列と配列",
+    summary: "PHP豊富な文字列・配列関数と正規表現を学びます。",
+    points: ["str_*関数で文字列操作、explode/implodeで分割・結合", "array_map/filter/reduceで高階関数", "preg_*関数でPCRE正規表現"],
+    words: [
+      { term: "sprintf", desc: "書式付き文字列生成。sprintf(\"%05d\", 42) → \"00042\"。" },
+      { term: "implode/explode", desc: "implodeは配列→文字列（join）、explodeは文字列→配列（split）。" },
+      { term: "array_map", desc: "配列の全要素にコールバックを適用して新しい配列を返す。" },
+      { term: "array_filter", desc: "コールバックがtrueを返す要素のみ残した配列を返す。インデックスは保持。" },
+      { term: "preg_match", desc: "PCREパターンでマッチ。第3引数に$matchesを渡すとキャプチャ取得可能。" }
+    ]
+  },
+  { id: 3, name: "UNIT 03  ◆  クラスとOOP",
+    summary: "OOPの基本概念（クラス・継承・インターフェース・トレイト・例外）を学びます。",
+    points: ["class/extends/interfaceでOOPを実現", "traitで水平的コード再利用", "try/catch/finallyで例外処理"],
+    words: [
+      { term: "コンストラクタプロモーション", desc: "PHP8のsyntax sugar。__construct(private string $name)で宣言と代入を同時に。" },
+      { term: "abstract", desc: "抽象クラス/メソッド。abstractクラスはインスタンス化不可。子クラスで実装必須。" },
+      { term: "interface", desc: "メソッドシグネチャのみ定義。implementsで実装を強制。多重実装可能。" },
+      { term: "trait", desc: "クラスに横断的に追加できるコードブロック。useでクラスに組み込む。" },
+      { term: "マジックメソッド", desc: "__construct, __toString, __get, __set, __callなど特殊動作をフック。" }
+    ]
+  },
+  { id: 4, name: "UNIT 04  ◆  高度なPHP",
+    summary: "クロージャ・Enum・名前空間・デザインパターンを学びます。",
+    points: ["fn() => でアロー関数（外部変数を自動キャプチャ）", "PHP8.1のEnumでタイプセーフな定数", "namespaceとuseでコード整理"],
+    words: [
+      { term: "クロージャ", desc: "function() {}またはfn() =>で作る無名関数。use()で外部変数をキャプチャ。" },
+      { term: "アロー関数", desc: "fn($x) => $x * 2の形式。外部スコープの変数を自動キャプチャ（use不要）。" },
+      { term: "BackedEnum", desc: "PHP8.1。enum E: string/intでスカラー値に対応。from()/tryFrom()で変換。" },
+      { term: "名前空間", desc: "namespaceでコードを論理的に分離。useでエイリアスを作る。PSR-4でオートロード。" },
+      { term: "依存注入", desc: "コンストラクタにインターフェース型で渡す設計。実装を差し替えやすくする。" }
+    ]
+  },
+  { id: 5, name: "UNIT 05  ◆  モダンPHP",
+    summary: "Fiber・Attribute・Reflection・コレクションなどPHP8の最新機能を学びます。",
+    points: ["PHP8.1 FiberでコルーチンスタイルのI/O多重化", "#[Attribute]でメタデータ付与", "Reflection APIで実行時メタプログラミング"],
+    words: [
+      { term: "Fiber", desc: "PHP8.1の軽量コルーチン。suspend()で一時停止、resume()で再開。非同期処理の基盤。" },
+      { term: "Attribute", desc: "PHP8.0のアノテーション。#[Route('/path')]のような宣言的メタデータ付与。" },
+      { term: "ReflectionClass", desc: "クラスの構造（メソッド・プロパティ・Attribute）を実行時に取得するAPI。" },
+      { term: "ArrayAccess", desc: "インターフェース。offsetGet/Set/Exists/Unsetを実装でクラスを配列として扱える。" },
+      { term: "union型", desc: "PHP8.0。function foo(int|string $x)のように複数の型を許容する型宣言。" }
+    ]
+  }
+];
+
 // ===== 言語別データ取得ヘルパー =====
 
 function getProblems() {
@@ -19664,6 +22191,11 @@ function getProblems() {
   if (currentLanguage === 'go') return goProblems;
   if (currentLanguage === 'c') return cProblems;
   if (currentLanguage === 'rust') return rustProblems;
+  if (currentLanguage === 'html') return htmlProblems;
+  if (currentLanguage === 'sql') return sqlProblems;
+  if (currentLanguage === 'bash') return bashProblems;
+  if (currentLanguage === 'regex') return regexProblems;
+  if (currentLanguage === 'php') return phpProblems;
   return problems;
 }
 
@@ -19679,6 +22211,11 @@ function getMissions() {
   if (currentLanguage === 'go') return goMissions;
   if (currentLanguage === 'c') return cMissions;
   if (currentLanguage === 'rust') return rustMissions;
+  if (currentLanguage === 'html') return htmlMissions;
+  if (currentLanguage === 'sql') return sqlMissions;
+  if (currentLanguage === 'bash') return bashMissions;
+  if (currentLanguage === 'regex') return regexMissions;
+  if (currentLanguage === 'php') return phpMissions;
   return missions;
 }
 
@@ -19694,6 +22231,11 @@ function getUnitGuides() {
   if (currentLanguage === 'go') return goUnitGuides;
   if (currentLanguage === 'c') return cUnitGuides;
   if (currentLanguage === 'rust') return rustUnitGuides;
+  if (currentLanguage === 'html') return htmlUnitGuides;
+  if (currentLanguage === 'sql') return sqlUnitGuides;
+  if (currentLanguage === 'bash') return bashUnitGuides;
+  if (currentLanguage === 'regex') return regexUnitGuides;
+  if (currentLanguage === 'php') return phpUnitGuides;
   return unitGuides;
 }
 
@@ -19717,6 +22259,11 @@ function getCompiler() {
   if (currentLanguage === 'go') return 'go-1.20.6';
   if (currentLanguage === 'c') return 'gcc-head';
   if (currentLanguage === 'rust') return 'rust-1.73.0';
+  if (currentLanguage === 'html') return null;
+  if (currentLanguage === 'sql') return 'cpython-3.12.7';
+  if (currentLanguage === 'bash') return 'bash';
+  if (currentLanguage === 'regex') return 'nodejs-head';
+  if (currentLanguage === 'php') return 'php-8.2.0';
   return 'gcc-head';
 }
 
@@ -19732,6 +22279,11 @@ function getAceMode() {
   if (currentLanguage === 'go') return 'ace/mode/golang';
   if (currentLanguage === 'c') return 'ace/mode/c_cpp';
   if (currentLanguage === 'rust') return 'ace/mode/rust';
+  if (currentLanguage === 'html') return 'ace/mode/html';
+  if (currentLanguage === 'sql') return 'ace/mode/python';
+  if (currentLanguage === 'bash') return 'ace/mode/sh';
+  if (currentLanguage === 'regex') return 'ace/mode/javascript';
+  if (currentLanguage === 'php') return 'ace/mode/php';
   return 'ace/mode/c_cpp';
 }
 
@@ -19781,6 +22333,26 @@ function getStarterCode() {
     if (p) return '// [問題] ' + p.question + '\n\nfn main() {\n    \n}\n';
     return 'fn main() {\n    \n}\n';
   }
+  if (currentLanguage === 'html') {
+    if (p) return '<!-- [問題] ' + p.question + ' -->\n<!DOCTYPE html>\n<html lang="ja">\n<head>\n  <meta charset="UTF-8">\n  <title>My Page</title>\n  <style>\n    /* ここにCSSを書く */\n  </style>\n</head>\n<body>\n  <!-- ここにHTMLを書く -->\n</body>\n</html>\n';
+    return '<!DOCTYPE html>\n<html lang="ja">\n<head>\n  <meta charset="UTF-8">\n  <title>My Page</title>\n</head>\n<body>\n</body>\n</html>\n';
+  }
+  if (currentLanguage === 'sql') {
+    if (p) return '# [問題] ' + p.question + '\nimport sqlite3\nconn = sqlite3.connect(\':memory:\')\ncur = conn.cursor()\n\n# ここにコードを書く\n\nconn.close()\n';
+    return 'import sqlite3\nconn = sqlite3.connect(\':memory:\')\ncur = conn.cursor()\n\n# ここにSQLを書く\n\nconn.close()\n';
+  }
+  if (currentLanguage === 'bash') {
+    if (p) return '# [問題] ' + p.question + '\n\n# ここにBashスクリプトを書く\n';
+    return '#!/bin/bash\n# ここにBashスクリプトを書く\n';
+  }
+  if (currentLanguage === 'regex') {
+    if (p) return '// [問題] ' + p.question + '\n\n// ここにJavaScriptコードを書く\n';
+    return '// ここに正規表現のコードを書く\nconst str = "";\nconst re = //;\nconsole.log(re.test(str));\n';
+  }
+  if (currentLanguage === 'php') {
+    if (p) return '<?php\n// [問題] ' + p.question + '\n\n// ここにPHPコードを書く\n';
+    return '<?php\n// ここにPHPコードを書く\n';
+  }
   if (p) return '// [問題] ' + p.question + '\n' + ACE_STARTER;
   return ACE_STARTER;
 }
@@ -19797,6 +22369,11 @@ function getLangName() {
   if (currentLanguage === 'go') return 'Go';
   if (currentLanguage === 'c') return 'C';
   if (currentLanguage === 'rust') return 'Rust';
+  if (currentLanguage === 'html') return 'HTML/CSS';
+  if (currentLanguage === 'sql') return 'SQL';
+  if (currentLanguage === 'bash') return 'Bash';
+  if (currentLanguage === 'regex') return 'Regex';
+  if (currentLanguage === 'php') return 'PHP';
   return 'C++';
 }
 
@@ -20293,6 +22870,24 @@ async function runCode() {
   const outputText = document.getElementById("output-text");
   const judgeArea  = document.getElementById("judge-area");
   const stdin      = document.getElementById("stdin-input").value;
+
+  // HTML/CSS: iframeプレビュー（Wandbox不使用）
+  if (currentLanguage === 'html') {
+    var previewFrame = document.getElementById('html-preview-frame');
+    if (!previewFrame) {
+      previewFrame = document.createElement('iframe');
+      previewFrame.id = 'html-preview-frame';
+      previewFrame.style.cssText = 'width:100%;height:400px;border:1px solid #444;border-radius:8px;background:#fff;margin-top:8px;display:block;';
+      outputArea.parentNode.insertBefore(previewFrame, outputArea.nextSibling);
+    }
+    previewFrame.srcdoc = aceEditor ? aceEditor.getValue() : '';
+    previewFrame.style.display = 'block';
+    outputArea.classList.add('hidden');
+    if (judgeArea) judgeArea.classList.add('hidden');
+    btn.textContent = '▶ 実行する';
+    btn.disabled = false;
+    return;
+  }
 
   btn.textContent = "実行中...";
   btn.disabled = true;
