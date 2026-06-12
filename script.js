@@ -937,6 +937,7 @@ function renderLangSelect() {
     '<div class="lang-page-header">' +
       '<div class="lang-page-title">◆ SELECT LANGUAGE</div>' +
       '<div class="lang-page-sub">学習する言語を選択してください</div>' +
+      '<button class="lang-quiz-btn" onclick="openQuizModal()">🧭 どの言語を選べばいいかわからない方はこちら</button>' +
     '</div>';
 
   LANGUAGE_GROUPS.forEach(function(group) {
