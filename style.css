@@ -3750,6 +3750,155 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   margin-left: auto;
 }
 
+/* ===== 言語紹介モーダル ===== */
+
+#lang-intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1800;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+#lang-intro-overlay.hidden { display: none !important; }
+
+.li-box {
+  background: rgba(14,8,4,0.98);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-shadow: 0 8px 48px rgba(0,0,0,0.7);
+  animation: liBoxIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes liBoxIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+
+.li-colorbar {
+  height: 4px;
+  width: 100%;
+  border-radius: 16px 16px 0 0;
+}
+
+.li-body {
+  padding: 24px 24px 20px;
+}
+
+.li-lang-name {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.li-tagline {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.li-builds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.li-build-tag {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.7);
+}
+
+.li-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+}
+.li-meta-item { display: flex; flex-direction: column; gap: 4px; }
+.li-meta-label { font-size: 0.7rem; color: rgba(255,255,255,0.38); letter-spacing: 0.08em; }
+.li-meta-val   { font-size: 0.85rem; color: rgba(255,255,255,0.78); font-weight: 600; }
+.li-meta-sep   { width: 1px; height: 32px; background: rgba(255,255,255,0.1); }
+
+.li-dots { display: flex; gap: 4px; align-items: center; }
+.li-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.14);
+}
+.li-dot.filled { background: #FF6B00; }
+
+.li-code-wrap {
+  margin-bottom: 20px;
+}
+.li-code-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.li-code {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 0;
+  overflow-x: auto;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.82);
+  white-space: pre;
+}
+
+.li-start-btn {
+  width: 100%;
+  padding: 13px;
+  background: var(--licol, #FF6B00);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+  transition: opacity 0.18s;
+}
+.li-start-btn:hover { opacity: 0.88; }
+
+.li-skip-btn {
+  width: 100%;
+  padding: 9px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.3);
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.15s;
+}
+.li-skip-btn:hover { color: rgba(255,255,255,0.55); }
+
 /* ===== 言語診断クイズモーダル ===== */
 
 #quiz-modal {

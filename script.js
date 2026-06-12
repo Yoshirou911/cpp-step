@@ -1035,6 +1035,10 @@ function selectLanguage(langId) {
     syncProgressFromSupabase();
     syncMissionProgressFromSupabase();
   }
+  // 初回のみ言語紹介を表示
+  if (!localStorage.getItem('intro_seen_' + langId)) {
+    setTimeout(function() { showLangIntro(langId); }, 120);
+  }
 }
 
 // ===== プレミアム機能 =====
@@ -24520,4 +24524,168 @@ function startWithLanguage(langId) {
   closeQuizModal();
   startApp();
   setTimeout(function() { selectLanguage(langId); }, 80);
+}
+
+// ===== 言語紹介モーダル =====
+
+var LANG_INTRO = {
+  cpp: {
+    tagline: 'ゲームエンジン・OS・ブラウザを動かす言語',
+    builds: ['🎮 ゲームエンジン', '🖥️ OS・ブラウザ', '⚡ 高速処理'],
+    difficulty: 4, duration: '3〜6ヶ月',
+    hello: '#include <iostream>\nusing namespace std;\nint main() {\n    cout << "Hello, C++!" << endl;\n    return 0;\n}'
+  },
+  python: {
+    tagline: 'AI・データ分析・自動化の最強言語',
+    builds: ['🤖 AI・機械学習', '📊 データ分析', '⚙️ 自動化スクリプト'],
+    difficulty: 1, duration: '1〜2ヶ月',
+    hello: 'print("Hello, Python!")'
+  },
+  javascript: {
+    tagline: 'Webを動かす、ブラウザ唯一の言語',
+    builds: ['🌐 Webサイト', '⚡ インタラクション', '🛠️ サーバー(Node.js)'],
+    difficulty: 2, duration: '1〜2ヶ月',
+    hello: 'console.log("Hello, JavaScript!");'
+  },
+  ruby: {
+    tagline: 'きれいなコードと爆速Web開発',
+    builds: ['🌐 Webアプリ(Rails)', '⚙️ スクリプト', '🤖 スクレイピング'],
+    difficulty: 2, duration: '1〜2ヶ月',
+    hello: 'puts "Hello, Ruby!"'
+  },
+  typescript: {
+    tagline: '型安全なJavaScript。大規模開発の定番',
+    builds: ['🏢 大規模Webアプリ', '🔷 型安全なAPI', '⚛️ React・Next.js'],
+    difficulty: 3, duration: '2〜3ヶ月',
+    hello: 'const msg: string = "Hello, TypeScript!";\nconsole.log(msg);'
+  },
+  kotlin: {
+    tagline: 'Androidアプリ開発の公式言語',
+    builds: ['📱 Androidアプリ', '🛠️ サーバー(Ktor)', '🎮 マルチプラットフォーム'],
+    difficulty: 3, duration: '2〜3ヶ月',
+    hello: 'fun main() {\n    println("Hello, Kotlin!")\n}'
+  },
+  swift: {
+    tagline: 'iPhoneアプリ開発の公式言語',
+    builds: ['🍎 iPhoneアプリ', '💻 Macアプリ', '⌚ Apple Watch'],
+    difficulty: 3, duration: '2〜4ヶ月',
+    hello: 'print("Hello, Swift!")'
+  },
+  java: {
+    tagline: '企業システムの定番。どこでも動く',
+    builds: ['🏢 企業システム', '🤖 Androidアプリ', '🛠️ Springサーバー'],
+    difficulty: 3, duration: '3〜5ヶ月',
+    hello: 'class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, Java!");\n    }\n}'
+  },
+  csharp: {
+    tagline: 'UnityゲームとWindowsアプリの主役',
+    builds: ['🎮 Unityゲーム', '🖥️ Windowsアプリ', '🌐 .NETサーバー'],
+    difficulty: 3, duration: '2〜4ヶ月',
+    hello: 'using System;\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello, C#!");\n    }\n}'
+  },
+  go: {
+    tagline: 'シンプルで超高速なクラウド言語',
+    builds: ['☁️ クラウドAPI', '🐳 Dockerなどインフラ', '🚀 マイクロサービス'],
+    difficulty: 3, duration: '2〜3ヶ月',
+    hello: 'package main\nimport "fmt"\nfunc main() {\n    fmt.Println("Hello, Go!")\n}'
+  },
+  c: {
+    tagline: 'OSと組み込みの基礎。コンピュータの心臓部',
+    builds: ['🖥️ OS(Linuxなど)', '🔌 組み込み・マイコン', '⚡ ドライバ開発'],
+    difficulty: 4, duration: '3〜6ヶ月',
+    hello: '#include <stdio.h>\nint main() {\n    printf("Hello, C!\\n");\n    return 0;\n}'
+  },
+  rust: {
+    tagline: '安全性と速さを両立する次世代言語',
+    builds: ['⚡ 超高速システム', '🔒 安全なOS開発', '🌐 WebAssembly'],
+    difficulty: 5, duration: '4〜8ヶ月',
+    hello: 'fn main() {\n    println!("Hello, Rust!");\n}'
+  },
+  html: {
+    tagline: 'Webページの骨格と見た目を作る',
+    builds: ['🌐 Webページ', '🎨 ランディングページ', '📱 スマホ対応サイト'],
+    difficulty: 1, duration: '2〜4週間',
+    hello: '<!DOCTYPE html>\n<html>\n<body>\n  <h1>Hello, HTML!</h1>\n</body>\n</html>'
+  },
+  sql: {
+    tagline: 'データベースを自在に操る言語',
+    builds: ['💾 データ抽出・集計', '📊 BI・データ分析', '🏢 業務システム連携'],
+    difficulty: 2, duration: '1〜2ヶ月',
+    hello: "SELECT 'Hello, SQL!' AS message;"
+  },
+  bash: {
+    tagline: 'Linuxを自在に操り作業を自動化する',
+    builds: ['🖥️ サーバー管理', '⚙️ CI/CD自動化', '📁 ファイル一括処理'],
+    difficulty: 2, duration: '1〜2ヶ月',
+    hello: 'echo "Hello, Bash!"'
+  },
+  regex: {
+    tagline: 'あらゆる言語で使えるパターン検索術',
+    builds: ['🔍 ログ解析', '✅ 入力バリデーション', '🔄 文字列置換・抽出'],
+    difficulty: 3, duration: '2〜4週間',
+    hello: "const str = 'Hello, World!';\nconst match = str.match(/Hello/);\nconsole.log(match[0]); // \"Hello\""
+  },
+  php: {
+    tagline: 'Web開発の実績No.1言語',
+    builds: ['🌐 WebアプリLaravel)', '📝 WordPress', '🛠️ APIサーバー'],
+    difficulty: 2, duration: '1〜2ヶ月',
+    hello: '<?php\necho "Hello, PHP!";\n?>'
+  }
+};
+
+function showLangIntro(langId) {
+  var d = LANG_INTRO[langId];
+  if (!d) return;
+  var r = null;
+  LANGUAGE_GROUPS.forEach(function(g) {
+    g.langs.forEach(function(l) { if (l.id === langId) r = l; });
+  });
+  var color = r ? r.color : '#FF6B00';
+  var name  = r ? r.name  : langId;
+
+  var diffDots = '';
+  for (var i = 1; i <= 5; i++) {
+    diffDots += '<span class="li-dot' + (i <= d.difficulty ? ' filled' : '') + '"></span>';
+  }
+  var diffLabel = ['', 'かんたん', '普通', 'やや難しい', '難しい', '超難しい'][d.difficulty];
+
+  var buildsHtml = d.builds.map(function(b) {
+    return '<span class="li-build-tag">' + b + '</span>';
+  }).join('');
+
+  var overlay = document.getElementById('lang-intro-overlay');
+  overlay.innerHTML =
+    '<div class="li-box">' +
+      '<div class="li-colorbar" style="background:' + color + '"></div>' +
+      '<div class="li-body">' +
+        '<div class="li-lang-name" style="color:' + color + '">' + name + '</div>' +
+        '<div class="li-tagline">' + d.tagline + '</div>' +
+        '<div class="li-builds">' + buildsHtml + '</div>' +
+        '<div class="li-meta">' +
+          '<div class="li-meta-item">' +
+            '<div class="li-meta-label">難易度</div>' +
+            '<div class="li-dots">' + diffDots + '</div>' +
+            '<div class="li-meta-val">' + diffLabel + '</div>' +
+          '</div>' +
+          '<div class="li-meta-sep"></div>' +
+          '<div class="li-meta-item">' +
+            '<div class="li-meta-label">目安期間</div>' +
+            '<div class="li-meta-val">' + d.duration + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="li-code-wrap">' +
+          '<div class="li-code-label">Hello World</div>' +
+          '<pre class="li-code"><code>' + d.hello.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</code></pre>' +
+        '</div>' +
+        '<button class="li-start-btn" style="--licol:' + color + '" onclick="dismissLangIntro(\'' + langId + '\')">▶ 問題を始める</button>' +
+        '<button class="li-skip-btn" onclick="dismissLangIntro(\'' + langId + '\')">スキップ</button>' +
+      '</div>' +
+    '</div>';
+
+  overlay.classList.remove('hidden');
+}
+
+function dismissLangIntro(langId) {
+  localStorage.setItem('intro_seen_' + langId, '1');
+  document.getElementById('lang-intro-overlay').classList.add('hidden');
 }
