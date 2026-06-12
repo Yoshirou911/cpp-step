@@ -4188,45 +4188,206 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   line-height: 1.6;
 }
 
-.explain-patterns-wrap {
-  margin-top: 4px;
-}
-
-.explain-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 12px;
-}
-
-.explain-card {
-  background: #0d1820;
-  border: 1px solid #1e3a50;
-  border-radius: 10px;
-  padding: 14px 16px;
-  transition: border-color 0.2s, transform 0.15s;
-}
-
-.explain-card:hover {
-  border-color: #4a8aba;
-  transform: translateY(-2px);
-}
-
-.explain-card-syntax {
-  font-family: 'Share Tech Mono', 'Consolas', monospace;
-  color: #7ec8e3;
-  font-size: 0.85rem;
-  margin-bottom: 8px;
-  font-weight: 600;
-}
-
-.explain-card-desc {
-  color: #a8b8c8;
-  font-size: 0.83rem;
-  line-height: 1.6;
-}
-
 .explain-error {
   color: #ff6b6b;
   font-size: 0.9rem;
   padding: 12px 0;
+}
+
+.explain-btns {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.syntax-menu-btn {
+  background: linear-gradient(135deg, #1a2a1a 0%, #0d1f0d 100%);
+  border: 1px solid #2a5a2a;
+  color: #7ec87e;
+}
+.syntax-menu-btn:hover {
+  background: linear-gradient(135deg, #243424 0%, #152515 100%);
+  border-color: #4a9a4a;
+  color: #a8e8a8;
+}
+
+/* ===== 書き方メニューモーダル ===== */
+
+.syntax-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+
+.syntax-modal.open {
+  pointer-events: auto;
+}
+
+.syntax-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.syntax-modal.open .syntax-overlay {
+  opacity: 1;
+}
+
+.syntax-panel {
+  position: relative;
+  width: min(540px, 96vw);
+  height: 100dvh;
+  background: #0d1820;
+  border-left: 1px solid #1e3a50;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.syntax-modal.open .syntax-panel {
+  transform: translateX(0);
+}
+
+.syntax-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid #1e3a50;
+  background: #0a1418;
+  flex-shrink: 0;
+}
+
+.syntax-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.syntax-lang-badge {
+  background: linear-gradient(135deg, #1a3a4a, #0d2535);
+  border: 1px solid #2a5a7a;
+  color: #7ec8e3;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px;
+  letter-spacing: 0.1em;
+}
+
+.syntax-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e8f4fc;
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+.syntax-close {
+  background: none;
+  border: none;
+  color: #6080a0;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1;
+}
+
+.syntax-close:hover {
+  color: #c8d8e8;
+  background: #1a2e40;
+}
+
+.syntax-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px 40px;
+  scrollbar-width: thin;
+  scrollbar-color: #1e3a50 transparent;
+}
+
+.syntax-body::-webkit-scrollbar { width: 5px; }
+.syntax-body::-webkit-scrollbar-track { background: transparent; }
+.syntax-body::-webkit-scrollbar-thumb { background: #1e3a50; border-radius: 3px; }
+
+.syntax-cat {
+  margin-bottom: 28px;
+}
+
+.syntax-cat-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #4a8aba;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0 0 8px 0;
+  border-bottom: 1px solid #1e3a50;
+  margin-bottom: 12px;
+}
+
+.syntax-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.syntax-item {
+  background: #0a1820;
+  border: 1px solid #1a3040;
+  border-radius: 8px;
+  padding: 12px 14px;
+  transition: border-color 0.15s;
+}
+
+.syntax-item:hover {
+  border-color: #2a5a7a;
+}
+
+.syntax-item-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #c8d8e8;
+  margin-bottom: 8px;
+}
+
+.syntax-item-code {
+  font-family: 'Share Tech Mono', 'Consolas', monospace;
+  font-size: 0.82rem;
+  color: #f8c555;
+  background: #060e14;
+  border: 1px solid #12283a;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin: 0 0 8px 0;
+  white-space: pre;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+.syntax-item-note {
+  font-size: 0.78rem;
+  color: #7090a8;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .explain-btns {
+    flex-direction: column;
+  }
+  .syntax-panel {
+    width: 100vw;
+    border-left: none;
+    border-top: 1px solid #1e3a50;
+  }
 }

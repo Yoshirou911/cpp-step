@@ -22661,7 +22661,10 @@ function renderDetail(id) {
     '</div>' +
 
     '<div class="section explain-section">' +
-      '<button class="toggle-btn explain-open-btn" onclick="explainCode(' + p.id + ')">🔍 コードを一行ずつ解説する</button>' +
+      '<div class="explain-btns">' +
+        '<button class="toggle-btn explain-open-btn" onclick="explainCode(' + p.id + ')">🔍 コードを一行ずつ解説する</button>' +
+        '<button class="toggle-btn syntax-menu-btn" onclick="showSyntaxMenu()">📚 書き方メニュー</button>' +
+      '</div>' +
       '<div id="explain-area-' + p.id + '" class="explain-area hidden"></div>' +
     '</div>' +
 
@@ -22674,6 +22677,333 @@ function renderDetail(id) {
 
   // Ace Editor を初期化（再描画のときはコードを引き継ぐ）
   initAceEditor(savedCode !== null ? savedCode : getStarterCode());
+}
+
+// ===== 書き方メニュー =====
+
+var SYNTAX_GUIDE = {
+  cpp: [
+    { cat: '基本形', items: [
+      { t: 'プログラムの基本形', c: '#include <iostream>\nusing namespace std;\n\nint main() {\n    // ここに処理を書く\n    return 0;\n}', n: 'C++プログラムの最小構成' },
+    ]},
+    { cat: '変数・型', items: [
+      { t: 'int（整数）', c: 'int x = 10;', n: '整数型の変数宣言' },
+      { t: 'double（小数）', c: 'double pi = 3.14;', n: '浮動小数点型' },
+      { t: 'string（文字列）', c: 'string s = "hello";', n: '文字列型' },
+      { t: 'bool（真偽値）', c: 'bool flag = true;', n: 'trueまたはfalse' },
+      { t: 'const（定数）', c: 'const int MAX = 100;', n: '変更できない定数' },
+    ]},
+    { cat: '入出力', items: [
+      { t: '画面に出力', c: 'cout << "hello" << endl;', n: '文字列を出力して改行' },
+      { t: '変数を出力', c: 'cout << x << endl;', n: '変数の値を出力' },
+      { t: '複数を出力', c: 'cout << "x=" << x << " y=" << y << endl;', n: '<<で連結して出力' },
+      { t: 'キーボードから入力', c: 'cin >> x;', n: '標準入力から変数に読み込む' },
+    ]},
+    { cat: '条件分岐', items: [
+      { t: 'if文', c: 'if (x > 0) {\n    // 処理\n}', n: '条件が真のとき実行' },
+      { t: 'if-else文', c: 'if (x > 0) {\n    // 正のとき\n} else {\n    // それ以外\n}', n: '条件の真偽で分岐' },
+      { t: 'else if', c: 'if (x > 0) {\n} else if (x == 0) {\n} else {\n}', n: '複数条件の分岐' },
+    ]},
+    { cat: 'ループ', items: [
+      { t: 'for文（回数指定）', c: 'for (int i = 0; i < 10; i++) {\n    cout << i << endl;\n}', n: '0から9まで10回繰り返す' },
+      { t: 'while文', c: 'while (x > 0) {\n    x--;\n}', n: '条件が真の間繰り返す' },
+      { t: '範囲for文', c: 'for (int v : vec) {\n    cout << v << endl;\n}', n: 'コンテナの全要素を走査' },
+      { t: 'break / continue', c: 'break;    // ループを抜ける\ncontinue; // 次の繰り返しへ', n: 'ループの制御' },
+    ]},
+    { cat: '関数', items: [
+      { t: '関数定義', c: 'int add(int a, int b) {\n    return a + b;\n}', n: '戻り値の型 関数名(引数) { ... }' },
+      { t: '戻り値なし', c: 'void greet() {\n    cout << "hi" << endl;\n}', n: 'voidは戻り値なし' },
+      { t: '関数呼び出し', c: 'int result = add(3, 4);', n: '定義した関数を呼び出す' },
+    ]},
+    { cat: '配列・vector', items: [
+      { t: '配列宣言', c: 'int arr[5] = {1, 2, 3, 4, 5};', n: '固定長配列' },
+      { t: 'vector宣言', c: 'vector<int> v = {1, 2, 3};', n: '可変長配列（推奨）' },
+      { t: '要素追加', c: 'v.push_back(4);', n: 'vectorの末尾に要素を追加' },
+      { t: 'サイズ取得', c: 'int n = v.size();', n: '要素数を取得' },
+      { t: '要素アクセス', c: 'v[0]  // 先頭要素', n: '[インデックス]でアクセス（0始まり）' },
+    ]},
+  ],
+  python: [
+    { cat: '基本形', items: [
+      { t: 'プログラムの基本形', c: '# ここに処理を書く\nprint("hello")', n: 'Pythonはmain()不要' },
+    ]},
+    { cat: '変数', items: [
+      { t: '変数代入', c: 'x = 10\ns = "hello"\npi = 3.14', n: '型宣言不要。代入で自動判定' },
+      { t: '複数代入', c: 'a, b = 1, 2', n: '一度に複数変数に代入' },
+      { t: '型変換', c: 'int("42")    # 文字列→整数\nstr(100)     # 整数→文字列\nfloat("3.14")', n: '型を明示的に変換する' },
+    ]},
+    { cat: '入出力', items: [
+      { t: '画面に出力', c: 'print("hello")\nprint(x)', n: '文字列や変数を出力' },
+      { t: 'f文字列', c: 'print(f"x = {x}")', n: '変数を文字列に埋め込む' },
+      { t: 'キーボードから入力', c: 'x = input("入力: ")\nn = int(input())', n: '文字列で受け取る。数値はint()変換' },
+    ]},
+    { cat: '条件分岐', items: [
+      { t: 'if文', c: 'if x > 0:\n    print("正")', n: 'コロンとインデントで構造を表す' },
+      { t: 'if-else', c: 'if x > 0:\n    print("正")\nelse:\n    print("0以下")', n: '' },
+      { t: 'elif', c: 'if x > 0:\n    pass\nelif x < 0:\n    pass\nelse:\n    pass', n: '複数条件の分岐' },
+    ]},
+    { cat: 'ループ', items: [
+      { t: 'for文（range）', c: 'for i in range(10):\n    print(i)', n: '0から9まで10回' },
+      { t: 'for文（リスト）', c: 'for v in lst:\n    print(v)', n: 'リストの全要素を走査' },
+      { t: 'while文', c: 'while x > 0:\n    x -= 1', n: '条件が真の間繰り返す' },
+      { t: 'enumerate', c: 'for i, v in enumerate(lst):\n    print(i, v)', n: 'インデックスと値を同時に取得' },
+    ]},
+    { cat: '関数', items: [
+      { t: '関数定義', c: 'def add(a, b):\n    return a + b', n: 'defで定義。returnで値を返す' },
+      { t: '関数呼び出し', c: 'result = add(3, 4)', n: '' },
+      { t: 'デフォルト引数', c: 'def greet(name="世界"):\n    print(f"こんにちは{name}")', n: '' },
+    ]},
+    { cat: 'リスト', items: [
+      { t: 'リスト宣言', c: 'lst = [1, 2, 3, 4, 5]', n: '可変長の要素列' },
+      { t: '要素追加・削除', c: 'lst.append(6)\nlst.pop()', n: '末尾に追加 / 末尾を削除' },
+      { t: 'スライス', c: 'lst[1:3]  # [2, 3]\nlst[:2]   # 先頭2件\nlst[-1]   # 末尾', n: '部分リストを取り出す' },
+      { t: '長さ', c: 'len(lst)', n: 'リストの要素数' },
+    ]},
+  ],
+  javascript: [
+    { cat: '基本形', items: [
+      { t: 'プログラムの基本形', c: '// ここに処理を書く\nconsole.log("hello");', n: 'ブラウザまたはNode.jsで実行' },
+    ]},
+    { cat: '変数', items: [
+      { t: 'const（定数）', c: 'const x = 10;', n: '再代入不可。基本はconstを使う' },
+      { t: 'let（変数）', c: 'let count = 0;', n: '再代入可能な変数' },
+      { t: 'テンプレートリテラル', c: 'const msg = `x = ${x}`;', n: '変数を文字列に埋め込む' },
+    ]},
+    { cat: '入出力', items: [
+      { t: 'コンソール出力', c: 'console.log("hello", x);', n: '値をコンソールに出力' },
+      { t: 'アラート', c: 'alert("メッセージ");', n: 'ブラウザでポップアップ表示' },
+    ]},
+    { cat: '条件分岐', items: [
+      { t: 'if文', c: 'if (x > 0) {\n    console.log("正");\n}', n: '' },
+      { t: 'if-else', c: 'if (x > 0) {\n} else {\n}', n: '' },
+      { t: '三項演算子', c: 'const msg = x > 0 ? "正" : "0以下";', n: '条件 ? 真 : 偽' },
+    ]},
+    { cat: 'ループ', items: [
+      { t: 'for文', c: 'for (let i = 0; i < 10; i++) {\n    console.log(i);\n}', n: '' },
+      { t: 'forEach', c: 'arr.forEach(v => console.log(v));', n: '配列の全要素を処理' },
+      { t: 'for...of', c: 'for (const v of arr) {\n    console.log(v);\n}', n: '配列の要素を順に取り出す' },
+    ]},
+    { cat: '関数', items: [
+      { t: '関数宣言', c: 'function add(a, b) {\n    return a + b;\n}', n: '' },
+      { t: 'アロー関数', c: 'const add = (a, b) => a + b;', n: '簡潔な関数の書き方' },
+      { t: '非同期関数', c: 'async function fetchData() {\n    const data = await api();\n}', n: 'awaitで非同期処理を待つ' },
+    ]},
+    { cat: '配列', items: [
+      { t: '配列宣言', c: 'const arr = [1, 2, 3];', n: '' },
+      { t: 'map', c: 'const doubled = arr.map(x => x * 2);', n: '全要素を変換した新配列' },
+      { t: 'filter', c: 'const evens = arr.filter(x => x % 2 === 0);', n: '条件を満たす要素だけ抽出' },
+      { t: 'push/pop', c: 'arr.push(4); arr.pop();', n: '末尾への追加・削除' },
+    ]},
+  ],
+  java: [
+    { cat: '基本形', items: [
+      { t: 'プログラムの基本形', c: 'public class Main {\n    public static void main(String[] args) {\n        // ここに処理を書く\n    }\n}', n: 'Javaプログラムの最小構成' },
+    ]},
+    { cat: '変数・型', items: [
+      { t: 'int型', c: 'int x = 10;', n: '整数型' },
+      { t: 'double型', c: 'double pi = 3.14;', n: '浮動小数点型' },
+      { t: 'String型', c: 'String s = "hello";', n: '文字列型（大文字S）' },
+      { t: 'boolean型', c: 'boolean flag = true;', n: '真偽値型' },
+    ]},
+    { cat: '入出力', items: [
+      { t: '画面に出力', c: 'System.out.println("hello");', n: '改行あり出力' },
+      { t: '変数を出力', c: 'System.out.println(x);', n: '' },
+      { t: 'キーボードから入力', c: 'Scanner sc = new Scanner(System.in);\nint n = sc.nextInt();\nString s = sc.next();', n: 'Scannerで標準入力を読む' },
+    ]},
+    { cat: '条件分岐', items: [
+      { t: 'if文', c: 'if (x > 0) {\n    // 処理\n}', n: '' },
+      { t: 'if-else', c: 'if (x > 0) {\n} else if (x < 0) {\n} else {\n}', n: '' },
+    ]},
+    { cat: 'ループ', items: [
+      { t: 'for文', c: 'for (int i = 0; i < 10; i++) {\n    System.out.println(i);\n}', n: '' },
+      { t: '拡張for文', c: 'for (int v : arr) {\n    System.out.println(v);\n}', n: '配列の全要素を走査' },
+      { t: 'while文', c: 'while (x > 0) {\n    x--;\n}', n: '' },
+    ]},
+    { cat: '関数（メソッド）', items: [
+      { t: 'staticメソッド定義', c: 'static int add(int a, int b) {\n    return a + b;\n}', n: 'mainから呼べるstaticメソッド' },
+      { t: '戻り値なし', c: 'static void greet() {\n    System.out.println("hi");\n}', n: '' },
+      { t: '呼び出し', c: 'int result = add(3, 4);', n: '' },
+    ]},
+    { cat: '配列・ArrayList', items: [
+      { t: '配列宣言', c: 'int[] arr = {1, 2, 3};', n: '固定長配列' },
+      { t: 'ArrayList', c: 'ArrayList<Integer> list = new ArrayList<>();\nlist.add(1);\nlist.get(0);', n: '可変長リスト' },
+      { t: '長さ', c: 'arr.length        // 配列\nlist.size()       // ArrayList', n: '要素数の取得方法' },
+    ]},
+  ],
+  sql: [
+    { cat: 'データ取得（SELECT）', items: [
+      { t: '全列取得', c: 'SELECT * FROM users;', n: 'テーブルの全列を取得' },
+      { t: '列を指定', c: 'SELECT name, age FROM users;', n: '特定の列だけ取得' },
+      { t: '条件で絞り込み', c: 'SELECT * FROM users\nWHERE age >= 20;', n: 'WHEREで行を絞り込む' },
+      { t: '並び替え', c: 'SELECT * FROM users\nORDER BY age DESC;', n: 'DESC：降順、ASC：昇順' },
+      { t: '件数制限', c: 'SELECT * FROM users LIMIT 10;', n: '取得件数を制限する' },
+    ]},
+    { cat: '集計', items: [
+      { t: '件数カウント', c: 'SELECT COUNT(*) FROM users;', n: '行数を数える' },
+      { t: '平均・合計・最大最小', c: 'SELECT AVG(age), SUM(score),\n       MAX(age), MIN(age)\nFROM users;', n: '数値の集計関数' },
+      { t: 'グループ集計', c: 'SELECT dept, COUNT(*)\nFROM users\nGROUP BY dept;', n: 'GROUP BYで列の値ごとに集計' },
+      { t: '集計条件', c: 'SELECT dept, COUNT(*)\nFROM users\nGROUP BY dept\nHAVING COUNT(*) > 5;', n: 'HAVINGは集計後の絞り込み' },
+    ]},
+    { cat: 'テーブル結合（JOIN）', items: [
+      { t: 'INNER JOIN', c: 'SELECT * FROM orders\nINNER JOIN users\n  ON orders.user_id = users.id;', n: '両テーブルに存在する行だけ結合' },
+      { t: 'LEFT JOIN', c: 'SELECT * FROM users\nLEFT JOIN orders\n  ON users.id = orders.user_id;', n: '左テーブルを全て保持して結合' },
+    ]},
+    { cat: 'データ操作', items: [
+      { t: 'INSERT', c: 'INSERT INTO users (name, age)\nVALUES ("田中", 25);', n: '新しい行を追加' },
+      { t: 'UPDATE', c: 'UPDATE users\nSET age = 26\nWHERE id = 1;', n: '行を更新（WHEREを忘れずに）' },
+      { t: 'DELETE', c: 'DELETE FROM users\nWHERE id = 1;', n: '行を削除（WHEREを忘れずに）' },
+    ]},
+    { cat: 'テーブル定義', items: [
+      { t: 'テーブル作成', c: 'CREATE TABLE users (\n    id   INT PRIMARY KEY,\n    name VARCHAR(50),\n    age  INT\n);', n: 'テーブルとカラムを定義' },
+    ]},
+  ],
+  html: [
+    { cat: 'HTML基本構造', items: [
+      { t: 'HTMLの基本形', c: '<!DOCTYPE html>\n<html lang="ja">\n<head>\n  <meta charset="UTF-8">\n  <title>タイトル</title>\n</head>\n<body>\n  <!-- コンテンツ -->\n</body>\n</html>', n: 'HTMLドキュメントの最小構成' },
+    ]},
+    { cat: 'よく使うHTMLタグ', items: [
+      { t: '見出し', c: '<h1>大見出し</h1>\n<h2>中見出し</h2>\n<h3>小見出し</h3>', n: 'h1〜h6まで使える' },
+      { t: '段落・テキスト', c: '<p>段落テキスト</p>\n<span>インライン</span>', n: 'pはブロック、spanはインライン' },
+      { t: 'リンク', c: '<a href="https://example.com">リンクテキスト</a>', n: 'hrefに遷移先URLを指定' },
+      { t: '画像', c: '<img src="image.jpg" alt="説明文">', n: 'altは画像の代替テキスト' },
+      { t: 'リスト', c: '<ul>\n  <li>箇条書き項目</li>\n</ul>\n<ol>\n  <li>番号付き項目</li>\n</ol>', n: 'ul：箇条書き、ol：番号付き' },
+      { t: 'ボタン', c: '<button onclick="myFunc()">押す</button>', n: 'clickイベントを設定できる' },
+      { t: '入力フォーム', c: '<input type="text" placeholder="入力">\n<input type="number">\n<input type="checkbox">', n: 'typeで入力の種類を指定' },
+      { t: 'div・section', c: '<div class="card">\n  コンテンツ\n</div>', n: 'ブロック要素。レイアウトの基本単位' },
+    ]},
+    { cat: 'CSSの基本', items: [
+      { t: 'セレクタ・プロパティ', c: 'h1 {\n  color: red;\n  font-size: 24px;\n}', n: 'セレクタ { プロパティ: 値; }' },
+      { t: 'クラス', c: '.card {\n  background: white;\n  padding: 16px;\n}', n: '.クラス名でクラスに適用' },
+      { t: 'IDセレクタ', c: '#header {\n  background: navy;\n}', n: '#ID名で特定の要素に適用' },
+      { t: 'Flexbox', c: '.container {\n  display: flex;\n  gap: 16px;\n  align-items: center;\n}', n: '横並びレイアウトに便利' },
+      { t: '色・背景', c: 'color: #333;\nbackground-color: #f0f0f0;\nborder: 1px solid #ccc;', n: '色はカラーコードや色名で指定' },
+      { t: 'マージン・パディング', c: 'margin: 16px;       /* 外側の余白 */\npadding: 16px;      /* 内側の余白 */\nmargin: 8px 16px;   /* 上下 左右 */', n: 'spaceの調整に使う' },
+    ]},
+  ],
+  php: [
+    { cat: '基本形', items: [
+      { t: 'PHPファイルの基本形', c: '<?php\n\n// ここに処理を書く\n\n?>', n: '<?php ?>タグでPHPコードを囲む' },
+    ]},
+    { cat: '変数・基本', items: [
+      { t: '変数宣言', c: '$name = "田中";\n$age = 25;\n$pi = 3.14;', n: '$で始まる。型宣言不要' },
+      { t: '文字列結合', c: '$msg = "こんにちは" . $name;', n: '.演算子で文字列を結合' },
+      { t: '文字列補間', c: '$msg = "名前は{$name}です";', n: 'ダブルクォートで変数を埋め込める' },
+    ]},
+    { cat: '入出力', items: [
+      { t: '画面に出力', c: 'echo "hello";\necho $name;', n: 'echoで出力（printも使える）' },
+      { t: 'HTMLと組み合わせ', c: '<p><?php echo $name; ?></p>', n: '<?php ?>タグでHTMLにPHPを埋め込む' },
+    ]},
+    { cat: '条件分岐', items: [
+      { t: 'if文', c: 'if ($x > 0) {\n    echo "正";\n}', n: '' },
+      { t: 'if-else', c: 'if ($x > 0) {\n} else if ($x < 0) {\n} else {\n}', n: '' },
+    ]},
+    { cat: 'ループ', items: [
+      { t: 'for文', c: 'for ($i = 0; $i < 10; $i++) {\n    echo $i;\n}', n: '' },
+      { t: 'foreach文', c: 'foreach ($arr as $v) {\n    echo $v;\n}', n: '配列の全要素を走査' },
+      { t: 'while文', c: 'while ($x > 0) {\n    $x--;\n}', n: '' },
+    ]},
+    { cat: '関数', items: [
+      { t: '関数定義', c: 'function add($a, $b) {\n    return $a + $b;\n}', n: '' },
+      { t: '関数呼び出し', c: '$result = add(3, 4);', n: '' },
+    ]},
+    { cat: '配列', items: [
+      { t: '配列宣言', c: '$arr = [1, 2, 3, 4, 5];', n: '[]で宣言' },
+      { t: '連想配列', c: '$user = [\n    "name" => "田中",\n    "age"  => 25\n];', n: 'キーと値のペア' },
+      { t: '要素追加', c: '$arr[] = 6;', n: '末尾に要素を追加' },
+      { t: '長さ', c: 'count($arr)', n: '配列の要素数を取得' },
+    ]},
+  ],
+  rust: [
+    { cat: '基本形', items: [
+      { t: 'プログラムの基本形', c: 'fn main() {\n    // ここに処理を書く\n    println!("hello");\n}', n: 'Rustプログラムの最小構成' },
+    ]},
+    { cat: '変数・型', items: [
+      { t: 'let（不変）', c: 'let x = 10;', n: 'デフォルトで不変。型推論あり' },
+      { t: 'let mut（可変）', c: 'let mut count = 0;\ncount += 1;', n: 'mutで変更可能にする' },
+      { t: '型を明示', c: 'let x: i32 = 10;\nlet f: f64 = 3.14;\nlet s: String = String::from("hello");', n: 'i32, f64, bool, String等' },
+      { t: '文字列スライス', c: 'let s: &str = "hello";', n: '&strはリテラル文字列の参照' },
+    ]},
+    { cat: '入出力', items: [
+      { t: 'コンソール出力', c: 'println!("hello");\nprintln!("x = {}", x);\nprintln!("vec = {:?}", vec);', n: '{}で変数埋め込み、{:?}でデバッグ表示' },
+      { t: '標準入力', c: 'let mut input = String::new();\nstd::io::stdin().read_line(&mut input).unwrap();\nlet n: i32 = input.trim().parse().unwrap();', n: '文字列で受け取り、parseで変換' },
+    ]},
+    { cat: '条件分岐', items: [
+      { t: 'if式', c: 'if x > 0 {\n    println!("正");\n}', n: '括弧不要、中括弧必須' },
+      { t: 'if-else式（値を返す）', c: 'let msg = if x > 0 { "正" } else { "0以下" };', n: 'Rustのifは値を返す式' },
+      { t: 'match', c: 'match x {\n    1 => println!("one"),\n    2 | 3 => println!("2か3"),\n    _ => println!("その他"),\n}', n: '強力なパターンマッチング' },
+    ]},
+    { cat: 'ループ', items: [
+      { t: 'for文（範囲）', c: 'for i in 0..10 {\n    println!("{}", i);\n}', n: '0から9まで（10は含まない）' },
+      { t: 'for文（イテレータ）', c: 'for v in &vec {\n    println!("{}", v);\n}', n: 'vecの全要素を走査' },
+      { t: 'loop（無限ループ）', c: 'loop {\n    if done { break; }\n}', n: 'breakで脱出' },
+      { t: 'while', c: 'while x > 0 {\n    x -= 1;\n}', n: '' },
+    ]},
+    { cat: '関数', items: [
+      { t: '関数定義', c: 'fn add(a: i32, b: i32) -> i32 {\n    a + b  // セミコロンなしで戻り値\n}', n: '引数と戻り値の型を明示' },
+      { t: '戻り値なし', c: 'fn greet() {\n    println!("hello");\n}', n: '戻り値なしは()型' },
+    ]},
+    { cat: 'Vec（ベクタ）', items: [
+      { t: 'Vec宣言', c: 'let v = vec![1, 2, 3];\nlet mut v: Vec<i32> = Vec::new();', n: 'vec!マクロで簡単に初期化' },
+      { t: '要素追加', c: 'v.push(4);', n: '末尾に要素を追加' },
+      { t: '長さ', c: 'v.len()', n: '要素数を取得' },
+    ]},
+  ],
+};
+
+function showSyntaxMenu() {
+  var lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'cpp';
+  var guide = SYNTAX_GUIDE[lang];
+
+  var existing = document.getElementById('syntax-modal');
+  if (existing) { existing.remove(); }
+
+  var langLabel = lang.toUpperCase();
+  if (lang === 'cpp') langLabel = 'C++';
+  if (lang === 'javascript') langLabel = 'JavaScript';
+  if (lang === 'html') langLabel = 'HTML/CSS';
+
+  var modal = document.createElement('div');
+  modal.id = 'syntax-modal';
+  modal.className = 'syntax-modal';
+  modal.innerHTML =
+    '<div class="syntax-overlay" onclick="closeSyntaxMenu()"></div>' +
+    '<div class="syntax-panel">' +
+      '<div class="syntax-header">' +
+        '<div class="syntax-header-left">' +
+          '<span class="syntax-lang-badge">' + langLabel + '</span>' +
+          '<h3 class="syntax-title">書き方メニュー</h3>' +
+        '</div>' +
+        '<button class="syntax-close" onclick="closeSyntaxMenu()">✕</button>' +
+      '</div>' +
+      '<div class="syntax-body">' + _buildSyntaxBody(guide) + '</div>' +
+    '</div>';
+
+  document.body.appendChild(modal);
+  requestAnimationFrame(function() { modal.classList.add('open'); });
+}
+
+function _buildSyntaxBody(guide) {
+  if (!guide) return '<p class="explain-error">この言語の書き方メニューはまだ準備中です。</p>';
+  return guide.map(function(section) {
+    var items = section.items.map(function(item) {
+      return '<div class="syntax-item">' +
+        '<div class="syntax-item-title">' + escapeHtml(item.t) + '</div>' +
+        '<pre class="syntax-item-code">' + escapeHtml(item.c) + '</pre>' +
+        (item.n ? '<div class="syntax-item-note">' + escapeHtml(item.n) + '</div>' : '') +
+      '</div>';
+    }).join('');
+    return '<div class="syntax-cat">' +
+      '<div class="syntax-cat-title">' + escapeHtml(section.cat) + '</div>' +
+      '<div class="syntax-items">' + items + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function closeSyntaxMenu() {
+  var modal = document.getElementById('syntax-modal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  setTimeout(function() { if (modal.parentNode) modal.remove(); }, 250);
 }
 
 // ===== コード一行解説 =====
@@ -22696,8 +23026,7 @@ async function explainCode(problemId) {
   const system =
     'あなたはC++/プログラミング教育の専門家です。与えられたコードを初学者向けに解説してください。' +
     '必ず次のJSON形式だけで返答してください（マークダウンや説明文は不要）:\n' +
-    '{"lines":[{"code":"コードの一行","note":"その行の日本語解説"},...], ' +
-    '"patterns":[{"syntax":"構文名や書き方","desc":"簡潔な説明"},...]}';
+    '{"lines":[{"code":"コードの一行","note":"その行の日本語解説"},...]}';
 
   const userMsg =
     '問題タイトル: ' + p.title + '\n' +
@@ -22725,20 +23054,6 @@ async function explainCode(problemId) {
                 '<td class="explain-note">' + escapeHtml(l.note) + '</td></tr>';
       });
       html += '</tbody></table></div>';
-    }
-
-    // 書き方カード
-    if (data.patterns && data.patterns.length) {
-      html += '<div class="explain-patterns-wrap">';
-      html += '<h4 class="explain-subtitle">📚 書き方リファレンス</h4>';
-      html += '<div class="explain-cards">';
-      data.patterns.forEach(function(pt) {
-        html += '<div class="explain-card">' +
-                '<div class="explain-card-syntax">' + escapeHtml(pt.syntax) + '</div>' +
-                '<div class="explain-card-desc">' + escapeHtml(pt.desc) + '</div>' +
-                '</div>';
-      });
-      html += '</div></div>';
     }
 
     area.innerHTML = html;
