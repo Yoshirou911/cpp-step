@@ -3606,6 +3606,37 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   overflow-x: auto;
 }
 
+#basicform-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+.bf-tab {
+  background: transparent;
+  border: 1px solid rgba(255,107,0,0.18);
+  color: rgba(255,107,0,0.40);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
+}
+.bf-tab:hover {
+  color: rgba(255,107,0,0.75);
+  border-color: rgba(255,107,0,0.35);
+  background: rgba(255,107,0,0.05);
+}
+.bf-tab.active {
+  background: rgba(255,107,0,0.12);
+  border-color: var(--orange);
+  color: var(--orange);
+  border-left: 2px solid var(--orange);
+}
+
 #basicform-copy {
   background: transparent;
   border: 1px solid rgba(255,107,0,0.35);

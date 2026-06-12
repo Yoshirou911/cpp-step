@@ -9624,27 +9624,49 @@ function editorFill()    { playUIClick(); setEditorMode('fill');    }
 
 // ===== 基本形モーダル =====
 
-function getBasicFormCode() {
-  if (currentLanguage === 'python')     return 'print("Hello, World!")';
-  if (currentLanguage === 'javascript') return 'console.log("Hello, World!");';
-  if (currentLanguage === 'ruby')       return 'puts "Hello, World!"';
-  if (currentLanguage === 'typescript') return 'console.log("Hello, World!");';
-  if (currentLanguage === 'kotlin')     return 'fun main() {\n    println("Hello, World!")\n}';
-  if (currentLanguage === 'swift')      return 'print("Hello, World!")';
-  if (currentLanguage === 'java')       return 'class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}';
-  if (currentLanguage === 'csharp')     return 'using System;\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello, World!");\n    }\n}';
-  if (currentLanguage === 'go')         return 'package main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello, World!")\n}';
-  if (currentLanguage === 'c')          return '#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}';
-  if (currentLanguage === 'rust')       return 'fn main() {\n    println!("Hello, World!");\n}';
-  return '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}';
-}
+var _basicformLang = null;
+var _basicformTemplates = {
+  cpp:        '#include <iostream>\nusing namespace std;\n\nint main() {\n    \n    return 0;\n}',
+  python:     '# ここにコードを書いてください',
+  javascript: '// ここにコードを書いてください',
+  typescript: '// ここにコードを書いてください',
+  ruby:       '# ここにコードを書いてください',
+  kotlin:     'fun main() {\n    \n}',
+  swift:      '// ここにコードを書いてください',
+  java:       'class Main {\n    public static void main(String[] args) {\n        \n    }\n}',
+  csharp:     'using System;\nclass Program {\n    static void Main() {\n        \n    }\n}',
+  go:         'package main\n\nimport "fmt"\n\nfunc main() {\n    \n}',
+  c:          '#include <stdio.h>\n\nint main() {\n    \n    return 0;\n}',
+  rust:       'fn main() {\n    \n}'
+};
+var _basicformLangNames = {
+  cpp: 'C++', python: 'Python', javascript: 'JS', typescript: 'TS',
+  ruby: 'Ruby', kotlin: 'Kotlin', swift: 'Swift', java: 'Java',
+  csharp: 'C#', go: 'Go', c: 'C', rust: 'Rust'
+};
+var _basicformOrder = ['cpp','python','javascript','typescript','ruby','kotlin','swift','java','csharp','go','c','rust'];
 
 function showBasicForm() {
   playUIClick();
-  document.getElementById('basicform-title').textContent = getLangName() + ' — 基本形';
-  document.getElementById('basicform-code').textContent = getBasicFormCode();
-  document.getElementById('basicform-copy').textContent = 'コピー';
+  _basicformLang = currentLanguage;
+  _renderBasicFormModal();
   document.getElementById('basicform-modal').classList.remove('hidden');
+}
+
+function _renderBasicFormModal() {
+  var tabs = _basicformOrder.map(function(l) {
+    var active = l === _basicformLang ? ' active' : '';
+    return '<button class="bf-tab' + active + '" onclick="switchBasicFormLang(\'' + l + '\')">' + _basicformLangNames[l] + '</button>';
+  }).join('');
+  document.getElementById('basicform-tabs').innerHTML = tabs;
+  document.getElementById('basicform-title').textContent = _basicformLangNames[_basicformLang] + ' — 基本形';
+  document.getElementById('basicform-code').textContent = _basicformTemplates[_basicformLang];
+  document.getElementById('basicform-copy').textContent = 'コピー';
+}
+
+function switchBasicFormLang(lang) {
+  _basicformLang = lang;
+  _renderBasicFormModal();
 }
 
 function closeBasicFormModal() {
