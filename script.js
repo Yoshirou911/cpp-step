@@ -1070,6 +1070,19 @@ async function adminSetPremium(isPremium) {
 
 // ===== プレミアムモーダル =====
 
+// ===== 汎用トースト =====
+var _toastTimer = null;
+function showToast(message, type) {
+  if (_toastTimer) { clearTimeout(_toastTimer); }
+  var existing = document.querySelector('.app-toast');
+  if (existing) existing.remove();
+  var el = document.createElement('div');
+  el.className = 'app-toast' + (type === 'error' ? ' error' : '');
+  el.textContent = message;
+  document.body.appendChild(el);
+  _toastTimer = setTimeout(function() { el.remove(); _toastTimer = null; }, 2800);
+}
+
 function openPremiumModal() {
   document.getElementById('premium-modal').classList.remove('hidden');
 }
@@ -1102,7 +1115,7 @@ async function startCheckout() {
       throw new Error(data.error || '決済の開始に失敗しました');
     }
   } catch(e) {
-    alert('エラー: ' + e.message);
+    showToast('エラー: ' + e.message, 'error');
     btn.textContent = orig;
     btn.disabled = false;
   }
@@ -9723,7 +9736,7 @@ function setEditorMode(mode) {
 
 async function runCode() {
   const code = aceEditor ? aceEditor.getValue().trim() : '';
-  if (!code) { alert("コードを入力してください"); return; }
+  if (!code) { showToast('コードを入力してください'); return; }
 
   const btn        = document.querySelector(".run-btn");
   const outputArea = document.getElementById("output-area");
@@ -9792,7 +9805,9 @@ async function runCode() {
       var _timeoutSec = currentLanguage === 'kotlin' ? '30秒' : '20秒';
       outputText.textContent = "⏱ タイムアウト（" + _timeoutSec + "）: 無限ループや長時間処理が含まれていないか確認してください。" + (currentLanguage === 'kotlin' ? "\n（Kotlinは初回コンパイルに時間がかかる場合があります）" : "");
     } else {
-      outputText.textContent = "⚠ 実行エラー: Wandbox APIに接続できませんでした。\nインターネット接続を確認するか、しばらく待ってから再試行してください。\n詳細: " + e.message;
+      var _apiName = currentLanguage === 'kotlin' ? 'Kotlin実行サーバー' : 'Wandbox API';
+      var _kotlinNote = currentLanguage === 'kotlin' ? '\n（サーバーが一時的に停止している場合は、しばらく待ってから再試行してください）' : '';
+      outputText.textContent = "⚠ 実行エラー: " + _apiName + "に接続できませんでした。\nインターネット接続を確認するか、しばらく待ってから再試行してください。" + _kotlinNote + "\n詳細: " + e.message;
     }
     outputText.className = "output-error";
   }
@@ -9884,7 +9899,7 @@ async function askAI(system, messages) {
 async function getAIFeedback(problemId) {
   const p = getProblems().find(function(x) { return x.id === problemId; });
   const code = aceEditor ? aceEditor.getValue().trim() : '';
-  if (!code) { alert('コードを入力してください'); return; }
+  if (!code) { showToast('コードを入力してください'); return; }
 
   const btn = document.querySelector('.ai-feedback-btn');
   const area = document.getElementById('ai-feedback-area');
@@ -9907,7 +9922,7 @@ async function getAIFeedback(problemId) {
       .replace(/`([^`]+)`/g, '<code>$1</code>');
   } catch (e) {
     area.classList.remove('hidden');
-    text.textContent = 'エラー: AIに接続できませんでした。';
+    text.textContent = '⚠ AIに接続できませんでした。しばらく待ってから再試行してください。\n詳細: ' + e.message;
   }
 
   btn.textContent = '🤖 AIにフィードバックをもらう';
@@ -10269,7 +10284,7 @@ function renderMissionDetail(id) {
 async function getMissionAIFeedback(missionId) {
   const m = getMissions().find(function(x) { return x.id === missionId; });
   const code = aceEditor ? aceEditor.getValue().trim() : '';
-  if (!code) { alert('コードを入力してください'); return; }
+  if (!code) { showToast('コードを入力してください'); return; }
 
   const btn = document.querySelector('.ai-feedback-btn');
   const area = document.getElementById('ai-feedback-area');
@@ -10296,7 +10311,7 @@ async function getMissionAIFeedback(missionId) {
       .replace(/`([^`]+)`/g, '<code>$1</code>');
   } catch (e) {
     area.classList.remove('hidden');
-    text.textContent = 'エラー: AIに接続できませんでした。';
+    text.textContent = '⚠ AIに接続できませんでした。しばらく待ってから再試行してください。\n詳細: ' + e.message;
   }
 
   btn.textContent = '🤖 AIにコードレビューしてもらう';

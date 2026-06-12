@@ -3536,6 +3536,38 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   .premium-success-toast { font-size: 0.78rem; padding: 10px 16px; white-space: normal; max-width: 90vw; text-align: center; }
 }
 
+/* ===== 汎用トースト ===== */
+.app-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #161208;
+  border: 1px solid rgba(255,107,0,0.35);
+  color: rgba(255,255,255,0.85);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  padding: 10px 22px;
+  z-index: 9999;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+  white-space: nowrap;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  animation: app-toast-in 0.25s ease;
+  pointer-events: none;
+}
+.app-toast.error {
+  border-color: rgba(255,60,60,0.5);
+  color: #ff8080;
+}
+@keyframes app-toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@media (max-width: 480px) {
+  .app-toast { font-size: 0.75rem; padding: 9px 16px; white-space: normal; max-width: 88vw; text-align: center; }
+}
+
 /* ===== 基本形モーダル ===== */
 #basicform-modal {
   position: fixed;
