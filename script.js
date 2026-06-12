@@ -21196,7 +21196,7 @@ const bashProblems = [
     title: "文字列操作",
     question: "変数str=\"Hello, World!\"を定義し、文字列長・大文字変換・「World」を「Bash」に置換した結果を各1行で表示してください。",
     hint: "${#str} / ${str^^} / ${str//World/Bash}",
-    answer: `str="Hello, World!"\necho ${#str}\necho ${str^^}\necho ${str//World/Bash}`,
+    answer: `str="Hello, World!"\necho \${#str}\necho \${str^^}\necho \${str//World/Bash}`,
     expected: "13\nHELLO, WORLD!\nHello, Bash!",
     explanation: "${#変数}は文字列長、${変数^^}は大文字変換、${変数//旧/新}は全置換のパラメータ展開です。" },
 
@@ -21212,7 +21212,7 @@ const bashProblems = [
     title: "配列",
     question: "fruits配列に(apple banana cherry)を格納し、全要素・要素数・インデックス1の要素を表示してください。",
     hint: "fruits=(apple banana cherry) / ${fruits[@]} / ${#fruits[@]} / ${fruits[1]}",
-    answer: `fruits=(apple banana cherry)\necho "${fruits[@]}"\necho ${#fruits[@]}\necho ${fruits[1]}`,
+    answer: `fruits=(apple banana cherry)\necho "\${fruits[@]}"\necho \${#fruits[@]}\necho \${fruits[1]}`,
     expected: "apple banana cherry\n3\nbanana",
     explanation: "Bashの配列は0始まりインデックス。[@]で全要素、#[@]で要素数を取得します。" },
 
@@ -21332,7 +21332,7 @@ const bashProblems = [
     title: "連想配列",
     question: "連想配列colorsに(apple→red, banana→yellow, cherry→red)を定義し、全キーと値をkey: valueの形式で表示してください（ソート順）。",
     hint: "declare -A colors / ${!colors[@]}でキー一覧",
-    answer: `declare -A colors\ncolors[apple]="red"\ncolors[banana]="yellow"\ncolors[cherry]="red"\nfor key in $(echo "${!colors[@]}" | tr ' ' '\\n' | sort); do\n  echo "$key: ${colors[$key]}"\ndone`,
+    answer: `declare -A colors\ncolors[apple]="red"\ncolors[banana]="yellow"\ncolors[cherry]="red"\nfor key in $(echo "\${!colors[@]}" | tr ' ' '\\n' | sort); do\n  echo "$key: \${colors[$key]}"\ndone`,
     expected: "apple: red\nbanana: yellow\ncherry: red",
     explanation: "declare -Aで連想配列（ハッシュ）を宣言。${!配列[@]}でキー一覧、${配列[@]}で値一覧を取得します。" },
 
@@ -21364,7 +21364,7 @@ const bashProblems = [
     title: "文字列のパース",
     question: "変数log=\"2024-01-15 ERROR: disk full (90%)\"からdateとmessageを抽出して別々の行に表示してください。",
     hint: "date=${log%% *} / ${log#* }などのパラメータ展開",
-    answer: `log="2024-01-15 ERROR: disk full (90%)"\ndate="${log%% *}"\nmessage="${log#* }"\necho "$date"\necho "$message"`,
+    answer: `log="2024-01-15 ERROR: disk full (90%)"\ndate="\${log%% *}"\nmessage="\${log#* }"\necho "$date"\necho "$message"`,
     expected: "2024-01-15\nERROR: disk full (90%)",
     explanation: "${変数%% パターン}は末尾からの最長削除、${変数# パターン}は先頭からの最短削除です。" },
 
