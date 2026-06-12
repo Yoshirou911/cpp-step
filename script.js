@@ -9638,26 +9638,20 @@ function editorFill()    { playUIClick(); setEditorMode('fill');    }
 // ===== 基本形モーダル =====
 
 var _basicformLang = null;
-var _basicformTemplates = {
-  cpp:        '#include <iostream>\nusing namespace std;\n\nint main() {\n    \n    return 0;\n}',
-  python:     '# ここにコードを書いてください',
-  javascript: '// ここにコードを書いてください',
-  typescript: '// ここにコードを書いてください',
-  ruby:       '# ここにコードを書いてください',
-  kotlin:     'fun main() {\n    \n}',
-  swift:      '// ここにコードを書いてください',
-  java:       'class Main {\n    public static void main(String[] args) {\n        \n    }\n}',
-  csharp:     'using System;\nclass Program {\n    static void Main() {\n        \n    }\n}',
-  go:         'package main\n\nimport "fmt"\n\nfunc main() {\n    \n}',
-  c:          '#include <stdio.h>\n\nint main() {\n    \n    return 0;\n}',
-  rust:       'fn main() {\n    \n}'
-};
 var _basicformLangNames = {
   cpp: 'C++', python: 'Python', javascript: 'JS', typescript: 'TS',
   ruby: 'Ruby', kotlin: 'Kotlin', swift: 'Swift', java: 'Java',
   csharp: 'C#', go: 'Go', c: 'C', rust: 'Rust'
 };
 var _basicformOrder = ['cpp','python','javascript','typescript','ruby','kotlin','swift','java','csharp','go','c','rust'];
+
+function _getStarterCodeForLang(lang) {
+  var saved = currentLanguage;
+  currentLanguage = lang;
+  var code = getStarterCode();
+  currentLanguage = saved;
+  return code;
+}
 
 function showBasicForm() {
   playUIClick();
@@ -9673,7 +9667,7 @@ function _renderBasicFormModal() {
   }).join('');
   document.getElementById('basicform-tabs').innerHTML = tabs;
   document.getElementById('basicform-title').textContent = _basicformLangNames[_basicformLang] + ' — 基本形';
-  document.getElementById('basicform-code').textContent = _basicformTemplates[_basicformLang];
+  document.getElementById('basicform-code').textContent = _getStarterCodeForLang(_basicformLang);
   document.getElementById('basicform-copy').textContent = 'コピー';
 }
 
