@@ -560,7 +560,7 @@ async function getLoginStreak() {
 
 // 総クリア数からランクを計算
 function getProfileRank(total) {
-  if (total >= 350) return { name: 'PREDATOR', color: '#FF6B00' };
+  if (total >= 350) return { name: 'PREDATOR', color: '#FF2020' };
   if (total >=  90) return { name: 'MASTER',   color: '#C040FF' };
   if (total >=  60) return { name: 'PLATINUM', color: '#00C8B4' };
   if (total >=  30) return { name: 'GOLD',     color: '#EFC050' };

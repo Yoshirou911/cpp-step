@@ -902,14 +902,14 @@ a.landing-text-link { text-decoration: underline; }
   50%       { text-shadow: 0 0 18px rgba(255,34,68,0.95), 0 0 36px rgba(255,34,68,0.55); }
 }
 .rank-predator {
-  color: #FF6B00;
-  text-shadow: 0 0 10px rgba(255,107,0,0.9), 0 0 22px rgba(255,50,0,0.55), 0 0 40px rgba(255,180,0,0.25);
+  color: #FF2020;
+  text-shadow: 0 0 10px rgba(255,32,32,0.9), 0 0 22px rgba(200,0,0,0.55), 0 0 40px rgba(255,80,80,0.25);
   animation: predatorBadgePulse 1.6s ease-in-out infinite;
 }
 @keyframes predatorBadgePulse {
-  0%, 100% { color:#FF6B00; text-shadow:0 0 10px rgba(255,107,0,0.80),0 0 22px rgba(255,50,0,0.45); }
-  33%       { color:#FF4400; text-shadow:0 0 20px rgba(255,50,0,1.00),0 0 40px rgba(255,107,0,0.65),0 0 60px rgba(255,180,0,0.25); }
-  66%       { color:#FFB300; text-shadow:0 0 18px rgba(255,180,0,0.90),0 0 36px rgba(255,107,0,0.55); }
+  0%, 100% { color:#FF2020; text-shadow:0 0 10px rgba(255,32,32,0.80),0 0 22px rgba(200,0,0,0.45); }
+  33%       { color:#FF0000; text-shadow:0 0 20px rgba(255,0,0,1.00),0 0 40px rgba(255,32,32,0.65),0 0 60px rgba(255,80,80,0.25); }
+  66%       { color:#FF4444; text-shadow:0 0 18px rgba(255,80,80,0.90),0 0 36px rgba(255,32,32,0.55); }
 }
 
 /* ========== 単元ヘッダー（APEX ロールタブ風） ========== */
@@ -1006,13 +1006,13 @@ a.landing-text-link { text-decoration: underline; }
   50%       { box-shadow: -3px 0 22px rgba(255,34,68,0.50); }
 }
 .rank-card-predator {
-  border-left-color: rgba(255,107,0,0.80) !important;
-  background: linear-gradient(90deg, rgba(255,107,0,0.10) 0%, rgba(255,50,0,0.04) 50%, transparent 100%);
+  border-left-color: rgba(255,32,32,0.80) !important;
+  background: linear-gradient(90deg, rgba(255,32,32,0.10) 0%, rgba(200,0,0,0.04) 50%, transparent 100%);
   animation: predatorCardPulse 1.8s ease-in-out infinite;
 }
 @keyframes predatorCardPulse {
-  0%, 100% { box-shadow: -3px 0 14px rgba(255,107,0,0.28), 0 0 8px rgba(255,180,0,0.08); }
-  50%       { box-shadow: -3px 0 28px rgba(255,107,0,0.60), 0 0 20px rgba(255,50,0,0.18); }
+  0%, 100% { box-shadow: -3px 0 14px rgba(255,32,32,0.28), 0 0 8px rgba(255,80,80,0.08); }
+  50%       { box-shadow: -3px 0 28px rgba(255,32,32,0.60), 0 0 20px rgba(200,0,0,0.18); }
 }
 
 /* ホバー：ランク色でグロー */
@@ -1024,7 +1024,7 @@ a.landing-text-link { text-decoration: underline; }
 .rank-card-diamond:hover { border-left-color:#5588FF; background:rgba(85,136,255,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(85,136,255,0.18); transform:translateX(5px); }
 .rank-card-master:hover  { border-left-color:#C040FF; background:rgba(192,64,255,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(192,64,255,0.22); transform:translateX(5px); }
 .rank-card-legend:hover  { border-left-color:#FF2244; background:rgba(255,34,68,0.12);  box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 18px rgba(255,34,68,0.40); transform:translateX(5px); }
-.rank-card-predator:hover{ border-left-color:#FF6B00; background:rgba(255,107,0,0.13); box-shadow:0 2px 22px rgba(0,0,0,0.4), -2px 0 24px rgba(255,107,0,0.60), 0 0 18px rgba(255,50,0,0.20); transform:translateX(5px); }
+.rank-card-predator:hover{ border-left-color:#FF2020; background:rgba(255,32,32,0.13); box-shadow:0 2px 22px rgba(0,0,0,0.4), -2px 0 24px rgba(255,32,32,0.60), 0 0 18px rgba(200,0,0,0.20); transform:translateX(5px); }
 
 .problem-card.learned {
   border-left-color: rgba(0,230,118,0.5) !important;
@@ -2894,18 +2894,18 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 
 /* ── PREDATOR ランクバッジ ── */
 .rank-predator {
-  color: #FF6B00 !important;
-  border-color: rgba(255,107,0,0.60) !important;
-  text-shadow: 0 0 12px rgba(255,107,0,0.8), 0 0 24px rgba(255,50,0,0.4);
+  color: #FF2020 !important;
+  border-color: rgba(255,32,32,0.60) !important;
+  text-shadow: 0 0 12px rgba(255,32,32,0.8), 0 0 24px rgba(200,0,0,0.4);
   animation: predatorBadgePulse 1.6s ease-in-out infinite;
 }
 .rank-card-predator {
-  border-left: 3px solid rgba(255,107,0,0.80) !important;
-  background: linear-gradient(90deg, rgba(255,107,0,0.10) 0%, transparent 100%) !important;
+  border-left: 3px solid rgba(255,32,32,0.80) !important;
+  background: linear-gradient(90deg, rgba(255,32,32,0.10) 0%, transparent 100%) !important;
   animation: predatorCardPulse 1.8s ease-in-out infinite;
 }
 .rank-card-predator:hover {
-  background: linear-gradient(90deg, rgba(255,107,0,0.18) 0%, transparent 100%) !important;
+  background: linear-gradient(90deg, rgba(255,32,32,0.18) 0%, transparent 100%) !important;
 }
 
 /* ── PREDATOR バッジアニメーション ── */
@@ -2913,15 +2913,15 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   animation: predatorPulse 1.6s ease-in-out infinite;
 }
 @keyframes predatorPulse {
-  0%, 100% { box-shadow:0 0 10px rgba(255,107,0,0.35), 0 0 0 1px rgba(255,107,0,0.60); }
-  50%       { box-shadow:0 0 28px rgba(255,107,0,0.75), 0 0 0 1px rgba(255,180,0,0.90), 0 0 50px rgba(255,50,0,0.25); }
+  0%, 100% { box-shadow:0 0 10px rgba(255,32,32,0.35), 0 0 0 1px rgba(255,32,32,0.60); }
+  50%       { box-shadow:0 0 28px rgba(255,32,32,0.75), 0 0 0 1px rgba(255,80,80,0.90), 0 0 50px rgba(200,0,0,0.25); }
 }
 .badge-predator .badge-hex {
   animation: predatorHexPulse 1.6s ease-in-out infinite;
 }
 @keyframes predatorHexPulse {
   0%, 100% { filter: brightness(1.0); }
-  50%       { filter: brightness(1.5) drop-shadow(0 0 10px rgba(255,107,0,0.9)); }
+  50%       { filter: brightness(1.5) drop-shadow(0 0 10px rgba(255,32,32,0.9)); }
 }
 
 /* ── LEGEND バッジ（鼓動アニメーション） ── */
