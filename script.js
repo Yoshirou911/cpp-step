@@ -307,7 +307,7 @@ var currentUserIsPremium = false;
 var currentUserIsAdmin = false;
 var _premiumStatusCache = false;  // 実際のSupabase値（管理者プレビュー用に保持）
 var _adminPreviewFree = false;    // 管理者が「無料ユーザーとして表示」テスト中
-var PREMIUM_RANKS = ['SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND', 'PREDATOR'];
+var PREMIUM_RANKS = ['SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND', 'TITAN'];
 var _currentAuthTab = 'login';
 // 進捗のインメモリキャッシュ（言語切替時にリセット）
 var _progressCache = null;
@@ -560,7 +560,7 @@ async function getLoginStreak() {
 
 // 総クリア数からランクを計算
 function getProfileRank(total) {
-  if (total >= 350) return { name: 'PREDATOR', color: '#FF2020' };
+  if (total >= 350) return { name: 'TITAN', color: '#FF2020' };
   if (total >=  90) return { name: 'MASTER',   color: '#C040FF' };
   if (total >=  60) return { name: 'PLATINUM', color: '#00C8B4' };
   if (total >=  30) return { name: 'GOLD',     color: '#EFC050' };
@@ -574,7 +574,7 @@ function getProfileRank(total) {
 // 問題ランク別 EXP
 var RANK_EXP = {
   rookie: 15, bronze: 25, silver: 40, gold: 60,
-  platinum: 85, diamond: 120, master: 160, legend: 500, predator: 1200
+  platinum: 85, diamond: 120, master: 160, legend: 500, titan: 1200
 };
 // ミッションランク別 EXP
 var MISSION_EXP = {
@@ -2517,7 +2517,7 @@ int main() {
   },
 
   // ───────────── UNIT 14: PREDATORチャレンジ ─────────────
-  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"カスタムメモリアロケータ（Arena）",
     question:"アリーナアロケータを実装してください。固定バッファから線形に割り当てるallocate()と一括解放するreset()を持つArenaクラスを作り、スタック上のメモリのみでオブジェクトを管理してください。",
     hint:"char buf[SIZE]; size_t offset=0; void* allocate(size_t n, size_t align) でアライメントを考慮した線形割り当てを行います。",
@@ -2561,7 +2561,7 @@ int main() {
     expected:"1 2\n3 4\n42\nused: 40 bytes\nreset: 0 bytes",
     explanation:"アリーナアロケータはメモリを線形に確保し、個別解放せず一括でリセットします。ゲームエンジン・データベース・ネットワークサーバーで、フレーム毎や1リクエスト毎にリセットして使います。malloc/freeより桁違いに高速です。"
   },
-  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"テンプレートメタプログラミング（型リスト）",
     question:"型リストTypeList<T...>を実装してください。Length、At<N>（N番目の型）、Contains<T>（型の存在確認）をコンパイル時に計算し、static_assertで検証してください。",
     hint:"struct TypeList {}; template<typename H,typename...T> struct TypeList<H,T...> {}; Length<L>::value を再帰で実装します。",
@@ -2608,7 +2608,7 @@ int main() {
     expected:"Length: 4\nAt<0>: i\nContains double: 1\nContains long: 0",
     explanation:"テンプレートメタプログラミング（TMP）はコンパイル時に型レベルの計算を行います。再帰特殊化で型リストを処理します。STLのstd::tupleやstd::variantも同様の手法で実装されています。"
   },
-  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"スタックベースVM（バイトコードインタープリタ）",
     question:"4命令（PUSH・ADD・MUL・PRINT）を持つスタックベースのVM（仮想マシン）を実装してください。バイトコード列を実行して計算結果を出力してください。",
     hint:"enum Op { PUSH,ADD,MUL,PRINT }; でオペコードを定義し、std::stack<int>でオペランドスタックを持つ実行ループを書きます。",
@@ -2647,7 +2647,7 @@ int main() {
     expected:"35\n30",
     explanation:"スタックベースVMはJVM・CPython・WebAssemblyの基礎です。PUSH/ADD/MUL/PRINTの4命令でチューリング完全なコンピュータを作れます。実務ではここにJITコンパイラを組み合わせてネイティブコードに変換します。"
   },
-  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"再帰下降パーサー（数式コンパイラ）",
     question:"再帰下降法で四則演算パーサーを実装してください。'3+4*2-1' のような文字列を解析してAST（抽象構文木）を構築し、評価してください。演算子優先順位を正しく処理すること。",
     hint:"expr = term (('+' | '-') term)* ; term = factor (('*' | '/') factor)* ; factor = number | '(' expr ')' で文法を定義します。",
@@ -2693,7 +2693,7 @@ int main() {
     expected:"10\n14\n30",
     explanation:"再帰下降パーサーはコンパイラフロントエンドの中核技術です。文法をBNF形式で定義し各規則を関数にマップします。演算子優先順位はtermとfactorの呼び出し順で表現します。GCC・Clang・V8のパーサーも同様の手法です。"
   },
-  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"CRTP（Curiously Recurring Template Pattern）",
     question:"CRTPを使って静的ポリモーフィズムを実装してください。Base<Derived>からDerivedの実装を呼ぶシェイプクラス階層を作り、仮想関数のオーバーヘッドなしでarea()とperimeter()を呼んでください。",
     hint:"template<typename D> struct Shape { void area() { return static_cast<D*>(this)->area_impl(); } }; struct Circle : Shape<Circle> { ... }",
@@ -3852,7 +3852,7 @@ scheduler([task_a(), task_b(), task_c()])`,
   },
 
   // ───────────── UNIT 14: PREDATORチャレンジ ─────────────
-  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"Hindley-Milner型推論（Wアルゴリズム）",
     question:"Hindley-Milner型推論のW アルゴリズムを実装してください。単純な式（変数・ラムダ・適用）の型を自動推論し、'fun f -> f 1' の型を出力してください。",
     hint:"単一化（unification）とsubstitutionで型変数を解決します。TypeVar、Arrow型、Intを定義し単一化関数を実装します。",
@@ -3930,7 +3930,7 @@ print(apply_subst(s, t))`,
     expected:"((Int -> t3) -> t3)",
     explanation:"Hindley-Milner型推論はHaskell・OCaml・Rustの型システムの基礎です。W アルゴリズムは単一化（unification）で型変数を解決します。'fun f -> f 1' は (Int -> a) -> a 型（f はInt→aな関数）と推論されます。"
   },
-  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"マーク＆スイープGC",
     question:"参照グラフを管理するシンプルなマーク＆スイープガベージコレクタを実装してください。ルートからの到達可能性をマークし、未到達オブジェクトを解放（削除）してください。",
     hint:"objects: dict[id, obj], roots: set[id], mark phase: DFS, sweep phase: remove unmarked objects",
@@ -3978,7 +3978,7 @@ print('alive:', sorted(gc.objects.keys()))`,
     expected:"collected 2 objects, 2 alive\nalive: [0, 1]\ncollected 2 objects, 0 alive\nalive: []",
     explanation:"マーク＆スイープはJVM・V8・CPython（refcountと組み合わせ）のGCの基礎です。マーク段階でルートからDFS/BFSして到達可能なオブジェクトに印をつけ、スイープ段階で未到達を解放します。世代別GCはこれを若い世代・古い世代に分けて効率化します。"
   },
-  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"Trampoline（末尾再帰最適化）",
     question:"Pythonはデフォルトで末尾呼び出し最適化がないため、深い再帰でstack overflowが起きます。Trampolineパターンを実装し、再帰的なフィボナッチをスタックオーバーフローなしで計算してください。",
     hint:"関数が値ではなくlambdaを返すとき、それをループで繰り返し呼ぶのがtrampolineです。",
@@ -4005,7 +4005,7 @@ print(trampoline(factorial_tramp(20)))`,
     expected:"55\n832040\n3628800\n2432902008176640000",
     explanation:"Trampolineはlambdaでサスペンドし、ループでレジュームすることで末尾呼び出し最適化をエミュレートします。Scheme・Haskellのような言語はコンパイラが自動でTCOを行いますが、Pythonではこの手法で深い再帰を安全に実行できます。"
   },
-  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"バイトコードハック（coデオブジェクト書き換え）",
     question:"Python の dis モジュールと types.CodeType を使って、実行中の関数のバイトコードを解析し、定数を書き換える実験的なデコレーターを実装してください。",
     hint:"import dis, types; func.__code__.co_consts でバイトコード定数を取得できます。",
@@ -4037,7 +4037,7 @@ for instr in dis.get_instructions(greet):
     expected:"Hello, World!\nHACKED!\nHello, World!\n=== bytecode ===\nLOAD_CONST: Hello, World!\nRETURN_VALUE: None",
     explanation:"Pythonのcode objectは実行可能なバイトコードを格納しています。co_constsで定数プール、co_codeでバイト列にアクセスできます。セキュリティ研究者や高度な最適化ライブラリ（Numba等）はこの仕組みを活用します。"
   },
-  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"分散MapReduce（プロセス版）",
     question:"multiprocessingを使って分散MapReduceフレームワークを実装してください。テキストのワードカウントを複数プロセスで並列処理し、結果をマージしてください。",
     hint:"Pool.map でmap段階を並列実行し、reduce段階でCounter.update()でマージします。",
@@ -5380,7 +5380,7 @@ console.log(tmpl({ name: 'Bob',   show: false, items: ['X'] }));`,
   },
 
   // ───────────── UNIT 14: PREDATORチャレンジ ─────────────
-  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"V8インスパイアJITコンパイラ（算術式）",
     question:"算術式の文字列を受け取り、構文解析→バイトコード生成→バイトコード実行の3段階で評価するミニJITコンパイラを実装してください。'3 + 4 * 2' → 11 を計算してください。",
     hint:"再帰下降パーサーでAST生成→ASTをバイトコード（PUSH/ADD/MUL等）に変換→スタックマシンで実行します。",
@@ -5482,7 +5482,7 @@ console.log(evalExpr('10 - 3 * 2 + 1'));`,
     expected:"11\n14\n5",
     explanation:"これはV8エンジンのIgnition（バイトコードインタープリタ）の簡略版です。字句解析→構文解析（再帰下降）→バイトコード生成→スタックマシン実行の4段階はすべての言語処理系の基礎です。"
   },
-  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"ObservableストリームライブラリRxJS風",
     question:"RxJS ライクな Observable クラスを実装してください。map・filter・mergeMap・take オペレーターと、fromArray・interval ファクトリを実装してください。",
     hint:"Observer パターン + Subscription 管理。pipe() でオペレーターチェーンを実装します。",
@@ -5537,7 +5537,7 @@ Observable.fromArray([1,2,3,4,5,6])
     expected:"value: 4\nvalue: 16\ndone",
     explanation:"RxJSはReactiveXパターンのJS実装です。Observableは非同期ストリームを統一的に扱えます。Angular・Vue・Reactの高度な状態管理に広く使われます。pipe()によるオペレーターチェーンは関数合成の実践例です。"
   },
-  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"依存性注入コンテナ",
     question:"TypeScriptなしでもDecorator風のメタデータを使ったIoC（制御の逆転）コンテナを実装してください。InversifyJS・NestJSのようにクラスを登録して自動的に依存を注入してください。",
     hint:"Reflect.metadata が使えない場合は static inject = [] で依存を宣言します。コンテナがクラスのグラフを解決して自動インスタンス化します。",
@@ -5589,7 +5589,7 @@ console.log('users:', users);`,
     expected:"[LOG] query: SELECT * FROM users\n[LOG] found 2 users\nusers: ['row1', 'row2']",
     explanation:"IoCコンテナはNestJSやSpringの核心機能です。クラスが自分の依存を作るのではなく、コンテナが依存グラフを解決して注入します。シングルトンキャッシュで同じインスタンスを使い回します。"
   },
-  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"仮想DOMとdiffアルゴリズム",
     question:"Reactライクな仮想DOMシステムを実装してください。vnode の生成・実DOMへのマウント・差分検出（diff）・パッチ適用（patch）を実装してください。",
     hint:"vnodeは { tag, props, children } の plain object。diffは旧vnode・新vnodeを比較してDOMを最小限更新します。",
@@ -5653,7 +5653,7 @@ vdom2: {
 diff done: patch applied`,
     explanation:"ReactのFiber・VueのVNodeもこの原理で動作します。仮想DOMは実DOMへの変更を最小化するためのデータ構造です。diffアルゴリズム（O(n)の経験的手法）がReactを高速にします。"
   },
-  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"非同期タスクスケジューラ（Node.jsイベントループ再現）",
     question:"Node.jsのイベントループを模倣した非同期タスクスケジューラを実装してください。マイクロタスクキュー（Promise）・マクロタスクキュー（setTimeout）・I/Oコールバックの優先順位を正しく再現してください。",
     hint:"マイクロタスクキューはマクロタスクより優先されます。各ループでマイクロタスクをすべて処理してからマクロタスクを1つ処理します。",
@@ -6785,7 +6785,7 @@ sched.run`,
   },
 
   // ───────────── UNIT 14: PREDATORチャレンジ ─────────────
-  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"Refinementsで安全なモンキーパッチ",
     question:"Ruby の Refinements を使ってスコープ付きのモンキーパッチシステムを実装してください。String に JSON変換メソッドを追加するが、using を呼んだスコープでのみ有効にしてください。",
     hint:"module MyRefinements; refine String do ... end; end を定義し、using MyRefinements をスコープ内で呼びます。",
@@ -6827,7 +6827,7 @@ end`,
     expected:"\"Alice\"\n42\n[\"hello\",1,\"world\"]\nstring:test\noutside: undefined method 'to_json_val'",
     explanation:"Refinementsはグローバルなモンキーパッチ問題を解決します。using で呼んだファイル/モジュールスコープ内でのみ拡張が有効になります。ライブラリ開発でコア拡張を安全に行うためのRuby独自の機能です。"
   },
-  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"TracePoint によるプロファイラー",
     question:"Ruby の TracePoint を使って、メソッド呼び出しを自動計測するプロファイラーを実装してください。各メソッドの呼び出し回数を計測してレポートを出力してください。",
     hint:"TracePoint.new(:call) でメソッドの開始をフックし、defined_class と method_id で識別します。",
@@ -6874,7 +6874,7 @@ profiler.report`,
     expected:"Method                        Calls\n----------------------------------------\nCalculator#fib              177\nCalculator#fact              10",
     explanation:"TracePointはRubyのコード実行をフックする強力なデバッグ/プロファイリングAPIです。ruby-profやStackProfなどのプロファイラーはこれを使って実装されています。"
   },
-  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"継続渡しスタイル（CPS変換）",
     question:"通常の再帰関数を継続渡しスタイル（CPS: Continuation Passing Style）に変換してください。フィボナッチと階乗をCPS変換し、計算結果をcontinuationラムダで受け取るようにしてください。",
     hint:"CPSでは計算結果を return せず continuation（次にすること）ラムダに渡します。fib_cps(n) { |r| ... }",
@@ -6905,7 +6905,7 @@ fact_cps(10) { |r| puts "fact(10) = #{r}" }`,
     expected:"fib(10) = 55\nfib(15) = 610\nfact(10) = 3628800",
     explanation:"CPSはコンパイラ理論の核心技術です。SchemeはCPS変換で末尾呼び出し最適化を実現します。継続は「これからすること」を表す first-class な値で、例外・コルーチン・非同期処理を統一的に表現できます。"
   },
-  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"ミニLispインタープリタ",
     question:"S式を評価するLispインタープリタを実装してください。define・lambda・if・クロージャをサポートしてください。(define square (lambda (x) (* x x))) と (square 7) を評価してください。",
     hint:"パーサーでS式をRuby配列に変換し、lisp_eval で再帰的に評価します。環境（ハッシュ）でレキシカルスコープを実現します。",
@@ -6951,7 +6951,7 @@ puts lisp_eval(parse("(fact 6)"), env)`,
     expected:"49\n720",
     explanation:"LISPインタープリタの実装はSICP（計算機プログラムの構造と解釈）の中核課題です。eval+applyの相互再帰・レキシカルスコープ（環境チェーン）・クロージャの実装が理解できれば、どの言語処理系も読めるようになります。"
   },
-  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"バイナリプロトコルパーサー",
     question:"Ruby で MessagePack ライクなバイナリシリアライゼーションフォーマットを実装してください。整数・文字列・配列・ハッシュをバイトシーケンスにエンコード/デコードしてください。",
     hint:"型タグ（0x01=int, 0x02=str, 0x03=array, 0x04=hash）+ データ長 + データの形式でエンコードします。",
@@ -8159,7 +8159,7 @@ console.log(person.email);`,
   },
 
   // ───────────── UNIT 14: PREDATORチャレンジ ─────────────
-  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"型レベルJSONパーサー",
     question:"TypeScriptの型システムだけで動作するJSONライクな型レベルパーサーを実装してください。type Parse<'42'> = 42、type Parse<'\"hello\"'> = 'hello' のような型推論を実現してください。",
     hint:"Template literal typesとinferで文字列型をパースします。",
@@ -8207,7 +8207,7 @@ console.log(t1, t2, t3, t4, t5);`,
     expected:"42 hello true null 99",
     explanation:"Template literal typesとinfer keywordでコンパイル時に文字列をパースできます。ts-jsonなどのライブラリはこの技術でJSONスキーマの型安全な解析を実現しています。"
   },
-  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"Variance・Covariance・Contravariance",
     question:"TypeScriptにおける型の共変性（covariance）・反変性（contravariance）・双変性（bivariance）を実演してください。Animalの配列にCatを代入できる理由と、関数の引数が反変になる理由を型で示してください。",
     hint:"(a: Animal) => void 型に (a: Cat) => void は代入できない（引数は反変）。戻り値は共変です。",
@@ -8241,7 +8241,7 @@ console.log('variance demo complete');`,
     expected:"covariant array: animal\ncovariant return: animal\nhandling: animal\nvariance demo complete",
     explanation:"型の分散はTypeScriptの型安全性の核心です。配列・Promise・Generatorは共変、関数引数は反変（strictFunctionTypesが有効時）です。この理解なしに大規模なジェネリクス設計はできません。"
   },
-  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"HKT（高カインド型）エミュレーション",
     question:"TypeScriptは高カインド型(Higher-Kinded Types)をネイティブサポートしていませんが、URIマッピングでエミュレートしてください。Functor型クラスをHKTで実装し、Array・Maybeに適用してください。",
     hint:"interface URItoKind<A> でURIとコンストラクタをマッピングし、Kind<URI, A>でHKTを表現します。",
@@ -8281,7 +8281,7 @@ console.log(JSON.stringify(maybeFunctor.map(nothing, x => x)));`,
     expected:"[2,4,6]\n{\"_tag\":\"Just\",\"value\":43}\n{\"_tag\":\"Nothing\"}",
     explanation:"HKTはHaskellのFunctor・Monad型クラスの基礎です。fp-ts・effectライブラリはこのURIマッピングパターンでTypeScriptにHKTをエミュレートし、型安全な関数型プログラミングを実現しています。"
   },
-  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"型安全なSQL クエリビルダー",
     question:"TypeScriptの型システムを使って、テーブルのスキーマ型からカラム名・WHERE条件・結果型を推論する型安全なSQLクエリビルダーを実装してください。",
     hint:"type Select<T, K extends keyof T> = Pick<T,K>; クエリ結果の型をジェネリクスで追跡します。",
@@ -8332,7 +8332,7 @@ console.log(q2.toSQL());`,
     expected:"SELECT name, age FROM users WHERE age = 30\nSELECT id, total FROM orders WHERE status = 'pending'",
     explanation:"型安全なクエリビルダーはDrizzle ORM・Kylelyなどの最新ORMの設計思想です。クエリ結果の型がコンパイル時に決まるため、タイポによるランタイムエラーを完全に防げます。"
   },
-  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"Effect System（型で副作用を追跡）",
     question:"TypeScriptでエフェクトシステムを実装してください。IO<A>・Either<E,A>・Task<E,A>を実装し、副作用をモナドとして型安全に合成してください。",
     hint:"type Task<E,A> = () => Promise<Either<E,A>> でエフェクトを表現し、chain/mapで合成します。",
@@ -9479,7 +9479,7 @@ println("hp: \${p.hp}")`,
   },
 
   // ───────────── UNIT 14: PREDATORチャレンジ ─────────────
-  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"コルーチンスケジューラの自作",
     question:"KotlinのCoroutineDispatcherを継承して独自のスレッドプールスケジューラを実装してください。優先度付きキューでタスクを管理し、高優先度のコルーチンが先に実行されるようにしてください。",
     hint:"class PriorityDispatcher : CoroutineDispatcher() { override fun dispatch(context: CoroutineContext, block: Runnable) }",
@@ -9530,7 +9530,7 @@ fun main() = runBlocking {
     expected:"high priority\nmid priority\nlow priority",
     explanation:"カスタムCoroutineDispatcherはAndroidのMainDispatcher・IO Dispatcherと同等の仕組みです。CoroutineContextで優先度情報を渡し、PriorityBlockingQueueで順序を制御します。リアルタイムシステムやUIスレッド管理に応用されます。"
   },
-  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"型安全なEvent Sourcing",
     question:"Event Sourcingパターンをシールドクラスで型安全に実装してください。イベントのシーケンスからアグリゲートの状態を再構築し、コマンドパターンとCQRSの基礎を実装してください。",
     hint:"sealed class Event で全イベントを型安全に定義し、fold関数でイベント列から状態を再構築します。",
@@ -9576,7 +9576,7 @@ println("closed: \${state.closed}")`,
     expected:"owner: Alice\nbalance: 1400\nclosed: false",
     explanation:"Event Sourcingはイベントを永続化し状態を再構築するアーキテクチャパターンです。Axon Framework・Eventuateなどで使われます。監査ログ・時系列分析・バグの再現が容易になります。"
   },
-  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"Inline関数とReified型パラメータで型安全シリアライザ",
     question:"Kotlinのinline関数とreified型パラメータを使って、実行時の型情報を保持した型安全なJSONシリアライザを実装してください。inline fun <reified T> fromJson(json: String): T のように型を保持できるようにしてください。",
     hint:"inline fun <reified T> からT::class.javaで型情報を取得できます。Moshi・Gsonのような処理を手で実装します。",
@@ -9628,7 +9628,7 @@ println(u2)`,
     expected:"{\"admin\": false, \"age\": 30, \"name\": \"Alice\"}\nUser(name=Alice, age=30, admin=false)",
     explanation:"reified型パラメータはJVMのtype erasureを回避してinline関数内で型情報を保持します。Kotlinの標準ライブラリのfilterIsInstance・Gson拡張もreifiedで実装されています。"
   },
-  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"コンパイラプラグイン相当：KSP風シンボル処理",
     question:"Kotlinのリフレクションを使ってAnnotation Processorのような仕組みを実装してください。@Table・@Column アノテーションが付いたデータクラスから CREATE TABLE SQL を自動生成してください。",
     hint:"@Target(AnnotationTarget.CLASS) @Retention でアノテーションを定義し、kClass.memberProperties でフィールドを走査します。",
@@ -9671,7 +9671,7 @@ println(generateDDL(User::class))`,
     expected:"CREATE TABLE users (\n  id INTEGER NOT NULL PRIMARY KEY,\n  user_name TEXT NOT NULL,\n  age INTEGER\n);",
     explanation:"KSP（Kotlin Symbol Processing）とkapt（Annotation Processor）はこの原理でRoom・Hilt・Moshiなどのコード生成を行います。リフレクションでアノテーションを読み取り、ボイラープレートコードを自動生成します。"
   },
-  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"ロックフリースタック（Atomicによる CAS）",
     question:"java.util.concurrent.atomic.AtomicReference を使ったロックフリースタックを実装してください。compareAndSet でスレッドセーフにpush/popを行い、複数スレッドからの並行アクセスをテストしてください。",
     hint:"data class Node<T>(val value: T, val next: Node<T>?); AtomicReference<Node<T>?> でヘッドを管理します。",
@@ -10925,7 +10925,7 @@ Task {
   },
 
   // ───────────── UNIT 14: PREDATORチャレンジ ─────────────
-  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"型消去（Type Erasure）パターン",
     question:"SwiftのAnyPublisher・AnySequenceと同様の型消去パターンを実装してください。任意のCollectionをAnyCollection<T>でラップし、具体的な型情報を隠蔽しつつ利用できるようにしてください。",
     hint:"struct AnyCollection<T> { private let _count: () -> Int; private let _index: (Int) -> T }",
@@ -10956,7 +10956,7 @@ print("set count:", set.count)`,
     expected:"array count: 5\narray[2]: 3\na: 1\na: 2\na: 3\na: 4\na: 5\nset count: 3",
     explanation:"型消去はSwiftのプロトコルのassociatedTypeを扱うための重要パターンです。AnyPublisher・AnyHashable・AnyViewもこれで実装されています。プロトコルを値型として保存するときに必要になります。"
   },
-  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"マクロシステムエミュレーション（ResultBuilder）",
     question:"@resultBuilderを使ってHTMLを型安全に生成するDSLを実装してください。SwiftUIのViewBuilderと同様に html { div { h1(\"Title\") } } の形式でHTMLを構築してください。",
     hint:"@resultBuilder struct HTMLBuilder { static func buildBlock(_ components: HTMLNode...) -> HTMLNode }",
@@ -11005,7 +11005,7 @@ print(page.render)`,
     expected:"<div><h1>Hello, Swift!</h1><p>This is a paragraph.</p><div><p>nested</p></div></div>",
     explanation:"@resultBuilderはSwiftUI・PointFreeのHTMLライブラリの基礎です。buildBlock・buildOptional・buildArrayを実装してDSL構文を制御します。複雑なUIを宣言的に記述できる仕組みです。"
   },
-  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"Unsafe Buffer操作でメモリプール",
     question:"UnsafeMutableRawBufferPointerを使って固定サイズのメモリプールアロケータを実装してください。malloc/freeを使わずにバッファ内でオブジェクトを割り当て・解放してください。",
     hint:"UnsafeMutableRawBufferPointer.allocate(byteCount:alignment:) でバッファを確保し、storeBytes(of:as:)で書き込みます。",
@@ -11054,7 +11054,7 @@ print("after reset:", pool.used)`,
     expected:"int: 42\ndouble: 3.14\nint64: 999\nused bytes: 24\nafter reset: 0",
     explanation:"線形アロケータ（Arena Allocator）はゲームエンジン・高性能サーバーで使われます。malloc/freeより高速で断片化がありません。SwiftはUnsafe APIでC同等のメモリ制御が可能です。"
   },
-  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"Swiftマクロ前処理エミュレーション",
     question:"Swift Macrosが導入前の時代にCodeGenerationをエミュレートする方法として、Mirror（リフレクション）を使ってEquatable・Hashable・Descriptionを自動導出するメカニズムを実装してください。",
     hint:"Mirror(reflecting: self).children でプロパティ一覧を取得し、値を比較・ハッシュ計算・文字列化します。",
@@ -11110,7 +11110,7 @@ print("hash equal:", p1.autoHash() == p2.autoHash())`,
     expected:"Point(x: 3.0, y: 4.0)\np1==p2: true\np1==p3: false\nhash equal: true",
     explanation:"Swift MacrosとMirrorはどちらもボイラープレートを自動生成します。Mirrorはランタイムリフレクション、Macrosはコンパイル時コード生成です。CodableのデフォルトimplementationもMirror的なアプローチを内部で使います。"
   },
-  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"分散アクターシステムのエミュレーション",
     question:"Swiftのasync/await・Actor・AsyncStreamを使って、分散アクターシステムを模倣してください。アクターがメッセージを受け取り、別のアクターに転送するメッセージパッシングシステムを実装してください。",
     hint:"actor Node<Msg> { let stream: AsyncStream<Msg>; let continuation: AsyncStream<Msg>.Continuation }",
@@ -12232,7 +12232,7 @@ public class Main {
   },
 
   // ───────────── UNIT 14: PREDATORチャレンジ ─────────────
-  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"JVMバイトコード生成（ASM）",
     question:"ASMライブラリを使ってJVMバイトコードを動的に生成し、実行時に新しいクラスを作成してください。add(int a, int b) メソッドを持つクラスをバイトコードで直接生成してください。",
     hint:"ClassWriter cw = new ClassWriter(0); cw.visit(...); MethodVisitor mv = cw.visitMethod(...); mv.visitVarInsn(ILOAD,...); mv.visitInsn(IADD); mv.visitInsn(IRETURN);",
@@ -12284,7 +12284,7 @@ public class Main {
     expected:"bytecode generated: 327 bytes\nadd(3, 4) = 7\nadd(10, 20) = 30",
     explanation:"ASMはJVMバイトコードを直接操作するライブラリです。ProxygenやCGLibはSpring AOPのプロキシ生成に使います。Lombokやkaptもコンパイル時にバイトコードを生成・変換します。"
   },
-  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"ロックフリーキュー（Michael-Scott Queue）",
     question:"Michael-Scott アルゴリズムを使ってロックフリーなConcurrentQueue（FIFO）を実装してください。AtomicReferenceのCASでenqueue/dequeueをスレッドセーフに行ってください。",
     hint:"class Node<T> { T val; AtomicReference<Node<T>> next; }; head・tailをAtomicReferenceで管理します。",
@@ -12363,7 +12363,7 @@ public class Main {
     expected:"dequeued: [1, 2, 3, 4, 5]",
     explanation:"Michael-Scott AlgorithmはJavaのConcurrentLinkedQueueの実装基盤です。ロックなしにenqueue/dequeueをCASで実現します。ABA問題を防ぐためセンチネルノードパターンを使います。"
   },
-  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"DIコンテナの自作（リフレクション+注入）",
     question:"JavaのリフレクションとアノテーションでSpring風のDI（依存性注入）コンテナを実装してください。@Component・@Autowired・@Qualifier をサポートし、コンストラクタインジェクションを自動解決してください。",
     hint:"Class<?>.getAnnotation(Component.class)で登録し、getConstructors()[0].getParameterTypes()で依存を解決します。",
@@ -12435,7 +12435,7 @@ public class Main {
     expected:"[LOG] created user: Alice\n[LOG] created user: Bob",
     explanation:"SpringのApplicationContextはこれを大規模にしたものです。アノテーション処理・リフレクション・シングルトンキャッシュの組み合わせでDIを実現します。@Autowiredのコンストラクタインジェクションがテスト容易性を高めます。"
   },
-  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"コンパイル時アノテーション処理（APT）",
     question:"Java Annotation Processing Tool（APT）をエミュレートして、@Builder アノテーションが付いたクラスのBuilderコードをリフレクションで自動生成してください。",
     hint:"Class<?>のgetDeclaredFields()でフィールドを取得し、setterメソッドのチェーンを動的に生成します。",
@@ -12503,7 +12503,7 @@ public class Main {
     expected:"Generated builder for: Person\nPerson{name=Alice, age=30, email=a@b.com}\n--- Generated Code ---\nclass PersonBuilder {\n  private String name;\n  private int age;",
     explanation:"Lombokの@Builderはコンパイル時APTでBuilderクラスを自動生成します。JavaPoetライブラリを使うとより本格的なコード生成ができます。MapStruct・Immutablesも同様にAPTを使っています。"
   },
-  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"オフヒープメモリ管理（sun.misc.Unsafe）",
     question:"sun.misc.UnsafeとMemorySegment（Java 21 FFM API）を使ってJVMヒープ外のメモリを直接操作してください。オフヒープ配列を確保し、GCを経由せずに高速に読み書きしてください。",
     hint:"MemorySegment.allocateNative(size, SegmentScope.auto()) でオフヒープ確保、VarHandle か set/get で読み書きします。",
@@ -13761,7 +13761,7 @@ class Main {
   },
 
   // ───────────── UNIT 14: PREDATORチャレンジ ─────────────
-  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"Roslyn Analyzer 自作",
     question:"Roslyn Compiler APIを使ってC#のコードを静的解析するアナライザーをエミュレートしてください。文字列連結ループ（for + +=）を検出してStringBuilderを推奨する診断を出力してください。",
     hint:"SyntaxTree.ParseText()でAST生成、CSharpSyntaxWalker でForStatementを走査し、AssignmentExpression(+=)を検出します。",
@@ -13820,7 +13820,7 @@ foreach (var w in analyzer.Warnings) Console.WriteLine(w);`,
     expected:"Line 5: String concatenation in loop detected. Use StringBuilder.",
     explanation:"Roslyn Analyzerは.NETの静的解析の標準手段です。SonarQube・StyleCop・Roslynatorはこれで実装されています。CSharpSyntaxWalkerでASTを走査し問題パターンを検出します。IDE警告・CI統合が可能です。"
   },
-  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"SIMD演算（System.Runtime.Intrinsics）",
     question:"System.Runtime.Intrinsics.X86のAVX2命令を使って、256ビットSIMDで配列の要素和を高速計算してください。通常ループとSIMDの性能差を実演してください。",
     hint:"Vector256<float>.Count = 8。Avx2.LoadVector256() Avx2.Add() Avx2.HorizontalAdd() で8要素を並列計算します。",
@@ -13877,7 +13877,7 @@ class Main {
     expected:"scalar: 500123.44 (5ms)\nsimd:   500123.44 (1ms)\nSIMD supported: True",
     explanation:"SIMD（Single Instruction Multiple Data）は1つの命令で複数データを並列処理します。AVX2は256ビット幅で8つのfloatを同時処理します。機械学習・画像処理・科学計算で2〜8倍の高速化が得られます。"
   },
-  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"AOT対応のカスタムシリアライザ",
     question:"System.Text.Jsonのカスタムコンバーターを実装し、[JsonConverter]属性で使えるジェネリックシリアライザを作成してください。Union型（discriminated union相当）をJSONにシリアライズ/デシリアライズしてください。",
     hint:"class UnionConverter<T> : JsonConverter<T> { override Read(...) override Write(...) } でカスタム変換を実装します。",
@@ -13937,7 +13937,7 @@ Console.WriteLine(r1 is Result<int, string>.Ok o ? $"ok: {o.Value}" : "err");`,
     expected:"{\"ok\":42}\n{\"err\":\"not found\"}\nok: 42",
     explanation:"カスタムJsonConverterはSystem.Text.JsonのAOT（Native AOT）対応に必要な技術です。Discriminated Unionをシリアライズするには型タグ付きフォーマットが必要です。MicrosoftのAzure SDKもカスタムコンバーターを多用しています。"
   },
-  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"MemoryMappedFile でゼロコピーIPC",
     question:"MemoryMappedFileとMutexを使ってプロセス間通信（IPC）を実装してください。共有メモリを通じてプロデューサーがデータを書き込み、コンシューマーが読み取る仕組みを作ってください。",
     hint:"MemoryMappedFile.CreateOrOpen(name, capacity) でOSレベルの共有メモリを作成し、CreateViewAccessor()で読み書きします。",
@@ -13997,7 +13997,7 @@ class SharedMemoryIPC {
     expected:"wrote: hello\nread:  hello\nwrote: world\nread:  world\nwrote: done\nread:  done",
     explanation:"MemoryMappedFileはOS管理の共有メモリを使うゼロコピーIPCです。Redis・Lucene・Kafkaはこの技術で高スループットを実現します。Mutexで複数プロセス間の排他制御を行います。"
   },
-  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"カスタムasync/await実装（INotifyCompletion）",
     question:"INotifyCompletion・ICriticalNotifyCompletion を実装してawaitableな独自の型を作成してください。Delay・Retryに最適化したカスタムAwaiterを実装してください。",
     hint:"struct CustomAwaitable { public CustomAwaiter GetAwaiter() } struct CustomAwaiter : INotifyCompletion { bool IsCompleted; void OnCompleted(Action); T GetResult() }",
@@ -15456,7 +15456,7 @@ func main() {
   },
 
   // ───────────── UNIT 14: PREDATORチャレンジ ─────────────
-  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"Goランタイムスケジューラのエミュレーション",
     question:"Goランタイムの M:N スレッドスケジューラ（GOMAXPROCS・work-stealing）をエミュレートしてください。M個のOSスレッドとN個のゴルーチンキューを管理し、アイドルスレッドが他のキューからゴルーチンを盗む仕組みを実装してください。",
     hint:"各workerが自身のrunqueueを持ち、空になったら他のworkerからタスクを盗みます。",
@@ -15548,7 +15548,7 @@ func main() {
     expected:"processed: 20/20",
     explanation:"Goランタイムは M:Nスレッドモデルでwork-stealingスケジューラを使います。アイドルなP（論理プロセッサ）が他のPのrunqueueからゴルーチンを盗んでCPU使用率を最大化します。GOMAXPROCS でPの数を制御します。"
   },
-  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"バイナリプロトコルエンコーダー（Protocol Buffers風）",
     question:"Go でシンプルなバイナリシリアライゼーションを実装してください。varint エンコーディング・フィールドタグ・ネストされた構造体のエンコード/デコードをサポートしてください。",
     hint:"varintは7ビットずつエンコードし、MSBが1なら続きがあることを示します。フィールドは(field_number << 3 | wire_type)でタグ付けします。",
@@ -15646,7 +15646,7 @@ func main() {
     expected:"encoded: 19 bytes\nID: 42, Name: Alice, Tags: [1 2 3]",
     explanation:"Protocol BuffersのエンコーディングはVarintとtag-lengthフォーマットを使います。gRPCはこれで高効率なRPC通信を実現します。JSONより3〜10倍コンパクトで高速です。"
   },
-  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"cgo でC関数を呼び出す FFI",
     question:"cgo を使ってCの数値計算関数をGoから呼び出してください。C側でAVG・STD（標準偏差）を計算し、Go側から配列を渡して結果を受け取るFFI（外部関数インターフェース）を実装してください。",
     hint:"// #include <math.h> と // double avg(double *arr, int n) {...} を // コメントに書き、import \"C\" でC関数を呼びます。",
@@ -15696,7 +15696,7 @@ func main() {
     expected:"avg: 5.5\nstd: 2.8723",
     explanation:"cgoはGoとCの相互運用を可能にします。TensorFlow・SQLite・OpenSSLのGoバインディングはcgoで実装されています。unsafe.PointerでGoのメモリをCに渡します。パフォーマンス重視のシステムソフトウェアに不可欠です。"
   },
-  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"HTTP/2 サーバープッシュ実装",
     question:"Go の net/http パッケージを使って HTTP/2 サーバーを実装してください。http.Pusher インターフェースでサーバープッシュを実現し、クライアントがリクエストする前に関連リソースをプッシュしてください。",
     hint:"http.ResponseWriter を http.Pusher に型アサーションし、pusher.Push(path, opts) でリソースをプッシュします。",
@@ -15765,7 +15765,7 @@ func main() {
     expected:"pushed: /style.css\npushed: /app.js\nserve: /\nserve: /style.css\nserve: /app.js",
     explanation:"HTTP/2サーバープッシュはブラウザがリクエストする前に関連リソースを送信します。CSSやJSを事前送信することでラウンドトリップを削減し、初期ロードを高速化します。Go標準ライブラリはHTTP/2をネイティブサポートしています。"
   },
-  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"コンパイラ：字句解析から評価まで",
     question:"Go でミニ言語（変数宣言・算術・print）のインタープリタをゼロから実装してください。let x = 10; let y = x * 3; print(y + 1) を実行できるようにしてください。",
     hint:"Lexer→Parser(AST)→Evaluator の3段階。ASTノードはinterface Nodeで表現し、switch type assertionで評価します。",
@@ -17448,7 +17448,7 @@ int main() {
   },
 
   // ───────────── UNIT 14: PREDATORチャレンジ ─────────────
-  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"x86-64 JITコンパイラ（機械語生成）",
     question:"実行時にx86-64機械語を生成してメモリに書き込み、関数ポインタとして呼び出すJITコンパイラの最小実装を作成してください。add(a,b)をx86-64命令で生成して実行してください。",
     hint:"mmap(PROT_EXEC|PROT_WRITE)でメモリ確保、x86-64のmov・add・retのオペコードを配列に書き込み、関数ポインタとしてキャストして呼び出します。",
@@ -17514,7 +17514,7 @@ int main() {
     expected:"add(3,4) = 7\nadd(10,20) = 30\nfib(10) = 55\nfib(15) = 610",
     explanation:"JITコンパイラは実行時に機械語を生成します。LLVM・LuaJIT・V8・PyPyはこの技術で10〜100倍の高速化を実現します。x86-64のadd命令はlea eax,[rdi+rsi]でrdi(第1引数)+rsi(第2引数)をeaxに格納します。"
   },
-  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"コルーチン（ucontext/setjmp）",
     question:"POSIXのucontext_tまたはsetjmp/longjmpを使ってユーザー空間のコルーチンを実装してください。複数のコルーチンが yield で制御を返し合う協調マルチタスクを実現してください。",
     hint:"ucontext_t ctx[N]; getcontext; makecontext; swapcontext でコルーチン間を切り替えます。",
@@ -17590,7 +17590,7 @@ int main() {
     expected:"A: step 0\nB: step 0\nA: step 1\nB: step 1\nA: step 2\nB: step 2",
     explanation:"ucontext_tはLinuxのPOSIXコルーチンAPIです。Goのゴルーチン・Python asyncio・Lua coroutineもユーザー空間コルーチンです。getcontext/makecontext/swapcontextでスタックとレジスタを保存・復元します。"
   },
-  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"ガベージコレクター（マーク＆スイープ）",
     question:"Cでマーク＆スイープガベージコレクターを実装してください。gc_malloc()で確保したオブジェクトをルートセットから到達可能性を調べ、未到達のものを解放してください。",
     hint:"struct GCObj { int marked; struct GCObj* next; }; gc_roots[]にルートを登録し、DFSでマーク後に未マークを解放します。",
@@ -17670,7 +17670,7 @@ int main() {
     expected:"before: 4 objects\nfreed: 3\nfreed: 4\nfreed: 2 objects still referenced: 2",
     explanation:"マーク＆スイープGCはJVM・V8・SpiderMonkeyの基礎アルゴリズムです。マーク段階でルートからDFSし到達可能なオブジェクトに印をつけ、スイープ段階で未到達オブジェクトを解放します。"
   },
-  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"シグナルハンドラとクラッシュレポーター",
     question:"SIGSEGVのシグナルハンドラを実装してクラッシュ時のスタックトレースを出力するクラッシュレポーターを作成してください。backtrace()とsigaction()を使ってください。",
     hint:"sigaction(SIGSEGV, &sa, NULL) でシグナルハンドラを登録します。backtrace()/backtrace_symbols()でスタックトレースを取得します。",
@@ -17723,7 +17723,7 @@ int main() {
     expected:"crash handler installed\ncurrent stack depth: 3\nready to catch SIGSEGV",
     explanation:"クラッシュレポーターはFirebase Crashlytics・Sentry・Google Breakpadの基礎技術です。SIGSEGVシグナルをキャッチしてスタックトレースを保存します。プロダクションでのデバッグに不可欠です。"
   },
-  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"カスタムTCPスタック（raw socket）",
     question:"Cのraw socketを使ってTCPヘッダーを手動で構築し、SYNパケットを送信する最小限のTCPスタックを実装してください。IPとTCPのチェックサム計算を含めてください。",
     hint:"socket(AF_INET, SOCK_RAW, IPPROTO_TCP) でrawソケットを作成し、struct tcphdr を手動で設定してsendto()で送信します。",
@@ -19069,7 +19069,7 @@ fn main() {
   },
 
   // ───────────── UNIT 14: PREDATORチャレンジ ─────────────
-  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:54, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"コンパイラプラグイン風proc-macro",
     question:"Rustのproc-macroをエミュレートして、#[derive(Builder)] 相当の機能をリフレクション+コード生成で実装してください。実際のproc-macroの仕組みとTokenStream処理を理解してください。",
     hint:"proc_macro2::TokenStream、syn、quoteクレートを使います。syn::DeriveInput でstructを解析し、quote!マクロでコードを生成します。",
@@ -19138,7 +19138,7 @@ fn main() {
     expected:"Person { name: \"Alice\", age: 30, email: Some(\"alice@test.com\") }\nErr(BuildError(\"name required\"))",
     explanation:"Rustのproc-macroはTokenStreamを入力に受け取りTokenStreamを出力するコンパイル時コード生成です。serdeの#[derive(Serialize)]・derive_more・tonic（gRPC）はproc-macroで実装されています。syn+quoteクレートが解析と生成を担います。"
   },
-  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:55, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"Unsafe：ロックフリースタック（AtomicPtr）",
     question:"Rustのstd::sync::atomic::AtomicPtrとunsafeを使ってロックフリースタックを実装してください。ABA問題の説明とハザードポインタの概念も示してください。",
     hint:"struct Stack<T> { head: AtomicPtr<Node<T>> }; compare_exchange で head を更新します。",
@@ -19219,7 +19219,7 @@ fn main() {
     expected:"count: 12\nmin: 0, max: 33",
     explanation:"ロックフリーアルゴリズムはunsafeのRustで実装できますが、正確性の証明が難しいです。ABA問題（AをBに変えてまたAに戻すとCASが誤って成功する）はhazard pointersやepoch-based reclaimで対処します。crossbeam-epochが標準実装です。"
   },
-  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:56, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"async Executor自作（Future実行ランタイム）",
     question:"tokioなしで動作するシンプルなasync Executorを実装してください。Future::pollを手動で呼び出してタスクを管理するシングルスレッドエグゼキューターを作ってください。",
     hint:"struct Executor { queue: VecDeque<Arc<Task>> }; Task は Future + Waker を保持します。",
@@ -19293,7 +19293,7 @@ fn main() {
     expected:"task 1 start\ntask 1 end\ntask 2 start\ntask 2 end\ntask 3 start\ntask 3 end\nall done",
     explanation:"tokioはこれを大規模にしたものです。RawWaker+VTableでWakerを実装し、Poll::Pendingを返すタスクをキューに戻して再スケジューリングします。async/awaitはコンパイラがFutureのstatemachineに変換します。"
   },
-  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:57, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"型レベルステートマシン",
     question:"Rustの型システムを使ってコンパイル時に状態遷移の正当性を保証するステートマシンを実装してください。不正な状態遷移（Draft→Closed、Published→Draft）はコンパイルエラーになるようにしてください。",
     hint:"struct Post<State>(String, PhantomData<State>); struct Draft; struct Reviewed; struct Published; でTypestateパターンを実装します。",
@@ -19363,7 +19363,7 @@ fn main() {
     expected:"created draft: Hello Rust!\nsubmitted for review: Hello Rust!\napproved: Hello Rust!\npublished: Hello Rust!\nclosed: Hello Rust!\narchived: Hello Rust!\nstate machine complete",
     explanation:"Typestateパターンはコンパイル時に状態遷移の正当性を保証します。各状態は別々の型で表現されるため、不正な操作（未ログイン状態でAPIを呼ぶ等）はコンパイルエラーになります。ゼロコストで安全性を実現できます。"
   },
-  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"PREDATOR",
+  { id:58, unit:"UNIT 14  ◆  TITAN — 実務最高難度", rank:"TITAN",
     title:"Wasmコンパイルターゲット（no_std環境）",
     question:"no_std環境でWASM向けにコンパイルできるRustライブラリを実装してください。extern \"C\" ABIでJavaScriptから呼べる関数を実装し、アロケーターをカスタムしてWebAssembly.Memory を制御してください。",
     hint:"#![no_std] + extern crate alloc; #[no_mangle] pub extern \"C\" fn で WebAssembly から呼び出し可能な関数を定義します。",

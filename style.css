@@ -901,6 +901,7 @@ a.landing-text-link { text-decoration: underline; }
   0%, 100% { text-shadow: 0 0 8px  rgba(255,34,68,0.60), 0 0 16px rgba(255,34,68,0.25); }
   50%       { text-shadow: 0 0 18px rgba(255,34,68,0.95), 0 0 36px rgba(255,34,68,0.55); }
 }
+.rank-titan,
 .rank-predator {
   color: #FF2020;
   text-shadow: 0 0 10px rgba(255,32,32,0.9), 0 0 22px rgba(200,0,0,0.55), 0 0 40px rgba(255,80,80,0.25);
@@ -1005,6 +1006,7 @@ a.landing-text-link { text-decoration: underline; }
   0%, 100% { box-shadow: -3px 0 12px rgba(255,34,68,0.20); }
   50%       { box-shadow: -3px 0 22px rgba(255,34,68,0.50); }
 }
+.rank-card-titan,
 .rank-card-predator {
   border-left-color: rgba(255,32,32,0.80) !important;
   background: linear-gradient(90deg, rgba(255,32,32,0.10) 0%, rgba(200,0,0,0.04) 50%, transparent 100%);
@@ -1024,6 +1026,7 @@ a.landing-text-link { text-decoration: underline; }
 .rank-card-diamond:hover { border-left-color:#5588FF; background:rgba(85,136,255,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(85,136,255,0.18); transform:translateX(5px); }
 .rank-card-master:hover  { border-left-color:#C040FF; background:rgba(192,64,255,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(192,64,255,0.22); transform:translateX(5px); }
 .rank-card-legend:hover  { border-left-color:#FF2244; background:rgba(255,34,68,0.12);  box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 18px rgba(255,34,68,0.40); transform:translateX(5px); }
+.rank-card-titan:hover,
 .rank-card-predator:hover{ border-left-color:#FF2020; background:rgba(255,32,32,0.13); box-shadow:0 2px 22px rgba(0,0,0,0.4), -2px 0 24px rgba(255,32,32,0.60), 0 0 18px rgba(200,0,0,0.20); transform:translateX(5px); }
 
 .problem-card.learned {
@@ -2892,23 +2895,27 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   background: linear-gradient(90deg, rgba(255,34,68,0.14) 0%, transparent 100%) !important;
 }
 
-/* ── PREDATOR ランクバッジ ── */
+/* ── TITAN（旧PREDATOR）ランクバッジ ── */
+.rank-titan,
 .rank-predator {
   color: #FF2020 !important;
   border-color: rgba(255,32,32,0.60) !important;
   text-shadow: 0 0 12px rgba(255,32,32,0.8), 0 0 24px rgba(200,0,0,0.4);
   animation: predatorBadgePulse 1.6s ease-in-out infinite;
 }
+.rank-card-titan,
 .rank-card-predator {
   border-left: 3px solid rgba(255,32,32,0.80) !important;
   background: linear-gradient(90deg, rgba(255,32,32,0.10) 0%, transparent 100%) !important;
   animation: predatorCardPulse 1.8s ease-in-out infinite;
 }
+.rank-card-titan:hover,
 .rank-card-predator:hover {
   background: linear-gradient(90deg, rgba(255,32,32,0.18) 0%, transparent 100%) !important;
 }
 
-/* ── PREDATOR バッジアニメーション ── */
+/* ── TITAN バッジアニメーション ── */
+.badge-titan,
 .badge-predator {
   animation: predatorPulse 1.6s ease-in-out infinite;
 }
@@ -2916,6 +2923,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   0%, 100% { box-shadow:0 0 10px rgba(255,32,32,0.35), 0 0 0 1px rgba(255,32,32,0.60); }
   50%       { box-shadow:0 0 28px rgba(255,32,32,0.75), 0 0 0 1px rgba(255,80,80,0.90), 0 0 50px rgba(200,0,0,0.25); }
 }
+.badge-titan .badge-hex,
 .badge-predator .badge-hex {
   animation: predatorHexPulse 1.6s ease-in-out infinite;
 }
