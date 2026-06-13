@@ -22625,6 +22625,7 @@ async function syncProgressFromSupabase() {
   } catch(e) {}
   updateProgressDisplay();
   renderList();
+  checkTitanTheme();
 }
 
 // ===== 画面切り替え =====
@@ -24064,6 +24065,7 @@ function toggleLearned(id) {
     playClearSound();
     showClearEffect();
     _checkSilverUnlock(id);
+    checkTitanTheme();
   }
   renderDetail(id);
   updateProgressDisplay();
@@ -24120,6 +24122,94 @@ function showRankingUnlockEffect(rank) {
   function dismiss() {
     el.classList.add('ruo-hide');
     setTimeout(function() { if (el.parentNode) el.remove(); }, 500);
+  }
+  el.addEventListener('click', dismiss);
+  setTimeout(dismiss, 7000);
+}
+
+// ===== TITANテーマ解放 =====
+
+var _TITAN_LANG_ARRS = [
+  { key: 'cpp',        get: function() { return problems; } },
+  { key: 'python',     get: function() { return pythonProblems; } },
+  { key: 'javascript', get: function() { return javascriptProblems; } },
+  { key: 'ruby',       get: function() { return rubyProblems; } },
+  { key: 'typescript', get: function() { return typescriptProblems; } },
+  { key: 'kotlin',     get: function() { return kotlinProblems; } },
+  { key: 'swift',      get: function() { return swiftProblems; } },
+  { key: 'java',       get: function() { return javaProblems; } },
+  { key: 'csharp',     get: function() { return csharpProblems; } },
+  { key: 'go',         get: function() { return goProblems; } },
+  { key: 'c',          get: function() { return cProblems; } },
+  { key: 'rust',       get: function() { return rustProblems; } },
+  { key: 'html',       get: function() { return htmlProblems; } },
+  { key: 'sql',        get: function() { return sqlProblems; } },
+  { key: 'bash',       get: function() { return bashProblems; } },
+  { key: 'regex',      get: function() { return regexProblems; } },
+  { key: 'php',        get: function() { return phpProblems; } },
+];
+
+function isTitanConditionMet() {
+  if (getProfileStats().total >= 350) return true;
+  for (var i = 0; i < _TITAN_LANG_ARRS.length; i++) {
+    var la = _TITAN_LANG_ARRS[i];
+    if (calcLangStrengthData(la.key, la.get()).pct >= 100) return true;
+  }
+  return false;
+}
+
+function checkTitanTheme() {
+  var active = isTitanConditionMet();
+  if (active) {
+    document.body.classList.add('titan-theme');
+    _updateTitanBadge(true);
+    if (localStorage.getItem('titan_theme_unlocked') !== '1') {
+      localStorage.setItem('titan_theme_unlocked', '1');
+      setTimeout(showTitanThemeUnlock, 600);
+    }
+  } else {
+    document.body.classList.remove('titan-theme');
+    _updateTitanBadge(false);
+  }
+  return active;
+}
+
+function _updateTitanBadge(show) {
+  var existing = document.getElementById('titan-header-badge');
+  if (show && !existing) {
+    var badge = document.createElement('span');
+    badge.id = 'titan-header-badge';
+    badge.className = 'titan-badge-header';
+    badge.textContent = '⬡ TITAN';
+    var lvBadge = document.getElementById('lv-badge');
+    if (lvBadge) lvBadge.parentNode.insertBefore(badge, lvBadge);
+  } else if (!show && existing) {
+    existing.remove();
+  }
+}
+
+function showTitanThemeUnlock() {
+  var existing = document.getElementById('titan-uo');
+  if (existing) existing.remove();
+  var el = document.createElement('div');
+  el.id = 'titan-uo';
+  el.className = 'titan-uo';
+  el.innerHTML =
+    '<div class="titan-uo-bg"></div>' +
+    '<div class="titan-uo-scan"></div>' +
+    '<div class="titan-uo-content">' +
+      '<div class="titan-uo-badge">T I T A N</div>' +
+      '<div class="titan-uo-title">THEME UNLOCKED</div>' +
+      '<div class="titan-uo-sub">最高位の覇者として<br>特別スキンが解放されました</div>' +
+      '<div class="titan-uo-tap">— TAP TO CONTINUE —</div>' +
+    '</div>';
+  document.body.appendChild(el);
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { el.classList.add('titan-uo-show'); });
+  });
+  function dismiss() {
+    el.classList.add('titan-uo-hide');
+    setTimeout(function() { if (el.parentNode) el.remove(); }, 600);
   }
   el.addEventListener('click', dismiss);
   setTimeout(dismiss, 7000);
@@ -24233,6 +24323,7 @@ function openProfile() {
 }
 
 async function renderProfile() {
+  checkTitanTheme();
   var content = document.getElementById('profile-content');
   // まずスケルトンを表示して即座にページを見せる
   content.innerHTML = '<div class="profile-loading">// LOADING...</div>';

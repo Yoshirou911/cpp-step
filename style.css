@@ -4831,3 +4831,168 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   0%, 100% { opacity: 0.25; }
   50%       { opacity: 0.6; }
 }
+
+/* ===== TITANテーマ ===== */
+
+body.titan-theme::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 3px,
+    rgba(255, 32, 32, 0.018) 3px, rgba(255, 32, 32, 0.018) 4px
+  );
+  pointer-events: none;
+  z-index: 9990;
+}
+
+body.titan-theme header {
+  border-bottom: 1px solid rgba(255, 32, 32, 0.35) !important;
+  box-shadow: 0 2px 24px rgba(255, 32, 32, 0.15) !important;
+}
+
+body.titan-theme #progress-bar {
+  background: linear-gradient(90deg, #CC0000 0%, #FF2020 100%) !important;
+  box-shadow: 0 0 14px rgba(255, 32, 32, 0.7) !important;
+}
+
+body.titan-theme .lv-badge-header {
+  color: #FF2020 !important;
+  text-shadow: 0 0 10px rgba(255, 32, 32, 0.7) !important;
+  border-color: rgba(255, 32, 32, 0.5) !important;
+}
+
+body.titan-theme .code-editor-ace,
+body.titan-theme #code-editor {
+  box-shadow: 0 0 0 1px rgba(255, 32, 32, 0.3), 0 0 24px rgba(255, 32, 32, 0.12) !important;
+}
+
+body.titan-theme .profile-hero {
+  border-color: rgba(255, 32, 32, 0.4) !important;
+  box-shadow: 0 0 32px rgba(255, 32, 32, 0.15), inset 0 0 24px rgba(255, 32, 32, 0.06) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+body.titan-theme .profile-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 4px,
+    rgba(255, 32, 32, 0.03) 4px, rgba(255, 32, 32, 0.03) 5px
+  );
+  pointer-events: none;
+  border-radius: inherit;
+  animation: titanScan 8s linear infinite;
+}
+
+body.titan-theme .profile-rank-badge {
+  box-shadow: 0 0 20px rgba(255, 32, 32, 0.5) !important;
+  border-color: rgba(255, 32, 32, 0.6) !important;
+}
+
+.titan-badge-header {
+  display: inline-block;
+  background: rgba(255, 32, 32, 0.12);
+  border: 1px solid rgba(255, 32, 32, 0.5);
+  color: #FF2020;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  padding: 3px 10px;
+  font-family: 'Share Tech Mono', monospace;
+  animation: titanBadgePulse 2s ease-in-out infinite;
+}
+
+@keyframes titanBadgePulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(255, 32, 32, 0.3); }
+  50%       { box-shadow: 0 0 14px rgba(255, 32, 32, 0.7); }
+}
+
+@keyframes titanScan {
+  from { background-position: 0 0; }
+  to   { background-position: 0 100px; }
+}
+
+/* TITAN解放演出 */
+.titan-uo {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+  cursor: pointer;
+}
+.titan-uo.titan-uo-show { opacity: 1; pointer-events: all; }
+.titan-uo.titan-uo-hide { opacity: 0; transition: opacity 0.6s; }
+
+.titan-uo-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(40,0,0,0.97) 0%, rgba(6,0,0,0.99) 100%);
+}
+.titan-uo-scan {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 3px,
+    rgba(255, 32, 32, 0.04) 3px, rgba(255, 32, 32, 0.04) 4px
+  );
+  animation: titanScan 4s linear infinite;
+}
+.titan-uo-content {
+  position: relative;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+.titan-uo-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 3.2rem;
+  font-weight: 900;
+  letter-spacing: 0.4em;
+  color: #FF2020;
+  text-shadow: 0 0 30px rgba(255,32,32,0.8), 0 0 60px rgba(255,32,32,0.4);
+  animation: titanBadgeIn 0.6s cubic-bezier(0.16,1,0.3,1) both;
+}
+.titan-uo-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.1rem;
+  letter-spacing: 0.3em;
+  color: rgba(255,100,100,0.9);
+  animation: titanTextIn 0.5s 0.3s both;
+}
+.titan-uo-sub {
+  font-size: 0.82rem;
+  color: rgba(255,160,160,0.6);
+  line-height: 1.8;
+  letter-spacing: 0.08em;
+  animation: titanTextIn 0.5s 0.6s both;
+}
+.titan-uo-tap {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: rgba(255,80,80,0.3);
+  letter-spacing: 0.2em;
+  animation: titanTextIn 0.5s 1s both, titanBlink 1.4s 2s ease-in-out infinite;
+}
+
+@keyframes titanBadgeIn {
+  from { opacity: 0; transform: scale(1.6); filter: blur(12px); }
+  to   { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+@keyframes titanTextIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes titanBlink {
+  0%, 100% { opacity: 0.3; }
+  50%       { opacity: 0.7; }
+}
