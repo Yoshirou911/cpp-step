@@ -24440,12 +24440,14 @@ async function saveGuildCard() {
   btn.textContent = '保存中...';
 
   try {
-    var res = await _supabase.from('user_profiles').upsert({
-      user_id:    currentUser.id,
-      age_group:  _gcSelected.age,
-      job_class:  _gcSelected.job,
-      experience: _gcSelected.exp
-    }, { onConflict: 'user_id' });
+    var res = await _supabase
+      .from('user_profiles')
+      .update({
+        age_group:  _gcSelected.age,
+        job_class:  _gcSelected.job,
+        experience: _gcSelected.exp
+      })
+      .eq('user_id', currentUser.id);
 
     if (res.error) throw res.error;
 
