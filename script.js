@@ -6814,6 +6814,129 @@ Observable.from([1,2,3,4,5,6,7,8,9,10])
   });`,
     expected:"4, 16, 36",
     explanation:"ReactiveX（RxJS）のObservableはlazy streamです。subscribeするまで何も実行しません。map・filter・takeはObservableを返す高階関数で、チェーンが遅延評価のパイプラインを形成します。"
+  },
+  { id: 63, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Atomics と SharedArrayBuffer：マルチスレッド同期",
+    question: "SharedArrayBuffer と Atomics を使ったスレッド間通信を実装してください。\n①SharedArrayBufferで共有メモリを確保\n②Atomics.add/sub でアトミックカウンタを実装\n③Atomics.wait/notify でスレッド間同期（シミュレーション）\n④複数の「スレッド」（Worker代替としてシミュレーション）がカウンタをインクリメント\n⑤競合状態なしに正しくカウントできることを確認",
+    hint: "SharedArrayBufferはInt32Arrayなどのビューを通してアクセスします。Atomics.add(typedArray, index, value)でアトミックに加算します。",
+    answer:
+`// SharedArrayBufferとAtomicsのデモ（シングルスレッドシミュレーション）
+const shared = new SharedArrayBuffer(4 * 4); // 4つのInt32
+const int32 = new Int32Array(shared);
+
+// アトミックカウンタのシミュレーション
+function atomicCounter() {
+  // カウンタ[0]: メインカウンタ
+  // カウンタ[1]: ロックフラグ
+  int32[0] = 0; // カウンタリセット
+
+  // Atomics.addで競合なしにインクリメント
+  const NUM_OPS = 1000;
+  for (let i = 0; i < NUM_OPS; i++) {
+    Atomics.add(int32, 0, 1);
+  }
+  console.log(\`アトミックカウンタ: \${Atomics.load(int32, 0)}\`);
+
+  // Compare-and-Swap (CAS)
+  const old = Atomics.compareExchange(int32, 0, NUM_OPS, 0); // 1000なら0にリセット
+  console.log(\`CAS前の値: \${old}, CAS後: \${Atomics.load(int32, 0)}\`);
+
+  // Atomics.store / load
+  Atomics.store(int32, 1, 42);
+  console.log(\`store/load: \${Atomics.load(int32, 1)}\`);
+
+  // Atomics.and / or / xor
+  Atomics.store(int32, 2, 0b1010);
+  Atomics.and(int32, 2, 0b1100);
+  console.log(\`AND: \${Atomics.load(int32, 2).toString(2).padStart(4,'0')}\`);
+
+  Atomics.store(int32, 3, 0b1010);
+  Atomics.or(int32, 3, 0b0101);
+  console.log(\`OR: \${Atomics.load(int32, 3).toString(2).padStart(4,'0')}\`);
+}
+
+atomicCounter();
+
+// Atomics.waitAsync のシミュレーション（Node.js 16+）
+console.log(\`SharedArrayBuffer bytes: \${shared.byteLength}\`);
+console.log(\`Int32Array length: \${int32.length}\`);`,
+    expected:"アトミックカウンタ: 1000\nCAS前の値: 1000, CAS後: 0\nstore/load: 42\nAND: 1000\nOR: 1111\nSharedArrayBuffer bytes: 16\nInt32Array length: 4",
+    explanation:"SharedArrayBuffer + Atomicsは複数のWeb WorkerがRAMを共有して通信するJavaScriptのマルチスレッドAPIです。Atomics.addで競合状態なしにカウンタを操作します。Spectre対策でSABはCross-Origin-Isolatedヘッダーが必要です。WebAssemblyのatomic命令と組み合わせて高性能並行処理が実現できます。"
+  },
+  { id: 64, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "JavaScript エンジン：バイトコードインタープリタ",
+    question: "シンプルなスタックベースの仮想マシン（VM）をJavaScriptで実装してください。\n以下の命令セットを実装してください：\n- PUSH n: スタックにnをプッシュ\n- POP: スタックからポップ\n- ADD/SUB/MUL/DIV: 二項算術演算\n- LOAD var / STORE var: 変数への読み書き\n- JUMP offset / JUMP_IF_FALSE offset: 条件分岐\n- PRINT: 出力\n- HALT: 終了\n式 `x = 5 * 3 + 2; y = x - 7; print(y)` に相当するバイトコードを実行してください。",
+    hint: "VMはinstructionPointer(IP)・stack[]・variables{}を持ちます。mainループでオペコードをfetch→decode→executeします。",
+    answer:
+`class VM {
+  constructor(bytecode) {
+    this.code = bytecode;
+    this.ip = 0;
+    this.stack = [];
+    this.vars = {};
+  }
+
+  push(v) { this.stack.push(v); }
+  pop()    { return this.stack.pop(); }
+  peek()   { return this.stack[this.stack.length - 1]; }
+
+  run() {
+    while (this.ip < this.code.length) {
+      const op = this.code[this.ip++];
+      switch (op) {
+        case 'PUSH':  this.push(this.code[this.ip++]); break;
+        case 'POP':   this.pop(); break;
+        case 'ADD':   { const b=this.pop(), a=this.pop(); this.push(a+b); break; }
+        case 'SUB':   { const b=this.pop(), a=this.pop(); this.push(a-b); break; }
+        case 'MUL':   { const b=this.pop(), a=this.pop(); this.push(a*b); break; }
+        case 'DIV':   { const b=this.pop(), a=this.pop(); this.push(a/b); break; }
+        case 'LOAD':  this.push(this.vars[this.code[this.ip++]] ?? 0); break;
+        case 'STORE': this.vars[this.code[this.ip++]] = this.pop(); break;
+        case 'DUP':   this.push(this.peek()); break;
+        case 'PRINT': console.log(this.pop()); break;
+        case 'JUMP':  this.ip = this.code[this.ip]; break;
+        case 'JUMP_IF_FALSE': {
+          const offset = this.code[this.ip++];
+          if (!this.pop()) this.ip = offset;
+          break;
+        }
+        case 'HALT':  return;
+        default: throw new Error(\`Unknown opcode: \${op}\`);
+      }
+    }
+  }
+}
+
+// x = 5 * 3 + 2; y = x - 7; print(y)
+// x = 17, y = 10
+const prog = [
+  'PUSH', 5,
+  'PUSH', 3,
+  'MUL',
+  'PUSH', 2,
+  'ADD',
+  'STORE', 'x',
+  'LOAD',  'x',
+  'PUSH', 7,
+  'SUB',
+  'STORE', 'y',
+  'LOAD', 'y',
+  'PRINT',
+  // if y > 5 then print("big")
+  'LOAD', 'y',
+  'PUSH', 5,
+  'SUB',
+  'JUMP_IF_FALSE', 28,
+  'PUSH', '"big"',
+  'PRINT',
+  'HALT'
+];
+
+const vm = new VM(prog);
+vm.run();
+console.log('vars:', JSON.stringify(vm.vars));`,
+    expected:"10\n\"big\"\nvars: {\"x\":17,\"y\":10}",
+    explanation:"スタックベースVMはJVM・CPython・V8の中間コード層です。PUSH/POPで値を操作し、LOAD/STOREで変数を管理します。JavaScriptエンジンのV8はASTをIgnitionバイトコードにコンパイルし、このVMで実行後にTurbofanでJITコンパイルして最適化します。"
   }
 ];
 
@@ -8266,6 +8389,111 @@ rescue FiberError
 end`,
     expected:"フィボナッチ: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34\nカウンタ: 1, 2, 3, 4, 5\nタスクA 0\nタスクB 0\nタスクA 1\nタスクB 1\nタスクA 2\nタスクB 2",
     explanation:"FiberはRubyの軽量コルーチンで、スレッドと違い明示的なyield/resumeで制御を移します。Enumeratorの内部もFiberで実装されています。Ruby 3.0のRactorとFiberを組み合わせた非同期I/Oや、async gem（HTTPX等）の基盤技術です。"
+  },
+  { id: 62, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Refinements：スコープを限定した型拡張",
+    question: "Rubyのrefinementsを使って既存クラスをモジュールスコープ内でのみ安全に拡張してください。\n①Integer に `factorial`, `to_roman` メソッドを追加するRefinements\n②String に `words`, `camel_to_snake` を追加するRefinements\n③using でRefinementsを有効化し、有効/無効スコープの違いを確認\n④refinementsが他のファイル・クラスに影響しないことを確認",
+    hint: "module MyRefinements; refine Integer do; def factorial; end; end; end の形で定義。using MyRefinements でスコープ内のみ有効化。",
+    answer:
+`module IntegerRefinements
+  refine Integer do
+    def factorial
+      return 1 if self <= 1
+      self * (self - 1).factorial
+    end
+
+    def to_roman
+      nums  = [1000,900,500,400,100,90,50,40,10,9,5,4,1]
+      syms  = %w[M CM D CD C XC L XL X IX V IV I]
+      result, n = '', self
+      nums.each_with_index { |v,i| while n >= v; result += syms[i]; n -= v; end }
+      result
+    end
+  end
+end
+
+module StringRefinements
+  refine String do
+    def words; split(/\s+/).reject(&:empty?); end
+    def camel_to_snake
+      gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
+        .gsub(/([a-z\d])([A-Z])/, '\1_\2')
+        .downcase
+    end
+  end
+end
+
+# Refinementsを使うスコープ
+module App
+  using IntegerRefinements
+  using StringRefinements
+
+  def self.run
+    puts 5.factorial
+    puts 10.factorial
+    puts 2024.to_roman
+    puts "Hello World Ruby".words.inspect
+    puts "CamelCaseMethodName".camel_to_snake
+    puts "HTMLParserV2".camel_to_snake
+  end
+end
+
+App.run
+
+# スコープ外ではメソッドは存在しない
+begin
+  puts 5.factorial
+rescue NoMethodError => e
+  puts "スコープ外: #{e.message}"
+end`,
+    expected:"120\n3628800\nMMXXIV\n[\"Hello\", \"World\", \"Ruby\"]\ncamel_case_method_name\nhtml_parser_v2\nスコープ外: undefined method 'factorial' for an instance of Integer",
+    explanation:"RefinementsはRuby 2.0で導入されたモンキーパッチの問題を解決するスコープ限定の型拡張機構です。using で有効化したモジュール・ファイルスコープ内のみ有効になり、グローバルな型汚染を防ぎます。ActiveSupportのようなコアクラス拡張の代替として設計されました。"
+  },
+  { id: 63, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Ractorによる並列処理（Ruby 3.0+）",
+    question: "Ruby 3.0のRactorを使った並列処理を実装してください。\n①Ractorで素数判定を並列実行（複数のRactorが独立して計算）\n②Ractorチャンネルでメッセージパッシング\n③pipeline パターン（Ractor A → Ractor B → 結果収集）\n④Ractor間でのfrozen objectの共有と非freezeオブジェクトの制限の理解",
+    hint: "Ractor.new { ... } で並列実行単位を作成。Ractor.recv でメッセージ受信、Ractor#send でメッセージ送信。unfrozenオブジェクトはRactor間で共有できない。",
+    answer:
+`# 素数判定
+def prime?(n)
+  return false if n < 2
+  (2..Math.sqrt(n).to_i).none? { |i| n % i == 0 }
+end
+
+# 複数のRactorで素数を並列探索
+numbers = (1..50).to_a
+
+ractors = numbers.each_slice(10).map do |slice|
+  Ractor.new(slice.freeze) do |nums|
+    nums.select { |n| n > 1 && (2..Math.sqrt(n).to_i).none? { |i| n % i == 0 } }
+  end
+end
+
+primes = ractors.flat_map(&:take).sort
+puts "素数: #{primes.join(', ')}"
+
+# パイプラインパターン
+producer = Ractor.new do
+  [1, 4, 9, 16, 25].each { |n| Ractor.yield n }
+  Ractor.yield :done
+end
+
+processor = Ractor.new(producer) do |prod|
+  loop do
+    val = prod.take
+    break if val == :done
+    Ractor.yield Math.sqrt(val)
+  end
+end
+
+results = []
+loop do
+  val = processor.take rescue break
+  results << val.to_i
+end
+puts "√変換: #{results.join(', ')}"`,
+    expected:"素数: 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47\n√変換: 1, 2, 3, 4, 5",
+    explanation:"RactorはRuby 3.0で実験的に導入されたGIL（Global Interpreter Lock）を持たない並列実行機構です。GILにより従来のRubyスレッドはCPUバウンドタスクで並列化できませんでしたが、Ractorは真の並列実行を実現します。Ractor間でfrozenオブジェクトのみ共有可能という制約がスレッドセーフを保証します。"
   }
 ];
 
@@ -9778,6 +10006,140 @@ const rAnimalBox: ReadonlyBox<Animal> = rDogBox; // OK: 共変
 console.log(rAnimalBox.value.name);`,
     expected:"Rex\nAnimal: Buddy\nMax",
     explanation:"型の変性（Variance）はジェネリック型の互換性を決定します。戻り値は共変（より具体的→汎用に代入可）、引数は反変（より汎用→具体的に代入可）。TypeScriptは関数引数を双変（bivariant）にしていますが、strictFunctionTypesで反変を強制できます。"
+  },
+  { id: 62, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "型安全ステートマシン：型レベルでの状態遷移",
+    question: "TypeScriptの型システムでステートマシンを実装してください。\n①状態と遷移をリテラル型で定義\n②`Transition<State, Event>` 型でstateとeventの組み合わせを制約\n③許可された遷移のみコンパイルで通る `send(state, event)` 関数\n④信号機（Red/Yellow/Green）ステートマシンを実装\n⑤Invalid な状態遷移を型エラーとして検出",
+    hint: "型レベルのマップは { [K in KeyType]: ValueType } のMapped Typeで表現。Conditional TypeでState×Event→NextStateのマッピングを定義します。",
+    answer:
+`type TrafficState = 'Red' | 'Yellow' | 'Green';
+type TrafficEvent = 'Next' | 'Emergency';
+
+type TransitionMap = {
+  Red:    { Next: 'Green';  Emergency: 'Red' };
+  Yellow: { Next: 'Red';   Emergency: 'Red' };
+  Green:  { Next: 'Yellow'; Emergency: 'Red' };
+};
+
+type NextState<S extends TrafficState, E extends TrafficEvent> =
+  S extends keyof TransitionMap
+    ? E extends keyof TransitionMap[S]
+      ? TransitionMap[S][E]
+      : never
+    : never;
+
+function transition<S extends TrafficState, E extends TrafficEvent>(
+  state: S, event: E
+): NextState<S, E> {
+  const map: TransitionMap = {
+    Red:    { Next: 'Green',  Emergency: 'Red' },
+    Yellow: { Next: 'Red',   Emergency: 'Red' },
+    Green:  { Next: 'Yellow', Emergency: 'Red' },
+  };
+  return map[state][event] as NextState<S, E>;
+}
+
+class TrafficLight {
+  private state: TrafficState = 'Red';
+  send(event: TrafficEvent): void {
+    this.state = transition(this.state, event);
+    console.log(\`→ \${this.state}\`);
+  }
+  getState(): TrafficState { return this.state; }
+}
+
+const light = new TrafficLight();
+console.log(\`Initial: \${light.getState()}\`);
+light.send('Next');
+light.send('Next');
+light.send('Next');
+light.send('Emergency');
+light.send('Next');
+
+// 型レベルの制約チェック（コンパイル時エラーになる）
+// const invalid: NextState<'Red', 'Unknown'> = transition('Red', 'Unknown'); // Error!
+const nextFromRed = transition('Red', 'Next');
+console.log(\`Red + Next = \${nextFromRed}\`);`,
+    expected:"Initial: Red\n→ Green\n→ Yellow\n→ Red\n→ Red\n→ Green\nRed + Next = Green",
+    explanation:"型レベルのステートマシンはTypeScriptの高度な型機能を使って状態遷移の正当性をコンパイル時に保証します。XState・RobotなどのFSMライブラリはこのパターンで実装されています。無効な状態遷移が型エラーになるため、ランタイムエラーを事前に防げます。"
+  },
+  { id: 63, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Decoratorと Metadata Reflection：DIコンテナ",
+    question: "TypeScriptのDecorator（Stage 3）とReflect Metadataを使ったDIコンテナを実装してください。\n①`@Injectable()` デコレータでクラスをDIコンテナに登録\n②`@Inject(token)` でコンストラクタ引数の依存性を宣言\n③DIコンテナの `resolve<T>()` で自動依存性解決\n④循環依存の検出\n⑤シングルトン vs Transient スコープの実装",
+    hint: "Reflect.metadata(key, value)でメタデータを付与しReflect.getMetadata(key, target)で取得します。tsconfig.json の experimentalDecorators と emitDecoratorMetadata が必要です。",
+    answer:
+`// Reflect.metadataのシミュレーション（実行環境に依存せず動くように）
+const metaStore = new Map<object, Map<string, unknown>>();
+const Reflect2 = {
+  metadata: (key: string, value: unknown) => (target: object) => {
+    if (!metaStore.has(target)) metaStore.set(target, new Map());
+    metaStore.get(target)!.set(key, value);
+  },
+  getMetadata: (key: string, target: object): unknown =>
+    metaStore.get(target)?.get(key)
+};
+
+type Constructor<T = unknown> = new (...args: unknown[]) => T;
+
+const container = new Map<string, { ctor: Constructor; singleton: boolean; instance?: unknown }>();
+
+function Injectable(token?: string, singleton = true) {
+  return function(target: Constructor) {
+    const key = token || target.name;
+    container.set(key, { ctor: target, singleton });
+  };
+}
+
+function Inject(token: string) {
+  return function(target: Constructor, _: string | undefined, index: number) {
+    const existing = (Reflect2.getMetadata('inject:params', target) as string[] | undefined) || [];
+    existing[index] = token;
+    Reflect2.metadata('inject:params', existing)(target);
+  };
+}
+
+function resolve<T>(token: string): T {
+  const entry = container.get(token);
+  if (!entry) throw new Error(\`Not registered: \${token}\`);
+  if (entry.singleton && entry.instance) return entry.instance as T;
+  const paramTokens = (Reflect2.getMetadata('inject:params', entry.ctor) as string[] | undefined) || [];
+  const deps = paramTokens.map(t => resolve(t));
+  const instance = new entry.ctor(...deps);
+  if (entry.singleton) entry.instance = instance;
+  return instance as T;
+}
+
+// --- 使用例 ---
+@Injectable('Logger')
+class Logger {
+  log(msg: string) { console.log(\`[LOG] \${msg}\`); }
+}
+
+@Injectable('Database')
+class Database {
+  constructor(@Inject('Logger') private logger: Logger) {
+    this.logger.log('Database initialized');
+  }
+  query(sql: string) { this.logger.log(\`Query: \${sql}\`); return [{id:1}]; }
+}
+
+@Injectable('UserService')
+class UserService {
+  constructor(
+    @Inject('Database') private db: Database,
+    @Inject('Logger') private logger: Logger
+  ) {
+    this.logger.log('UserService initialized');
+  }
+  getUsers() { return this.db.query('SELECT * FROM users'); }
+}
+
+const svc = resolve<UserService>('UserService');
+svc.getUsers();
+const svc2 = resolve<UserService>('UserService');
+console.log(\`Singleton: \${svc === svc2}\`);`,
+    expected:"[LOG] Database initialized\n[LOG] UserService initialized\n[LOG] Query: SELECT * FROM users\nSingleton: true",
+    explanation:"DIコンテナはAngular・NestJSのコアです。Decoratorでクラスにメタデータを付与し、Reflectでコンストラクタの依存性を解決します。Singleton スコープで同じインスタンスを再利用します。TypeScriptのDI実装は型安全で、Reflect Metadataにより依存性が型として記録されます。"
   }
 ];
 
@@ -11227,6 +11589,130 @@ fun main() {
 }`,
     expected:"[LOG] 処理開始: Hello World\n[LOG] 処理完了\n[LOG] 処理開始: \n[WARN] 入力が空です\nhello-world-2024\nb",
     explanation:"Kotlinの委譲パターン（by）はデコレータ・ラッパーのボイラープレートを排除します。インターフェースの全メソッドを自動委譲し、必要なメソッドだけオーバーライドできます。拡張関数はC#の拡張メソッドに相当し、既存ライブラリのクラスにメソッドを追加できます。"
+  },
+  { id: 62, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Kotlin Multiplatform：共通コードの設計",
+    question: "Kotlin Multiplatform（KMP）の設計パターンをシミュレートしてください。\n①expect/actual パターンを模倣（interface + JVM実装）\n②共通ロジック（Platform独立なビジネスロジック）\n③Platform別実装（Android風 / iOS風）\n④Repository パターンと UseCase を共通コードとして実装\n⑤各プラットフォームで同じUseCaseを異なるDataSourceで動作確認",
+    hint: "KMPのexpect/actualはJVM上ではインターフェース+実装クラスで模倣できます。共通コードはplatform-specificなAPIに依存しない純粋なKotlinで書きます。",
+    answer:
+`// --- 共通コード (commonMain) ---
+interface Platform { val name: String }
+interface UserRepository {
+    fun getUser(id: Int): Map<String, Any>?
+    fun saveUser(user: Map<String, Any>): Boolean
+}
+
+data class GetUserResult(val found: Boolean, val name: String?, val platform: String)
+
+class GetUserUseCase(
+    private val repo: UserRepository,
+    private val platform: Platform
+) {
+    fun execute(id: Int): GetUserResult {
+        val user = repo.getUser(id)
+        return if (user != null)
+            GetUserResult(true, user["name"] as String, platform.name)
+        else
+            GetUserResult(false, null, platform.name)
+    }
+}
+
+// --- JVM実装 (androidMain模倣) ---
+class AndroidPlatform : Platform { override val name = "Android" }
+class InMemoryUserRepository(private val db: Map<Int, Map<String, Any>>) : UserRepository {
+    override fun getUser(id: Int) = db[id]
+    override fun saveUser(user: Map<String, Any>) = true
+}
+
+// --- iOS風実装 (iosMain模倣) ---
+class IosPlatform : Platform { override val name = "iOS" }
+class RemoteUserRepository : UserRepository {
+    private val remote = mapOf(1 to mapOf("name" to "Alice", "email" to "alice@ios.app"))
+    override fun getUser(id: Int) = remote[id]
+    override fun saveUser(user: Map<String, Any>) = true
+}
+
+fun main() {
+    val androidDb = mapOf(
+        1 to mapOf("name" to "Bob", "email" to "bob@android.app"),
+        2 to mapOf("name" to "Carol", "email" to "carol@android.app")
+    )
+    val androidUseCase = GetUserUseCase(InMemoryUserRepository(androidDb), AndroidPlatform())
+    val iosUseCase = GetUserUseCase(RemoteUserRepository(), IosPlatform())
+
+    for (id in listOf(1, 2, 3)) {
+        val ar = androidUseCase.execute(id)
+        val ir = iosUseCase.execute(id)
+        println("[${ar.platform}] id=$id: ${if(ar.found) ar.name else "Not found"}")
+        println("[${ir.platform}] id=$id: ${if(ir.found) ir.name else "Not found"}")
+    }
+}`,
+    expected:"[Android] id=1: Bob\n[iOS] id=1: Alice\n[Android] id=2: Carol\n[iOS] id=2: Not found\n[Android] id=3: Not found\n[iOS] id=3: Not found",
+    explanation:"Kotlin Multiplatform（KMP）はビジネスロジックを共有しUIをプラットフォームごとに実装します。expect/actualで「共通インターフェース + プラットフォーム別実装」を実現します。JetBrains製Compose MultiplatformはKMPをUI層にも拡張し、Android/iOS/Desktop/Webに対応します。"
+  },
+  { id: 63, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Arrow-kt：関数型プログラミングライブラリ風実装",
+    question: "Arrow-ktの主要コンセプトをスクラッチで実装してください。\n①Either<L, R> — 左（エラー）または右（成功）の代数的型\n②Option<A> — null安全オプション型\n③IO<A> — 副作用を遅延実行する型（unsafeRunSync()で実行）\n④各型を組み合わせてバリデーションパイプラインを構築\n⑤flatMap/map/fold で関数合成",
+    hint: "Either.Right(value).map {}でmapping、.flatMap {}でチェーン。IO { ... }でlambdaをラップし、実行時に副作用を起こすモナドを実装します。",
+    answer:
+`sealed class Either<out L, out R> {
+    data class Left<L>(val value: L) : Either<L, Nothing>()
+    data class Right<R>(val value: R) : Either<Nothing, R>()
+
+    fun <T> map(f: (R) -> T): Either<L, T> = when (this) {
+        is Left  -> this
+        is Right -> Right(f(value))
+    }
+    fun <T> flatMap(f: (R) -> Either<@UnsafeVariance L, T>): Either<L, T> = when (this) {
+        is Left  -> this
+        is Right -> f(value)
+    }
+    fun fold(onLeft: (L) -> Unit, onRight: (R) -> Unit) = when (this) {
+        is Left  -> onLeft(value)
+        is Right -> onRight(value)
+    }
+}
+
+fun <R> right(value: R): Either<Nothing, R> = Either.Right(value)
+fun <L> left(value: L): Either<L, Nothing> = Either.Left(value)
+
+class IO<out A>(private val effect: () -> A) {
+    fun <B> map(f: (A) -> B): IO<B> = IO { f(effect()) }
+    fun <B> flatMap(f: (A) -> IO<B>): IO<B> = IO { f(effect()).unsafeRunSync() }
+    fun unsafeRunSync(): A = effect()
+}
+
+fun validateAge(age: Int): Either<String, Int> =
+    if (age in 0..150) right(age) else left("Invalid age: $age")
+
+fun validateEmail(email: String): Either<String, String> =
+    if (email.contains('@')) right(email) else left("Invalid email: $email")
+
+data class User(val name: String, val age: Int, val email: String)
+
+fun createUser(name: String, age: Int, email: String): Either<String, User> =
+    validateAge(age).flatMap { a ->
+        validateEmail(email).map { e -> User(name, a, e) }
+    }
+
+val io = IO { println("副作用: DBに保存") }
+    .flatMap { IO { "saved" } }
+    .map { it.uppercase() }
+
+println(io.unsafeRunSync())
+
+listOf(
+    createUser("Alice", 30, "alice@example.com"),
+    createUser("Bob", -1, "bob@example.com"),
+    createUser("Carol", 25, "not-an-email"),
+).forEach { result ->
+    result.fold(
+        onLeft  = { println("Error: $it") },
+        onRight = { println("OK: ${it.name} (${it.age})")  }
+    )
+}`,
+    expected:"副作用: DBに保存\nSAVED\nOK: Alice (30)\nError: Invalid age: -1\nError: Invalid email: not-an-email",
+    explanation:"Arrow-ktはKotlinに関数型プログラミングを導入するライブラリです。Either<Error, Success>でnullや例外を使わずエラー処理をチェーンできます。IO<A>モナドは副作用を値として扱いテスタブルなコードを実現します。HaskellのMaybeEither, IOモナドと同一概念です。"
   }
 ];
 
