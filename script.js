@@ -312,6 +312,8 @@ var currentUserJobClass   = null;
 var currentUserExperience = null;
 var currentUserScoutOptIn = false;
 var currentUserScoutMessages = [];
+var editorDirty = false;
+var _suppressDirty = false;
 var PREMIUM_RANKS = ['SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND', 'TITAN', 'OVERLORD'];
 var _currentAuthTab = 'login';
 // 進捗のインメモリキャッシュ（言語切替時にリセット）
@@ -22834,6 +22836,7 @@ function renderDetail(id) {
   if (aceEditor) { aceEditor.destroy(); aceEditor = null; }
   currentProblemId = id;
   currentEditorMode = 'scratch';  // モードをリセット
+  editorDirty = false;  // 新しい問題ではリセット
 
   const detail = document.getElementById("detail-content");
   detail.innerHTML =
@@ -23621,7 +23624,9 @@ function initAceEditor(initialCode) {
   aceEditor.session.setMode(getAceMode());
 
   // 初期コードをセット（カーソルを末尾へ）
+  _suppressDirty = true;
   aceEditor.setValue(initialCode !== undefined ? initialCode : getStarterCode(), -1);
+  _suppressDirty = false;
 
   aceEditor.setOptions({
     fontSize          : '14px',
@@ -23641,6 +23646,11 @@ function initAceEditor(initialCode) {
     name: 'insertTab',
     bindKey: { win: 'Tab', mac: 'Tab' },
     exec: function(editor) { editor.insert('    '); }
+  });
+
+  // ユーザーが入力したら dirty フラグを立てる
+  aceEditor.session.on('change', function() {
+    if (!_suppressDirty) editorDirty = true;
   });
 
   // CODE GOLF ライブ文字数カウンター
@@ -23764,12 +23774,17 @@ function setEditorMode(mode) {
   var activeBtn = document.getElementById('mode-' + mode);
   if (activeBtn) activeBtn.classList.add('active');
 
-  if (mode === 'zero') {
-    aceEditor.setValue('', -1);
-  } else if (mode === 'scratch') {
-    aceEditor.setValue(getStarterCode(), -1);
-  } else {
-    aceEditor.setValue(p ? buildSkeleton(p) : getStarterCode(), -1);
+  // コードを書いていなければモードに合わせて内容を切り替える
+  if (!editorDirty) {
+    _suppressDirty = true;
+    if (mode === 'zero') {
+      aceEditor.setValue('', -1);
+    } else if (mode === 'scratch') {
+      aceEditor.setValue(getStarterCode(), -1);
+    } else {
+      aceEditor.setValue(p ? buildSkeleton(p) : getStarterCode(), -1);
+    }
+    _suppressDirty = false;
   }
   aceEditor.focus();
 }
