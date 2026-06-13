@@ -22835,7 +22835,7 @@ function renderDetail(id) {
       '</div>' +
       '<button class="run-btn" onclick="runCode()">▶ 実行する</button>' +
       '<div id="output-area" class="hidden">' +
-        '<p class="output-label">実行結果：</p>' +
+        '<p class="output-label">実行結果：<span id="exec-time-badge" class="exec-time-badge hidden"></span></p>' +
         '<pre id="output-text"></pre>' +
       '</div>' +
       '<div id="judge-area" class="hidden"></div>' +
@@ -23533,6 +23533,18 @@ async function runCode() {
       outputText.textContent = output || "(出力なし)";
       outputText.className = "output-success";
 
+      // 実行時間バッジ
+      var _timeBadge = document.getElementById('exec-time-badge');
+      if (_timeBadge) {
+        if (data.program_time != null) {
+          var _ms = data.program_time < 1 ? Math.round(data.program_time * 1000) + 'ms' : data.program_time.toFixed(2) + 's';
+          _timeBadge.textContent = '⚡ ' + _ms;
+          _timeBadge.classList.remove('hidden');
+        } else {
+          _timeBadge.classList.add('hidden');
+        }
+      }
+
       // 出力がある＆まだクリアしていない → 自動判定
       if (data.program_output && currentProblemId && !isLearned(currentProblemId)) {
         startAutoJudge(currentProblemId, data.program_output);
@@ -23999,7 +24011,7 @@ function renderMissionDetail(id) {
       '</div>' +
       '<button class="run-btn" onclick="runCode()">▶ 実行する</button>' +
       '<div id="output-area" class="hidden">' +
-        '<p class="output-label">実行結果：</p>' +
+        '<p class="output-label">実行結果：<span id="exec-time-badge" class="exec-time-badge hidden"></span></p>' +
         '<pre id="output-text"></pre>' +
       '</div>' +
       '<button class="ai-feedback-btn" onclick="getMissionAIFeedback(' + m.id + ')">🤖 AIにコードレビューしてもらう</button>' +
@@ -24486,6 +24498,15 @@ async function renderProfile() {
     rust:   calcLangStrengthData('rust',       rustProblems),
   };
 
+  // パーセンタイルデータ取得
+  var pct = {};
+  if (_supabase && currentUser) {
+    var _pctRes = await _supabase.rpc('get_all_percentiles');
+    if (!_pctRes.error && _pctRes.data) {
+      _pctRes.data.forEach(function(r) { pct[r.language] = r; });
+    }
+  }
+
   // ストリーク状態の判定（今日ログイン済みかどうか）
   var todayStr = new Date().toISOString().slice(0, 10);
   var localDays = JSON.parse(localStorage.getItem('login_days') || '[]');
@@ -24693,18 +24714,18 @@ async function renderProfile() {
     '<div class="profile-section">' +
       '<div class="profile-section-title">// LANGUAGE STATS</div>' +
       '<div class="profile-stats-grid">' +
-        _statCardHTML('C++',        '#00599C', stats.cpp,    strength.cpp,    stats.cppM,    58) +
-        _statCardHTML('Python',     '#3776AB', stats.python, strength.python, stats.pyM,     58) +
-        _statCardHTML('JavaScript', '#F0C040', stats.js,     strength.js,     stats.jsM,     58) +
-        _statCardHTML('Ruby',       '#CC342D', stats.ruby,   strength.ruby,   stats.rubyM,   30) +
-        _statCardHTML('TypeScript', '#3178C6', stats.ts,     strength.ts,     stats.tsM,     30) +
-        _statCardHTML('Kotlin',     '#7F52FF', stats.kotlin, strength.kotlin, stats.kotlinM, 30) +
-        _statCardHTML('Swift',      '#FA7343', stats.swift,  strength.swift,  stats.swiftM,  30) +
-        _statCardHTML('Java',       '#ED8B00', stats.java,   strength.java,   stats.javaM,   58) +
-        _statCardHTML('C#',         '#9B4F96', stats.csharp, strength.csharp, stats.csharpM, 30) +
-        _statCardHTML('Go',         '#00ADD8', stats.go,     strength.go,     stats.goM,     30) +
-        _statCardHTML('C',          '#A8B9CC', stats.c,      strength.c,      stats.cM,      30) +
-        _statCardHTML('Rust',       '#CE412B', stats.rust,   strength.rust,   stats.rustM,   58) +
+        _statCardHTML('C++',        '#00599C', stats.cpp,    strength.cpp,    stats.cppM,    58, pct['cpp']) +
+        _statCardHTML('Python',     '#3776AB', stats.python, strength.python, stats.pyM,     58, pct['python']) +
+        _statCardHTML('JavaScript', '#F0C040', stats.js,     strength.js,     stats.jsM,     58, pct['javascript']) +
+        _statCardHTML('Ruby',       '#CC342D', stats.ruby,   strength.ruby,   stats.rubyM,   30, pct['ruby']) +
+        _statCardHTML('TypeScript', '#3178C6', stats.ts,     strength.ts,     stats.tsM,     30, pct['typescript']) +
+        _statCardHTML('Kotlin',     '#7F52FF', stats.kotlin, strength.kotlin, stats.kotlinM, 30, pct['kotlin']) +
+        _statCardHTML('Swift',      '#FA7343', stats.swift,  strength.swift,  stats.swiftM,  30, pct['swift']) +
+        _statCardHTML('Java',       '#ED8B00', stats.java,   strength.java,   stats.javaM,   58, pct['java']) +
+        _statCardHTML('C#',         '#9B4F96', stats.csharp, strength.csharp, stats.csharpM, 30, pct['csharp']) +
+        _statCardHTML('Go',         '#00ADD8', stats.go,     strength.go,     stats.goM,     30, pct['go']) +
+        _statCardHTML('C',          '#A8B9CC', stats.c,      strength.c,      stats.cM,      30, pct['c']) +
+        _statCardHTML('Rust',       '#CE412B', stats.rust,   strength.rust,   stats.rustM,   58, pct['rust']) +
       '</div>' +
     '</div>' +
 
@@ -24720,10 +24741,11 @@ async function renderProfile() {
     '</div>';
 }
 
-function _statCardHTML(lang, color, count, strengthData, missions, maxProblems) {
+function _statCardHTML(lang, color, count, strengthData, missions, maxProblems, pctInfo) {
   var s = strengthData || { pct: 0, earned: 0, max: 0 };
   var rank = getLangStrengthRank(s.pct);
   var isActive = count > 0;
+  var showPct = pctInfo && pctInfo.total_users >= 3 && isActive;
   return (
     '<div class="profile-stat-card' + (isActive ? ' stat-card-active' : '') + '"' +
         ' style="--stat-rank-color:' + rank.color + '">' +
@@ -24744,6 +24766,9 @@ function _statCardHTML(lang, color, count, strengthData, missions, maxProblems) 
         '<span class="stat-clear-text">' + count + ' / ' + maxProblems + ' CLEARED</span>' +
         '<span class="stat-mission">' + missions + '/6 M</span>' +
       '</div>' +
+      (showPct
+        ? '<div class="stat-pct-row">上位 <span class="stat-pct-val">' + pctInfo.top_pct + '</span>% <span class="stat-pct-total">/ ' + pctInfo.total_users + '人</span></div>'
+        : '') +
     '</div>'
   );
 }
