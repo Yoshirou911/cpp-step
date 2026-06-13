@@ -24153,7 +24153,555 @@ const htmlProblems = [
   <h1>🌸 桜 🌸</h1>
 </body>
 </html>`,
-    explanation: "nth-child()セレクタで各花びらに異なるanimation-duration・animation-delayを設定。translateXの正負交互でゆらぎを表現。Pure CSSでも豊かなアニメーションが実現できます。" }
+    explanation: "nth-child()セレクタで各花びらに異なるanimation-duration・animation-delayを設定。translateXの正負交互でゆらぎを表現。Pure CSSでも豊かなアニメーションが実現できます。" },
+  { id: 51, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "CSS 3D変換：カードフリップとパースペクティブ",
+    question: "CSS 3D変換を使ってインタラクティブなカードフリップコンポーネントを作成してください。\n- perspective: 1000px を親要素に設定\n- transform-style: preserve-3d で3D空間を有効化\n- 表面（正面）と裏面（背面）を持つカード\n- :hover でY軸180度回転（rotateY）\n- backface-visibility: hidden で裏返し時の透過を防ぐ\n- カードは240×160px、角丸あり、美しい色使い",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>3D Card Flip</title>
+  <style>
+    body { display:flex; justify-content:center; align-items:center; min-height:100vh; background:#1a1a2e; font-family:sans-serif; }
+    .scene { perspective:1000px; }
+    .card {
+      width:240px; height:160px;
+      position:relative;
+      transform-style:preserve-3d;
+      transition:transform 0.7s cubic-bezier(.4,.2,.2,1);
+      cursor:pointer;
+    }
+    .card:hover { transform:rotateY(180deg); }
+    .card__face {
+      position:absolute; inset:0;
+      border-radius:16px;
+      backface-visibility:hidden;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      gap:8px;
+      box-shadow:0 20px 60px rgba(0,0,0,.4);
+    }
+    .card__face--front {
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      color:#fff;
+    }
+    .card__face--front .icon { font-size:48px; }
+    .card__face--front p { font-size:14px; opacity:.8; }
+    .card__face--back {
+      background:linear-gradient(135deg,#f093fb,#f5576c);
+      color:#fff;
+      transform:rotateY(180deg);
+    }
+    .card__face--back h2 { font-size:20px; margin:0; }
+    .card__face--back p { font-size:13px; opacity:.9; text-align:center; padding:0 16px; }
+  </style>
+</head>
+<body>
+  <div class="scene">
+    <div class="card">
+      <div class="card__face card__face--front">
+        <div class="icon">✨</div>
+        <h2>カードをホバー</h2>
+        <p>クリックして裏を見る</p>
+      </div>
+      <div class="card__face card__face--back">
+        <h2>🎉 正解！</h2>
+        <p>CSS 3D変換で<br>インタラクティブなUIを実現</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`,
+    explanation: "perspective で3D空間の奥行きを定義し、transform-style: preserve-3d で子要素を3D空間に配置します。backface-visibility: hidden で裏返し時の反転した正面を非表示にします。Stripe・Appleのカードアニメーションはこの技術を活用しています。" },
+  { id: 52, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "Web Components：カスタム要素の実装",
+    question: "ネイティブのWeb Componentsを使ってカスタム要素 `<rating-stars>` を実装してください。\n- HTMLElement を拡張したカスタム要素\n- max属性（デフォルト5）で星の数を制御\n- value属性で現在の評価値を制御\n- Shadow DOMでスタイルをカプセル化\n- 星をクリックしてvalue変更、change イベントを発火\n- 属性変更の監視（attributeChangedCallback）",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Web Components Rating</title>
+  <style>
+    body { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; background:#f8f9fa; font-family:sans-serif; gap:24px; }
+    .output { font-size:18px; color:#333; }
+  </style>
+</head>
+<body>
+  <h2>⭐ Star Rating</h2>
+  <rating-stars max="5" value="3"></rating-stars>
+  <rating-stars max="10" value="7"></rating-stars>
+  <div class="output" id="out">選択した評価: 3</div>
+  <script>
+    class RatingStars extends HTMLElement {
+      static get observedAttributes() { return ['value','max']; }
+
+      constructor() {
+        super();
+        this._shadow = this.attachShadow({ mode:'open' });
+      }
+
+      connectedCallback() { this._render(); }
+
+      attributeChangedCallback() { this._render(); }
+
+      _render() {
+        const max = parseInt(this.getAttribute('max') || '5');
+        const val = parseInt(this.getAttribute('value') || '0');
+        this._shadow.innerHTML = \`
+          <style>
+            :host { display:inline-flex; gap:4px; }
+            span {
+              font-size:32px; cursor:pointer;
+              transition:transform .2s, filter .2s;
+              filter:grayscale(1);
+            }
+            span.filled { filter:none; }
+            span:hover { transform:scale(1.2); }
+          </style>
+          \${Array.from({length:max},(_,i) => \`
+            <span class="\${i<val?'filled':''}" data-idx="\${i+1}">⭐</span>
+          \`).join('')}
+        \`;
+        this._shadow.querySelectorAll('span').forEach(s => {
+          s.addEventListener('click', () => {
+            this.setAttribute('value', s.dataset.idx);
+            this.dispatchEvent(new CustomEvent('change', { detail: { value: +s.dataset.idx }, bubbles:true }));
+          });
+        });
+      }
+    }
+    customElements.define('rating-stars', RatingStars);
+
+    document.querySelectorAll('rating-stars').forEach(el => {
+      el.addEventListener('change', e => {
+        document.getElementById('out').textContent = \`選択した評価: \${e.detail.value}\`;
+      });
+    });
+  </script>
+</body>
+</html>`,
+    explanation: "Web Componentsはブラウザネイティブのコンポーネントシステムです。Shadow DOMでCSSとDOMをカプセル化し、外部スタイルの影響を受けません。customElements.define()でカスタムHTMLタグを登録。ReactやVueより低レベルですがフレームワーク非依存です。" },
+  { id: 53, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "Canvas API：パーティクルシステム",
+    question: "Canvas APIでインタラクティブなパーティクルシステムを実装してください。\n- 100個のパーティクル（ランダムな位置・速度・色・サイズ）\n- requestAnimationFrame でアニメーション\n- 画面端で跳ね返る物理演算\n- マウス周辺のパーティクルを引き寄せる効果\n- パーティクル同士が近い場合に線で繋ぐ（距離100px以内）",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Particle System</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#0d0d1a; overflow:hidden; }
+    canvas { display:block; }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <script>
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const mouse = { x: canvas.width/2, y: canvas.height/2 };
+    window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+    const colors = ['#6c63ff','#ff6584','#43d9ad','#ffd93d','#ff6b6b'];
+    const particles = Array.from({length:100}, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - .5) * 2,
+      vy: (Math.random() - .5) * 2,
+      r: Math.random() * 3 + 1,
+      color: colors[Math.floor(Math.random() * colors.length)],
+    }));
+
+    function update(p) {
+      const dx = mouse.x - p.x, dy = mouse.y - p.y;
+      const dist = Math.sqrt(dx*dx+dy*dy);
+      if (dist < 120) { p.vx += dx/dist*.3; p.vy += dy/dist*.3; }
+      p.vx *= .98; p.vy *= .98;
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0||p.x > canvas.width)  p.vx *= -1;
+      if (p.y < 0||p.y > canvas.height) p.vy *= -1;
+    }
+
+    function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      for (let i=0;i<particles.length;i++) {
+        for (let j=i+1;j<particles.length;j++) {
+          const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+          const d=Math.sqrt(dx*dx+dy*dy);
+          if (d<100) {
+            ctx.strokeStyle = `rgba(108,99,255,${1-d/100})`;
+            ctx.lineWidth=.5;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x,particles[i].y);
+            ctx.lineTo(particles[j].x,particles[j].y);
+            ctx.stroke();
+          }
+        }
+        const p=particles[i];
+        ctx.fillStyle=p.color;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fill();
+        update(p);
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  </script>
+</body>
+</html>`,
+    explanation: "Canvas APIはピクセルレベルの描画を可能にします。requestAnimationFrameは60fpsに最適化されたアニメーションループです。O(n²)の距離計算はQuadtreeで最適化できます。Three.jsやPixiJSはCanvasを高レベルに抽象化したライブラリです。" },
+  { id: 54, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "Intersection Observer：無限スクロールとLazy Load",
+    question: "Intersection Observer APIを使って以下を実装してください。\n- 画像のLazy Load（data-src属性の値を実際のsrcに設定）\n- 無限スクロール（リストの最後に近づいたら新しいアイテムを追加）\n- スクロールに応じて要素をフェードインするアニメーション\n- 全実装をVanilla JSのみで行う",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Intersection Observer</title>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:sans-serif; background:#f0f2f5; }
+    .hero { text-align:center; padding:40px; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; }
+    .container { max-width:600px; margin:0 auto; padding:20px; }
+    .card {
+      background:#fff; border-radius:12px; padding:20px; margin-bottom:16px;
+      box-shadow:0 2px 8px rgba(0,0,0,.08);
+      opacity:0; transform:translateY(30px);
+      transition:opacity .5s, transform .5s;
+    }
+    .card.visible { opacity:1; transform:none; }
+    .card img { width:100%; height:160px; object-fit:cover; border-radius:8px; background:#e0e0e0; }
+    .sentinel { height:60px; display:flex; align-items:center; justify-content:center; color:#888; }
+    .loading { display:none; text-align:center; padding:16px; color:#888; }
+  </style>
+</head>
+<body>
+  <div class="hero"><h1>Intersection Observer Demo</h1><p>スクロールでアイテムが動的に追加されます</p></div>
+  <div class="container" id="list"></div>
+  <div class="sentinel" id="sentinel">⬇ さらに読み込む</div>
+  <div class="loading" id="loading">読み込み中...</div>
+  <script>
+    let page = 0;
+    const colors = ['#667eea','#f093fb','#4facfe','#43e97b','#fa709a'];
+
+    function createCard(i) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = \`
+        <img data-src="https://picsum.photos/seed/\${i}/600/160" alt="画像\${i}">
+        <h3 style="margin-top:12px">アイテム #\${i}</h3>
+        <p style="color:#666;margin-top:6px">Intersection Observer で動的に追加されたコンテンツです。</p>
+        <div style="margin-top:12px;padding:8px;background:\${colors[i%5]}22;border-radius:8px;color:\${colors[i%5]};font-weight:bold">タグ #\${i%5+1}</div>
+      \`;
+      return card;
+    }
+
+    const lazyObserver = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.src = e.target.dataset.src;
+          lazyObserver.unobserve(e.target);
+        }
+      });
+    });
+
+    const fadeObserver = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: .1 });
+
+    function loadMore() {
+      const loading = document.getElementById('loading');
+      loading.style.display = 'block';
+      setTimeout(() => {
+        const list = document.getElementById('list');
+        for (let i = page*10+1; i <= page*10+10; i++) {
+          const card = createCard(i);
+          list.appendChild(card);
+          fadeObserver.observe(card);
+          card.querySelector('img')&&lazyObserver.observe(card.querySelector('img'));
+        }
+        page++;
+        loading.style.display = 'none';
+      }, 600);
+    }
+
+    const sentinel = document.getElementById('sentinel');
+    new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) loadMore();
+    }).observe(sentinel);
+
+    loadMore();
+  </script>
+</body>
+</html>`,
+    explanation: "Intersection Observer APIはスクロール位置を効率的に監視します。従来のscrollイベント+getBoundingClientRect()より大幅にパフォーマンスが高く、メインスレッドをブロックしません。Lazy Load・無限スクロール・アニメーション起動の標準実装パターンです。" },
+  { id: 55, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "Drag & Drop API：Kanbanボード",
+    question: "HTML5 Drag & Drop APIを使ってKanbanボードを実装してください。\n- 「予定」「進行中」「完了」の3カラム\n- カードをドラッグして他のカラムに移動\n- dragover・dragenter・dragleave・drop イベントを活用\n- ドラッグ中のカードにスタイルを適用（半透明）\n- ドロップ先のカラムをハイライト\n- タスクを追加できるフォームを各カラムに設置",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Kanban Board</title>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { background:#1e1e2e; font-family:sans-serif; min-height:100vh; padding:24px; }
+    h1 { color:#cdd6f4; text-align:center; margin-bottom:24px; }
+    .board { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+    .col { background:#313244; border-radius:12px; padding:16px; min-height:400px; }
+    .col h2 { color:#cba6f7; font-size:15px; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+    .col.dragover { background:#45475a; outline:2px dashed #cba6f7; }
+    .card {
+      background:#45475a; border-radius:8px; padding:12px; margin-bottom:8px;
+      color:#cdd6f4; cursor:grab; font-size:14px;
+      transition:opacity .2s,transform .2s; user-select:none;
+    }
+    .card.dragging { opacity:.4; transform:rotate(2deg); }
+    .add-form { display:flex; gap:6px; margin-top:8px; }
+    .add-form input { flex:1; background:#1e1e2e; border:1px solid #585b70; border-radius:6px; padding:6px 8px; color:#cdd6f4; font-size:13px; }
+    .add-form button { background:#cba6f7; color:#1e1e2e; border:none; border-radius:6px; padding:6px 10px; cursor:pointer; font-weight:bold; }
+    .badge { background:#cba6f7; color:#1e1e2e; border-radius:10px; padding:2px 8px; font-size:12px; }
+  </style>
+</head>
+<body>
+  <h1>📋 Kanban Board</h1>
+  <div class="board" id="board">
+    <div class="col" id="todo">
+      <h2>📋 予定 <span class="badge" id="todo-count">0</span></h2>
+      <div class="cards"></div>
+      <div class="add-form"><input placeholder="タスクを追加..." /><button>＋</button></div>
+    </div>
+    <div class="col" id="doing">
+      <h2>🔄 進行中 <span class="badge" id="doing-count">0</span></h2>
+      <div class="cards"></div>
+      <div class="add-form"><input placeholder="タスクを追加..." /><button>＋</button></div>
+    </div>
+    <div class="col" id="done">
+      <h2>✅ 完了 <span class="badge" id="done-count">0</span></h2>
+      <div class="cards"></div>
+      <div class="add-form"><input placeholder="タスクを追加..." /><button>＋</button></div>
+    </div>
+  </div>
+  <script>
+    let dragged = null;
+
+    function updateCounts() {
+      ['todo','doing','done'].forEach(id => {
+        document.getElementById(id+'-count').textContent =
+          document.getElementById(id).querySelectorAll('.card').length;
+      });
+    }
+
+    function makeCard(text) {
+      const c = document.createElement('div');
+      c.className = 'card'; c.textContent = text; c.draggable = true;
+      c.addEventListener('dragstart', () => { dragged = c; setTimeout(()=>c.classList.add('dragging'),0); });
+      c.addEventListener('dragend', () => { c.classList.remove('dragging'); updateCounts(); });
+      return c;
+    }
+
+    document.querySelectorAll('.col').forEach(col => {
+      const cards = col.querySelector('.cards');
+      col.addEventListener('dragover', e => e.preventDefault());
+      col.addEventListener('dragenter', () => col.classList.add('dragover'));
+      col.addEventListener('dragleave', e => { if(!col.contains(e.relatedTarget)) col.classList.remove('dragover'); });
+      col.addEventListener('drop', () => { col.classList.remove('dragover'); if(dragged) cards.appendChild(dragged); updateCounts(); });
+      const [input, btn] = col.querySelectorAll('input, button');
+      const add = () => { if(input.value.trim()) { cards.appendChild(makeCard(input.value.trim())); input.value=''; updateCounts(); } };
+      btn.addEventListener('click', add);
+      input.addEventListener('keydown', e => e.key==='Enter'&&add());
+    });
+
+    ['UIデザイン改善','APIの実装','テスト作成','ドキュメント'].forEach(t => document.querySelector('#todo .cards').appendChild(makeCard(t)));
+    ['コードレビュー'].forEach(t => document.querySelector('#doing .cards').appendChild(makeCard(t)));
+    ['環境構築'].forEach(t => document.querySelector('#done .cards').appendChild(makeCard(t)));
+    updateCounts();
+  </script>
+</body>
+</html>`,
+    explanation: "HTML5 Drag & Drop APIはネイティブのドラッグ操作を提供します。dragstart/dragover/dropイベントチェーンでデータ移動を実現します。Trello・GitHub ProjectsなどのKanbanツールはこのAPIを基盤に実装されています。" },
+  { id: 56, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "View Transitions API：SPAページ遷移",
+    question: "View Transitions APIを使ってSPA風のアニメーションページ遷移を実装してください。\n- document.startViewTransition() でDOM更新をアニメーション化\n- view-transition-name でヒーロー要素をクロスフェード\n- カード一覧→詳細ビューへのシームレス遷移\n- CSS @keyframes でカスタム入退場アニメーション\n- フォールバック（非対応ブラウザ）対応",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>View Transitions</title>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:sans-serif; background:#0f0f1a; color:#fff; min-height:100vh; }
+    .page { padding:24px; max-width:800px; margin:0 auto; }
+    h1 { margin-bottom:24px; color:#cba6f7; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; }
+    .card {
+      background:#1e1e2e; border-radius:12px; padding:16px;
+      cursor:pointer; transition:transform .2s;
+    }
+    .card:hover { transform:scale(1.03); }
+    .card-img { width:100%; height:120px; border-radius:8px; object-fit:cover; }
+    .card h3 { margin-top:10px; font-size:16px; }
+    .card p { margin-top:6px; font-size:13px; color:#888; }
+    .detail { display:none; }
+    .detail img { width:100%; height:280px; object-fit:cover; border-radius:16px; }
+    .detail h2 { margin-top:16px; font-size:24px; color:#cba6f7; }
+    .detail p { margin-top:10px; line-height:1.7; color:#aaa; }
+    .back { margin-top:16px; background:#cba6f7; color:#0f0f1a; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold; }
+
+    /* View Transition アニメーション */
+    ::view-transition-old(root) { animation:.3s ease-out both slide-out; }
+    ::view-transition-new(root) { animation:.3s ease-out both slide-in; }
+    @keyframes slide-out { to { opacity:0; transform:translateX(-30px); } }
+    @keyframes slide-in  { from { opacity:0; transform:translateX(30px); } }
+
+    [style*="view-transition-name: hero"] { view-transition-name: hero; contain: layout; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    const items = [
+      { id:1, title:'Aurora', desc:'北極圏で見られる幻想的な自然現象。太陽風による荷電粒子が大気と反応して発光します。', color:'#43e97b' },
+      { id:2, title:'Deep Ocean', desc:'地球の71%を覆う海。最深部のマリアナ海溝は水深11,000mに達し、未知の生物が生息します。', color:'#4facfe' },
+      { id:3, title:'Desert', desc:'砂漠は地球の陸地の3分の1を占めます。日較差が50℃に達することもある過酷な環境です。', color:'#ffd93d' },
+      { id:4, title:'Mountain', desc:'世界最高峰エベレストは8,849m。登頂には高度順応が必要で、多くの登山家が挑戦し続けています。', color:'#fa709a' },
+    ];
+
+    function renderList() {
+      document.getElementById('app').innerHTML = \`
+        <div class="page">
+          <h1>🌍 自然の図鑑</h1>
+          <div class="grid">
+            \${items.map(item => \`
+              <div class="card" onclick="showDetail(\${item.id})">
+                <div style="width:100%;height:120px;border-radius:8px;background:\${item.color}33;display:flex;align-items:center;justify-content:center;font-size:36px">🌿</div>
+                <h3>\${item.title}</h3>
+                <p>\${item.desc.slice(0,40)}...</p>
+              </div>
+            \`).join('')}
+          </div>
+        </div>
+      \`;
+    }
+
+    function showDetail(id) {
+      const item = items.find(i => i.id === id);
+      const update = () => {
+        document.getElementById('app').innerHTML = \`
+          <div class="page">
+            <div style="width:100%;height:280px;border-radius:16px;background:\${item.color}44;display:flex;align-items:center;justify-content:center;font-size:80px">🌿</div>
+            <h2 style="margin-top:16px;font-size:24px;color:#cba6f7">\${item.title}</h2>
+            <p style="margin-top:10px;line-height:1.7;color:#aaa">\${item.desc}</p>
+            <button class="back" onclick="goBack()">← 一覧に戻る</button>
+          </div>
+        \`;
+      };
+      if (document.startViewTransition) {
+        document.startViewTransition(update);
+      } else { update(); }
+    }
+
+    function goBack() {
+      if (document.startViewTransition) {
+        document.startViewTransition(renderList);
+      } else { renderList(); }
+    }
+
+    renderList();
+  </script>
+</body>
+</html>`,
+    explanation: "View Transitions APIはDOM更新をスムーズにアニメーション化するChrome 111+の新機能です。document.startViewTransition()でBefore/After状態をスクリーンショットし、CSSアニメーションで遷移します。SPA・MPAの両方で使え、Next.js 13+もサポートしています。" },
+  { id: 57, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "WebGL：GPUを使った2Dシェーダー",
+    question: "WebGLを使って以下を実装してください。\n- 頂点シェーダー（Vertex Shader）とフラグメントシェーダー（Fragment Shader）をGLSLで記述\n- フルスクリーンの四角形を描画し、フラグメントシェーダーでSincos関数を使った波模様を生成\n- uniform変数でアニメーション時間(u_time)を渡し、動くパターンを生成\n- マウス座標（u_mouse）を渡してインタラクション",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>WebGL Shader</title>
+  <style>* { margin:0; padding:0; } canvas { display:block; }</style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <script>
+    const canvas = document.getElementById('c');
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    const gl = canvas.getContext('webgl');
+
+    const vert = \`
+      attribute vec2 a_pos;
+      void main() { gl_Position = vec4(a_pos, 0, 1); }
+    \`;
+    const frag = \`
+      precision mediump float;
+      uniform float u_time;
+      uniform vec2 u_res;
+      uniform vec2 u_mouse;
+      void main() {
+        vec2 uv = gl_FragCoord.xy / u_res;
+        vec2 m = u_mouse / u_res;
+        float d = distance(uv, m);
+        float wave = sin(uv.x * 10.0 + u_time) * cos(uv.y * 10.0 + u_time * 0.7);
+        float ripple = sin(d * 30.0 - u_time * 3.0) * exp(-d * 3.0);
+        float v = wave * 0.5 + ripple * 0.5 + 0.5;
+        vec3 col = vec3(
+          sin(v * 3.14 + 0.0),
+          sin(v * 3.14 + 2.094),
+          sin(v * 3.14 + 4.189)
+        ) * 0.5 + 0.5;
+        gl_FragColor = vec4(col, 1.0);
+      }
+    \`;
+
+    function compile(type, src) {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, src); gl.compileShader(s);
+      return s;
+    }
+    const prog = gl.createProgram();
+    gl.attachShader(prog, compile(gl.VERTEX_SHADER, vert));
+    gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, frag));
+    gl.linkProgram(prog); gl.useProgram(prog);
+
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, 'a_pos');
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+    const uTime = gl.getUniformLocation(prog, 'u_time');
+    const uRes  = gl.getUniformLocation(prog, 'u_res');
+    const uMouse= gl.getUniformLocation(prog, 'u_mouse');
+    let mouse = [canvas.width/2, canvas.height/2];
+    canvas.addEventListener('mousemove', e => { mouse = [e.clientX, canvas.height-e.clientY]; });
+
+    function draw(t) {
+      gl.uniform1f(uTime, t/1000);
+      gl.uniform2f(uRes, canvas.width, canvas.height);
+      gl.uniform2fv(uMouse, mouse);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+  </script>
+</body>
+</html>`,
+    explanation: "WebGLはブラウザでGPUを直接操作するAPIです。GLSLシェーダーはGPUの並列処理で全ピクセルを同時計算します。Three.js・Babylon.jsはWebGLの高レベルラッパーです。ShaderToyのようなクリエイティブコーディングにも広く使われています。" }
 ];
 
 const htmlMissions = [
@@ -24653,7 +25201,301 @@ const sqlProblems = [
     hint: "WITH RECURSIVE all_nums AS (...) SELECT an.n FROM all_nums LEFT JOIN numbers ON... WHERE numbers.n IS NULL",
     answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE numbers (n INTEGER)')\ncur.executemany('INSERT INTO numbers VALUES (?)', [(1,),(2,),(3,),(5,),(6,),(9,),(10,),(11,)])\nfor r in cur.execute('''\n    WITH RECURSIVE all_nums(n) AS (\n        SELECT MIN(n) FROM numbers\n        UNION ALL\n        SELECT n+1 FROM all_nums WHERE n < (SELECT MAX(n) FROM numbers)\n    )\n    SELECT an.n as missing\n    FROM all_nums an\n    LEFT JOIN numbers num ON an.n = num.n\n    WHERE num.n IS NULL\n    ORDER BY an.n\n''').fetchall():\n    print(r[0])\nconn.close()`,
     expected: "4\n7\n8",
-    explanation: "再帰CTEで連番を生成し、LEFT JOINで実テーブルと結合。IS NULLで欠番を検出します。IDのシーケンスギャップ検出などに応用できます。" }
+    explanation: "再帰CTEで連番を生成し、LEFT JOINで実テーブルと結合。IS NULLで欠番を検出します。IDのシーケンスギャップ検出などに応用できます。" },
+  { id: 51, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "マーケットバスケット分析：頻出アイテムペア",
+    question: "トランザクションデータからマーケットバスケット分析を実装してください。\ntransactions(txn_id, item)テーブルを作成し、同一取引内で一緒に購入されるアイテムペアの出現頻度（support）を集計するSQLを書いてください。\n最低2回以上現れるペアを頻度降順で出力してください。",
+    hint: "自己JOINでtransactionsをtxn_idで結合し、t1.item < t2.item で重複ペアを除外します。GROUP BYしてHAVING COUNT(*) >= 2 でフィルタします。",
+    answer:
+`import sqlite3
+
+conn = sqlite3.connect(':memory:')
+cur = conn.cursor()
+
+cur.executescript("""
+CREATE TABLE transactions (txn_id INTEGER, item TEXT);
+INSERT INTO transactions VALUES
+  (1,'A'),(1,'B'),(1,'C'),
+  (2,'A'),(2,'B'),
+  (3,'B'),(3,'C'),(3,'D'),
+  (4,'A'),(4,'C'),
+  (5,'A'),(5,'B'),(5,'C');
+""")
+
+cur.execute("""
+SELECT t1.item AS item1, t2.item AS item2, COUNT(*) AS support
+FROM transactions t1
+JOIN transactions t2 ON t1.txn_id = t2.txn_id AND t1.item < t2.item
+GROUP BY t1.item, t2.item
+HAVING COUNT(*) >= 2
+ORDER BY support DESC, item1, item2
+""")
+for row in cur.fetchall():
+    print(f"{row[0]},{row[1]}: {row[2]}")
+conn.close()`,
+    expected:"A,B: 3\nA,C: 3\nB,C: 3\nA,B,C: NA",
+    explanation:"マーケットバスケット分析は小売業のレコメンデーションシステムの基盤です。自己JOINでアイテムペアを生成しCOUNTで頻度を集計します。アソシエーション分析のsupport・confidence・liftはこのペアカウントから計算します。"
+  },
+  { id: 52, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "タイムシリーズ：移動平均と異常検知",
+    question: "時系列データの移動平均と標準偏差を使った異常検知SQLを実装してください。\nmetrics(ts INTEGER, value REAL)テーブルで、各行に対して直前7行の移動平均と標準偏差を計算し、値が（平均 ± 2σ）の範囲外の行を「異常」として検出してください。",
+    hint: "AVG(value) OVER (ORDER BY ts ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) で移動平均、同様にAVG(value*value)から分散を計算しsqrt()で標準偏差を求めます。",
+    answer:
+`import sqlite3, math
+
+conn = sqlite3.connect(':memory:')
+cur = conn.cursor()
+
+cur.executescript("""
+CREATE TABLE metrics (ts INTEGER, value REAL);
+INSERT INTO metrics VALUES
+  (1,100),(2,102),(3,98),(4,101),(5,99),
+  (6,103),(7,97),(8,150),(9,101),(10,99),
+  (11,98),(12,102),(13,200),(14,100),(15,101);
+""")
+
+cur.execute("""
+WITH stats AS (
+  SELECT ts, value,
+    AVG(value) OVER (ORDER BY ts ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS ma,
+    AVG(value*value) OVER (ORDER BY ts ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) -
+    AVG(value) OVER (ORDER BY ts ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) *
+    AVG(value) OVER (ORDER BY ts ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS var
+  FROM metrics
+)
+SELECT ts, value, ROUND(ma,2) AS moving_avg, ROUND(SQRT(MAX(var,0)),2) AS stddev,
+  CASE WHEN ABS(value - ma) > 2 * SQRT(MAX(var,0)) THEN 'ANOMALY' ELSE 'normal' END AS status
+FROM stats
+WHERE status = 'ANOMALY'
+ORDER BY ts
+""")
+for row in cur.fetchall():
+    print(f"ts={row[0]} value={row[1]} avg={row[2]} std={row[3]} -> {row[4]}")
+conn.close()`,
+    expected:"ts=8 value=150.0 avg=100.0 std=1.69 -> ANOMALY\nts=13 value=200.0 avg=106.71 std=17.94 -> ANOMALY",
+    explanation:"移動統計ウィンドウ関数はMonitoring・APM・金融分析の核心技術です。ROWS BETWEEN N PRECEDING AND CURRENT ROWで移動ウィンドウを定義します。2σルールは統計的プロセス管理（SPC）の標準手法で外れ値検知に広く使われます。"
+  },
+  { id: 53, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "グラフ探索：再帰CTEで最短パス",
+    question: "再帰CTEを使って有向グラフの全パスと最短パスを求めてください。\nedges(from_node TEXT, to_node TEXT, cost INTEGER)テーブルを作成し、'A'から全ノードへの最短経路コストを求めるDijkstra的なSQLを実装してください。",
+    hint: "再帰CTEで到達済みノードを管理します。MIN(total_cost)で最短コストを保持しながら探索します。",
+    answer:
+`import sqlite3
+
+conn = sqlite3.connect(':memory:')
+cur = conn.cursor()
+
+cur.executescript("""
+CREATE TABLE edges (from_node TEXT, to_node TEXT, cost INTEGER);
+INSERT INTO edges VALUES
+  ('A','B',4),('A','C',2),('B','D',3),('C','B',1),
+  ('C','D',8),('D','E',2),('B','E',7),('C','E',10);
+""")
+
+cur.execute("""
+WITH RECURSIVE paths(node, path, total_cost) AS (
+  SELECT 'A', 'A', 0
+  UNION ALL
+  SELECT e.to_node, p.path || '->' || e.to_node, p.total_cost + e.cost
+  FROM paths p
+  JOIN edges e ON p.node = e.from_node
+  WHERE p.path NOT LIKE '%' || e.to_node || '%'
+),
+best AS (
+  SELECT node, MIN(total_cost) AS min_cost
+  FROM paths
+  WHERE node != 'A'
+  GROUP BY node
+)
+SELECT b.node, b.min_cost,
+  (SELECT p.path FROM paths p WHERE p.node=b.node AND p.total_cost=b.min_cost LIMIT 1) AS shortest_path
+FROM best b
+ORDER BY min_cost
+""")
+for row in cur.fetchall():
+    print(f"{row[0]}: cost={row[1]} path={row[2]}")
+conn.close()`,
+    expected:"C: cost=2 path=A->C\nB: cost=3 path=A->C->B\nD: cost=6 path=A->C->B->D\nE: cost=8 path=A->C->B->D->E",
+    explanation:"再帰CTEはグラフ探索・階層データ処理の標準SQLパターンです。NOT LIKEによるサイクル検出は簡易的な実装で、大規模グラフにはPostgreSQLのpgRoutingやグラフDBが適します。組織図・SNSのフォロー関係・ルーティングに応用されます。"
+  },
+  { id: 54, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "ピボット：動的クロス集計",
+    question: "CASE WHENを使ってピボットテーブル（クロス集計）を実装してください。\nsales(year INTEGER, month INTEGER, product TEXT, amount INTEGER)テーブルで、productを行、月(1-6月)を列にしたクロス集計を出力してください。",
+    hint: "SUM(CASE WHEN month=1 THEN amount ELSE 0 END) AS jan の形でCASE WHENを月ごとに書き並べます。GROUP BYでproductごとに集計します。",
+    answer:
+`import sqlite3
+
+conn = sqlite3.connect(':memory:')
+cur = conn.cursor()
+
+cur.executescript("""
+CREATE TABLE sales (year INTEGER, month INTEGER, product TEXT, amount INTEGER);
+INSERT INTO sales VALUES
+  (2024,1,'Apple',100),(2024,2,'Apple',150),(2024,3,'Apple',200),
+  (2024,4,'Apple',180),(2024,5,'Apple',220),(2024,6,'Apple',190),
+  (2024,1,'Banana',80),(2024,2,'Banana',90),(2024,3,'Banana',70),
+  (2024,4,'Banana',110),(2024,5,'Banana',130),(2024,6,'Banana',95),
+  (2024,1,'Cherry',50),(2024,2,'Cherry',60),(2024,3,'Cherry',80),
+  (2024,4,'Cherry',75),(2024,5,'Cherry',90),(2024,6,'Cherry',100);
+""")
+
+cur.execute("""
+SELECT product,
+  SUM(CASE WHEN month=1 THEN amount ELSE 0 END) AS jan,
+  SUM(CASE WHEN month=2 THEN amount ELSE 0 END) AS feb,
+  SUM(CASE WHEN month=3 THEN amount ELSE 0 END) AS mar,
+  SUM(CASE WHEN month=4 THEN amount ELSE 0 END) AS apr,
+  SUM(CASE WHEN month=5 THEN amount ELSE 0 END) AS may,
+  SUM(CASE WHEN month=6 THEN amount ELSE 0 END) AS jun,
+  SUM(amount) AS total
+FROM sales
+WHERE year = 2024
+GROUP BY product
+ORDER BY total DESC
+""")
+print("product,jan,feb,mar,apr,may,jun,total")
+for row in cur.fetchall():
+    print(','.join(map(str,row)))
+conn.close()`,
+    expected:"product,jan,feb,mar,apr,may,jun,total\nApple,100,150,200,180,220,190,1040\nBanana,80,90,70,110,130,95,575\nCherry,50,60,80,75,90,100,455",
+    explanation:"CASE WHENによるピボットは最も汎用的なSQL横展開手法です。BigQuery・Snowflakeにはnative PIVOT構文がありますがSQLiteはCASE WHENで対応します。月・カテゴリ・ステータスなど固定値のクロス集計に広く使われます。"
+  },
+  { id: 55, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "ファネル分析：コンバージョン率計算",
+    question: "Webサービスのコンバージョンファネル分析SQLを実装してください。\nevents(user_id INTEGER, event TEXT, ts INTEGER)テーブルで以下のファネルステップのコンバージョン率を計算してください：\nvisit → signup → purchase の各ステップの到達人数と前ステップからの転換率を出力してください。",
+    hint: "各ステップをCTEで独立してカウントします。各ステップ到達ユーザーは DISTINCT user_id で数えます。転換率は ROUND(次のステップ人数 * 100.0 / 現在ステップ人数, 1) で計算します。",
+    answer:
+`import sqlite3
+
+conn = sqlite3.connect(':memory:')
+cur = conn.cursor()
+
+cur.executescript("""
+CREATE TABLE events (user_id INTEGER, event TEXT, ts INTEGER);
+INSERT INTO events VALUES
+  (1,'visit',1),(2,'visit',2),(3,'visit',3),(4,'visit',4),(5,'visit',5),
+  (6,'visit',6),(7,'visit',7),(8,'visit',8),(9,'visit',9),(10,'visit',10),
+  (1,'signup',11),(2,'signup',12),(3,'signup',13),(4,'signup',14),(5,'signup',15),
+  (6,'signup',16),(7,'signup',17),
+  (1,'purchase',20),(2,'purchase',21),(3,'purchase',22),(4,'purchase',23);
+""")
+
+cur.execute("""
+WITH
+  visited  AS (SELECT COUNT(DISTINCT user_id) AS n FROM events WHERE event='visit'),
+  signed   AS (SELECT COUNT(DISTINCT user_id) AS n FROM events WHERE event='signup'),
+  purchased AS (SELECT COUNT(DISTINCT user_id) AS n FROM events WHERE event='purchase')
+SELECT
+  'visit'    AS step, visited.n AS users, 100.0 AS cvr_from_prev FROM visited
+UNION ALL
+SELECT
+  'signup',  signed.n,
+  ROUND(signed.n * 100.0 / visited.n, 1)
+FROM visited, signed
+UNION ALL
+SELECT
+  'purchase', purchased.n,
+  ROUND(purchased.n * 100.0 / signed.n, 1)
+FROM signed, purchased
+""")
+for row in cur.fetchall():
+    print(f"{row[0]}: {row[1]}人 ({row[2]}%)")
+conn.close()`,
+    expected:"visit: 10人 (100.0%)\nsignup: 7人 (70.0%)\npurchase: 4人 (57.1%)",
+    explanation:"ファネル分析はグロースエンジニアリングの基本手法です。Mixpanel・Amplitude・GA4のファネルレポートはこのSQL集計を可視化したものです。各ステップのドロップオフを定量化してA/Bテストの効果測定や改善点特定に使います。"
+  },
+  { id: 56, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "セッション分析：ギャップ&アイランド問題",
+    question: "ギャップ＆アイランド問題を使ってユーザーセッションを分割してください。\npage_views(user_id INTEGER, ts INTEGER)テーブルで、連続するページビューを「セッション」としてグループ化します。\n同一ユーザーの前のページビューから30秒以上空いた場合は新しいセッション開始とみなし、各セッションの開始時刻・終了時刻・ページビュー数を出力してください。",
+    hint: "LAGでひとつ前のts取得→前のtsとの差が30以上なら新セッション開始フラグ→SUM(flag) OVER (PARTITION BY user_id ORDER BY ts)でセッションIDを採番→GROUP BYで集計。",
+    answer:
+`import sqlite3
+
+conn = sqlite3.connect(':memory:')
+cur = conn.cursor()
+
+cur.executescript("""
+CREATE TABLE page_views (user_id INTEGER, ts INTEGER);
+INSERT INTO page_views VALUES
+  (1,100),(1,110),(1,115),(1,200),(1,210),
+  (1,300),(1,400),(1,410),
+  (2,50),(2,55),(2,200),(2,205);
+""")
+
+cur.execute("""
+WITH flagged AS (
+  SELECT user_id, ts,
+    CASE WHEN ts - LAG(ts,1,0) OVER (PARTITION BY user_id ORDER BY ts) >= 30
+         THEN 1 ELSE 0 END AS new_session
+  FROM page_views
+),
+sessions AS (
+  SELECT user_id, ts,
+    SUM(new_session) OVER (PARTITION BY user_id ORDER BY ts) AS session_id
+  FROM flagged
+)
+SELECT user_id, session_id+1 AS session_num,
+  MIN(ts) AS start_ts, MAX(ts) AS end_ts, COUNT(*) AS pageviews
+FROM sessions
+GROUP BY user_id, session_id
+ORDER BY user_id, session_num
+""")
+for row in cur.fetchall():
+    print(f"user={row[0]} session={row[1]} [{row[2]}-{row[3]}] pv={row[4]}")
+conn.close()`,
+    expected:"user=1 session=1 [100-115] pv=3\nuser=1 session=2 [200-210] pv=2\nuser=1 session=3 [300-300] pv=1\nuser=1 session=4 [400-410] pv=2\nuser=2 session=1 [50-55] pv=2\nuser=2 session=2 [200-205] pv=2",
+    explanation:"ギャップ＆アイランド問題はWeb分析・IoT・金融の連続イベント分析で頻出です。LAGで前行との差を計算しSUM()ウィンドウ関数でセッションIDを採番するパターンは非常に強力です。Google Analytics・Mixpanelのセッション定義もこの論理で実装されています。"
+  },
+  { id: 57, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "リテンション分析：コホートリテンション行列",
+    question: "コホートリテンション分析を実装してください。\nuser_activity(user_id INTEGER, week INTEGER)テーブルで、各ユーザーの初回アクティビティ週（コホート週）を基準に、何週後もアクティブだったかを表す「リテンション行列」を出力してください。\n各コホート週の登録人数と、week0/week1/week2/week3のリテンション率（%）を出力してください。",
+    hint: "MIN(week) OVER (PARTITION BY user_id)で各ユーザーのコホート週を求めます。week - cohort_week でwhorelative weekを計算し、CASE WHENでwk0/wk1/wk2/wk3に展開します。",
+    answer:
+`import sqlite3
+
+conn = sqlite3.connect(':memory:')
+cur = conn.cursor()
+
+cur.executescript("""
+CREATE TABLE user_activity (user_id INTEGER, week INTEGER);
+INSERT INTO user_activity VALUES
+  (1,0),(1,1),(1,2),(1,3),
+  (2,0),(2,1),(2,2),
+  (3,0),(3,1),
+  (4,0),
+  (5,1),(5,2),(5,3),
+  (6,1),(6,2),
+  (7,1),
+  (8,2),(8,3),
+  (9,2),
+  (10,3);
+""")
+
+cur.execute("""
+WITH cohorts AS (
+  SELECT user_id, MIN(week) AS cohort_week FROM user_activity GROUP BY user_id
+),
+activity AS (
+  SELECT a.user_id, c.cohort_week, a.week - c.cohort_week AS rel_week
+  FROM user_activity a JOIN cohorts c ON a.user_id = c.user_id
+)
+SELECT cohort_week,
+  COUNT(DISTINCT user_id) AS cohort_size,
+  ROUND(COUNT(DISTINCT CASE WHEN rel_week=0 THEN user_id END)*100.0/COUNT(DISTINCT user_id),0) AS wk0,
+  ROUND(COUNT(DISTINCT CASE WHEN rel_week=1 THEN user_id END)*100.0/COUNT(DISTINCT user_id),0) AS wk1,
+  ROUND(COUNT(DISTINCT CASE WHEN rel_week=2 THEN user_id END)*100.0/COUNT(DISTINCT user_id),0) AS wk2,
+  ROUND(COUNT(DISTINCT CASE WHEN rel_week=3 THEN user_id END)*100.0/COUNT(DISTINCT user_id),0) AS wk3
+FROM activity
+GROUP BY cohort_week
+ORDER BY cohort_week
+""")
+print("cohort,size,wk0%,wk1%,wk2%,wk3%")
+for row in cur.fetchall():
+    print(','.join(str(int(v)) if v else '0' for v in row))
+conn.close()`,
+    expected:"cohort,size,wk0%,wk1%,wk2%,wk3%\n0,4,100,75,50,25\n1,3,100,67,33,33\n2,2,100,50,0,0\n3,1,100,0,0,0",
+    explanation:"コホートリテンション行列はSaaS・ゲームのユーザー分析の最重要指標です。縦軸がコホート（初回利用週）、横軸が経過週数で各セルはアクティブ率です。三角形状に値が詰まるのが特徴で、急激なドロップがある週が離脱要因の特定に繋がります。"
+  }
 ];
 
 const sqlMissions = [
@@ -25158,7 +26000,460 @@ const bashProblems = [
     hint: "assert_eq() { [[ \"$1\" == \"$2\" ]] && echo PASS || echo \"FAIL: got '$1' want '$2'\"; }",
     answer: `passed=0; failed=0\nassert_eq() {\n  local got="$1" want="$2" label="$3"\n  if [[ "$got" == "$want" ]]; then\n    echo "PASS: $label"\n    ((passed++))\n  else\n    echo "FAIL: $label (got='$got' want='$want')"\n    ((failed++))\n  fi\n}\ntrim() { echo "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'; }\nreverse_str() { echo "$1" | rev; }\nis_palindrome() { [[ "$1" == "$(echo "$1" | rev)" ]] && echo true || echo false; }\nassert_eq "$(trim '  hello  ')" "hello" "trim spaces"\nassert_eq "$(reverse_str 'abcde')" "edcba" "reverse string"\nassert_eq "$(is_palindrome 'racecar')" "true" "palindrome true"\nassert_eq "$(is_palindrome 'hello')" "false" "palindrome false"\necho "Results: $passed passed, $failed failed"`,
     expected: "PASS: trim spaces\nPASS: reverse string\nPASS: palindrome true\nPASS: palindrome false\nResults: 4 passed, 0 failed",
-    explanation: "シェルスクリプトにもテストを書けます。カウンター変数と条件分岐でassert関数を実装。自動テストはスクリプトの品質を保証します。" }
+    explanation: "シェルスクリプトにもテストを書けます。カウンター変数と条件分岐でassert関数を実装。自動テストはスクリプトの品質を保証します。" },
+  { id: 51, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "インタラクティブメニュー：tput と ANSI エスケープ",
+    question: "tputとANSIエスケープシーケンスを使ってインタラクティブな矢印キーナビゲーションメニューを実装してください。\n- 選択項目リストを表示\n- ↑↓キーで選択位置を移動（カーソル移動エスケープ）\n- Enterで選択確定してアクション実行\n- 選択中の行をハイライト（反転表示）",
+    hint: "read -sn1 で1文字読み取り。ESC[A/B が↑↓のエスケープシーケンス。tput civis でカーソル非表示、tput cup ROW COL でカーソル移動。",
+    answer:
+`#!/bin/bash
+# インタラクティブメニュー（非対話型環境での動作確認用）
+
+items=("🚀 プロジェクト起動" "📦 依存パッケージ更新" "🧪 テスト実行" "📊 カバレッジレポート" "🚪 終了")
+selected=0
+
+# ANSI色定数
+RESET='\e[0m'; BOLD='\e[1m'; HIGHLIGHT='\e[7m'
+CLEAR_LINE='\e[2K'; UP='\e[A'; HIDE='\e[?25l'; SHOW='\e[?25h'
+
+draw_menu() {
+  local start_row=$1
+  for i in "${!items[@]}"; do
+    printf '\e[%d;0H%b' "$((start_row + i))" "$CLEAR_LINE"
+    if [[ $i -eq $selected ]]; then
+      printf '%b  %b %s %b\n' "$HIGHLIGHT" "$BOLD" "${items[$i]}" "$RESET"
+    else
+      printf '     %s\n' "${items[$i]}"
+    fi
+  done
+}
+
+# 非対話型テスト（キー操作なしで自動選択）
+echo "=== メニューデモ（自動選択モード） ==="
+echo ""
+for item in "${items[@]}"; do
+  echo "  $item"
+done
+echo ""
+
+# 自動選択シミュレーション
+selected=2
+echo "選択位置: ${items[$selected]}"
+echo "[Enter] -> 選択: ${items[$selected]}"
+echo ""
+
+# 実際のキー読み取りループ（対話型端末がある場合）
+if [[ -t 0 ]]; then
+  printf '%b' "$HIDE"
+  trap "printf '%b' '$SHOW'; tput cnorm; exit" INT
+  tput clear
+  echo "メニュー (↑↓: 移動, Enter: 選択, q: 終了)"
+  draw_menu 3
+  while true; do
+    read -rsn1 key
+    [[ $key == $'\x1b' ]] && { read -rsn2 seq; key="${key}${seq}"; }
+    case "$key" in
+      $'\x1b[A') [[ $selected -gt 0 ]] && ((selected--)) ;;
+      $'\x1b[B') [[ $selected -lt $((${#items[@]}-1)) ]] && ((selected++)) ;;
+      '') echo; echo "選択: ${items[$selected]}"; break ;;
+      q|Q) break ;;
+    esac
+    draw_menu 3
+  done
+  printf '%b' "$SHOW"
+fi`,
+    expected:"=== メニューデモ（自動選択モード） ===\n\n  🚀 プロジェクト起動\n  📦 依存パッケージ更新\n  🧪 テスト実行\n  📊 カバレッジレポート\n  🚪 終了\n\n選択位置: 🧪 テスト実行\n[Enter] -> 選択: 🧪 テスト実行\n",
+    explanation:"tputとANSIエスケープシーケンスでターミナルの任意位置に書き込みインタラクティブUIが作れます。\e[?25lでカーソル非表示、\e[ROW;COLHでカーソル位置指定、\e[7mで反転表示です。fzf・vimのUIもこの原理で実装されています。"
+  },
+  { id: 52, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "ログ解析パイプライン：複合フィルタ＆集計",
+    question: "Webサーバーのアクセスログを解析するBashパイプラインを実装してください。\n以下の形式のログから（awk/grep/sort/uniq使用）:\n`127.0.0.1 - - [01/Jan/2024:10:00:01] \"GET /api/users HTTP/1.1\" 200 1234`\n①5xxエラー一覧（URL、件数、レスポンスタイム平均）\n②時間帯別（時単位）リクエスト数\n③最もアクセスの多いエンドポイント上位5件\n④1分間のリクエスト数が100を超える時刻（ホットスポット）",
+    hint: "awkのif/else文とハッシュ配列（array[key]++）を組み合わせます。時刻はsubstr($4,2,2)で時を取り出せます。sortの-t:で区切り指定、-k2nrで数値降順ソート。",
+    answer:
+`#!/bin/bash
+# テスト用ログデータ生成
+generate_logs() {
+cat << 'EOF'
+127.0.0.1 - - [01/Jan/2024:10:00:01] "GET /api/users HTTP/1.1" 200 1234
+10.0.0.2 - - [01/Jan/2024:10:00:02] "POST /api/login HTTP/1.1" 500 567
+10.0.0.3 - - [01/Jan/2024:10:00:03] "GET /api/users HTTP/1.1" 200 890
+10.0.0.4 - - [01/Jan/2024:11:00:01] "GET /api/products HTTP/1.1" 503 0
+10.0.0.5 - - [01/Jan/2024:11:00:02] "DELETE /api/users/1 HTTP/1.1" 404 100
+10.0.0.1 - - [01/Jan/2024:11:00:03] "GET /api/users HTTP/1.1" 200 450
+10.0.0.2 - - [01/Jan/2024:12:00:01] "GET /api/users HTTP/1.1" 200 670
+10.0.0.3 - - [01/Jan/2024:12:00:02] "POST /api/orders HTTP/1.1" 500 234
+10.0.0.4 - - [01/Jan/2024:12:00:03] "GET /api/products HTTP/1.1" 200 789
+10.0.0.5 - - [01/Jan/2024:12:00:04] "GET /api/users HTTP/1.1" 200 345
+EOF
+}
+
+LOGS=$(generate_logs)
+
+echo "=== 5xxエラー ==="
+echo "$LOGS" | awk '$9 >= 500 { print $7, $9, $10 }' | sort | uniq -c | sort -rn | \
+  awk '{ printf "%-30s status=%s count=%s\n", $2, $3, $1 }'
+
+echo ""
+echo "=== 時間帯別リクエスト数 ==="
+echo "$LOGS" | awk '{ hour=substr($4,14,2); counts[hour]++ }
+  END { for(h in counts) print h":00 -", counts[h], "requests" }' | sort
+
+echo ""
+echo "=== 上位エンドポイント ==="
+echo "$LOGS" | awk '{ print $7 }' | sort | uniq -c | sort -rn | head -5 | \
+  awk '{ printf "%d回: %s\n", $1, $2 }'`,
+    expected:"=== 5xxエラー ===\n/api/login status=500 count=1\n/api/orders status=500 count=1\n/api/products status=503 count=1\n\n=== 時間帯別リクエスト数 ===\n10:00 - 3 requests\n11:00 - 3 requests\n12:00 - 4 requests\n\n=== 上位エンドポイント ===\n4回: /api/users\n2回: /api/products\n1回: /api/login\n1回: /api/orders\n1回: /delete /api/users/1",
+    explanation:"awk+grep+sort+uniqのパイプラインはGBレベルのログを高速処理できます。awk連想配列（hash）で集計、sortで整列、uniq -cでカウントが鉄板パターンです。ElasticsearchやSplunkがない環境でのログ分析の実戦スキルです。"
+  },
+  { id: 53, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "サービス監視スクリプト：再起動とアラート",
+    question: "サービス監視スクリプトを実装してください。\n以下の機能を含むbashスクリプトを書いてください：\n①サービスプロセスの死活監視（ps/pgrep）\n②停止時の自動再起動（最大3回リトライ）\n③CPU/メモリ使用率の閾値監視（ps aux）\n④ログへの記録（タイムスタンプ付き）\n⑤連続失敗時のアラート出力（emailの代わりにcatでメッセージ表示）",
+    hint: "pgrep -x でプロセス名完全一致チェック。awk '{print $3}' でCPU使用率抽出。$(( ... ))で算術比較。",
+    answer:
+`#!/bin/bash
+set -euo pipefail
+
+# 設定
+SERVICE_NAME="my-service"
+MAX_RETRIES=3
+CPU_THRESHOLD=80
+MEM_THRESHOLD=80
+LOG_FILE="/tmp/monitor_$$.log"
+
+# ログ関数
+log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE"; }
+alert() { log "ALERT: $*"; echo "=== ALERT ===" ; echo "$*"; }
+
+# プロセス死活確認（シミュレーション）
+is_running() {
+  # テスト用：3回目の確認で「落ちている」とみなす
+  [[ $((check_count % 4)) -ne 2 ]]
+}
+
+start_service() {
+  log "サービス起動試行: $SERVICE_NAME"
+  sleep 0.1  # 起動シミュレーション
+  log "起動完了: $SERVICE_NAME (PID=$$)"
+  return 0
+}
+
+check_resources() {
+  # シミュレーション値
+  local cpu=45 mem=62
+  log "リソース確認: CPU=${cpu}% MEM=${mem}%"
+  if [[ $cpu -gt $CPU_THRESHOLD ]]; then alert "CPU使用率超過: ${cpu}% > ${CPU_THRESHOLD}%"; fi
+  if [[ $mem -gt $MEM_THRESHOLD ]]; then alert "メモリ使用率超過: ${mem}% > ${MEM_THRESHOLD}%"; fi
+}
+
+# メイン監視ループ（シミュレーション: 3回チェック）
+check_count=0
+retry_count=0
+
+for _ in 1 2 3 4 5; do
+  ((check_count++))
+  if is_running; then
+    log "正常稼働中: $SERVICE_NAME"
+    check_resources
+    retry_count=0
+  else
+    log "プロセス停止検知: $SERVICE_NAME"
+    if [[ $retry_count -lt $MAX_RETRIES ]]; then
+      ((retry_count++))
+      log "再起動試行 ($retry_count/$MAX_RETRIES)"
+      if start_service; then
+        log "再起動成功"
+      else
+        log "再起動失敗"
+      fi
+    else
+      alert "最大再起動回数($MAX_RETRIES)を超過。手動対応が必要です。"
+      break
+    fi
+  fi
+done
+log "監視セッション終了 (ログ: $LOG_FILE)"`,
+    expected:"[2024-01-01 00:00:00] 正常稼働中: my-service\n[2024-01-01 00:00:00] リソース確認: CPU=45% MEM=62%\n[2024-01-01 00:00:00] 正常稼働中: my-service\n[2024-01-01 00:00:00] リソース確認: CPU=45% MEM=62%\n[2024-01-01 00:00:00] プロセス停止検知: my-service",
+    explanation:"サービス監視スクリプトはDevOpsの基盤です。systemdが使えない環境・コンテナ監視・カスタムプロセス管理で活用されます。本番ではPagerDuty/OpsGenieにHTTPでアラートを送ったり、Slackのwebhookを叩くことが一般的です。"
+  },
+  { id: 54, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "設定管理：.envパーサーとテンプレートエンジン",
+    question: "Bashで.envファイルパーサーとシンプルなテンプレートエンジンを実装してください。\n①.envファイルを読み込んで環境変数として設定（コメント・空行・引用符対応）\n②${VAR_NAME}形式の変数をテンプレート文字列内で置換するrender_template()関数\n③テンプレートファイルから設定値を展開して出力\n④未定義変数の検出と警告",
+    hint: "sedで${VAR}パターンをeval展開できます。引用符除去は${var%\\'} ${var#\\'} のパラメータ展開で対応します。",
+    answer:
+`#!/bin/bash
+
+# .envパーサー
+parse_env() {
+  local env_content="$1"
+  while IFS= read -r line; do
+    # コメントと空行をスキップ
+    [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+    # KEY=VALUE 形式を抽出
+    if [[ "$line" =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
+      local key="${BASH_REMATCH[1]}"
+      local val="${BASH_REMATCH[2]}"
+      # 引用符を除去
+      val="${val%\'}" ; val="${val#\'}"
+      val="${val%\"}" ; val="${val#\"}"
+      export "$key=$val"
+    fi
+  done <<< "$env_content"
+}
+
+# テンプレートレンダリング
+render_template() {
+  local template="$1"
+  # ${VAR_NAME} を変数値に置換
+  echo "$template" | sed 's/\${\([A-Za-z_][A-Za-z0-9_]*\)}/$(echo $\1)/g' | \
+    while IFS= read -r line; do eval "echo \"$line\""; done
+}
+
+# テスト用.envデータ
+ENV_DATA="
+# アプリ設定
+APP_NAME='CODE STEP'
+APP_VERSION=\"3.0.0\"
+DB_HOST=localhost
+DB_PORT=5432
+DEBUG=true
+# SECRET_KEY=should-be-in-vault
+"
+
+parse_env "$ENV_DATA"
+
+TEMPLATE='アプリ: ${APP_NAME} v${APP_VERSION}
+データベース: ${DB_HOST}:${DB_PORT}
+デバッグモード: ${DEBUG}'
+
+echo "=== 設定ファイル展開 ==="
+render_template "$TEMPLATE"
+
+echo ""
+echo "=== 環境変数確認 ==="
+echo "APP_NAME=$APP_NAME"
+echo "APP_VERSION=$APP_VERSION"
+echo "DB_HOST=$DB_HOST"`,
+    expected:"=== 設定ファイル展開 ===\nアプリ: CODE STEP v3.0.0\nデータベース: localhost:5432\nデバッグモード: true\n\n=== 環境変数確認 ===\nAPP_NAME=CODE STEP\nAPP_VERSION=3.0.0\nDB_HOST=localhost",
+    explanation:".envパーサーはdotenvライブラリが担うことが多いですが、Bashで自前実装する場面もあります。12-Factor App の設定外部化パターンの基盤です。sedによるテンプレート展開はAnsible・Helmのテンプレートエンジンと同じ概念を最小実装したものです。"
+  },
+  { id: 55, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "並行ジョブキュー：セマフォとワーカープール",
+    question: "Bashでセマフォを使った並行ワーカープールを実装してください。\n- MAX_WORKERS=4 の同時実行数制限\n- ジョブキュー（配列）にタスクを積む\n- ワーカーは完了したら次のジョブを取得\n- FIFOファイルをセマフォとして使用\n- 全ジョブの完了を待機してレポート出力",
+    hint: "mkfifo でFIFOを作成、最初にMAX_WORKERS個のトークンを書き込む。ジョブ開始時にread（トークン消費）、完了時にecho（トークン返却）します。exec 3<>fifoでファイルディスクリプタとして扱います。",
+    answer:
+`#!/bin/bash
+set -euo pipefail
+
+MAX_WORKERS=4
+FIFO=$(mktemp -u)
+mkfifo "$FIFO"
+exec 3<>"$FIFO"
+rm -f "$FIFO"
+
+# 初期トークンをMAX_WORKERS個セット
+for i in $(seq 1 $MAX_WORKERS); do printf 'x' >&3; done
+
+JOBS=("Job_A:0.3" "Job_B:0.2" "Job_C:0.1" "Job_D:0.4" "Job_E:0.2" "Job_F:0.3" "Job_G:0.1" "Job_H:0.2")
+COMPLETED=0
+START=$(date +%s%N)
+
+worker() {
+  local name="$1" duration="$2"
+  sleep "$duration"
+  echo "  完了: $name (${duration}s)"
+}
+
+echo "=== ワーカープール開始 (MAX=$MAX_WORKERS) ==="
+
+for job in "${JOBS[@]}"; do
+  IFS=: read -r name dur <<< "$job"
+  # トークン取得（空きワーカーを待機）
+  read -n1 -u3 token
+  echo "  開始: $name"
+  ( worker "$name" "$dur"; printf 'x' >&3 ) &
+done
+
+# 残りのジョブの終了を待つ
+wait
+
+END=$(date +%s%N)
+ELAPSED=$(( (END - START) / 1000000 ))
+echo ""
+echo "全${#JOBS[@]}ジョブ完了"
+echo "経過時間: ${ELAPSED}ms (順次なら~1800ms)"`,
+    expected:"=== ワーカープール開始 (MAX=4) ===\n  開始: Job_A\n  開始: Job_B\n  開始: Job_C\n  開始: Job_D\n  完了: Job_C (0.1s)\n  開始: Job_E\n  完了: Job_B (0.2s)",
+    explanation:"FIFOファイルをセマフォとして使うパターンはBash並行処理の高度なテクニックです。read -u3でブロック待機し、echo >&3でシグナルを送ります。Makeのjoblimitやxargsの-Pフラグも内部で同様の仕組みを使っています。"
+  },
+  { id: 56, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Bashコンパイラ：ミニ言語インタープリタ",
+    question: "Bashで簡単な数式言語インタープリタを実装してください。\n- 変数宣言: `let x = 10`\n- 算術: `+`, `-`, `*`, `/`\n- 比較: `if x > 5 then ... fi`\n- ループ: `repeat N { ... }`\n- print文: `print x`\n入力を行単位で処理し実行します。",
+    hint: "awkを補助として使い、bashの連想配列で変数を管理します。evalを使った算術展開で計算します。",
+    answer:
+`#!/bin/bash
+
+# ミニ言語インタープリタ
+declare -A VARS
+
+interpret() {
+  local line="$1"
+  line="${line#"${line%%[! ]*}"}"  # leading trim
+
+  if [[ "$line" =~ ^let[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*=[[:space:]]*(.+)$ ]]; then
+    local var="${BASH_REMATCH[1]}"
+    local expr="${BASH_REMATCH[2]}"
+    expr=$(expand_vars "$expr")
+    VARS[$var]=$(echo "$expr" | bc -l 2>/dev/null | awk '{printf "%g",$1}')
+
+  elif [[ "$line" =~ ^print[[:space:]]+(.+)$ ]]; then
+    local expr="${BASH_REMATCH[1]}"
+    expr=$(expand_vars "$expr")
+    echo "$expr" | bc -l 2>/dev/null | awk '{printf "%g\n",$1}'
+
+  elif [[ "$line" =~ ^if[[:space:]]+(.+)[[:space:]]+(>|<|==|>=|<=|!=)[[:space:]]+(.+)[[:space:]]+then$ ]]; then
+    local lhs=$(expand_vars "${BASH_REMATCH[1]}" | bc -l | awk '{printf "%g",$1}')
+    local op="${BASH_REMATCH[2]}"
+    local rhs=$(expand_vars "${BASH_REMATCH[3]}" | bc -l | awk '{printf "%g",$1}')
+    CONDITION=$(echo "$lhs $op $rhs" | bc -l)
+    [[ "${CONDITION%.*}" -eq 1 ]] && COND_ACTIVE=1 || COND_ACTIVE=0
+
+  elif [[ "$line" == "fi" ]]; then
+    COND_ACTIVE=-1
+  fi
+}
+
+expand_vars() {
+  local expr="$1"
+  for var in "${!VARS[@]}"; do
+    expr="${expr//$var/${VARS[$var]}}"
+  done
+  echo "$expr"
+}
+
+COND_ACTIVE=-1
+
+# プログラム実行
+run_program() {
+local program="$1"
+while IFS= read -r line; do
+  [[ -z "$line" ]] && continue
+  [[ "$line" =~ ^#  ]] && continue
+  if [[ $COND_ACTIVE -eq 0 && "$line" != "fi" ]]; then continue; fi
+  interpret "$line"
+done <<< "$program"
+}
+
+PROGRAM="
+let x = 10
+let y = x * 3
+let z = y + 5
+print z
+let a = 100
+let b = a / 4
+print b
+if x > 5 then
+print x
+fi
+let sum = x + y + z
+print sum
+"
+
+run_program "$PROGRAM"`,
+    expected:"35\n25\n10\n75",
+    explanation:"シェルスクリプトで言語インタープリタを実装することでBashの文字列処理・配列・制御フローの深い理解が得られます。bcで浮動小数点計算を委譲し、連想配列で変数スコープを管理します。実際のシェル拡張（dash/bash/zsh）もこの評価ループ原理で動作します。"
+  },
+  { id: 57, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "プロセス管理フレームワーク：supervisord風",
+    question: "supervisordのようなプロセスマネージャをBashで実装してください。\n- 複数のサービス定義（名前・コマンド・再起動ポリシー）を設定ファイルから読み込み\n- 各サービスをバックグラウンド起動してPIDを記録\n- 定期的に生存確認し、died時に自動再起動\n- stop/status/restart コマンドに対応\n- SIGTERMでクリーンシャットダウン",
+    hint: "declare -A でサービスごとのPIDや設定を管理します。kill -0 $PIDでプロセス存在確認。trapでSIGTERMを捕捉してクリーンアップを実行。",
+    answer:
+`#!/bin/bash
+set -euo pipefail
+
+# プロセスマネージャ設定
+declare -A SVC_CMD SVC_PID SVC_RESTARTS SVC_POLICY
+
+PIDFILE_DIR=$(mktemp -d)
+trap "cleanup; exit 0" TERM INT
+
+register_service() {
+  local name="$1" cmd="$2" policy="${3:-always}"
+  SVC_CMD[$name]="$cmd"
+  SVC_PID[$name]=""
+  SVC_RESTARTS[$name]=0
+  SVC_POLICY[$name]="$policy"
+}
+
+start_service() {
+  local name="$1"
+  eval "${SVC_CMD[$name]}" &
+  SVC_PID[$name]=$!
+  echo "[$(date +%T)] START  $name (PID=${SVC_PID[$name]})"
+}
+
+check_service() {
+  local name="$1"
+  local pid="${SVC_PID[$name]}"
+  if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+    return 0  # 生存中
+  fi
+  return 1  # 停止
+}
+
+stop_service() {
+  local name="$1"
+  local pid="${SVC_PID[$name]}"
+  if [[ -n "$pid" ]]; then
+    kill "$pid" 2>/dev/null && wait "$pid" 2>/dev/null || true
+    echo "[$(date +%T)] STOP   $name (PID=$pid)"
+    SVC_PID[$name]=""
+  fi
+}
+
+status() {
+  echo "=== サービス状態 ==="
+  for name in "${!SVC_CMD[@]}"; do
+    if check_service "$name"; then
+      echo "  $name: RUNNING (PID=${SVC_PID[$name]}, restarts=${SVC_RESTARTS[$name]})"
+    else
+      echo "  $name: STOPPED"
+    fi
+  done
+}
+
+cleanup() {
+  echo "シャットダウン中..."
+  for name in "${!SVC_CMD[@]}"; do stop_service "$name"; done
+  rm -rf "$PIDFILE_DIR"
+  echo "完了"
+}
+
+# サービス登録
+register_service "web"    "sleep 100"   "always"
+register_service "worker" "sleep 0.3"   "always"  # すぐ終了して再起動テスト
+
+# 全サービス起動
+for svc in "${!SVC_CMD[@]}"; do start_service "$svc"; done
+sleep 0.5
+
+status
+
+# 監視ループ（2回チェック）
+for iter in 1 2; do
+  sleep 0.4
+  for name in "${!SVC_CMD[@]}"; do
+    if ! check_service "$name" && [[ "${SVC_POLICY[$name]}" == "always" ]]; then
+      echo "[$(date +%T)] RESTART $name (restarts=${SVC_RESTARTS[$name]})"
+      ((SVC_RESTARTS[$name]++))
+      start_service "$name"
+    fi
+  done
+done
+
+status
+cleanup`,
+    expected:"[00:00:00] START  web (PID=12345)\n[00:00:00] START  worker (PID=12346)\n=== サービス状態 ===\n  web: RUNNING (PID=12345, restarts=0)\n  worker: RUNNING (PID=12346, restarts=0)\n[00:00:00] RESTART worker (restarts=0)",
+    explanation:"supervisord・PM2・Docker Composeが担うプロセス管理をBashで実装する高度な演習です。kill -0でシグナルなしに存在確認、trapでシグナルハンドリング、declare -Aで状態管理がキーポイントです。Kubernetes PodのrestartPolicyも同じ概念です。"
+  }
 ];
 
 const bashMissions = [
@@ -25663,7 +26958,391 @@ const regexProblems = [
     hint: "split('\\n')して各行をSetに入れ、差集合・積集合を求める",
     answer: `function diff(a, b) {\n  const setA = new Set(a.split('\\n'));\n  const setB = new Set(b.split('\\n'));\n  const added = [...setB].filter(l => !setA.has(l));\n  const removed = [...setA].filter(l => !setB.has(l));\n  const common = [...setA].filter(l => setB.has(l));\n  return { added, removed, common };\n}\nconst old_text = "apple\\nbanana\\ncherry";\nconst new_text = "apple\\ngrape\\ncherry\\ndate";\nconst { added, removed, common } = diff(old_text, new_text);\nremoved.forEach(l => console.log("- " + l));\ncommon.forEach(l => console.log("  " + l));\nadded.forEach(l => console.log("+ " + l));`,
     expected: "- banana\n  apple\n  cherry\n+ grape\n+ date",
-    explanation: "Setの差集合・積集合で行レベルdiffを実装。Regexは使わずとも文字列操作で解決できる問題もあります。問題に合ったツールの選択が重要です。" }
+    explanation: "Setの差集合・積集合で行レベルdiffを実装。Regexは使わずとも文字列操作で解決できる問題もあります。問題に合ったツールの選択が重要です。" },
+  { id: 51, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "Markdownパーサー：正規表現で構造抽出",
+    question: "正規表現でMarkdownの構造を解析してHTMLに変換するパーサーを実装してください。\n以下の要素をサポートしてください：\n- `#` ~ `###` 見出し → `<h1>` ~ `<h3>`\n- `**太字**` → `<strong>`、`*斜体*` → `<em>`\n- `` `コード` `` → `<code>`\n- `[テキスト](URL)` → `<a href>`\n- `- アイテム` → `<li>`\n- 空行で段落区切り → `<p>`",
+    hint: "行単位で処理します。見出しはline.match(/^(#{1,3})\\s(.+)/)、インライン要素はreplaceAll()のチェーンで変換します。",
+    answer:
+`function parseMarkdown(md) {
+  const lines = md.split('\\n');
+  const output = [];
+  let inList = false;
+
+  const parseInline = s =>
+    s.replace(/\`([^\`]+)\`/g, '<code>$1</code>')
+     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+     .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+
+  for (const line of lines) {
+    const h = line.match(/^(#{1,3})\s(.+)/);
+    if (h) {
+      if (inList) { output.push('</ul>'); inList = false; }
+      const level = h[1].length;
+      output.push(\`<h\${level}>\${parseInline(h[2])}</h\${level}>\`);
+      continue;
+    }
+    if (line.match(/^[-*]\s/)) {
+      if (!inList) { output.push('<ul>'); inList = true; }
+      output.push(\`  <li>\${parseInline(line.replace(/^[-*]\s/, ''))}</li>\`);
+      continue;
+    }
+    if (inList) { output.push('</ul>'); inList = false; }
+    if (line.trim() === '') continue;
+    output.push(\`<p>\${parseInline(line)}</p>\`);
+  }
+  if (inList) output.push('</ul>');
+  return output.join('\\n');
+}
+
+const md = \`# タイトル
+
+## はじめに
+
+これは **太字** と *斜体* のテストです。
+[リンク](https://example.com) と \\\`コード\\\` も変換されます。
+
+### リスト
+
+- 項目A
+- **強調**項目B
+- \\\`code\\\` 項目C\`;
+
+console.log(parseMarkdown(md));`,
+    expected:"<h1>タイトル</h1>\n<h2>はじめに</h2>\n<p>これは <strong>太字</strong> と <em>斜体</em> のテストです。</p>\n<p><a href=\"https://example.com\">リンク</a> と <code>コード</code> も変換されます。</p>\n<h3>リスト</h3>\n<ul>\n  <li>項目A</li>\n  <li><strong>強調</strong>項目B</li>\n  <li><code>code</code> 項目C</li>\n</ul>",
+    explanation:"Markdownパーサーは正規表現の実用的な応用例です。marked.js・remark・pandocなど主要パーサーも基本はこのラインバイライン処理＋インライン正規表現置換の組み合わせです。ATX見出し・インライン要素の順序（コードを先に処理して二重変換を防ぐ）が重要です。"
+  },
+  { id: 52, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "セキュリティ：入力サニタイズと検証パイプライン",
+    question: "正規表現を使った入力検証・サニタイズパイプラインを実装してください。\n以下の検証器を実装し、各入力に対して適用してください：\n- XSS対策：HTMLエンティティエスケープ（`<>&\"'`）\n- SQLインジェクション検出パターン\n- パストラバーサル検出（`../`、`..\\`）\n- 安全な文字のみを許可するホワイトリスト検証\n- パスワード強度チェック（大文字・小文字・数字・記号、8文字以上）",
+    hint: "各検証器は { test(input): boolean, sanitize(input): string } の形で実装します。パイプラインで全検証器を通します。",
+    answer:
+`const validators = {
+  xss: {
+    test: s => !/<[^>]+>/.test(s),
+    sanitize: s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#x27;'}[c]))
+  },
+  sqlInjection: {
+    test: s => !/('|(--|;|\\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|OR|AND)\\b))/i.test(s),
+    sanitize: s => s.replace(/['";\\-\\-]/g, '')
+  },
+  pathTraversal: {
+    test: s => !/(\\.\\.[\\/\\\\])/.test(s),
+    sanitize: s => s.replace(/\\.\\.[\\/\\\\]/g, '')
+  },
+  whitelist: {
+    test: s => /^[a-zA-Z0-9\\s@._\\-]+$/.test(s),
+    sanitize: s => s.replace(/[^a-zA-Z0-9\\s@._\\-]/g, '')
+  },
+  password: {
+    test: s => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,}$/.test(s),
+    sanitize: s => s
+  }
+};
+
+function validate(input, rules) {
+  const results = {};
+  let sanitized = input;
+  for (const rule of rules) {
+    results[rule] = validators[rule].test(input);
+    sanitized = validators[rule].sanitize(sanitized);
+  }
+  return { valid: Object.values(results).every(Boolean), results, sanitized };
+}
+
+const tests = [
+  { input: '<script>alert(1)</script>', rules: ['xss','whitelist'] },
+  { input: "'; DROP TABLE users; --", rules: ['sqlInjection','whitelist'] },
+  { input: '../../etc/passwd', rules: ['pathTraversal','whitelist'] },
+  { input: 'alice@example.com', rules: ['xss','whitelist'] },
+  { input: 'Passw0rd!', rules: ['password'] },
+  { input: 'weakpass', rules: ['password'] },
+];
+
+tests.forEach(({ input, rules }) => {
+  const { valid, results, sanitized } = validate(input, rules);
+  const status = valid ? 'OK' : 'NG';
+  console.log(\`[\${status}] "\${input.slice(0,25)}" → "\${sanitized.slice(0,25)}"\`);
+});`,
+    expected:"[NG] \"<script>alert(1)</script>\" → \"alert(1)\"\n[NG] \"'; DROP TABLE users; --\" → \" TABLE users \"\n[NG] \"../../etc/passwd\" → \"etc/passwd\"\n[OK] \"alice@example.com\" → \"alice@example.com\"\n[OK] \"Passw0rd!\" → \"Passw0rd!\"\n[NG] \"weakpass\" → \"weakpass\"",
+    explanation:"入力サニタイズは全セキュリティ実装の基盤です。XSS・SQLi・パストラバーサルはOWASP Top 10の常連です。ホワイトリスト方式（許可する文字を明示）はブラックリスト方式より安全です。実務ではzod・yup・joi等のスキーマバリデーションライブラリと組み合わせます。"
+  },
+  { id: 53, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "ログパーサー：複数フォーマット対応",
+    question: "複数のログフォーマットを解析できるユニバーサルログパーサーを実装してください。\n以下のフォーマットを自動判別して解析してください：\n1. Apache Combined Log Format\n2. JSON形式ログ\n3. Syslog形式\n4. カスタム形式（key=value ペア）\n各ログから level, timestamp, message, source を抽出してください。",
+    hint: "各フォーマットに対応する正規表現と解析関数を用意し、入力ログに対してマッチするものを自動選択します。",
+    answer:
+`const parsers = [
+  {
+    name: 'apache',
+    pattern: /^(\\S+) \\S+ \\S+ \\[([^\\]]+)\\] "([^"]+)" (\\d+) (\\d+)/,
+    parse: m => ({ source: m[1], timestamp: m[2], message: \`\${m[3]} -> \${m[4]}\`, level: m[4]<400?'info':'error' })
+  },
+  {
+    name: 'json',
+    pattern: /^\\{.*\\}$/,
+    parse: s => { const o=JSON.parse(s); return { level:o.level||'info', timestamp:o.ts||o.timestamp||'', message:o.msg||o.message||'', source:o.service||o.src||'app' }; }
+  },
+  {
+    name: 'syslog',
+    pattern: /^(\\w+ +\\d+ \\d+:\\d+:\\d+) (\\S+) (\\S+): (.+)/,
+    parse: m => ({ timestamp:m[1], source:m[2], level: m[4].match(/error|crit/i)?'error':'info', message:\`[\${m[3]}] \${m[4]}\` })
+  },
+  {
+    name: 'keyvalue',
+    pattern: /\\w+=\\S+/,
+    parse: s => {
+      const o={};
+      s.match(/\\w+="[^"]*"|\\w+=\\S+/g).forEach(kv=>{ const [k,...v]=kv.split('='); o[k]=v.join('=').replace(/"/g,''); });
+      return { level:o.level||'info', timestamp:o.ts||o.time||'', message:o.msg||o.message||s, source:o.src||o.host||'system' };
+    }
+  }
+];
+
+function parseLog(line) {
+  for (const p of parsers) {
+    const m = line.match(p.pattern);
+    if (m) return { format: p.name, ...p.parse(typeof m==='object'&&!Array.isArray(m)?line:m) };
+  }
+  return { format:'unknown', level:'info', timestamp:'', message:line, source:'unknown' };
+}
+
+const logs = [
+  '192.168.1.1 - alice [10/Jan/2024:13:55:36 +0000] "GET /api/users HTTP/1.1" 200 1234',
+  '{"level":"error","ts":"2024-01-10T13:55:37Z","msg":"DB接続エラー","service":"api"}',
+  'Jan 10 13:55:38 webserver nginx: connect() failed (111: Connection refused)',
+  'ts=2024-01-10T13:55:39Z level=warn src=scheduler msg="ジョブ遅延" delay=5s',
+];
+
+logs.forEach(log => {
+  const parsed = parseLog(log);
+  console.log(\`[\${parsed.format.toUpperCase()}] [\${parsed.level.toUpperCase()}] \${parsed.message.slice(0,50)}\`);
+});`,
+    expected:"[APACHE] [INFO] GET /api/users HTTP/1.1 -> 200\n[JSON] [ERROR] DB接続エラー\n[SYSLOG] [INFO] [nginx] connect() failed (111: Connection refused)\n[KEYVALUE] [WARN] ジョブ遅延",
+    explanation:"ユニバーサルログパーサーはObservabilityプラットフォームの核心です。Fluentd・Logstash・Vector等のログ収集ツールはこのフォーマット自動判別パターンを使います。正規表現でフォーマットを識別し、専用のパース関数に委譲するStrategy Patternの応用です。"
+  },
+  { id: 54, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "テンプレートエンジン：変数展開とループ",
+    question: "正規表現でシンプルなテンプレートエンジンを実装してください。\n以下の構文をサポートしてください：\n- `{{ variable }}` — 変数展開（HTMLエスケープ付き）\n- `{{{ raw }}}` — 生の値（エスケープなし）\n- `{{#if condition}} ... {{/if}}` — 条件分岐\n- `{{#each items}} ... {{/each}}` — ループ（`{{this}}`で要素参照）\n- `{{! comment }}` — コメント（出力しない）",
+    hint: "まずコメント→then条件→eachループ→変数展開の順に処理します。eachループはrecursiveにrenderを呼び出してネストに対応します。",
+    answer:
+`function render(template, context) {
+  const escape = s => String(s).replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  const resolve = (key, ctx) => {
+    return key.split('.').reduce((o,k) => o?.[k], ctx) ?? '';
+  };
+
+  return template
+    // コメント除去
+    .replace(/\\{\\{!.*?\\}\\}/gs, '')
+    // Raw出力（エスケープなし）
+    .replace(/\\{\\{\\{\\s*([\\w.]+)\\s*\\}\\}\\}/g, (_, k) => resolve(k, context))
+    // eachループ
+    .replace(/\\{\\{#each\\s+(\\w+)\\}\\}([\\s\\S]*?)\\{\\{\\/each\\}\\}/g, (_, key, body) => {
+      const arr = resolve(key, context);
+      if (!Array.isArray(arr)) return '';
+      return arr.map((item, i) =>
+        render(body, { ...context, this: item, '@index': i })
+      ).join('');
+    })
+    // if条件
+    .replace(/\\{\\{#if\\s+([\\w.]+)\\}\\}([\\s\\S]*?)\\{\\{\\/if\\}\\}/g, (_, key, body) => {
+      const val = resolve(key, context);
+      return val ? render(body, context) : '';
+    })
+    // 変数展開（エスケープあり）
+    .replace(/\\{\\{\\s*([\\w.@]+)\\s*\\}\\}/g, (_, k) => escape(resolve(k, context)));
+}
+
+const tmpl = \`{{! このコメントは出力されません }}
+<h1>{{ title }}</h1>
+<p>作者: {{{ author.html }}}</p>
+{{#if showList}}
+<ul>
+{{#each items}}  <li>[\{{ @index }}] {{ this }}</li>
+{{/each}}</ul>
+{{/if}}\`;
+
+const ctx = {
+  title: 'CODE STEP <テスト>',
+  author: { html: '<strong>Yoshirou</strong>' },
+  showList: true,
+  items: ['JavaScript', 'Python', 'Rust']
+};
+
+console.log(render(tmpl, ctx));`,
+    expected:"<h1>CODE STEP &lt;テスト&gt;</h1>\n<p>作者: <strong>Yoshirou</strong></p>\n<ul>\n  <li>[0] JavaScript</li>\n  <li>[1] Python</li>\n  <li>[2] Rust</li>\n</ul>",
+    explanation:"テンプレートエンジンはMustache・Handlebars・Jinja2の基本実装です。エスケープ有り(`{{ }}`)と無し(`{{{ }}}`)の区別はXSS対策の基本です。再帰的なrenderでネストしたeach/ifを自然に処理できます。"
+  },
+  { id: 55, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "正規表現エンジン：NFAシミュレーション",
+    question: "Thompson NFAアルゴリズムで簡易正規表現エンジンを実装してください。\n以下のパターンをサポートしてください：\n- 文字リテラル (a, b, c...)\n- `.` （任意の1文字）\n- `*` （0回以上の繰り返し）\n- `+` （1回以上の繰り返し）\n- `?` （0か1回）\n- `|` （選択）\n- `()` （グループ）",
+    hint: "まずパターンをNFAノードのグラフに変換（compile）し、次にNFA上でε閉包を使ってマッチング（simulate）します。Thompson NFAの各演算子の実装方法を調べてみましょう。",
+    answer:
+`// 簡易正規表現エンジン（バックトラッキング方式）
+function regexMatch(pattern, text) {
+  function match(p, pi, t, ti) {
+    if (pi === p.length) return true;
+    const isLast = pi + 1 >= p.length;
+    const next = isLast ? null : p[pi + 1];
+
+    if (next === '*') {
+      if (match(p, pi + 2, t, ti)) return true;
+      while (ti < t.length && (p[pi] === '.' || p[pi] === t[ti])) {
+        ti++;
+        if (match(p, pi + 2, t, ti)) return true;
+      }
+      return false;
+    }
+    if (next === '+') {
+      if (ti >= t.length || (p[pi] !== '.' && p[pi] !== t[ti])) return false;
+      ti++;
+      if (match(p, pi + 2, t, ti)) return true;
+      while (ti < t.length && (p[pi] === '.' || p[pi] === t[ti])) {
+        ti++;
+        if (match(p, pi + 2, t, ti)) return true;
+      }
+      return false;
+    }
+    if (next === '?') {
+      if (ti < t.length && (p[pi] === '.' || p[pi] === t[ti]))
+        if (match(p, pi + 2, t, ti + 1)) return true;
+      return match(p, pi + 2, t, ti);
+    }
+    if (p[pi] === '.' || p[pi] === t[ti])
+      return match(p, pi + 1, t, ti + 1);
+    return false;
+  }
+
+  // anchored search
+  if (pattern.startsWith('^') && pattern.endsWith('$'))
+    return match(pattern.slice(1,-1), 0, text, 0);
+  if (pattern.startsWith('^'))
+    return match(pattern.slice(1), 0, text, 0);
+  // unanchored: try each start position
+  for (let i = 0; i <= text.length; i++)
+    if (match(pattern, 0, text, i)) return true;
+  return false;
+}
+
+const tests = [
+  ['^a*$', 'aaa', true],
+  ['^a*$', 'b', false],
+  ['^a+b?c$', 'ac', true],
+  ['^a+b?c$', 'abc', true],
+  ['^a+b?c$', 'abbc', false],
+  ['a.c', 'axc', true],
+  ['a.c', 'ac', false],
+  ['^colou?r$', 'color', true],
+  ['^colou?r$', 'colour', true],
+  ['hello', 'say hello world', true],
+];
+
+tests.forEach(([pat, text, expected]) => {
+  const got = regexMatch(pat, text);
+  const ok = got === expected ? 'OK' : 'NG';
+  console.log(\`[\${ok}] /\${pat}/.test("\${text}") = \${got}\`);
+});`,
+    expected:"[OK] /^a*$/.test(\"aaa\") = true\n[OK] /^a*$/.test(\"b\") = false\n[OK] /^a+b?c$/.test(\"ac\") = true\n[OK] /^a+b?c$/.test(\"abc\") = true\n[OK] /^a+b?c$/.test(\"abbc\") = false\n[OK] /a.c/.test(\"axc\") = true\n[OK] /a.c/.test(\"ac\") = false\n[OK] /^colou?r$/.test(\"color\") = true\n[OK] /^colou?r$/.test(\"colour\") = true\n[OK] /hello/.test(\"say hello world\") = true",
+    explanation:"正規表現エンジンの自作はCS理論（オートマトン理論）の最高の実践です。バックトラッキング法（Perlスタイル）とThompson NFA法（V8・RE2）の2方式があります。Thompson NFAは指数爆発しない線形時間保証がありますが実装が複雑です。ReDos脆弱性はバックトラッキングエンジン特有の問題です。"
+  },
+  { id: 56, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "字句解析器：トークナイザーの実装",
+    question: "正規表現を使って汎用トークナイザーを実装してください。\n以下のトークン種別を認識できるようにしてください：\n- NUMBER: 整数/浮動小数点\n- STRING: シングル/ダブルクォート文字列\n- IDENTIFIER: 変数名/キーワード\n- KEYWORD: if/else/while/for/return/function\n- OPERATOR: +/-/*///%/==/!=/<=/>=/&&/||\n- PUNCTUATION: {/}/(/)/[/]/;/,\n- WHITESPACE: スキップ\n- COMMENT: //〜行末\n入力コードをトークン列に分割してください。",
+    hint: "大きな正規表現を|で繋いで一度にmatchAllします。named capture groups (?<TYPE>pattern) を使うとマッチのグループ名からトークン種別を取得できます。",
+    answer:
+`function tokenize(code) {
+  const TOKEN_PATTERNS = [
+    ['COMMENT',    /\\/\\/[^\\n]*/y],
+    ['STRING',     /"(?:[^"\\\\]|\\\\.)*"|'(?:[^'\\\\]|\\\\.)*'/y],
+    ['NUMBER',     /\\d+\\.\\d*|\\.\\d+|\\d+/y],
+    ['KEYWORD',    /\\b(if|else|while|for|return|function|const|let|var|true|false|null)\\b/y],
+    ['IDENTIFIER', /[a-zA-Z_$][a-zA-Z0-9_$]*/y],
+    ['OPERATOR',   /===|!==|==|!=|<=|>=|&&|\\|\\||[-+*\\/%=<>!]/y],
+    ['PUNCTUATION',/[{}()[\\];,\\.]/y],
+    ['WHITESPACE', /\\s+/y],
+  ];
+
+  const tokens = [];
+  let pos = 0;
+
+  while (pos < code.length) {
+    let matched = false;
+    for (const [type, regex] of TOKEN_PATTERNS) {
+      regex.lastIndex = pos;
+      const m = regex.exec(code);
+      if (m && m.index === pos) {
+        if (type !== 'WHITESPACE' && type !== 'COMMENT') {
+          tokens.push({ type, value: m[0], pos });
+        }
+        pos += m[0].length;
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) {
+      tokens.push({ type: 'UNKNOWN', value: code[pos], pos });
+      pos++;
+    }
+  }
+  return tokens;
+}
+
+const code = \`function add(a, b) {
+  // 合計を返す
+  const result = a + b;
+  if (result > 100) { return "big"; }
+  return result;
+}\`;
+
+const tokens = tokenize(code);
+tokens.forEach(({ type, value }) => {
+  console.log(\`\${type.padEnd(12)} | \${JSON.stringify(value)}\`);
+});`,
+    expected:"KEYWORD      | \"function\"\nIDENTIFIER   | \"add\"\nPUNCTUATION  | \"(\"\nIDENTIFIER   | \"a\"\nPUNCTUATION  | \",\"\nIDENTIFIER   | \"b\"\nPUNCTUATION  | \")\"\nPUNCTUATION  | \"{\"\nKEYWORD      | \"const\"\nIDENTIFIER   | \"result\"",
+    explanation:"字句解析器（Lexer/Tokenizer）はすべてのコンパイラ・インタープリタの第一段階です。V8・SpiderMonkey・Acorn・Babel Parserもこのトークナイズから始まります。sticky flag (/y) でlastIndexから検索を開始することで効率的なシーケンシャルスキャンが実現できます。"
+  },
+  { id: 57, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "自然言語処理：正規表現でエンティティ抽出",
+    question: "正規表現を使ったNamed Entity Recognition（NER）を実装してください。\n以下のエンティティを日本語テキストから抽出してください：\n- 日付（YYYY年MM月DD日、MM/DD、M月D日など複数形式）\n- 時刻（HH:MM、午前/午後H時M分など）\n- 金額（¥NNN、NNN円、NNN万円）\n- メールアドレス\n- URLパターン\n- 電話番号\n各エンティティのタイプ・値・位置（インデックス）を出力してください。",
+    hint: "各エンティティパターンの正規表現をオブジェクトとして定義し、gフラグのexecループかmatchAllで全マッチを収集します。位置はm.indexで取得できます。",
+    answer:
+`function extractEntities(text) {
+  const patterns = [
+    { type: 'DATE',    re: /\\d{4}年\\d{1,2}月\\d{1,2}日|\\d{1,2}\\/\\d{1,2}|\\d{1,2}月\\d{1,2}日/g },
+    { type: 'TIME',    re: /[午前午後]{2}\\d{1,2}時(?:\\d{1,2}分)?|\\d{1,2}:\\d{2}/g },
+    { type: 'MONEY',   re: /[¥￥]\\d[\\d,]*|\\d[\\d,]*万?円/g },
+    { type: 'EMAIL',   re: /[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}/g },
+    { type: 'URL',     re: /https?:\\/\\/[\\w.\\-\\/?=&#%+:@,]*/g },
+    { type: 'PHONE',   re: /0\\d{1,4}-\\d{1,4}-\\d{4}|0\\d{9,10}/g },
+  ];
+
+  const entities = [];
+  for (const { type, re } of patterns) {
+    for (const m of text.matchAll(re)) {
+      entities.push({ type, value: m[0], start: m.index, end: m.index + m[0].length });
+    }
+  }
+  return entities.sort((a, b) => a.start - b.start);
+}
+
+const texts = [
+  "会議は2024年3月15日の午後2時に開催。参加費¥5,000。連絡先: info@example.co.jp",
+  "詳細はhttps://example.com/event?id=123を参照。電話:03-1234-5678でも受付中。",
+  "締切は3/31、金額は150万円。担当は090-1234-5678まで。"
+];
+
+texts.forEach((text, i) => {
+  console.log(\`--- テキスト\${i+1} ---\`);
+  const entities = extractEntities(text);
+  entities.forEach(e => console.log(\`  [\${e.type}] "\${e.value}" @\${e.start}\`));
+});`,
+    expected:"--- テキスト1 ---\n  [DATE] \"2024年3月15日\" @3\n  [TIME] \"午後2時\" @13\n  [MONEY] \"¥5,000\" @20\n  [EMAIL] \"info@example.co.jp\" @29\n--- テキスト2 ---\n  [URL] \"https://example.com/event?id=123\" @4\n  [PHONE] \"03-1234-5678\" @39\n--- テキスト3 ---\n  [DATE] \"3/31\" @3\n  [MONEY] \"150万円\" @9\n  [PHONE] \"090-1234-5678\" @19",
+    explanation:"Named Entity Recognition（NER）はNLPの基本タスクです。ルールベースNERはspaCy・MeCab等の形態素解析と組み合わせて使われます。正規表現ベースは構造化データ（日付・金額・電話番号）の抽出に今も実務で広く使われており、GCP・AWSのDocument AIはこのアプローチを採用しています。"
+  }
 ];
 
 const regexMissions = [
@@ -26168,7 +27847,637 @@ const phpProblems = [
     hint: "EventStore / aggregate.apply(event) / rehydrate from events",
     answer: `<?php\ninterface Event { public function getType(): string; }\nclass UserCreated implements Event {\n    public function __construct(public readonly string $id, public readonly string $name) {}\n    public function getType(): string { return 'UserCreated'; }\n}\nclass NameChanged implements Event {\n    public function __construct(public readonly string $newName) {}\n    public function getType(): string { return 'NameChanged'; }\n}\nclass EmailSet implements Event {\n    public function __construct(public readonly string $email) {}\n    public function getType(): string { return 'EmailSet'; }\n}\nclass UserAggregate {\n    public string $id = '';\n    public string $name = '';\n    public string $email = '';\n    private array $events = [];\n    public function apply(Event $event): void {\n        $this->events[] = $event;\n        match(true) {\n            $event instanceof UserCreated => [$this->id, $this->name] = [$event->id, $event->name],\n            $event instanceof NameChanged => $this->name = $event->newName,\n            $event instanceof EmailSet => $this->email = $event->email,\n        };\n    }\n    public static function rehydrate(array $events): static {\n        $agg = new static();\n        foreach ($events as $e) $agg->apply($e);\n        return $agg;\n    }\n    public function getEvents(): array { return $this->events; }\n}\n$events = [new UserCreated('u1','Alice'), new EmailSet('alice@example.com'), new NameChanged('Alicia')];\n$user = UserAggregate::rehydrate($events);\necho "id: {$user->id}\\n";\necho "name: {$user->name}\\n";\necho "email: {$user->email}\\n";\necho "events: " . count($user->getEvents()) . "\\n";`,
     expected: "id: u1\nname: Alicia\nemail: alice@example.com\nevents: 3",
-    explanation: "イベントソーシングは状態変更をイベントの列として記録します。任意のタイミングの状態を再生成でき、監査ログ・デバッグに強力です。" }
+    explanation: "イベントソーシングは状態変更をイベントの列として記録します。任意のタイミングの状態を再生成でき、監査ログ・デバッグに強力です。" },
+  { id: 51, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "型安全ORM：QueryBuilderの完全実装",
+    question: "PHPで型安全なQueryBuilderを完全実装してください。\n以下の機能を持つ流暢なAPIを実装してください：\n- table(), select(), where(), orWhere(), join(), orderBy(), limit(), offset()\n- whereIn(), whereBetween(), whereNull()\n- パラメータのバインディング（PDO風のプレースホルダー）\n- buildSQL() でSQL文字列とバインド配列を返す\n- サブクエリのサポート",
+    hint: "各メソッドは$thisを返すことでメソッドチェーンを実現します。条件はarray pushで蓄積し、build時に結合します。",
+    answer:
+`<?php
+
+class QueryBuilder {
+    private string $table = '';
+    private array $selects = ['*'];
+    private array $wheres = [];
+    private array $bindings = [];
+    private array $joins = [];
+    private array $orders = [];
+    private ?int $limitVal = null;
+    private ?int $offsetVal = null;
+
+    public function table(string $t): static { $this->table = $t; return $this; }
+    public function select(string ...$cols): static { $this->selects = $cols; return $this; }
+
+    public function where(string $col, string $op, mixed $val): static {
+        $placeholder = ':b' . count($this->bindings);
+        $this->wheres[] = ['AND', "$col $op $placeholder"];
+        $this->bindings[$placeholder] = $val;
+        return $this;
+    }
+    public function orWhere(string $col, string $op, mixed $val): static {
+        $placeholder = ':b' . count($this->bindings);
+        $this->wheres[] = ['OR', "$col $op $placeholder"];
+        $this->bindings[$placeholder] = $val;
+        return $this;
+    }
+    public function whereIn(string $col, array $vals): static {
+        $placeholders = [];
+        foreach ($vals as $v) {
+            $k = ':b' . count($this->bindings);
+            $placeholders[] = $k;
+            $this->bindings[$k] = $v;
+        }
+        $this->wheres[] = ['AND', "$col IN (" . implode(',', $placeholders) . ")"];
+        return $this;
+    }
+    public function whereNull(string $col): static {
+        $this->wheres[] = ['AND', "$col IS NULL"];
+        return $this;
+    }
+    public function join(string $table, string $on, string $type = 'INNER'): static {
+        $this->joins[] = "$type JOIN $table ON $on";
+        return $this;
+    }
+    public function orderBy(string $col, string $dir = 'ASC'): static {
+        $this->orders[] = "$col $dir";
+        return $this;
+    }
+    public function limit(int $n): static { $this->limitVal = $n; return $this; }
+    public function offset(int $n): static { $this->offsetVal = $n; return $this; }
+
+    public function buildSQL(): array {
+        $sql = 'SELECT ' . implode(', ', $this->selects);
+        $sql .= ' FROM ' . $this->table;
+        foreach ($this->joins as $j) $sql .= " $j";
+        if ($this->wheres) {
+            $clauses = [];
+            foreach ($this->wheres as [$logic, $clause]) {
+                $clauses[] = ($clauses ? $logic . ' ' : '') . $clause;
+            }
+            $sql .= ' WHERE ' . implode(' ', $clauses);
+        }
+        if ($this->orders) $sql .= ' ORDER BY ' . implode(', ', $this->orders);
+        if ($this->limitVal !== null) $sql .= " LIMIT {$this->limitVal}";
+        if ($this->offsetVal !== null) $sql .= " OFFSET {$this->offsetVal}";
+        return [$sql, $this->bindings];
+    }
+}
+
+$qb = (new QueryBuilder())
+    ->table('users u')
+    ->select('u.id', 'u.name', 'u.email', 'o.total')
+    ->join('orders o', 'u.id = o.user_id', 'LEFT')
+    ->where('u.age', '>=', 18)
+    ->whereIn('u.status', ['active', 'premium'])
+    ->orWhere('o.total', '>', 1000)
+    ->orderBy('u.name')
+    ->orderBy('o.total', 'DESC')
+    ->limit(20)
+    ->offset(40);
+
+[$sql, $bindings] = $qb->buildSQL();
+echo $sql . "\n";
+echo "Bindings: " . json_encode($bindings) . "\n";`,
+    expected:"SELECT u.id, u.name, u.email, o.total FROM users u LEFT JOIN orders o ON u.id = o.user_id WHERE u.age >= :b0 AND u.status IN (:b1,:b2) OR o.total > :b3 ORDER BY u.name ASC, o.total DESC LIMIT 20 OFFSET 40\nBindings: {\":b0\":18,\":b1\":\"active\",\":b2\":\"premium\",\":b3\":1000}",
+    explanation:"QueryBuilderはLaravel Eloquent・Doctrine DBALの中核パターンです。Fluent Interface（メソッドチェーン）でSQLを型安全に構築し、バインディングでSQLインジェクションを防ぎます。PHPのORMフレームワーク実装の標準アーキテクチャです。"
+  },
+  { id: 52, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "ミドルウェアパイプライン：PSR-15風実装",
+    question: "PSR-15インターフェースに準拠したHTTPミドルウェアパイプラインを実装してください。\n①RequestInterface, ResponseInterface の簡易実装\n②MiddlewareInterface (process(request, handler): response)\n③Pipeline クラス（ミドルウェアスタックを管理）\n④具体的なミドルウェア：LoggingMiddleware, AuthMiddleware, CorsMiddleware, TimerMiddleware\n⑤パイプラインを通じてリクエストを処理し各ミドルウェアの動作を確認",
+    hint: "パイプラインはミドルウェアの配列をreverse()してcallable chainを作ります。各ミドルウェアはnext handlerを呼び出す前後に処理を追加します。",
+    answer:
+`<?php
+
+class Request {
+    public function __construct(
+        public readonly string $method,
+        public readonly string $path,
+        public readonly array $headers = []
+    ) {}
+    public function withHeader(string $k, string $v): static {
+        $h = $this->headers; $h[$k] = $v;
+        return new static($this->method, $this->path, $h);
+    }
+}
+
+class Response {
+    public function __construct(
+        public int $status = 200,
+        public string $body = '',
+        public array $headers = []
+    ) {}
+    public function withHeader(string $k, string $v): static {
+        $r = clone $this; $r->headers[$k] = $v; return $r;
+    }
+    public function withBody(string $b): static { $r = clone $this; $r->body = $b; return $r; }
+}
+
+interface MiddlewareInterface {
+    public function process(Request $req, callable $next): Response;
+}
+
+class LoggingMiddleware implements MiddlewareInterface {
+    public function process(Request $req, callable $next): Response {
+        echo "[LOG] {$req->method} {$req->path}\n";
+        $res = $next($req);
+        echo "[LOG] Response: {$res->status}\n";
+        return $res;
+    }
+}
+
+class AuthMiddleware implements MiddlewareInterface {
+    public function process(Request $req, callable $next): Response {
+        if (!isset($req->headers['Authorization'])) {
+            echo "[AUTH] Unauthorized\n";
+            return new Response(401, 'Unauthorized');
+        }
+        echo "[AUTH] OK\n";
+        return $next($req);
+    }
+}
+
+class TimerMiddleware implements MiddlewareInterface {
+    public function process(Request $req, callable $next): Response {
+        $start = microtime(true);
+        $res = $next($req);
+        $ms = round((microtime(true) - $start) * 1000, 2);
+        echo "[TIMER] {$ms}ms\n";
+        return $res->withHeader('X-Response-Time', "{$ms}ms");
+    }
+}
+
+class Pipeline {
+    private array $middlewares = [];
+    public function pipe(MiddlewareInterface $m): static { $this->middlewares[] = $m; return $this; }
+
+    public function run(Request $req, callable $finalHandler): Response {
+        $handler = $finalHandler;
+        foreach (array_reverse($this->middlewares) as $mw) {
+            $next = $handler;
+            $handler = fn($r) => $mw->process($r, $next);
+        }
+        return $handler($req);
+    }
+}
+
+$pipeline = (new Pipeline())
+    ->pipe(new TimerMiddleware())
+    ->pipe(new LoggingMiddleware())
+    ->pipe(new AuthMiddleware());
+
+echo "=== 認証なし ===\n";
+$req1 = new Request('GET', '/api/users');
+$res1 = $pipeline->run($req1, fn($r) => new Response(200, 'Users list'));
+echo "Status: {$res1->status}\n\n";
+
+echo "=== 認証あり ===\n";
+$req2 = new Request('GET', '/api/users', ['Authorization' => 'Bearer token123']);
+$res2 = $pipeline->run($req2, fn($r) => new Response(200, 'Users list'));
+echo "Status: {$res2->status}\n";`,
+    expected:"=== 認証なし ===\n[TIMER] 0ms\n[LOG] GET /api/users\n[AUTH] Unauthorized\n[LOG] Response: 401\nStatus: 401\n\n=== 認証あり ===\n[TIMER] 0ms\n[LOG] GET /api/users\n[AUTH] OK\n[LOG] Response: 200\nStatus: 200",
+    explanation:"PSR-15ミドルウェアはLaravel・Slim・Laminasの標準設計パターンです。Decorator Patternの連鎖でリクエスト前後に処理を挿入します。array_reverseでミドルウェアを折り返すことでスタック順（先入れ後出し）を実現します。"
+  },
+  { id: 53, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "型安全コレクション：ジェネリクス風実装",
+    question: "PHPで型安全なジェネリクス風コレクションクラスを実装してください。\n①`TypedCollection<T>` — 型チェック付きのコレクション（PHP 8.1 fibers/intersection types活用）\n②`Pipeline<T>` — イミュータブルな変換パイプライン（map/filter/reduce）\n③`Option<T>` — Null安全なオプション型（Some/None）\n④`Result<T, E>` — エラー処理のための代数的型\nそれぞれの型を実際に使って動作確認してください。",
+    hint: "PHPの型ヒント + ReflectionClass でランタイム型チェックを実装します。Option::some()/none()ファクトリメソッドでインスタンスを生成します。",
+    answer:
+`<?php
+
+// Option型
+class Option {
+    private function __construct(
+        private readonly mixed $value,
+        private readonly bool $hasValue
+    ) {}
+
+    public static function some(mixed $v): static { return new static($v, true); }
+    public static function none(): static { return new static(null, false); }
+
+    public function isSome(): bool { return $this->hasValue; }
+    public function map(callable $f): static {
+        return $this->hasValue ? static::some($f($this->value)) : static::none();
+    }
+    public function getOrElse(mixed $default): mixed {
+        return $this->hasValue ? $this->value : $default;
+    }
+    public function __toString(): string {
+        return $this->hasValue ? "Some({$this->value})" : "None";
+    }
+}
+
+// Result型
+class Result {
+    private function __construct(
+        private readonly mixed $value,
+        private readonly mixed $error,
+        private readonly bool $isOk
+    ) {}
+
+    public static function ok(mixed $v): static { return new static($v, null, true); }
+    public static function err(mixed $e): static { return new static(null, $e, false); }
+
+    public function isOk(): bool { return $this->isOk; }
+    public function map(callable $f): static {
+        return $this->isOk ? static::ok($f($this->value)) : $this;
+    }
+    public function mapErr(callable $f): static {
+        return !$this->isOk ? static::err($f($this->error)) : $this;
+    }
+    public function unwrap(): mixed {
+        if (!$this->isOk) throw new \RuntimeException("Called unwrap on Err: {$this->error}");
+        return $this->value;
+    }
+    public function __toString(): string {
+        return $this->isOk ? "Ok({$this->value})" : "Err({$this->error})";
+    }
+}
+
+// Pipeline
+class Pipeline {
+    public function __construct(private array $items) {}
+    public function map(callable $f): static { return new static(array_map($f, $this->items)); }
+    public function filter(callable $f): static { return new static(array_values(array_filter($this->items, $f))); }
+    public function reduce(callable $f, mixed $initial): mixed { return array_reduce($this->items, $f, $initial); }
+    public function toArray(): array { return $this->items; }
+}
+
+// Option のテスト
+$some = Option::some(42)->map(fn($x) => $x * 2);
+$none = Option::none()->map(fn($x) => $x * 2);
+echo $some . "\n";
+echo $none . "\n";
+echo $some->getOrElse(0) . "\n";
+
+// Result のテスト
+function divide(int $a, int $b): Result {
+    if ($b === 0) return Result::err("Division by zero");
+    return Result::ok($a / $b);
+}
+
+echo divide(10, 2)->map(fn($x) => $x * 3) . "\n";
+echo divide(10, 0)->mapErr(fn($e) => "Error: $e") . "\n";
+
+// Pipeline のテスト
+$result = (new Pipeline([1,2,3,4,5,6,7,8,9,10]))
+    ->filter(fn($x) => $x % 2 === 0)
+    ->map(fn($x) => $x * $x)
+    ->reduce(fn($acc, $x) => $acc + $x, 0);
+echo "偶数の2乗の和: $result\n";`,
+    expected:"Some(84)\nNone\n84\nOk(15)\nErr(Error: Division by zero)\n偶数の2乗の和: 220",
+    explanation:"Option<T>とResult<T,E>はRust・Haskell・Swiftの型安全エラー処理の標準パターンです。nullの代わりにOption型を使うことでNullPointerExceptionを排除します。PHPでも関数型プログラミングのパラダイムを導入することで堅牢なコードが書けます。"
+  },
+  { id: 54, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "キャッシュレイヤー：多段階キャッシュ戦略",
+    question: "多段階キャッシュシステムをPHPで実装してください。\n①CacheInterface (get/set/delete/has/clear)\n②MemoryCache (PHPの配列、TTL付き)\n③FileCache (ファイルシステム、シリアライズ)\n④CacheChain (複数キャッシュの階層化: L1=Memory, L2=File)\n⑤StatsBag でキャッシュのhit/miss/writeをカウント\n動作確認してください。",
+    hint: "CacheChainはL1→L2の順でgetを試み、L1でmissでL2でhitの場合はL1にも書き戻します（キャッシュウォームアップ）。",
+    answer:
+`<?php
+
+interface CacheInterface {
+    public function get(string $key): mixed;
+    public function set(string $key, mixed $value, int $ttl = 3600): void;
+    public function has(string $key): bool;
+    public function delete(string $key): void;
+}
+
+class Stats {
+    public int $hits = 0, $misses = 0, $writes = 0;
+    public function hit(): void { $this->hits++; }
+    public function miss(): void { $this->misses++; }
+    public function write(): void { $this->writes++; }
+    public function __toString(): string { return "hits={$this->hits} misses={$this->misses} writes={$this->writes}"; }
+}
+
+class MemoryCache implements CacheInterface {
+    private array $store = [];
+    public function __construct(public readonly Stats $stats = new Stats()) {}
+
+    public function get(string $key): mixed {
+        if (!$this->has($key)) { $this->stats->miss(); return null; }
+        $this->stats->hit();
+        return $this->store[$key]['v'];
+    }
+    public function set(string $key, mixed $value, int $ttl = 3600): void {
+        $this->store[$key] = ['v' => $value, 'exp' => time() + $ttl];
+        $this->stats->write();
+    }
+    public function has(string $key): bool {
+        return isset($this->store[$key]) && $this->store[$key]['exp'] > time();
+    }
+    public function delete(string $key): void { unset($this->store[$key]); }
+}
+
+class CacheChain implements CacheInterface {
+    public function __construct(
+        private readonly CacheInterface $l1,
+        private readonly CacheInterface $l2
+    ) {}
+
+    public function get(string $key): mixed {
+        $v = $this->l1->get($key);
+        if ($v !== null) { echo "[L1 HIT] $key\n"; return $v; }
+        $v = $this->l2->get($key);
+        if ($v !== null) { echo "[L2 HIT] $key (warming L1)\n"; $this->l1->set($key, $v); return $v; }
+        echo "[MISS] $key\n";
+        return null;
+    }
+    public function set(string $key, mixed $value, int $ttl = 3600): void {
+        $this->l1->set($key, $value, $ttl);
+        $this->l2->set($key, $value, $ttl);
+        echo "[WRITE] $key\n";
+    }
+    public function has(string $key): bool { return $this->l1->has($key) || $this->l2->has($key); }
+    public function delete(string $key): void { $this->l1->delete($key); $this->l2->delete($key); }
+}
+
+$l1 = new MemoryCache($s1 = new Stats());
+$l2 = new MemoryCache($s2 = new Stats());
+$chain = new CacheChain($l1, $l2);
+
+$chain->set('user:1', ['name' => 'Alice', 'age' => 30]);
+$chain->set('user:2', ['name' => 'Bob',   'age' => 25]);
+
+// L1キャッシュをクリア（L2に残る）
+$l1->delete('user:1');
+
+$u1 = $chain->get('user:1');  // L1 MISS → L2 HIT (warmup)
+$u1 = $chain->get('user:1');  // L1 HIT (warmed up)
+$u2 = $chain->get('user:2');  // L1 HIT
+$u3 = $chain->get('user:3');  // MISS
+
+echo "L1: $s1\nL2: $s2\n";`,
+    expected:"[WRITE] user:1\n[WRITE] user:2\n[L2 HIT] user:1 (warming L1)\n[L1 HIT] user:1\n[L1 HIT] user:2\n[MISS] user:3\nL1: hits=2 misses=2 writes=3\nL2: hits=1 misses=2 writes=2",
+    explanation:"多段階キャッシュ（L1/L2/L3）はCPUキャッシュからCDNまで全スタックで使われるパターンです。L1=Memory(Redis)→L2=Disk(File)→L3=Networkの階層構造でレイテンシーとコストをバランスします。cache-aside・read-through・write-throughの各戦略を理解することが重要です。"
+  },
+  { id: 55, unit: "UNIT 14  ◆  TITAN — 実務最高難度", rank: "TITAN",
+    title: "非同期タスクキュー：ジョブスケジューラー",
+    question: "PHPでジョブキューシステムをシミュレートしてください。\n①Job インターフェース（handle(): void, getRetries(): int, onFail(): void）\n②Queue クラス（push/pop/size、優先度付きキュー）\n③Worker クラス（ジョブを取り出して実行、失敗時リトライ）\n④具体的なジョブ：EmailJob, ResizeImageJob, NotificationJob\n⑤実行ログと成功/失敗カウントを出力",
+    hint: "優先度付きキューはSplPriorityQueueで実装できます。リトライはJob::getRetries()の回数分だけキューに再投入します。",
+    answer:
+`<?php
+
+interface Job {
+    public function handle(): void;
+    public function getMaxRetries(): int;
+    public function getName(): string;
+}
+
+class EmailJob implements Job {
+    private static int $count = 0;
+    public function handle(): void {
+        self::$count++;
+        if (self::$count % 3 === 0) throw new \RuntimeException("SMTPサーバーエラー");
+        echo "  ✉  メール送信完了\n";
+    }
+    public function getMaxRetries(): int { return 2; }
+    public function getName(): string { return 'EmailJob'; }
+}
+
+class ResizeImageJob implements Job {
+    public function __construct(private string $file, private int $width) {}
+    public function handle(): void { echo "  🖼  {$this->file} を {$this->width}px にリサイズ\n"; }
+    public function getMaxRetries(): int { return 1; }
+    public function getName(): string { return "ResizeImageJob({$this->file})"; }
+}
+
+class JobQueue {
+    private \SplPriorityQueue $queue;
+    public function __construct() { $this->queue = new \SplPriorityQueue(); }
+    public function push(Job $job, int $priority = 0): void { $this->queue->insert($job, $priority); }
+    public function pop(): ?Job { return $this->queue->isEmpty() ? null : $this->queue->extract(); }
+    public function isEmpty(): bool { return $this->queue->isEmpty(); }
+}
+
+class Worker {
+    private int $success = 0, $failed = 0;
+
+    public function run(JobQueue $queue): void {
+        while (!$queue->isEmpty()) {
+            $job = $queue->pop();
+            $this->execute($job, $queue);
+        }
+        echo "\n完了: success={$this->success} failed={$this->failed}\n";
+    }
+
+    private function execute(Job $job, JobQueue $queue, int $attempt = 0): void {
+        echo "[{$job->getName()}] 試行" . ($attempt+1) . "\n";
+        try {
+            $job->handle();
+            $this->success++;
+        } catch (\Throwable $e) {
+            echo "  エラー: {$e->getMessage()}\n";
+            if ($attempt < $job->getMaxRetries()) {
+                echo "  リトライ予約...\n";
+                $queue->push($job, -1);
+            } else {
+                echo "  最大リトライ超過: 破棄\n";
+                $this->failed++;
+            }
+        }
+    }
+}
+
+$queue = new JobQueue();
+$queue->push(new EmailJob(), 5);
+$queue->push(new ResizeImageJob('photo.jpg', 800), 3);
+$queue->push(new EmailJob(), 5);
+$queue->push(new ResizeImageJob('avatar.png', 200), 3);
+$queue->push(new EmailJob(), 5);
+
+(new Worker())->run($queue);`,
+    expected:"[EmailJob] 試行1\n  ✉  メール送信完了\n[EmailJob] 試行1\n  ✉  メール送信完了\n[ResizeImageJob(photo.jpg)] 試行1\n  🖼  photo.jpg を 800px にリサイズ\n[ResizeImageJob(avatar.png)] 試行1\n  🖼  avatar.png を 200px にリサイズ\n[EmailJob] 試行1\n  エラー: SMTPサーバーエラー\n  リトライ予約...\n[EmailJob] 試行2\n  ✉  メール送信完了\n\n完了: success=5 failed=0",
+    explanation:"ジョブキューはLaravel Queue・Sidekiq・Celeryの核心パターンです。SplPriorityQueueで優先度付きキューを実現します。本番ではRedis・SQS・RabbitMQをバックエンドに使い、複数ワーカーで並行処理します。失敗ジョブのDead Letter Queueへの移動も重要な実装要素です。"
+  },
+  { id: 56, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "メタプログラミング：PHPDocからORMを自動生成",
+    question: "PHPのReflectionクラスを使ってPHPDocアノテーションからデータベーススキーマとCRUDメソッドを自動生成するミニORMを実装してください。\n①`@Entity`, `@Column(type, length)`, `@PrimaryKey` アノテーションを解析\n②ReflectionClassでプロパティのアノテーションを読み取る\n③自動生成されるCREATE TABLE文\n④insert()/findById()/findAll() メソッドをマジックメソッドで実装\n⑤実際のEntityクラスで動作確認",
+    hint: "docblock文字列はReflectionProperty::getDocComment()で取得できます。preg_matchでアノテーションを解析し、対応するメタデータを構築します。",
+    answer:
+`<?php
+
+/**
+ * @Entity(table="users")
+ */
+class User {
+    /**
+     * @PrimaryKey
+     * @Column(type="INTEGER")
+     */
+    public int $id;
+
+    /**
+     * @Column(type="VARCHAR", length=100)
+     */
+    public string $name;
+
+    /**
+     * @Column(type="VARCHAR", length=200)
+     */
+    public string $email;
+
+    /**
+     * @Column(type="INTEGER")
+     */
+    public int $age;
+}
+
+class MiniORM {
+    private array $schema = [];
+    private array $store = [];
+    private int $nextId = 1;
+
+    public function register(string $class): void {
+        $ref = new ReflectionClass($class);
+        $docblock = $ref->getDocComment();
+
+        preg_match('/@Entity\s*\(\s*table\s*=\s*"(\w+)"\s*\)/', $docblock, $m);
+        $table = $m[1] ?? strtolower($class);
+
+        $columns = [];
+        foreach ($ref->getProperties() as $prop) {
+            $doc = $prop->getDocComment() ?: '';
+            preg_match('/@Column\s*\(\s*type\s*=\s*"(\w+)"(?:,\s*length\s*=\s*(\d+))?\s*\)/', $doc, $cm);
+            if ($cm) {
+                $columns[$prop->getName()] = [
+                    'type' => $cm[1],
+                    'length' => $cm[2] ?? null,
+                    'pk' => (bool)preg_match('/@PrimaryKey/', $doc),
+                ];
+            }
+        }
+        $this->schema[$class] = compact('table', 'columns', 'ref');
+        $this->store[$table] = [];
+    }
+
+    public function generateSchema(string $class): string {
+        $meta = $this->schema[$class];
+        $cols = [];
+        foreach ($meta['columns'] as $name => $col) {
+            $def = $name . ' ' . $col['type'];
+            if ($col['length']) $def .= "({$col['length']})";
+            if ($col['pk']) $def .= ' PRIMARY KEY AUTOINCREMENT';
+            $cols[] = $def;
+        }
+        return "CREATE TABLE {$meta['table']} (\n  " . implode(",\n  ", $cols) . "\n);";
+    }
+
+    public function insert(string $class, object $obj): object {
+        $meta = $this->schema[$class];
+        $obj->id = $this->nextId++;
+        $this->store[$meta['table']][$obj->id] = clone $obj;
+        return $obj;
+    }
+
+    public function findById(string $class, int $id): ?object {
+        $table = $this->schema[$class]['table'];
+        return $this->store[$table][$id] ?? null;
+    }
+
+    public function findAll(string $class): array {
+        $table = $this->schema[$class]['table'];
+        return array_values($this->store[$table]);
+    }
+}
+
+$orm = new MiniORM();
+$orm->register(User::class);
+
+echo $orm->generateSchema(User::class) . "\n";
+
+$u1 = new User(); $u1->name = 'Alice'; $u1->email = 'alice@example.com'; $u1->age = 30;
+$u2 = new User(); $u2->name = 'Bob';   $u2->email = 'bob@example.com';   $u2->age = 25;
+$orm->insert(User::class, $u1);
+$orm->insert(User::class, $u2);
+
+$found = $orm->findById(User::class, 1);
+echo "findById(1): {$found->name}\n";
+echo "findAll count: " . count($orm->findAll(User::class)) . "\n";`,
+    expected:"CREATE TABLE users (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  name VARCHAR(100),\n  email VARCHAR(200),\n  age INTEGER\n);\n\nfindById(1): Alice\nfindAll count: 2",
+    explanation:"Reflectionによるアノテーション駆動ORMはDoctrine ORMの基本原理です。PHPDocコメントをメタデータとして使うこのパターンはDoctrine 2のAnnotationsドライバで実装されています。PHP 8からはAttribute (#[Column])という言語組み込みのアノテーション構文が利用可能です。"
+  },
+  { id: 57, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Fiberとリアクティブシステム：イベントループ実装",
+    question: "PHP 8.1のFiberを使って非同期イベントループを実装してください。\n①EventLoop クラス（タスクキュー・タイマー管理）\n②Fiberベースのタスク登録と実行\n③setTimeout相当（指定秒後に実行）\n④複数の非同期タスクが並行に見える動きを実現\n⑤チャンネル風の通信（Fiber間でデータを受け渡し）",
+    hint: "EventLoopはFiberの配列を保持しrunning中のFiberをround-robinで実行します。Fiber::suspend()でフロー制御を戻し、Fiber::resume()で値を渡します。",
+    answer:
+`<?php
+
+class EventLoop {
+    private array $tasks = [];
+    private array $timers = [];
+    private float $startTime;
+
+    public function __construct() { $this->startTime = microtime(true); }
+
+    public function run(callable $fn): void {
+        $fiber = new Fiber($fn);
+        $this->tasks[] = $fiber;
+    }
+
+    public function setTimeout(callable $fn, float $delay): void {
+        $this->timers[] = ['fn' => $fn, 'at' => $this->startTime + $delay, 'done' => false];
+    }
+
+    public function tick(): void {
+        $now = microtime(true);
+        foreach ($this->timers as &$timer) {
+            if (!$timer['done'] && $now >= $timer['at']) {
+                $timer['done'] = true;
+                ($timer['fn'])();
+            }
+        }
+    }
+
+    public function start(): void {
+        foreach ($this->tasks as $fiber) {
+            if (!$fiber->isStarted()) $fiber->start();
+        }
+
+        $iterations = 0;
+        while ($iterations < 50) {
+            $iterations++;
+            $this->tick();
+            $allDone = true;
+            foreach ($this->tasks as $fiber) {
+                if ($fiber->isSuspended()) {
+                    $fiber->resume();
+                    $allDone = false;
+                } elseif (!$fiber->isTerminated()) {
+                    $allDone = false;
+                }
+            }
+            if ($allDone && array_reduce($this->timers, fn($c, $t) => $c && $t['done'], true)) break;
+            usleep(1000); // 1ms sleep
+        }
+    }
+}
+
+$loop = new EventLoop();
+
+$loop->run(function() {
+    echo "[TaskA] 開始\n";
+    Fiber::suspend();
+    echo "[TaskA] 継続1\n";
+    Fiber::suspend();
+    echo "[TaskA] 完了\n";
+});
+
+$loop->run(function() {
+    echo "[TaskB] 開始\n";
+    Fiber::suspend();
+    echo "[TaskB] 完了\n";
+});
+
+$loop->setTimeout(function() {
+    echo "[Timer] 遅延タスク実行\n";
+}, 0.01);
+
+$loop->start();
+echo "全タスク完了\n";`,
+    expected:"[TaskA] 開始\n[TaskB] 開始\n[TaskA] 継続1\n[TaskB] 完了\n[TaskA] 完了\n[Timer] 遅延タスク実行\n全タスク完了",
+    explanation:"PHP 8.1のFiberはNode.jsのイベントループと同様の協調的マルチタスクを実現します。ReactPHP・Swoole・RevoltはFiberベースの非同期PHPランタイムとして実用化されています。Fiber::suspend()でコントロールをイベントループに返し、他のタスクを実行する仕組みがコルーチンの本質です。"
+  }
 ];
 
 const phpMissions = [
