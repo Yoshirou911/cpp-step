@@ -23147,6 +23147,282 @@ var SYNTAX_GUIDE = {
       { t: '長さ', c: 'v.len()', n: '要素数を取得' },
     ]},
   ],
+  ruby: [
+    { cat: '基本形', items: [
+      { t: 'プログラムの基本形', c: '# Rubyに特別なmain関数は不要\nputs "hello, world"', n: 'スクリプトをそのまま実行' },
+    ]},
+    { cat: '変数・型', items: [
+      { t: '変数（型宣言不要）', c: 'x = 10\nname = "Alice"\nflag = true', n: '型推論で自動的に型が決まる' },
+      { t: '定数', c: 'MAX = 100', n: '大文字始まりが定数' },
+      { t: '文字列補間', c: 'name = "Alice"\nputs "Hello, #{name}!"', n: '#{}で変数を埋め込む' },
+    ]},
+    { cat: '入出力', items: [
+      { t: '出力', c: 'puts "hello"   # 改行あり\nprint "hello"  # 改行なし\np 42           # デバッグ出力', n: 'putsが最もよく使われる' },
+      { t: '入力', c: 'input = gets.chomp\nn = gets.chomp.to_i', n: 'getsで1行読み込み、chompで改行除去' },
+    ]},
+    { cat: '条件分岐', items: [
+      { t: 'if文', c: 'if x > 0\n  puts "正"\nend', n: '中括弧不要、endで閉じる' },
+      { t: 'if-elsif-else', c: 'if x > 0\n  puts "正"\nelsif x == 0\n  puts "ゼロ"\nelse\n  puts "負"\nend', n: 'elsif（elseifではない）' },
+      { t: '後置if', c: 'puts "正" if x > 0', n: '一行で書ける後置if' },
+      { t: 'case-when', c: 'case x\nwhen 1 then puts "one"\nwhen 2, 3 then puts "2か3"\nelse puts "その他"\nend', n: 'switchの代わりにcase/when' },
+    ]},
+    { cat: 'ループ', items: [
+      { t: 'times', c: '5.times do\n  puts "hello"\nend', n: '整数.timesで指定回数繰り返す' },
+      { t: 'each', c: '[1, 2, 3].each do |v|\n  puts v\nend', n: '配列の全要素を走査' },
+      { t: 'for-in', c: 'for i in 1..5\n  puts i\nend', n: '1..5は1から5まで（5含む）' },
+      { t: 'while', c: 'while x > 0\n  x -= 1\nend', n: '条件が真の間繰り返す' },
+    ]},
+    { cat: '配列・ハッシュ', items: [
+      { t: '配列', c: 'arr = [1, 2, 3]\narr.push(4)\narr.length', n: '動的配列、pushで追加' },
+      { t: 'ハッシュ', c: 'h = { "key" => "value" }\nh[:name] = "Alice"\nh[:name]', n: 'キーと値のペア（シンボルも使える）' },
+    ]},
+    { cat: '関数（メソッド）', items: [
+      { t: 'メソッド定義', c: 'def greet(name)\n  puts "Hello, #{name}!"\nend\ngreet("Alice")', n: 'defでメソッドを定義' },
+      { t: '戻り値', c: 'def add(a, b)\n  a + b  # 最後の式が戻り値\nend', n: 'returnは省略可能' },
+    ]},
+  ],
+  typescript: [
+    { cat: '基本形', items: [
+      { t: 'プログラムの基本形', c: '// TypeScript: JavaScriptに型を追加\nconst message: string = "hello";\nconsole.log(message);', n: '型注釈が追加されたJavaScript' },
+    ]},
+    { cat: '変数・型', items: [
+      { t: '型注釈', c: 'const n: number = 42;\nconst s: string = "hello";\nconst flag: boolean = true;', n: '変数名の後に :型名 で型を指定' },
+      { t: 'let / const', c: 'let count: number = 0;    // 変更可\nconst MAX: number = 100;  // 変更不可', n: 'const推奨、変更が必要なときlet' },
+      { t: '配列の型', c: 'const nums: number[] = [1, 2, 3];\nconst strs: Array<string> = ["a", "b"];', n: '型[] または Array<型>' },
+      { t: 'union型', c: 'let val: string | number = "hello";\nval = 42;', n: '複数の型を | で指定できる' },
+      { t: 'type / interface', c: 'type Point = { x: number; y: number; };\ninterface User { name: string; age: number; }', n: 'カスタム型の定義' },
+    ]},
+    { cat: '入出力', items: [
+      { t: '出力', c: 'console.log("hello");\nconsole.log(`x = ${x}`);', n: 'テンプレートリテラルで変数埋め込み' },
+    ]},
+    { cat: '条件分岐', items: [
+      { t: 'if-else', c: 'if (x > 0) {\n  console.log("正");\n} else {\n  console.log("0以下");\n}', n: 'JavaScriptと同じ形式' },
+    ]},
+    { cat: 'ループ', items: [
+      { t: 'for文', c: 'for (let i = 0; i < 10; i++) {\n  console.log(i);\n}', n: '' },
+      { t: 'for-of', c: 'const arr = [1, 2, 3];\nfor (const v of arr) {\n  console.log(v);\n}', n: '配列の要素を走査' },
+    ]},
+    { cat: '関数', items: [
+      { t: '型付き関数', c: 'function add(a: number, b: number): number {\n  return a + b;\n}', n: '引数と戻り値に型を付ける' },
+      { t: 'アロー関数', c: 'const add = (a: number, b: number): number => a + b;', n: 'アロー関数にも型注釈可能' },
+      { t: 'オプション引数', c: 'function greet(name: string, title?: string): string {\n  return title ? `${title} ${name}` : name;\n}', n: '?をつけると省略可能な引数' },
+    ]},
+  ],
+  kotlin: [
+    { cat: '基本形', items: [
+      { t: 'プログラムの基本形', c: 'fun main() {\n    println("hello, world")\n}', n: 'mainがエントリーポイント' },
+    ]},
+    { cat: '変数・型', items: [
+      { t: 'val（不変）', c: 'val x = 10\nval name = "Alice"', n: '型推論あり、変更不可' },
+      { t: 'var（可変）', c: 'var count = 0\ncount += 1', n: 'varは変更可能' },
+      { t: '型を明示', c: 'val n: Int = 42\nval s: String = "hello"\nval flag: Boolean = true', n: 'Int, String, Boolean, Double等' },
+      { t: 'Null許容型', c: 'var name: String? = null\nval len = name?.length ?: 0', n: '?でnull許容、?:でデフォルト値' },
+    ]},
+    { cat: '入出力', items: [
+      { t: '出力', c: 'println("hello")\nprintln("x = $x")', n: '$で変数埋め込み（文字列テンプレート）' },
+      { t: '入力', c: 'val input = readLine()!!\nval n = readLine()!!.toInt()', n: 'readLine()で1行読み込み' },
+    ]},
+    { cat: '条件分岐', items: [
+      { t: 'if式', c: 'if (x > 0) {\n    println("正")\n}', n: 'Kotlinのifは値を返す式' },
+      { t: 'when', c: 'when (x) {\n    1 -> println("one")\n    2, 3 -> println("2か3")\n    else -> println("その他")\n}', n: 'switchより強力なパターンマッチ' },
+    ]},
+    { cat: 'ループ', items: [
+      { t: 'for（範囲）', c: 'for (i in 1..5) {\n    println(i)\n}', n: '1..5は1から5（両端含む）' },
+      { t: 'for（コレクション）', c: 'val list = listOf(1, 2, 3)\nfor (v in list) {\n    println(v)\n}', n: 'リストの全要素を走査' },
+      { t: 'while', c: 'while (x > 0) {\n    x--\n}', n: '' },
+    ]},
+    { cat: 'コレクション', items: [
+      { t: 'List', c: 'val list = listOf(1, 2, 3)        // 不変\nval mList = mutableListOf(1, 2)  // 可変\nmList.add(3)', n: 'mutableListOfで変更可能なリスト' },
+      { t: 'Map', c: 'val map = mapOf("a" to 1, "b" to 2)\nval mMap = mutableMapOf("key" to "value")', n: 'toでキーと値を対応付ける' },
+    ]},
+    { cat: '関数', items: [
+      { t: '関数定義', c: 'fun add(a: Int, b: Int): Int {\n    return a + b\n}', n: 'funキーワードで定義' },
+      { t: '一行関数', c: 'fun add(a: Int, b: Int) = a + b', n: '式の結果を直接返す省略形' },
+    ]},
+  ],
+  swift: [
+    { cat: '基本形', items: [
+      { t: 'プログラムの基本形', c: 'import Foundation\n\nprint("hello, world")', n: 'Foundationで標準ライブラリが使える' },
+    ]},
+    { cat: '変数・型', items: [
+      { t: 'let（定数）', c: 'let x = 10\nlet name = "Alice"', n: '変更不可、型推論あり' },
+      { t: 'var（変数）', c: 'var count = 0\ncount += 1', n: '変更可能な変数' },
+      { t: '型を明示', c: 'let n: Int = 42\nlet s: String = "hello"\nlet flag: Bool = true', n: 'Int, String, Bool, Double等' },
+      { t: 'Optional', c: 'var name: String? = nil\nif let n = name {\n    print(n)  // 安全にアンラップ\n}', n: '?でOptional型、if letでアンラップ' },
+    ]},
+    { cat: '入出力', items: [
+      { t: '出力', c: 'print("hello")\nprint("x = \\(x)")', n: '\\()で変数埋め込み（文字列補間）' },
+      { t: '入力', c: 'let input = readLine() ?? ""\nlet n = Int(readLine() ?? "0") ?? 0', n: 'readLine()はオプショナルStringを返す' },
+    ]},
+    { cat: '条件分岐', items: [
+      { t: 'if-else', c: 'if x > 0 {\n    print("正")\n} else {\n    print("0以下")\n}', n: '条件を括弧で囲まなくてもよい' },
+      { t: 'switch', c: 'switch x {\ncase 1:\n    print("one")\ncase 2, 3:\n    print("2か3")\ndefault:\n    print("その他")\n}', n: 'fallthroughは自動的にしない' },
+    ]},
+    { cat: 'ループ', items: [
+      { t: 'for-in（範囲）', c: 'for i in 1...5 {\n    print(i)\n}', n: '1...5は1から5（両端含む）' },
+      { t: 'for-in（配列）', c: 'let arr = [1, 2, 3]\nfor v in arr {\n    print(v)\n}', n: '配列の全要素を走査' },
+      { t: 'while', c: 'while x > 0 {\n    x -= 1\n}', n: '' },
+    ]},
+    { cat: 'コレクション', items: [
+      { t: 'Array', c: 'var arr: [Int] = [1, 2, 3]\narr.append(4)\narr.count', n: '動的配列' },
+      { t: 'Dictionary', c: 'var dict: [String: Int] = ["a": 1]\ndict["b"] = 2', n: 'キーと値のペア' },
+    ]},
+    { cat: '関数', items: [
+      { t: '関数定義', c: 'func add(a: Int, b: Int) -> Int {\n    return a + b\n}', n: 'funcキーワードで定義' },
+      { t: '引数ラベル', c: 'func greet(to name: String) {\n    print("Hello, \\(name)!")\n}\ngreet(to: "Alice")', n: '外部引数名と内部引数名を分けられる' },
+    ]},
+  ],
+  csharp: [
+    { cat: '基本形', items: [
+      { t: 'プログラムの基本形', c: 'using System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine("hello");\n    }\n}', n: 'Mainがエントリーポイント' },
+      { t: 'トップレベル文（C# 9以降）', c: 'Console.WriteLine("hello");', n: 'classやMainを省略できる最新の書き方' },
+    ]},
+    { cat: '変数・型', items: [
+      { t: '型宣言', c: 'int n = 42;\nstring s = "hello";\nbool flag = true;\ndouble d = 3.14;', n: 'int, string, bool, double等' },
+      { t: 'var（型推論）', c: 'var x = 42;\nvar name = "Alice";', n: 'varで型を省略（コンパイル時に確定）' },
+      { t: 'const', c: 'const int MAX = 100;', n: 'コンパイル時定数' },
+    ]},
+    { cat: '入出力', items: [
+      { t: '出力', c: 'Console.WriteLine("hello");\nConsole.WriteLine($"x = {x}");', n: '$"..."で文字列補間' },
+      { t: '入力', c: 'string input = Console.ReadLine();\nint n = int.Parse(Console.ReadLine());', n: 'ReadLineで1行読み込み' },
+    ]},
+    { cat: '条件分岐', items: [
+      { t: 'if-else', c: 'if (x > 0) {\n    Console.WriteLine("正");\n} else {\n    Console.WriteLine("0以下");\n}', n: '' },
+      { t: 'switch', c: 'switch (x) {\n    case 1:\n        Console.WriteLine("one");\n        break;\n    default:\n        Console.WriteLine("その他");\n        break;\n}', n: 'breakが必要' },
+    ]},
+    { cat: 'ループ', items: [
+      { t: 'for文', c: 'for (int i = 0; i < 10; i++) {\n    Console.WriteLine(i);\n}', n: '' },
+      { t: 'foreach', c: 'int[] arr = {1, 2, 3};\nforeach (int v in arr) {\n    Console.WriteLine(v);\n}', n: 'コレクション全要素を走査' },
+      { t: 'while', c: 'while (x > 0) {\n    x--;\n}', n: '' },
+    ]},
+    { cat: 'コレクション', items: [
+      { t: '配列', c: 'int[] arr = new int[3];\nint[] arr2 = {1, 2, 3};', n: '固定長の配列' },
+      { t: 'List<T>', c: 'var list = new List<int> {1, 2, 3};\nlist.Add(4);\nlist.Count;', n: '動的な配列（Listが一般的）' },
+      { t: 'Dictionary', c: 'var dict = new Dictionary<string, int>();\ndict["key"] = 1;', n: 'キーと値のペア' },
+    ]},
+    { cat: '関数（メソッド）', items: [
+      { t: 'staticメソッド', c: 'static int Add(int a, int b) {\n    return a + b;\n}', n: 'クラス外から呼べるstatic' },
+    ]},
+  ],
+  go: [
+    { cat: '基本形', items: [
+      { t: 'プログラムの基本形', c: 'package main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("hello")\n}', n: 'package mainとmain関数が必須' },
+    ]},
+    { cat: '変数・型', items: [
+      { t: 'var宣言', c: 'var x int = 10\nvar name string = "Alice"', n: '型を明示した変数宣言' },
+      { t: ':= 短縮宣言', c: 'x := 10\nname := "Alice"', n: '関数内でのみ使える型推論付き宣言' },
+      { t: '定数', c: 'const MAX = 100\nconst Pi = 3.14159', n: 'constで定数を宣言' },
+      { t: '複数代入', c: 'a, b := 1, 2\na, b = b, a  // 値を交換', n: '複数の変数を同時に代入できる' },
+    ]},
+    { cat: '入出力', items: [
+      { t: '出力', c: 'fmt.Println("hello")\nfmt.Printf("x = %d\\n", x)\nfmt.Printf("s = %s\\n", s)', n: 'PrintlnとPrintf（書式指定）' },
+      { t: '入力', c: 'var n int\nfmt.Scan(&n)', n: 'Scanでポインタ渡し' },
+    ]},
+    { cat: '条件分岐', items: [
+      { t: 'if文', c: 'if x > 0 {\n    fmt.Println("正")\n}', n: '括弧不要、中括弧必須' },
+      { t: 'switch', c: 'switch x {\ncase 1:\n    fmt.Println("one")\ncase 2, 3:\n    fmt.Println("2か3")\ndefault:\n    fmt.Println("その他")\n}', n: 'breakは不要（自動break）' },
+    ]},
+    { cat: 'ループ', items: [
+      { t: 'for（C風）', c: 'for i := 0; i < 10; i++ {\n    fmt.Println(i)\n}', n: 'Goにはforしかない' },
+      { t: 'for range', c: 'nums := []int{1, 2, 3}\nfor i, v := range nums {\n    fmt.Println(i, v)\n}', n: 'インデックスと値を同時に取得' },
+      { t: 'while相当', c: 'for x > 0 {\n    x--\n}', n: 'forだけでwhileを実現' },
+    ]},
+    { cat: 'スライス・マップ', items: [
+      { t: 'スライス', c: 'nums := []int{1, 2, 3}\nnums = append(nums, 4)\nlen(nums)', n: '動的配列。appendで追加' },
+      { t: 'マップ', c: 'm := map[string]int{"a": 1}\nm["b"] = 2\nv, ok := m["a"]', n: '存在チェックはok変数で判定' },
+    ]},
+    { cat: '関数', items: [
+      { t: '関数定義', c: 'func add(a, b int) int {\n    return a + b\n}', n: '同じ型の引数はまとめて書ける' },
+      { t: '複数戻り値', c: 'func divide(a, b int) (int, error) {\n    if b == 0 { return 0, fmt.Errorf("zero") }\n    return a / b, nil\n}', n: 'Goは複数の値を返せる' },
+    ]},
+  ],
+  c: [
+    { cat: '基本形', items: [
+      { t: 'プログラムの基本形', c: '#include <stdio.h>\n\nint main() {\n    printf("hello\\n");\n    return 0;\n}', n: 'C言語の最小構成' },
+    ]},
+    { cat: '変数・型', items: [
+      { t: '基本型', c: 'int n = 42;\nfloat f = 3.14f;\ndouble d = 3.14;\nchar c = \'A\';', n: 'int, float, double, char' },
+      { t: 'ポインタ', c: 'int x = 10;\nint *p = &x;       // アドレスを取得\nprintf("%d", *p);  // 逆参照', n: '*でポインタ宣言、&でアドレス取得' },
+      { t: 'const', c: 'const int MAX = 100;', n: '変更不可の定数' },
+    ]},
+    { cat: '入出力', items: [
+      { t: '出力（printf）', c: 'printf("hello\\n");\nprintf("x = %d\\n", x);\nprintf("d = %.2f\\n", d);', n: '%dで整数、%fで小数、%sで文字列' },
+      { t: '入力（scanf）', c: 'int n;\nscanf("%d", &n);\nchar s[100];\nscanf("%s", s);', n: '変数にはアドレスを渡す（&n）' },
+    ]},
+    { cat: '条件分岐', items: [
+      { t: 'if-else', c: 'if (x > 0) {\n    printf("正\\n");\n} else {\n    printf("0以下\\n");\n}', n: '' },
+      { t: 'switch', c: 'switch (x) {\n    case 1:\n        printf("one\\n");\n        break;\n    default:\n        printf("その他\\n");\n}', n: 'breakを忘れずに' },
+    ]},
+    { cat: 'ループ', items: [
+      { t: 'for文', c: 'for (int i = 0; i < 10; i++) {\n    printf("%d\\n", i);\n}', n: '' },
+      { t: 'while', c: 'while (x > 0) {\n    x--;\n}', n: '' },
+      { t: 'do-while', c: 'do {\n    printf("%d\\n", x);\n    x--;\n} while (x > 0);', n: '必ず1回は実行される' },
+    ]},
+    { cat: '配列', items: [
+      { t: '配列宣言', c: 'int arr[5] = {1, 2, 3, 4, 5};\narr[0];  // 先頭要素', n: '固定長の配列' },
+      { t: '文字列', c: 'char str[100] = "hello";\nprintf("%s\\n", str);', n: 'C言語の文字列はchar配列' },
+    ]},
+    { cat: '関数', items: [
+      { t: '関数定義', c: 'int add(int a, int b) {\n    return a + b;\n}', n: '戻り値の型を先に書く' },
+      { t: 'void関数', c: 'void greet() {\n    printf("hello\\n");\n}', n: '戻り値なしはvoid' },
+    ]},
+  ],
+  bash: [
+    { cat: '基本形', items: [
+      { t: 'スクリプトの基本形', c: '#!/bin/bash\n\necho "hello, world"', n: '1行目にシェバン（#!）を書く' },
+    ]},
+    { cat: '変数', items: [
+      { t: '変数の代入と参照', c: 'name="Alice"    # スペースなし\necho "$name"', n: '代入時はスペース禁止、参照時は$' },
+      { t: '数値演算', c: 'x=10\ny=$((x + 5))\necho $y', n: '算術演算は$(( ))で行う' },
+      { t: 'コマンド置換', c: 'today=$(date +%Y-%m-%d)\necho "今日は $today"', n: '$(コマンド)でコマンド結果を変数に入れる' },
+    ]},
+    { cat: '入出力', items: [
+      { t: '出力', c: 'echo "hello"\nprintf "x = %d\\n" $x', n: 'echoが基本、printfで書式指定' },
+      { t: '入力', c: 'read -p "名前を入力: " name\necho "Hello, $name"', n: 'readでユーザー入力を受け取る' },
+    ]},
+    { cat: '条件分岐', items: [
+      { t: 'if文', c: 'if [ $x -gt 0 ]; then\n  echo "正"\nfi', n: '[ ]の内側はスペースが必要' },
+      { t: '比較演算子', c: '[ $a -eq $b ]  # 等しい\n[ $a -ne $b ]  # 等しくない\n[ $a -gt $b ]  # より大きい\n[ $a -lt $b ]  # より小さい', n: '数値比較は -eq/-ne/-gt/-lt 等を使う' },
+      { t: '文字列比較', c: 'if [ "$s" = "hello" ]; then\n  echo "match"\nfi', n: '文字列は = で比較（変数は""で囲む）' },
+    ]},
+    { cat: 'ループ', items: [
+      { t: 'for文', c: 'for i in 1 2 3 4 5; do\n  echo $i\ndone', n: '値のリストを順番に処理' },
+      { t: 'for文（範囲）', c: 'for i in $(seq 1 10); do\n  echo $i\ndone', n: 'seqで連番生成' },
+      { t: 'while', c: 'while [ $x -gt 0 ]; do\n  echo $x\n  x=$((x - 1))\ndone', n: '条件が真の間繰り返す' },
+    ]},
+    { cat: '関数', items: [
+      { t: '関数定義', c: 'greet() {\n  echo "Hello, $1"\n}\n\ngreet "Alice"', n: '$1, $2...で引数を参照' },
+    ]},
+  ],
+  regex: [
+    { cat: '基本メタ文字', items: [
+      { t: '任意の1文字', c: '.', n: '改行以外の任意の1文字にマッチ' },
+      { t: '行頭・行末', c: '^abc   # 行頭がabc\nabc$   # 行末がabc', n: '^は行頭、$は行末' },
+      { t: '文字クラス', c: '[abc]   # a, b, cのどれか\n[a-z]   # 小文字アルファベット\n[^abc]  # a, b, c以外', n: '[]で文字の集合を指定' },
+    ]},
+    { cat: '量指定子', items: [
+      { t: '0回以上（*）', c: 'ab*c   # ac, abc, abbc ...', n: '*は直前の要素の0回以上の繰り返し' },
+      { t: '1回以上（+）', c: 'ab+c   # abc, abbc ...（acは不可）', n: '+は直前の要素の1回以上の繰り返し' },
+      { t: '0または1回（?）', c: 'colou?r  # color または colour', n: '?は直前の要素が0または1回' },
+      { t: '回数指定（{}）', c: 'a{3}    # aaa\na{2,4}  # aa, aaa, aaaa', n: '{n}でn回、{m,n}でm〜n回' },
+    ]},
+    { cat: '特殊シーケンス', items: [
+      { t: '数字（\\d）', c: '\\d   # [0-9]と同じ\n\\D   # 数字以外', n: '\\dは数字1文字' },
+      { t: '単語文字（\\w）', c: '\\w   # [a-zA-Z0-9_]と同じ\n\\W   # 単語文字以外', n: '\\wはアルファベット・数字・アンダースコア' },
+      { t: '空白（\\s）', c: '\\s   # スペース、タブ、改行等\n\\S   # 空白以外', n: '\\sは空白文字' },
+      { t: '単語境界（\\b）', c: '\\bword\\b', n: '前後が単語文字でない位置' },
+    ]},
+    { cat: 'グループ・選択', items: [
+      { t: 'グループ化', c: '(abc)+   # abcの1回以上の繰り返し', n: '()で要素をグループ化' },
+      { t: 'キャプチャ', c: '(\\d{4})-(\\d{2})  # グループ1と2', n: '()でキャプチャし後から参照できる' },
+      { t: '選択（OR）', c: 'cat|dog   # catまたはdog', n: '|で複数の候補を指定' },
+    ]},
+    { cat: 'よく使うパターン', items: [
+      { t: 'メールアドレス', c: '[\\w.+-]+@[\\w-]+\\.[a-z]{2,}', n: '簡易的なメール形式チェック' },
+      { t: '日本語文字', c: '[\\u3040-\\u309F]  # ひらがな\n[\\u30A0-\\u30FF]  # カタカナ\n[\\u4E00-\\u9FAF]  # 漢字', n: 'Unicodeの範囲でマッチ' },
+      { t: '電話番号（日本）', c: '0\\d{1,4}-\\d{1,4}-\\d{4}', n: '一般的な日本の電話番号形式' },
+    ]},
+  ],
 };
 
 function showSyntaxMenu() {
