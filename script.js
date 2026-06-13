@@ -310,7 +310,9 @@ var _adminPreviewFree = false;    // 管理者が「無料ユーザーとして�
 var currentUserAgeGroup   = null;
 var currentUserJobClass   = null;
 var currentUserExperience = null;
-var PREMIUM_RANKS = ['SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND', 'TITAN'];
+var currentUserScoutOptIn = false;
+var currentUserScoutMessages = [];
+var PREMIUM_RANKS = ['SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND', 'TITAN', 'OVERLORD'];
 var _currentAuthTab = 'login';
 // 進捗のインメモリキャッシュ（言語切替時にリセット）
 var _progressCache = null;
@@ -562,7 +564,8 @@ async function getLoginStreak() {
 }
 
 // 総クリア数からランクを計算
-function getProfileRank(total) {
+function getProfileRank(total, titanLangCount) {
+  if (total >= 350 && (titanLangCount || 0) >= 3) return { name: 'OVERLORD', color: '#FFD700' };
   if (total >= 350) return { name: 'TITAN', color: '#FF2020' };
   if (total >=  90) return { name: 'MASTER',   color: '#C040FF' };
   if (total >=  60) return { name: 'PLATINUM', color: '#00C8B4' };
@@ -585,7 +588,8 @@ function calcLangStrengthData(langKey, problemArray) {
   return { pct: pct, earned: earnedExp, max: maxExp };
 }
 
-function getLangStrengthRank(pct) {
+function getLangStrengthRank(pct, titanLangCount) {
+  if (pct >= 100 && (titanLangCount || 0) >= 2) return { name: 'OVERLORD', color: '#FFD700' };
   if (pct >= 100) return { name: 'TITAN',    color: '#FF2020' };
   if (pct >= 90)  return { name: 'LEGEND',   color: '#FF2244' };
   if (pct >= 75)  return { name: 'MASTER',   color: '#C040FF' };
@@ -1221,7 +1225,7 @@ async function fetchUserProfile() {
   try {
     var result = await _supabase
       .from('user_profiles')
-      .select('is_premium, is_admin, age_group, job_class, experience')
+      .select('is_premium, is_admin, age_group, job_class, experience, is_scout_opted_in')
       .eq('user_id', currentUser.id)
       .maybeSingle();
     if (result.data) {
@@ -1230,6 +1234,7 @@ async function fetchUserProfile() {
       currentUserAgeGroup      = result.data.age_group   || null;
       currentUserJobClass      = result.data.job_class   || null;
       currentUserExperience    = result.data.experience  || null;
+      currentUserScoutOptIn    = !!result.data.is_scout_opted_in;
     } else {
       // プロフィールが存在しなければ作成
       await _supabase.from('user_profiles').upsert({
@@ -1248,6 +1253,48 @@ async function fetchUserProfile() {
   updateAdDisplay();
   if (currentLanguage) { renderList(); renderMissionList(); }
   updateAdminBtnVisibility();
+}
+
+async function fetchScoutMessages() {
+  if (!currentUser || !_supabase) { currentUserScoutMessages = []; return; }
+  try {
+    var result = await _supabase
+      .from('scout_messages')
+      .select('message_id, message_title, message_body, status, sent_at')
+      .eq('target_user_id', currentUser.id)
+      .order('sent_at', { ascending: false })
+      .limit(20);
+    currentUserScoutMessages = result.data || [];
+  } catch(e) { currentUserScoutMessages = []; }
+}
+
+async function toggleScoutOptIn() {
+  if (!currentUser || !_supabase) return;
+  var newVal = !currentUserScoutOptIn;
+  currentUserScoutOptIn = newVal;
+  var btn = document.querySelector('.gc-scout-toggle');
+  if (btn) btn.classList.toggle('on', newVal);
+  try {
+    await _supabase.from('user_profiles')
+      .update({ is_scout_opted_in: newVal })
+      .eq('user_id', currentUser.id);
+  } catch(e) {
+    currentUserScoutOptIn = !newVal;
+    if (btn) btn.classList.toggle('on', !newVal);
+  }
+}
+
+async function markScoutRead(messageId) {
+  if (!currentUser || !_supabase) return;
+  try {
+    await _supabase.from('scout_messages')
+      .update({ status: 'read' })
+      .eq('message_id', messageId)
+      .eq('target_user_id', currentUser.id);
+    var msg = currentUserScoutMessages.find(function(m) { return m.message_id === messageId; });
+    if (msg) msg.status = 'read';
+    renderProfile();
+  } catch(e) {}
 }
 
 function updateAdDisplay() {
@@ -22659,7 +22706,7 @@ function updateProgressDisplay() {
   var total = getProblems().length;
   var langKey = currentLanguage || 'cpp';
   var sd   = calcLangStrengthData(langKey, getProblems());
-  var rank = getLangStrengthRank(sd.pct);
+  var rank = getLangStrengthRank(sd.pct, countTitanLangs());
 
   document.getElementById('progress-text').innerHTML =
     count + ' / ' + total + ' クリア' +
@@ -24469,8 +24516,19 @@ function isTitanConditionMet() {
   return false;
 }
 
+function countTitanLangs() {
+  var count = 0;
+  for (var i = 0; i < _TITAN_LANG_ARRS.length; i++) {
+    var la = _TITAN_LANG_ARRS[i];
+    if (calcLangStrengthData(la.key, la.get()).pct >= 100) count++;
+  }
+  return count;
+}
+
 function checkTitanTheme() {
   var active = isTitanConditionMet();
+  var titanCount = countTitanLangs();
+  var isOverlord = active && titanCount >= 3;
   if (active) {
     document.body.classList.add('titan-theme');
     _updateTitanBadge(true);
@@ -24480,7 +24538,17 @@ function checkTitanTheme() {
     }
   } else {
     document.body.classList.remove('titan-theme');
+    document.body.classList.remove('overlord-theme');
     _updateTitanBadge(false);
+  }
+  if (isOverlord) {
+    document.body.classList.add('overlord-theme');
+    if (localStorage.getItem('overlord_unlocked') !== '1') {
+      localStorage.setItem('overlord_unlocked', '1');
+      setTimeout(showOverlordUnlock, 1200);
+    }
+  } else {
+    document.body.classList.remove('overlord-theme');
   }
   return active;
 }
@@ -24524,6 +24592,34 @@ function showTitanThemeUnlock() {
   }
   el.addEventListener('click', dismiss);
   setTimeout(dismiss, 7000);
+}
+
+function showOverlordUnlock() {
+  var existing = document.getElementById('overlord-uo');
+  if (existing) existing.remove();
+  var el = document.createElement('div');
+  el.id = 'overlord-uo';
+  el.className = 'overlord-uo';
+  el.innerHTML =
+    '<div class="overlord-uo-bg"></div>' +
+    '<div class="overlord-uo-scan"></div>' +
+    '<div class="overlord-uo-content">' +
+      '<div class="overlord-uo-crown">👑</div>' +
+      '<div class="overlord-uo-badge">O V E R L O R D</div>' +
+      '<div class="overlord-uo-title">RANK UNLOCKED</div>' +
+      '<div class="overlord-uo-sub">3言語以上でTITAN到達<br>最高位の称号が解放されました</div>' +
+      '<div class="overlord-uo-tap">— TAP TO CONTINUE —</div>' +
+    '</div>';
+  document.body.appendChild(el);
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { el.classList.add('overlord-uo-show'); });
+  });
+  function dismiss() {
+    el.classList.add('overlord-uo-hide');
+    setTimeout(function() { if (el.parentNode) el.remove(); }, 600);
+  }
+  el.addEventListener('click', dismiss);
+  setTimeout(dismiss, 8000);
 }
 
 // ===== CODE GOLF =====
@@ -24704,8 +24800,9 @@ async function renderProfile() {
   // まずスケルトンを表示して即座にページを見せる
   content.innerHTML = '<div class="profile-loading">// LOADING...</div>';
 
-  // ストリークを非同期で取得
-  var streak = await getLoginStreak();
+  // ストリーク＆スカウトメッセージを並行取得
+  var results = await Promise.all([getLoginStreak(), fetchScoutMessages()]);
+  var streak = results[0];
 
   var stats  = getProfileStats();
   stats.currentStreak = streak.current;
@@ -24722,7 +24819,7 @@ async function renderProfile() {
   var expNeed    = expToNextLevel(level);                 // 次レベルまで必要EXP
   var expPct     = Math.min(100, Math.round(expCurrent / expNeed * 100));
 
-  var rank   = getProfileRank(stats.total);
+  var rank   = getProfileRank(stats.total, countTitanLangs());
   var earned = BADGES.filter(function(b) { return b.check(stats); });
   var locked = BADGES.filter(function(b) { return !b.check(stats); });
 
@@ -24853,6 +24950,7 @@ async function renderProfile() {
       var AGE_ICON = { '10代': '🌱', '20代': '⚡', '30代以上': '🔥' };
       var JOB_ICON = { '学生': '🎓', '会社員': '💼', 'フリーランス': '🚀', 'その他': '🎲' };
       var EXP_ICON = { '完全未経験': '🥚', '少し触ったことがある': '🐣', '実務経験あり': '🦅' };
+      var unread = currentUserScoutMessages.filter(function(m) { return m.status === 'unread'; });
       if (!currentUser) return '';
       if (!hasCard) {
         return '<div class="profile-section gc-section-empty">' +
@@ -24888,6 +24986,36 @@ async function renderProfile() {
               '<div class="gc-card-key">経験</div>' +
               '<div class="gc-card-val">' + escapeHtml(currentUserExperience) + '</div>' +
             '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="gc-scout-section">' +
+          (unread.length > 0
+            ? '<div class="gc-scout-badge">' +
+                '<span class="gc-scout-badge-icon">🔥</span>' +
+                '<div>' +
+                  '<div class="gc-scout-badge-title">NEW INVITATION</div>' +
+                  '<div class="gc-scout-badge-sub">' + unread.length + '件の企業からの招待状</div>' +
+                '</div>' +
+                '<span class="gc-scout-count">' + (unread.length > 9 ? '9+' : unread.length) + '</span>' +
+              '</div>' +
+              '<div class="gc-scout-msgs">' +
+                unread.map(function(m) {
+                  return '<div class="gc-scout-msg" onclick="markScoutRead(\'' + m.message_id + '\')">' +
+                    '<span class="gc-scout-dot"></span>' +
+                    '<span class="gc-scout-msg-title">' + escapeHtml(m.message_title) + '</span>' +
+                    '<span class="gc-scout-msg-date">' + new Date(m.sent_at).toLocaleDateString('ja-JP') + '</span>' +
+                  '</div>';
+                }).join('') +
+              '</div>'
+            : '') +
+          '<div class="gc-scout-row">' +
+            '<div class="gc-scout-info">' +
+              '<div class="gc-scout-label">スカウト受け取り</div>' +
+              '<div class="gc-scout-sub">ONにすると企業からスカウトが届きます</div>' +
+            '</div>' +
+            '<button class="gc-scout-toggle' + (currentUserScoutOptIn ? ' on' : '') + '" onclick="toggleScoutOptIn()" role="switch" aria-checked="' + currentUserScoutOptIn + '">' +
+              '<span class="gc-scout-knob"></span>' +
+            '</button>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -25019,7 +25147,7 @@ async function renderProfile() {
 
 function _statCardHTML(lang, color, count, strengthData, missions, maxProblems, pctInfo) {
   var s = strengthData || { pct: 0, earned: 0, max: 0 };
-  var rank = getLangStrengthRank(s.pct);
+  var rank = getLangStrengthRank(s.pct, countTitanLangs());
   var isActive = count > 0;
   var showPct = pctInfo && pctInfo.total_users >= 3 && isActive;
   return (

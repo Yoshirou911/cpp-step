@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCOUT PORTAL — CODE STEP</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="company.css">
+</head>
+<body>
+
+  <!-- ===== ログイン画面 ===== -->
+  <div id="login-screen">
+    <div class="login-box">
+      <div class="login-logo">CODE STEP</div>
+      <div class="login-subtitle">// SCOUT PORTAL</div>
+      <p class="login-desc">企業向けスカウト管理システム</p>
+      <div class="login-form">
+        <label class="login-label">API KEY</label>
+        <input id="api-key-input" type="password" class="login-input"
+               placeholder="企業APIキーを入力" autocomplete="off"
+               onkeydown="if(event.key==='Enter')doLogin()">
+        <button id="login-btn" class="login-btn" onclick="doLogin()">ログイン</button>
+        <p id="login-error" class="login-error hidden"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ダッシュボード ===== -->
+  <div id="dashboard" class="hidden">
+
+    <header class="portal-header">
+      <div class="portal-header-left">
+        <span class="portal-logo-text">CODE STEP</span>
+        <span class="portal-sep">//</span>
+        <span class="portal-title-text">SCOUT PORTAL</span>
+      </div>
+      <div class="portal-header-right">
+        <span id="company-name-label" class="company-name-label"></span>
+        <span id="plan-badge" class="plan-badge"></span>
+        <button class="logout-btn" onclick="doLogout()">ログアウト</button>
+      </div>
+    </header>
+
+    <main class="portal-main">
+
+      <!-- 検索パネル -->
+      <section class="search-panel">
+        <h2 class="section-title">// CANDIDATE SEARCH</h2>
+        <div class="search-controls">
+          <div class="search-field">
+            <label class="field-label">言語</label>
+            <select id="lang-select" class="field-select">
+              <option value="cpp">C++</option>
+              <option value="python">Python</option>
+              <option value="javascript">JavaScript</option>
+              <option value="typescript">TypeScript</option>
+              <option value="java">Java</option>
+              <option value="rust">Rust</option>
+              <option value="go">Go</option>
+              <option value="c">C</option>
+              <option value="csharp">C#</option>
+              <option value="kotlin">Kotlin</option>
+              <option value="swift">Swift</option>
+              <option value="ruby">Ruby</option>
+              <option value="php">PHP</option>
+              <option value="sql">SQL</option>
+              <option value="html">HTML/CSS</option>
+              <option value="bash">Bash</option>
+              <option value="regex">Regex</option>
+            </select>
+          </div>
+          <div class="search-field">
+            <label class="field-label">最低ランク</label>
+            <select id="tier-select" class="field-select">
+              <option value="8">TITAN（100%達成）</option>
+              <option value="9">OVERLORD（複数言語TITAN）</option>
+            </select>
+          </div>
+          <button id="search-btn" class="search-btn" onclick="doSearch(false)">検索する</button>
+        </div>
+        <p id="search-status" class="search-status hidden"></p>
+      </section>
+
+      <!-- 検索結果 -->
+      <section class="results-section">
+        <div id="results-grid" class="results-grid"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ===== スカウトモーダル ===== -->
+  <div id="scout-modal" class="modal-wrap hidden">
+    <div class="modal-overlay" onclick="closeScoutModal()"></div>
+    <div class="modal-panel">
+      <div class="modal-header">
+        <span class="modal-title">// SEND SCOUT</span>
+        <button class="modal-close" onclick="closeScoutModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-target">
+          <span class="modal-target-label">送信先</span>
+          <span id="modal-target-id" class="modal-target-id"></span>
+          <span id="modal-target-rank" class="modal-target-rank"></span>
+        </div>
+        <div class="modal-field">
+          <label class="field-label">件名 <span class="field-limit">(最大100文字)</span></label>
+          <input id="scout-title" type="text" class="modal-input" maxlength="100"
+                 placeholder="例：エンジニア採用のご案内">
+        </div>
+        <div class="modal-field">
+          <label class="field-label">メッセージ本文 <span class="field-limit">(最大2000文字)</span></label>
+          <textarea id="scout-body" class="modal-textarea" maxlength="2000" rows="6"
+                    placeholder="自己紹介・仕事内容・募集背景などを記載してください"></textarea>
+          <div id="body-count" class="char-count">0 / 2000</div>
+        </div>
+        <p id="scout-error" class="scout-error hidden"></p>
+        <button id="send-btn" class="send-btn" onclick="doSendScout()">送信する</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="company.js"></script>
+</body>
+</html>

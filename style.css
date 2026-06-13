@@ -4997,6 +4997,125 @@ body.titan-theme .profile-rank-badge {
   50%       { opacity: 0.7; }
 }
 
+/* ===== OVERLORDテーマ ===== */
+
+body.overlord-theme::before {
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 3px,
+    rgba(255, 215, 0, 0.015) 3px, rgba(255, 215, 0, 0.015) 4px
+  ) !important;
+}
+body.overlord-theme header {
+  border-bottom: 1px solid rgba(255, 215, 0, 0.4) !important;
+  box-shadow: 0 2px 28px rgba(255, 215, 0, 0.18) !important;
+}
+body.overlord-theme #progress-bar {
+  background: linear-gradient(90deg, #c8a000 0%, #FFD700 100%) !important;
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.7) !important;
+}
+body.overlord-theme .lv-badge-header {
+  color: #FFD700 !important;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.7) !important;
+  border-color: rgba(255, 215, 0, 0.5) !important;
+}
+body.overlord-theme .code-editor-ace,
+body.overlord-theme #code-editor {
+  box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.3), 0 0 24px rgba(255, 215, 0, 0.1) !important;
+}
+body.overlord-theme .profile-hero {
+  border-color: rgba(255, 215, 0, 0.45) !important;
+  box-shadow: 0 0 36px rgba(255, 215, 0, 0.18), inset 0 0 24px rgba(255, 215, 0, 0.05) !important;
+}
+body.overlord-theme .profile-rank-badge {
+  box-shadow: 0 0 22px rgba(255, 215, 0, 0.55) !important;
+  border-color: rgba(255, 215, 0, 0.65) !important;
+}
+
+/* TITANバッジをOVERLORD色で上書き */
+body.overlord-theme .titan-badge-header {
+  background: rgba(255, 215, 0, 0.1) !important;
+  border-color: rgba(255, 215, 0, 0.5) !important;
+  color: #FFD700 !important;
+  animation: overlordBadgePulse 2s ease-in-out infinite !important;
+}
+@keyframes overlordBadgePulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(255, 215, 0, 0.3); }
+  50%       { box-shadow: 0 0 18px rgba(255, 215, 0, 0.8); }
+}
+
+/* OVERLORD解放演出 */
+.overlord-uo {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+  cursor: pointer;
+}
+.overlord-uo.overlord-uo-show { opacity: 1; pointer-events: all; }
+.overlord-uo.overlord-uo-hide { opacity: 0; transition: opacity 0.6s; }
+.overlord-uo-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(30,24,0,0.97) 0%, rgba(4,3,0,0.99) 100%);
+}
+.overlord-uo-scan {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 3px,
+    rgba(255, 215, 0, 0.035) 3px, rgba(255, 215, 0, 0.035) 4px
+  );
+  animation: titanScan 4s linear infinite;
+}
+.overlord-uo-content {
+  position: relative;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+.overlord-uo-crown {
+  font-size: 3rem;
+  animation: titanBadgeIn 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  filter: drop-shadow(0 0 20px rgba(255,215,0,0.8));
+}
+.overlord-uo-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 2.6rem;
+  font-weight: 900;
+  letter-spacing: 0.35em;
+  color: #FFD700;
+  text-shadow: 0 0 30px rgba(255,215,0,0.9), 0 0 70px rgba(255,215,0,0.4);
+  animation: titanBadgeIn 0.6s 0.1s cubic-bezier(0.16,1,0.3,1) both;
+}
+.overlord-uo-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1rem;
+  letter-spacing: 0.3em;
+  color: rgba(255, 215, 0, 0.85);
+  animation: titanTextIn 0.5s 0.35s both;
+}
+.overlord-uo-sub {
+  font-size: 0.82rem;
+  color: rgba(255, 200, 80, 0.6);
+  line-height: 1.8;
+  letter-spacing: 0.06em;
+  animation: titanTextIn 0.5s 0.65s both;
+}
+.overlord-uo-tap {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: rgba(255, 215, 0, 0.3);
+  letter-spacing: 0.2em;
+  animation: titanTextIn 0.5s 1s both, titanBlink 1.4s 2s ease-in-out infinite;
+}
+
 /* ===== CODE GOLF ===== */
 
 .golf-section {
@@ -5188,4 +5307,157 @@ body.titan-theme .profile-rank-badge {
 .stat-pct-total {
   font-size: 0.6rem;
   color: rgba(255, 255, 255, 0.22);
+}
+
+/* ===== スカウト UI ===== */
+.gc-scout-section {
+  margin-top: 16px;
+  border-top: 1px solid #1a3040;
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* スカウト通知バッジ */
+.gc-scout-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 120, 20, 0.08);
+  border: 1px solid rgba(255, 120, 20, 0.35);
+  border-radius: 8px;
+  padding: 10px 14px;
+  position: relative;
+  animation: scout-pulse 2.5s ease-in-out infinite;
+}
+@keyframes scout-pulse {
+  0%, 100% { border-color: rgba(255, 120, 20, 0.35); }
+  50%       { border-color: rgba(255, 120, 20, 0.7); }
+}
+.gc-scout-badge-icon {
+  font-size: 1.3rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.gc-scout-badge-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #ff9955;
+}
+.gc-scout-badge-sub {
+  font-size: 0.72rem;
+  color: rgba(255, 153, 85, 0.7);
+  margin-top: 2px;
+}
+.gc-scout-count {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #e83030;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* スカウトメッセージ一覧 */
+.gc-scout-msgs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.gc-scout-msg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 120, 20, 0.06);
+  border: 1px solid rgba(255, 120, 20, 0.25);
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 0.8rem;
+}
+.gc-scout-msg:hover {
+  background: rgba(255, 120, 20, 0.12);
+}
+.gc-scout-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ff7733;
+  flex-shrink: 0;
+  animation: scout-pulse 1.8s ease-in-out infinite;
+}
+.gc-scout-msg-title {
+  flex: 1;
+  color: #d0c8c0;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gc-scout-msg-date {
+  font-size: 0.68rem;
+  color: #4a6070;
+  flex-shrink: 0;
+}
+
+/* オプトイントグル行 */
+.gc-scout-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #0a1820;
+  border: 1px solid #1a3040;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.gc-scout-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #c8dce8;
+  margin-bottom: 2px;
+}
+.gc-scout-sub {
+  font-size: 0.7rem;
+  color: #4a6070;
+}
+.gc-scout-toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  border: none;
+  background: #1e3040;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+  padding: 0;
+}
+.gc-scout-toggle.on {
+  background: #d06020;
+}
+.gc-scout-knob {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  transition: transform 0.2s;
+  display: block;
+}
+.gc-scout-toggle.on .gc-scout-knob {
+  transform: translateX(20px);
 }

@@ -1,4 +1,7 @@
 {
+  "rewrites": [
+    { "source": "/company", "destination": "/company.html" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
