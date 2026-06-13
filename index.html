@@ -256,29 +256,61 @@
         <button onclick="closePrivacyPolicy()">✕</button>
       </div>
       <div class="legal-body">
-        <p class="legal-date">最終更新: 2025年6月</p>
-        <h3>1. 収集する情報</h3>
+        <p class="legal-date">最終更新: 2026年6月13日</p>
+
+        <h3>1. 運営者情報</h3>
+        <p>本サービス「CODE STEP」は、以下の個人が運営しています。</p>
+        <ul>
+          <li><strong>運営者:</strong> Yoshirou911</li>
+          <li><strong>連絡先:</strong> <a href="mailto:yoshiiii0911@gmail.com" style="color:#FF6B00">yoshiiii0911@gmail.com</a></li>
+        </ul>
+
+        <h3>2. 収集する情報</h3>
         <p>本サービスは以下の情報を収集します。</p>
         <ul>
-          <li><strong>メールアドレス</strong>（アカウント登録時のみ）</li>
-          <li><strong>学習データ</strong>（問題・ミッションのクリア状況、ログイン日時、学習時間）— 主にお使いのデバイスのローカルストレージに保存。ログイン時はSupabaseサーバーにも同期されます。</li>
+          <li><strong>メールアドレス</strong> — アカウント登録時のみ。認証に使用します。</li>
+          <li><strong>学習データ</strong> — 問題・ミッションのクリア状況、ログイン日時、学習時間、言語別進捗。ローカルストレージおよびSupabaseサーバーに保存されます。</li>
+          <li><strong>プロフィール情報</strong> — 年齢層・職業クラス・経験年数（ギルドカード）。任意で入力いただく情報です。</li>
+          <li><strong>コードゴルフデータ</strong> — コード提出時の文字数とランキング。他ユーザーのスコアと比較するため、匿名化した形式で共有されます。</li>
         </ul>
-        <h3>2. 利用目的</h3>
+
+        <h3>3. 利用目的</h3>
         <ul>
-          <li>ユーザー認証・進捗の保存と同期</li>
-          <li>サービスの品質改善</li>
+          <li>ユーザー認証および学習進捗の保存・同期</li>
+          <li>ランキング機能・パーセンタイル表示の提供</li>
+          <li>サービスの改善および機能開発</li>
         </ul>
-        <h3>3. 第三者提供</h3>
-        <p>法令に基づく場合を除き、収集した個人情報を第三者に提供することはありません。</p>
-        <h3>4. 利用する外部サービス</h3>
+
+        <h3>4. 第三者提供</h3>
+        <p>法令に基づく場合を除き、収集した個人情報を第三者に提供することはありません。コードゴルフランキング等の集計データは、個人を特定できない形式で表示されます。</p>
+
+        <h3>5. 利用する外部サービス</h3>
         <ul>
-          <li><strong>Supabase</strong> — 認証・データ保存（supabase.com）</li>
-          <li><strong>Wandbox</strong> — コード実行（wandbox.org）。入力したコードは実行のためWandboxに送信されます。</li>
-          <li><strong>Groq</strong> — AI機能（groq.com）。AIヒント使用時にコードと質問内容が送信されます。</li>
-          <li><strong>Vercel</strong> — ホスティング（vercel.com）</li>
+          <li><strong>Supabase</strong> — 認証・データ保存（<a href="https://supabase.com" target="_blank" rel="noopener" style="color:#FF6B00">supabase.com</a>）</li>
+          <li><strong>Wandbox</strong> — コード実行（<a href="https://wandbox.org" target="_blank" rel="noopener" style="color:#FF6B00">wandbox.org</a>）。実行時にコードが送信されます。</li>
+          <li><strong>Groq</strong> — AI機能（<a href="https://groq.com" target="_blank" rel="noopener" style="color:#FF6B00">groq.com</a>）。AI機能使用時にコードと質問内容が送信されます。</li>
+          <li><strong>Vercel</strong> — ホスティング（<a href="https://vercel.com" target="_blank" rel="noopener" style="color:#FF6B00">vercel.com</a>）</li>
         </ul>
-        <h3>5. お問い合わせ</h3>
-        <p>プライバシーに関するご質問は <a href="https://github.com/Yoshirou911/cpp-step/issues" target="_blank" rel="noopener" style="color:#FF6B00">GitHub Issues</a> よりお問い合わせください。</p>
+
+        <h3>6. データの保存期間</h3>
+        <p>アカウントを削除するまでデータを保存します。アカウント削除はお問い合わせフォームよりご依頼ください。削除依頼から30日以内にサーバー上のデータを消去します。</p>
+
+        <h3>7. ユーザーの権利</h3>
+        <ul>
+          <li><strong>アクセス権:</strong> 保存されている自分のデータの確認を請求できます。</li>
+          <li><strong>削除権:</strong> アカウントおよび関連データの削除を請求できます。</li>
+          <li><strong>訂正権:</strong> 不正確なデータの訂正を請求できます。</li>
+        </ul>
+        <p>いずれも下記お問い合わせ先までご連絡ください。</p>
+
+        <h3>8. Cookieおよびローカルストレージ</h3>
+        <p>本サービスはローカルストレージを使用して学習進捗をデバイスに保存します。これはサービスの基本機能に必要なものであり、広告目的では使用しません。</p>
+
+        <h3>9. 本ポリシーの変更</h3>
+        <p>本ポリシーを変更する場合、本ページ上に最終更新日を表示します。重要な変更がある場合はサービス内でお知らせします。</p>
+
+        <h3>10. お問い合わせ</h3>
+        <p>プライバシーに関するご質問・削除依頼は <a href="mailto:yoshiiii0911@gmail.com" style="color:#FF6B00">yoshiiii0911@gmail.com</a> までご連絡ください。</p>
       </div>
     </div>
   </div>
@@ -292,28 +324,50 @@
         <button onclick="closeTermsModal()">✕</button>
       </div>
       <div class="legal-body">
-        <p class="legal-date">最終更新: 2025年6月</p>
+        <p class="legal-date">最終更新: 2026年6月13日</p>
+
         <h3>1. サービス概要</h3>
-        <p>CODE STEP（以下「本サービス」）は、C++ / Python / JavaScript のプログラミング学習を支援する無料のWebアプリケーションです。</p>
+        <p>CODE STEP（以下「本サービス」）は、C++ / Python / JavaScript / Ruby / TypeScript / Kotlin / Swift / Java / C# / Go / C / Rust / HTML / SQL / Bash / Regex / PHP の17言語に対応したプログラミング学習Webアプリケーションです。運営者: Yoshirou911（<a href="mailto:yoshiiii0911@gmail.com" style="color:#FF6B00">yoshiiii0911@gmail.com</a>）</p>
+
         <h3>2. 利用条件</h3>
         <ul>
           <li>本サービスは13歳以上の方を対象としています。</li>
           <li>アカウント登録は任意です。未登録でも主要機能を利用できます。</li>
-          <li>登録情報は正確な情報を入力してください。</li>
+          <li>登録情報（メールアドレス等）は正確な情報を入力してください。</li>
+          <li>1人につき1アカウントを原則とします。</li>
         </ul>
+
         <h3>3. 禁止事項</h3>
         <ul>
-          <li>サービスへの不正アクセスや過剰なリクエスト</li>
-          <li>他のユーザーへの妨害行為</li>
-          <li>法令に違反する行為</li>
-          <li>外部APIの利用制限を超える意図的な負荷</li>
+          <li>サービスへの不正アクセス、クラッキング、過剰なリクエスト送信</li>
+          <li>コードゴルフランキング等の改ざん・不正操作</li>
+          <li>他のユーザーへの妨害・嫌がらせ行為</li>
+          <li>外部API（Wandbox・Groq等）の利用制限を意図的に超える行為</li>
+          <li>本サービスのコンテンツ（問題・解説・ソースコード）の無断転載・商用利用</li>
+          <li>法令または公序良俗に違反する行為</li>
         </ul>
-        <h3>4. 免責事項</h3>
-        <p>本サービスは現状有姿で提供されます。サービスの継続性・正確性・完全性を保証するものではありません。本サービスの利用により生じた損害について、運営者は責任を負いません。</p>
-        <h3>5. 変更・終了</h3>
-        <p>本サービスの内容変更・終了・利用規約の変更を予告なく行う場合があります。変更後もサービスを利用した場合、新しい規約に同意したものとみなします。</p>
-        <h3>6. 準拠法</h3>
-        <p>本規約は日本法に準拠し、解釈されるものとします。</p>
+
+        <h3>4. 知的財産権</h3>
+        <p>本サービスに掲載されている問題・解説・UI・ソースコードの著作権は運営者に帰属します。ユーザーがエディタに入力したコードの著作権はユーザー自身に帰属します。コードゴルフ機能への提出データは、ランキング表示の目的で運営者が利用できるものとします。</p>
+
+        <h3>5. アカウントの管理</h3>
+        <ul>
+          <li>パスワードはご自身で適切に管理してください。</li>
+          <li>アカウントの不正利用が発覚した場合、予告なく利用停止・削除する場合があります。</li>
+          <li>アカウント削除を希望する場合は <a href="mailto:yoshiiii0911@gmail.com" style="color:#FF6B00">yoshiiii0911@gmail.com</a> にご連絡ください。</li>
+        </ul>
+
+        <h3>6. 免責事項</h3>
+        <p>本サービスは現状有姿で提供されます。サービスの継続性・正確性・完全性を保証するものではありません。外部サービス（Wandbox・Groq等）の障害・仕様変更による影響について、運営者は責任を負いません。本サービスの利用により生じた損害について、運営者は責任を負いません。</p>
+
+        <h3>7. サービスの変更・終了</h3>
+        <p>本サービスの内容変更・機能追加・終了を予告なく行う場合があります。利用規約の変更後もサービスを利用した場合、新しい規約に同意したものとみなします。</p>
+
+        <h3>8. 準拠法・管轄</h3>
+        <p>本規約は日本法に準拠します。本サービスに関する紛争については、運営者の所在地を管轄する裁判所を専属合意管轄とします。</p>
+
+        <h3>9. お問い合わせ</h3>
+        <p>本規約に関するご質問は <a href="mailto:yoshiiii0911@gmail.com" style="color:#FF6B00">yoshiiii0911@gmail.com</a> までご連絡ください。</p>
       </div>
     </div>
   </div>
