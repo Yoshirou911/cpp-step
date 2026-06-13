@@ -22829,6 +22829,7 @@ function renderDetail(id) {
   const learned = isLearned(p.id);
 
   // 既存エディタのコードを保存してから破棄
+  var prevProblemId = currentProblemId;
   var savedCode = aceEditor ? aceEditor.getValue() : null;
   if (aceEditor) { aceEditor.destroy(); aceEditor = null; }
   currentProblemId = id;
@@ -22920,8 +22921,11 @@ function renderDetail(id) {
       ) +
     '</div>';
 
-  // Ace Editor を初期化（再描画のときはコードを引き継ぐ）
-  initAceEditor(savedCode !== null ? savedCode : getStarterCode());
+  // 別の問題に移動した場合はリセット、同じ問題の再描画ならコードを引き継ぐ
+  var initCode = (prevProblemId !== null && prevProblemId !== id)
+    ? getStarterCode()
+    : (savedCode !== null ? savedCode : getStarterCode());
+  initAceEditor(initCode);
   refreshGolfBoard(p.id);
 }
 
