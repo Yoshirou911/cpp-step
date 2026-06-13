@@ -4685,3 +4685,149 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
     max-width: 100%;
   }
 }
+
+/* ===== SILVERアンロック演出 ===== */
+
+.ruo-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+.ruo-overlay.ruo-show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.ruo-overlay.ruo-hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ruo-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, #14083a 0%, #030508 65%);
+}
+
+.ruo-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+  padding: 40px 24px;
+}
+
+/* 六角形 */
+.ruo-hex-wrap {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ruo-hex {
+  width: 130px;
+  height: 130px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  background: linear-gradient(135deg, #0d1428 0%, #1a0d38 100%);
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  position: relative;
+  z-index: 2;
+  animation: ruoHexPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  box-shadow: 0 0 40px var(--uc, #B8C8D8), inset 0 0 30px rgba(255,255,255,0.04);
+  filter: drop-shadow(0 0 18px var(--uc, #B8C8D8));
+}
+
+.ruo-hex-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.4);
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.ruo-hex-rank {
+  font-size: 1.3rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: var(--uc, #B8C8D8);
+  font-family: 'Share Tech Mono', monospace;
+  text-shadow: 0 0 20px var(--uc, #B8C8D8);
+}
+
+/* 拡張リング */
+.ruo-ring {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  border: 2px solid var(--uc, #B8C8D8);
+  background: transparent;
+  opacity: 0;
+  border-radius: 0;
+}
+
+.ruo-ring-1 { animation: ruoRing 2s 0.3s ease-out infinite; }
+.ruo-ring-2 { animation: ruoRing 2s 0.9s ease-out infinite; }
+.ruo-ring-3 { animation: ruoRing 2s 1.5s ease-out infinite; }
+
+@keyframes ruoRing {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes ruoHexPop {
+  0%   { transform: scale(0) rotate(-30deg); opacity: 0; }
+  60%  { transform: scale(1.08) rotate(3deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* テキスト */
+.ruo-unlock-label {
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  color: #fff;
+  font-family: 'Share Tech Mono', monospace;
+  text-shadow: 0 0 30px var(--uc, #B8C8D8), 0 0 60px var(--uc, #B8C8D8);
+  animation: ruoTextIn 0.5s 0.5s both;
+}
+
+.ruo-desc {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.8;
+  letter-spacing: 0.06em;
+  animation: ruoTextIn 0.5s 0.75s both;
+}
+
+.ruo-tap {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 0.2em;
+  font-family: 'Share Tech Mono', monospace;
+  animation: ruoTextIn 0.5s 1.2s both, ruoBlink 1.4s 2s ease-in-out infinite;
+}
+
+@keyframes ruoTextIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ruoBlink {
+  0%, 100% { opacity: 0.25; }
+  50%       { opacity: 0.6; }
+}

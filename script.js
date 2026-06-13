@@ -24063,10 +24063,66 @@ function toggleLearned(id) {
     saveProgress(id);
     playClearSound();
     showClearEffect();
+    _checkSilverUnlock(id);
   }
   renderDetail(id);
   updateProgressDisplay();
   renderList();
+}
+
+function _checkSilverUnlock(problemId) {
+  if (localStorage.getItem('ranking_unlocked') === '1') return;
+  var p = getProblems().find(function(x) { return x.id === problemId; });
+  if (!p) return;
+  var silverPlus = ['SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND', 'TITAN'];
+  if (silverPlus.indexOf(p.rank.toUpperCase()) === -1) return;
+  localStorage.setItem('ranking_unlocked', '1');
+  setTimeout(function() { showRankingUnlockEffect(p.rank); }, 700);
+}
+
+var _RANK_COLORS = {
+  SILVER: '#B8C8D8', GOLD: '#EFC050', PLATINUM: '#00C8B4',
+  DIAMOND: '#5588FF', MASTER: '#C040FF', LEGEND: '#FF2244', TITAN: '#FF2020'
+};
+
+function showRankingUnlockEffect(rank) {
+  var existing = document.getElementById('ruo-overlay');
+  if (existing) existing.remove();
+
+  var color = _RANK_COLORS[rank.toUpperCase()] || '#B8C8D8';
+
+  var el = document.createElement('div');
+  el.id = 'ruo-overlay';
+  el.className = 'ruo-overlay';
+  el.style.setProperty('--uc', color);
+  el.innerHTML =
+    '<div class="ruo-bg"></div>' +
+    '<div class="ruo-content">' +
+      '<div class="ruo-hex-wrap">' +
+        '<div class="ruo-ring ruo-ring-1"></div>' +
+        '<div class="ruo-ring ruo-ring-2"></div>' +
+        '<div class="ruo-ring ruo-ring-3"></div>' +
+        '<div class="ruo-hex">' +
+          '<div class="ruo-hex-label">RANK</div>' +
+          '<div class="ruo-hex-rank">' + rank + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="ruo-unlock-label">RANKING UNLOCKED</div>' +
+      '<div class="ruo-desc">強さメーターが解放されました<br>プロフィールで確認しよう</div>' +
+      '<div class="ruo-tap">— TAP TO CONTINUE —</div>' +
+    '</div>';
+
+  document.body.appendChild(el);
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { el.classList.add('ruo-show'); });
+  });
+
+  function dismiss() {
+    el.classList.add('ruo-hide');
+    setTimeout(function() { if (el.parentNode) el.remove(); }, 500);
+  }
+  el.addEventListener('click', dismiss);
+  setTimeout(dismiss, 7000);
 }
 
 // ===== アクティビティヒートマップ =====
