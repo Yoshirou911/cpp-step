@@ -2962,6 +2962,483 @@ int main() {
 }`,
     expected:"area=78.5398 peri=31.4159\narea=24 peri=20\nno vtable overhead",
     explanation:"CRTPは基底クラスが派生クラスをテンプレート引数として受け取るパターンです。static_cast<Derived*>(this)で派生クラスのメソッドを呼びます。仮想関数テーブルを使わないため関数ポインタ間接参照のオーバーヘッドがなく、インライン展開も可能です。"
+  },
+  { id:59, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"C++20 Concepts と制約付きテンプレート",
+    question:"C++20のConceptsを使って「数値型のみ受け付けるsum関数」と「イテレータ概念を満たす型のみのprint_range関数」を実装してください。static_assertでコンセプト違反を検証してください。",
+    hint:"concept Numeric = std::integral<T> || std::floating_point<T>; / template<std::forward_iterator It> void print_range(It, It)",
+    answer:
+`#include <iostream>
+#include <concepts>
+#include <vector>
+#include <list>
+#include <numeric>
+
+template<typename T>
+concept Numeric = std::integral<T> || std::floating_point<T>;
+
+template<Numeric T>
+T sum(std::initializer_list<T> vals) {
+    T result{};
+    for (auto v : vals) result += v;
+    return result;
+}
+
+template<std::forward_iterator It>
+void print_range(It first, It last) {
+    for (auto it = first; it != last; ++it) {
+        std::cout << *it;
+        if (std::next(it) != last) std::cout << " ";
+    }
+    std::cout << "\\n";
+}
+
+int main() {
+    std::cout << sum({1, 2, 3, 4, 5}) << "\\n";
+    std::cout << sum({1.5, 2.5, 3.0}) << "\\n";
+    std::vector<int> v{10, 20, 30};
+    std::list<std::string> lst{"hello", "world"};
+    print_range(v.begin(), v.end());
+    print_range(lst.begin(), lst.end());
+    // static_assert(!Numeric<std::string>, "string is not Numeric");
+    std::cout << "Numeric<int>: " << Numeric<int> << "\\n";
+    std::cout << "Numeric<std::string>: " << Numeric<std::string> << "\\n";
+}`,
+    expected:"15\n7\n10 20 30\nhello world\nNumeric<int>: 1\nNumeric<std::string>: 0",
+    explanation:"C++20 Conceptsはtemplate引数に意味的制約を付けます。std::integral/floating_point/forward_iteratorは標準ライブラリ提供のConcept。制約違反はコンパイル時に明確なエラーになります。"
+  },
+  { id:60, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"std::ranges views パイプライン",
+    question:"C++20のstd::rangesとviewsを使って、1〜20の数列に対して「偶数のみフィルタ」→「2乗」→「先頭5件」をパイプラインで処理して出力してください。",
+    hint:"std::views::iota(1,21) | std::views::filter(...) | std::views::transform(...) | std::views::take(5)",
+    answer:
+`#include <iostream>
+#include <ranges>
+#include <vector>
+
+int main() {
+    namespace rv = std::views;
+    auto pipeline = rv::iota(1, 21)
+                  | rv::filter([](int n){ return n % 2 == 0; })
+                  | rv::transform([](int n){ return n * n; })
+                  | rv::take(5);
+
+    for (int v : pipeline) std::cout << v << " ";
+    std::cout << "\\n";
+
+    // 文字列変換
+    std::vector<std::string> words{"hello", "WORLD", "C++", "ranges", "views"};
+    auto upper_long = words
+        | rv::filter([](const std::string& s){ return s.size() >= 5; })
+        | rv::transform([](std::string s){ for(auto& c:s) c=toupper(c); return s; });
+
+    for (const auto& s : upper_long) std::cout << s << "\\n";
+}`,
+    expected:"4 16 36 64 100 \nHELLO\nWORLD\nRANGES\nVIEWS",
+    explanation:"std::rangesのviewsはlazy evaluation（遅延評価）パイプライン。|演算子でLinuxパイプのように処理を繋げます。メモリに中間コンテナを生成しないため効率的です。"
+  },
+  { id:61, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"constexpr コンパイル時行列演算",
+    question:"constexprを使ってコンパイル時に計算される2×2行列クラスを実装し、行列乗算と行列式を計算してください。全ての計算がコンパイル時に完了することをstatic_assertで確認してください。",
+    hint:"template<size_t R,size_t C> struct Matrix { std::array<std::array<T,C>,R> data; constexpr auto operator*(const Matrix&) const; }",
+    answer:
+`#include <iostream>
+#include <array>
+
+template<typename T, size_t R, size_t C>
+struct Matrix {
+    std::array<std::array<T, C>, R> data{};
+    constexpr T& at(size_t r, size_t c) { return data[r][c]; }
+    constexpr const T& at(size_t r, size_t c) const { return data[r][c]; }
+
+    template<size_t C2>
+    constexpr Matrix<T, R, C2> operator*(const Matrix<T, C, C2>& rhs) const {
+        Matrix<T, R, C2> result{};
+        for (size_t i = 0; i < R; ++i)
+            for (size_t j = 0; j < C2; ++j)
+                for (size_t k = 0; k < C; ++k)
+                    result.at(i,j) += at(i,k) * rhs.at(k,j);
+        return result;
+    }
+};
+
+constexpr Matrix<int,2,2> make22(int a,int b,int c,int d) {
+    Matrix<int,2,2> m{};
+    m.at(0,0)=a; m.at(0,1)=b; m.at(1,0)=c; m.at(1,1)=d;
+    return m;
+}
+
+constexpr int det2x2(const Matrix<int,2,2>& m) {
+    return m.at(0,0)*m.at(1,1) - m.at(0,1)*m.at(1,0);
+}
+
+int main() {
+    constexpr auto A = make22(1,2,3,4);
+    constexpr auto B = make22(5,6,7,8);
+    constexpr auto C = A * B;
+    static_assert(C.at(0,0) == 19);
+    static_assert(C.at(1,1) == 50);
+    std::cout << C.at(0,0) << " " << C.at(0,1) << "\\n";
+    std::cout << C.at(1,0) << " " << C.at(1,1) << "\\n";
+    constexpr int d = det2x2(A);
+    static_assert(d == -2);
+    std::cout << "det(A) = " << d << "\\n";
+}`,
+    expected:"19 22\n43 50\ndet(A) = -2",
+    explanation:"constexpr関数はコンパイル時に実行可能。C++17以降はif/for/switchもconstexpr内で使えます。static_assertでコンパイル時検証ができ、実行時コストがゼロの計算が実現できます。"
+  },
+  { id:62, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"カスタムアロケータとメモリプール",
+    question:"固定サイズのメモリプールアロケータを実装してください。std::vectorに渡せるAllocator概念を満たすPoolAllocatorクラスを作ってください。",
+    hint:"template<typename T> struct PoolAllocator { using value_type = T; T* allocate(size_t n); void deallocate(T* p, size_t n); }; std::vector<int, PoolAllocator<int>> v;",
+    answer:
+`#include <iostream>
+#include <vector>
+#include <memory>
+#include <array>
+
+template<typename T, size_t PoolSize = 1024>
+class PoolAllocator {
+    alignas(T) std::array<std::byte, sizeof(T) * PoolSize> pool;
+    size_t used = 0;
+public:
+    using value_type = T;
+    PoolAllocator() = default;
+    template<typename U> PoolAllocator(const PoolAllocator<U, PoolSize>&) {}
+
+    T* allocate(size_t n) {
+        if (used + n > PoolSize) throw std::bad_alloc{};
+        T* ptr = reinterpret_cast<T*>(pool.data() + used * sizeof(T));
+        used += n;
+        std::cout << "  alloc " << n << " @ offset " << (used-n) << "\\n";
+        return ptr;
+    }
+    void deallocate(T* /*p*/, size_t n) {
+        std::cout << "  dealloc " << n << "\\n";
+    }
+    template<typename U>
+    struct rebind { using other = PoolAllocator<U, PoolSize>; };
+};
+
+template<typename T, size_t N, typename U, size_t M>
+bool operator==(const PoolAllocator<T,N>&, const PoolAllocator<U,M>&) { return false; }
+
+int main() {
+    PoolAllocator<int, 64> alloc;
+    std::vector<int, PoolAllocator<int, 64>> v(alloc);
+    v.reserve(5);
+    for (int i = 1; i <= 5; ++i) v.push_back(i * 10);
+    for (int x : v) std::cout << x << " ";
+    std::cout << "\\n";
+}`,
+    expected:"  alloc 5 @ offset 0\n10 20 30 40 50 \n  dealloc 5",
+    explanation:"STLアロケータはallocate/deallocateを持つクラスです。カスタムアロケータでメモリ確保先（プール・スタック・共有メモリ）を制御できます。ゲームエンジンや低レイテンシシステムで多用されます。"
+  },
+  { id:63, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"Expression Templates（式テンプレート）",
+    question:"Expression Templatesを使って遅延評価のベクトル演算を実装してください。v1 + v2 * v3を1ループで計算（中間配列なし）してください。",
+    hint:"struct VecAdd { const L& l; const R& r; auto operator[](size_t i) const { return l[i] + r[i]; } }; / operator+が VecAdd<L,R>を返す",
+    answer:
+`#include <iostream>
+#include <vector>
+#include <cstddef>
+
+template<typename E>
+struct VecExpr {
+    const E& self() const { return static_cast<const E&>(*this); }
+    auto operator[](size_t i) const { return self()[i]; }
+    size_t size() const { return self().size(); }
+};
+
+struct Vec : VecExpr<Vec> {
+    std::vector<double> data;
+    Vec(size_t n, double v = 0) : data(n, v) {}
+    template<typename E>
+    Vec(const VecExpr<E>& expr) : data(expr.size()) {
+        for (size_t i = 0; i < data.size(); ++i) data[i] = expr[i];
+    }
+    double operator[](size_t i) const { return data[i]; }
+    size_t size() const { return data.size(); }
+};
+
+template<typename L, typename R>
+struct VecAdd : VecExpr<VecAdd<L,R>> {
+    const L& l; const R& r;
+    VecAdd(const L& l, const R& r) : l(l), r(r) {}
+    auto operator[](size_t i) const { return l[i] + r[i]; }
+    size_t size() const { return l.size(); }
+};
+
+template<typename L, typename R>
+struct VecMul : VecExpr<VecMul<L,R>> {
+    const L& l; const R& r;
+    VecMul(const L& l, const R& r) : l(l), r(r) {}
+    auto operator[](size_t i) const { return l[i] * r[i]; }
+    size_t size() const { return l.size(); }
+};
+
+template<typename L, typename R>
+auto operator+(const VecExpr<L>& l, const VecExpr<R>& r) {
+    return VecAdd<L,R>(l.self(), r.self());
+}
+template<typename L, typename R>
+auto operator*(const VecExpr<L>& l, const VecExpr<R>& r) {
+    return VecMul<L,R>(l.self(), r.self());
+}
+
+int main() {
+    Vec a(4), b(4), c(4);
+    for (int i=0;i<4;++i) { a.data[i]=i+1; b.data[i]=(i+1)*2; c.data[i]=(i+1)*3; }
+    Vec result = a + b * c;  // 1ループ、中間配列なし
+    for (double v : result.data) std::cout << v << " ";
+    std::cout << "\\n";
+}`,
+    expected:"7 18 33 52 ",
+    explanation:"Expression Templatesはoperator+がVecAddオブジェクト（式木）を返し、代入時に1ループで全演算を実行。Eigen・Blaze等の線形代数ライブラリの中核技術です。"
+  },
+  { id:64, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"Lock-freeスタック（std::atomic）",
+    question:"std::atomicとcompare_exchange_weakを使ってABA問題を考慮したロックフリースタックを実装してください。",
+    hint:"struct Node { T data; Node* next; }; std::atomic<Node*> head; / compare_exchange_weak(expected, desired)",
+    answer:
+`#include <iostream>
+#include <atomic>
+#include <thread>
+#include <vector>
+#include <optional>
+
+template<typename T>
+class LockFreeStack {
+    struct Node { T data; Node* next; };
+    std::atomic<Node*> head{nullptr};
+public:
+    void push(T val) {
+        auto* n = new Node{std::move(val), nullptr};
+        n->next = head.load(std::memory_order_relaxed);
+        while (!head.compare_exchange_weak(n->next, n,
+               std::memory_order_release, std::memory_order_relaxed));
+    }
+    std::optional<T> pop() {
+        Node* old = head.load(std::memory_order_acquire);
+        while (old && !head.compare_exchange_weak(old, old->next,
+               std::memory_order_acquire, std::memory_order_relaxed));
+        if (!old) return std::nullopt;
+        T val = std::move(old->data);
+        delete old;
+        return val;
+    }
+    ~LockFreeStack() { while (pop()); }
+};
+
+int main() {
+    LockFreeStack<int> stack;
+    std::vector<std::thread> threads;
+    for (int i = 1; i <= 5; ++i) {
+        threads.emplace_back([&stack, i]{ stack.push(i * 10); });
+    }
+    for (auto& t : threads) t.join();
+    std::vector<int> results;
+    while (auto v = stack.pop()) results.push_back(*v);
+    std::sort(results.begin(), results.end());
+    for (int v : results) std::cout << v << " ";
+    std::cout << "\\n";
+}`,
+    expected:"10 20 30 40 50 ",
+    explanation:"compare_exchange_weakは「期待値と一致すれば交換、失敗したら期待値を更新してfalseを返す」アトミック操作。ループで成功するまでリトライするCAS（Compare-And-Swap）パターンです。"
+  },
+  { id:65, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"型消去（Type Erasure）でany_callable",
+    question:"std::functionのような型消去クラス（any_callable）を実装してください。任意のCallable（ラムダ・関数ポインタ・ファンクタ）を型情報なしに格納・呼び出せるようにしてください。",
+    hint:"struct Concept { virtual ~Concept()=default; virtual R call(Args...) = 0; }; template<typename F> struct Model : Concept { F f; R call(Args... a) { return f(a...); } };",
+    answer:
+`#include <iostream>
+#include <memory>
+#include <functional>
+
+template<typename Signature>
+class any_callable;
+
+template<typename R, typename... Args>
+class any_callable<R(Args...)> {
+    struct Concept {
+        virtual ~Concept() = default;
+        virtual R call(Args...) = 0;
+        virtual std::unique_ptr<Concept> clone() const = 0;
+    };
+    template<typename F>
+    struct Model : Concept {
+        F f;
+        Model(F f) : f(std::move(f)) {}
+        R call(Args... a) override { return f(a...); }
+        std::unique_ptr<Concept> clone() const override { return std::make_unique<Model>(f); }
+    };
+    std::unique_ptr<Concept> impl;
+public:
+    template<typename F>
+    any_callable(F f) : impl(std::make_unique<Model<F>>(std::move(f))) {}
+    any_callable(const any_callable& o) : impl(o.impl->clone()) {}
+    R operator()(Args... a) { return impl->call(a...); }
+};
+
+int add(int a, int b) { return a + b; }
+
+int main() {
+    any_callable<int(int,int)> f1 = add;
+    any_callable<int(int,int)> f2 = [](int a, int b){ return a * b; };
+    struct Mul { int operator()(int a, int b){ return a - b; } } mul;
+    any_callable<int(int,int)> f3 = mul;
+    std::cout << f1(3, 4) << "\\n";
+    std::cout << f2(3, 4) << "\\n";
+    std::cout << f3(10, 3) << "\\n";
+    auto f4 = f1;
+    std::cout << f4(5, 6) << "\\n";
+}`,
+    expected:"7\n12\n7\n11",
+    explanation:"型消去（Type Erasure）はConceptとModelの組でvirtual dispatch経由で型情報を隠蔽します。std::function・std::any・std::shared_ptrがこのパターンの標準実装です。"
+  },
+  { id:66, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"Policy-based Designでコンパイル時戦略切り替え",
+    question:"Policyパターンでソートアルゴリズムを実装してください。BubbleSortPolicy・QuickSortPolicyをtemplate引数で切り替えられるSorterクラスを作ってください。",
+    hint:"template<typename SortPolicy> class Sorter { void sort(auto& v) { SortPolicy::sort(v); } }; / SorterはBubbleSort/QuickSortを差し替え可能",
+    answer:
+`#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <chrono>
+
+struct BubbleSortPolicy {
+    template<typename Container>
+    static void sort(Container& c) {
+        for (size_t i = 0; i < c.size(); ++i)
+            for (size_t j = 0; j+1 < c.size()-i; ++j)
+                if (c[j] > c[j+1]) std::swap(c[j], c[j+1]);
+    }
+    static const char* name() { return "BubbleSort"; }
+};
+
+struct StdSortPolicy {
+    template<typename Container>
+    static void sort(Container& c) { std::sort(c.begin(), c.end()); }
+    static const char* name() { return "std::sort"; }
+};
+
+template<typename SortPolicy>
+class Sorter {
+public:
+    template<typename Container>
+    static void sort_and_print(Container c) {
+        SortPolicy::sort(c);
+        std::cout << SortPolicy::name() << ": ";
+        for (auto v : c) std::cout << v << " ";
+        std::cout << "\\n";
+    }
+};
+
+int main() {
+    std::vector<int> data = {5, 3, 8, 1, 9, 2, 7, 4, 6};
+    Sorter<BubbleSortPolicy>::sort_and_print(data);
+    Sorter<StdSortPolicy>::sort_and_print(data);
+}`,
+    expected:"BubbleSort: 1 2 3 4 5 6 7 8 9 \nstd::sort: 1 2 3 4 5 6 7 8 9 ",
+    explanation:"Policy-basedデザインはアルゴリズムや振る舞いをtemplate引数（Policy）として外部から注入します。virtual dispatchなしで戦略を切り替えられ、コンパイル時に最適化されます。"
+  },
+  { id:67, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"Variadic Template と fold expression",
+    question:"Variadic TemplatesとC++17のfold expressionを使って、型安全なprintf（format_print）・型リストのsum・print_allを実装してください。",
+    hint:"template<typename... Args> void print_all(Args&&... args) { (std::cout << ... << args) << '\\n'; }",
+    answer:
+`#include <iostream>
+#include <string>
+#include <type_traits>
+
+// fold expression で全引数を出力
+template<typename... Args>
+void print_all(Args&&... args) {
+    ((std::cout << std::forward<Args>(args) << " "), ...);
+    std::cout << "\\n";
+}
+
+// 全引数の合計（同型のみ）
+template<typename T, typename... Rest>
+T sum_all(T first, Rest... rest) {
+    return first + (... + rest);
+}
+
+// 型リストの sizeof の最大値
+template<typename... Ts>
+constexpr size_t max_size = std::max({sizeof(Ts)...});
+
+// 型安全な println（型チェック付き）
+template<typename... Args>
+void println(Args&&... args) {
+    int dummy[] = {(std::cout << std::forward<Args>(args), 0)...};
+    (void)dummy;
+    std::cout << "\\n";
+}
+
+// count if で条件を満たす引数をカウント
+template<typename Pred, typename... Args>
+size_t count_if_args(Pred pred, Args&&... args) {
+    return (... + (pred(std::forward<Args>(args)) ? 1u : 0u));
+}
+
+int main() {
+    print_all(1, 2.5, "hello", 'c');
+    std::cout << sum_all(1, 2, 3, 4, 5) << "\\n";
+    std::cout << "max sizeof(int,double,char): " << max_size<int,double,char> << "\\n";
+    size_t pos = count_if_args([](auto x){ return x > 0; }, -1, 2, -3, 4, 5);
+    std::cout << "positive count: " << pos << "\\n";
+}`,
+    expected:"1 2.5 hello c \n15\nmax sizeof(int,double,char): 8\npositive count: 3",
+    explanation:"fold expression (... op args)はC++17の機能。(expr op ...)は左fold、(... op expr)は右fold。可変長引数パックを再帰なしに展開できます。"
+  },
+  { id:68, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"C++20 コルーチンジェネレータ",
+    question:"C++20のco_yieldを使って無限フィボナッチ数列ジェネレータを実装してください。std::generatorまたは独自Generatorクラスでn番目の値まで取り出せるようにしてください。",
+    hint:"struct Generator { struct promise_type { int value; auto yield_value(int v){...} }; }; / co_yield fibonacci;",
+    answer:
+`#include <iostream>
+#include <coroutine>
+#include <optional>
+
+template<typename T>
+struct Generator {
+    struct promise_type {
+        T current_value;
+        std::suspend_always yield_value(T v) { current_value = v; return {}; }
+        std::suspend_always initial_suspend() { return {}; }
+        std::suspend_always final_suspend() noexcept { return {}; }
+        Generator get_return_object() { return Generator{std::coroutine_handle<promise_type>::from_promise(*this)}; }
+        void return_void() {}
+        void unhandled_exception() { std::terminate(); }
+    };
+    std::coroutine_handle<promise_type> handle;
+    explicit Generator(std::coroutine_handle<promise_type> h) : handle(h) {}
+    ~Generator() { if (handle) handle.destroy(); }
+    bool next() { handle.resume(); return !handle.done(); }
+    T value() const { return handle.promise().current_value; }
+};
+
+Generator<long long> fibonacci() {
+    long long a = 0, b = 1;
+    while (true) {
+        co_yield a;
+        auto tmp = a + b;
+        a = b; b = tmp;
+    }
+}
+
+int main() {
+    auto gen = fibonacci();
+    for (int i = 0; i < 10; ++i) {
+        gen.next();
+        std::cout << gen.value();
+        if (i < 9) std::cout << " ";
+    }
+    std::cout << "\\n";
+}`,
+    expected:"0 1 1 2 3 5 8 13 21 34",
+    explanation:"C++20コルーチンはco_yield/co_await/co_returnをサポート。promise_typeで挙動を制御します。ジェネレータはlazy evaluationの無限列生成に使います。Node.jsのasync/generator・Pythonのyieldと同原理です。"
   }
 ];
 
@@ -4299,6 +4776,228 @@ if __name__ == '__main__':
         print(f"{word}: {count}")`,
     expected:"and: 1\nat: 1\naway: 1\nbarked: 1\nbrown: 1",
     explanation:"MapReduceはGoogleが論文で発表した大規模データ処理パターンです。Map段階で各チャンクを並列処理し、Reduce段階で結果を統合します。Hadoop・Spark・Flinkの基礎となっています。multiprocessingでGILを回避してCPU並列処理を実現します。"
+  },
+  { id:59, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"メタクラスと記述子プロトコル",
+    question:"__set_name__・__get__・__set__を実装した型付き記述子クラスとそれを使うメタクラスを実装してください。Fieldクラスを使ってModelクラスのフィールドを型チェック付きで管理してください。",
+    hint:"class TypedField: def __set_name__(self,owner,name): ... def __get__(self,...): ... def __set__(self,...): ...",
+    answer:
+`class TypedField:
+    def __init__(self, field_type, default=None):
+        self.field_type = field_type
+        self.default = default
+    def __set_name__(self, owner, name):
+        self.name = name
+        self.private_name = f'_{name}'
+    def __get__(self, obj, objtype=None):
+        if obj is None: return self
+        return getattr(obj, self.private_name, self.default)
+    def __set__(self, obj, value):
+        if not isinstance(value, self.field_type):
+            raise TypeError(f'{self.name} must be {self.field_type.__name__}, got {type(value).__name__}')
+        setattr(obj, self.private_name, value)
+
+class ModelMeta(type):
+    def __new__(mcs, name, bases, namespace):
+        cls = super().__new__(mcs, name, bases, namespace)
+        cls._fields = {k: v for k, v in namespace.items() if isinstance(v, TypedField)}
+        return cls
+    def __repr__(cls):
+        return f"<Model: {cls.__name__} fields={list(cls._fields.keys())}>"
+
+class User(metaclass=ModelMeta):
+    name = TypedField(str)
+    age = TypedField(int, 0)
+    score = TypedField(float, 0.0)
+
+u = User()
+u.name = "Alice"
+u.age = 25
+u.score = 98.5
+print(f"{u.name}, {u.age}, {u.score}")
+print(repr(User))
+try:
+    u.age = "not a number"
+except TypeError as e:
+    print(f"Error: {e}")`,
+    expected:"Alice, 25, 98.5\n<Model: User fields=['name', 'age', 'score']>\nError: age must be int, got str",
+    explanation:"記述子プロトコル(__get__/__set__/__set_name__)はPythonのプロパティ・classmethod・staticmethodの実装基盤。メタクラスはクラス生成時にフックできます。ORMのフィールド定義(Django Models等)に応用されます。"
+  },
+  { id:60, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"asyncio コルーチンパイプライン",
+    question:"asyncioのasync generatorとasync forを使って、プロデューサー→フィルター→トランスフォーマー→コンシューマーの非同期パイプラインを実装してください。",
+    hint:"async def producer(): for i in ...: yield i; await asyncio.sleep(0) / async def filter_stage(stream): async for item in stream: if cond: yield item",
+    answer:
+`import asyncio
+
+async def producer(n: int):
+    for i in range(1, n + 1):
+        yield i
+        await asyncio.sleep(0)
+
+async def filter_stage(stream, pred):
+    async for item in stream:
+        if pred(item):
+            yield item
+
+async def transform_stage(stream, func):
+    async for item in stream:
+        yield func(item)
+
+async def consume(stream):
+    results = []
+    async for item in stream:
+        results.append(item)
+    return results
+
+async def main():
+    pipeline = transform_stage(
+        filter_stage(producer(20), lambda x: x % 3 == 0),
+        lambda x: x ** 2
+    )
+    results = await consume(pipeline)
+    print(results)
+    print(f"count: {len(results)}")
+
+asyncio.run(main())`,
+    expected:"[9, 36, 81, 144, 225, 324, 441]\ncount: 7",
+    explanation:"async generatorはasync defでyieldする関数。async forで非同期に反復できます。パイプラインの各ステージが非同期で動くため、I/O待ちを他のコルーチンに譲ることができます。"
+  },
+  { id:61, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"Protocol（構造的部分型）とランタイム検査",
+    question:"typing.Protocolを使って「Sortable」「Printable」プロトコルを定義し、isinstance()での検査とruntime_checkable・@abstractmethodなしの構造的部分型を実証してください。",
+    hint:"from typing import Protocol, runtime_checkable; @runtime_checkable class Sortable(Protocol): def __lt__(self, other) -> bool: ...",
+    answer:
+`from typing import Protocol, runtime_checkable
+from functools import total_ordering
+
+@runtime_checkable
+class Comparable(Protocol):
+    def __lt__(self, other) -> bool: ...
+    def __eq__(self, other) -> bool: ...
+
+@runtime_checkable
+class Drawable(Protocol):
+    def draw(self) -> str: ...
+
+@total_ordering
+class Point:
+    def __init__(self, x: float, y: float):
+        self.x, self.y = x, y
+    def __lt__(self, other): return (self.x**2 + self.y**2) < (other.x**2 + other.y**2)
+    def __eq__(self, other): return self.x == other.x and self.y == other.y
+    def draw(self) -> str: return f"Point({self.x}, {self.y})"
+
+class Card:
+    def __init__(self, value: int):
+        self.value = value
+    def __lt__(self, other): return self.value < other.value
+    def __eq__(self, other): return self.value == other.value
+
+points = [Point(3, 4), Point(1, 2), Point(2, 1)]
+cards = [Card(5), Card(1), Card(3)]
+print("Point is Comparable:", isinstance(Point(0,0), Comparable))
+print("Card is Comparable:", isinstance(Card(1), Comparable))
+print("Point is Drawable:", isinstance(Point(0,0), Drawable))
+print("Sorted points:", [p.draw() for p in sorted(points)])
+print("Sorted cards:", [c.value for c in sorted(cards)])`,
+    expected:"Point is Comparable: True\nCard is Comparable: True\nPoint is Drawable: True\nSorted points: ['Point(1, 2)', 'Point(2, 1)', 'Point(3, 4)']\nSorted cards: [1, 3, 5]",
+    explanation:"Protocol（PEP 544）は「このメソッドを持つ型はこのプロトコルを満たす」という構造的部分型。@runtime_checkableでisinstance()による実行時チェックが可能になります。Goのinterfaceと同じ概念です。"
+  },
+  { id:62, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"ASTトランスフォームによるDSL実装",
+    question:"astモジュールを使ってPythonコードを解析・変換するマクロシステムを実装してください。'@debug'デコレータ相当のASTトランスフォームで、関数の引数と戻り値を自動的にprint出力するコードを生成してください。",
+    hint:"import ast; ast.parse(source) / ast.NodeTransformer / compile(tree, ...) / exec()",
+    answer:
+`import ast
+import textwrap
+
+class DebugTransformer(ast.NodeTransformer):
+    def visit_FunctionDef(self, node):
+        self.generic_visit(node)
+        arg_names = [a.arg for a in node.args.args]
+        print_args = ast.parse(
+            f'print(f"CALL {node.name}({", ".join(f"{a}={{{{a}}}}" for a in arg_names)})")',
+            mode='eval'
+        )
+        arg_stmt = ast.Expr(value=ast.parse(
+            f'print(f"CALL {node.name}(" + ", ".join(f"{{n}}={{{{n}}}}" for n in {arg_names}) + ")")',
+            mode='eval'
+        ).body)
+
+        new_body = []
+        for arg in arg_names:
+            new_body.append(ast.parse(f'print(f"  arg {arg}={{{arg}}}")').body[0])
+        new_body.extend(node.body)
+
+        node.body = new_body
+        ast.fix_missing_locations(node)
+        return node
+
+source = textwrap.dedent("""
+def add(a, b):
+    return a + b
+def multiply(x, y):
+    result = x * y
+    return result
+""").strip()
+
+tree = ast.parse(source)
+new_tree = DebugTransformer().visit(tree)
+ast.fix_missing_locations(new_tree)
+code = compile(new_tree, '<string>', 'exec')
+ns = {}
+exec(code, ns)
+print(ns['add'](3, 4))
+print(ns['multiply'](5, 6))`,
+    expected:"  arg a=3\n  arg b=4\n7\n  arg x=5\n  arg y=6\n30",
+    explanation:"ASTトランスフォームはコードの構文木を変換するメタプログラミング技術。PyTestのassertion rewriting、型チェッカー、コードカバレッジツールで使われます。Lispのマクロに相当します。"
+  },
+  { id:63, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"__class_getitem__でジェネリック型",
+    question:"__class_getitem__とGenericを使って型パラメータ付きのStack[T]クラスを実装してください。型情報をランタイムでも保持してisinstance的な検証ができるようにしてください。",
+    hint:"from typing import Generic, TypeVar; T = TypeVar('T'); class Stack(Generic[T]): def __class_getitem__(cls, item): ...",
+    answer:
+`from typing import Generic, TypeVar, get_args, get_origin
+
+T = TypeVar('T')
+
+class TypedStack(Generic[T]):
+    def __class_getitem__(cls, item):
+        class ParameterizedStack(cls):
+            __item_type__ = item
+            def push(self, value):
+                if not isinstance(value, self.__item_type__):
+                    raise TypeError(f"Expected {self.__item_type__.__name__}, got {type(value).__name__}")
+                return super().push(value)
+        ParameterizedStack.__name__ = f"Stack[{item.__name__}]"
+        return ParameterizedStack
+
+    def __init__(self):
+        self._data = []
+    def push(self, value):
+        self._data.append(value)
+    def pop(self):
+        return self._data.pop()
+    def peek(self):
+        return self._data[-1]
+    def __len__(self):
+        return len(self._data)
+    def __repr__(self):
+        return f"Stack({self._data})"
+
+IntStack = TypedStack[int]
+s = IntStack()
+s.push(1); s.push(2); s.push(3)
+print(s)
+print(f"pop: {s.pop()}")
+print(f"len: {len(s)}")
+try:
+    s.push("hello")
+except TypeError as e:
+    print(f"Error: {e}")`,
+    expected:"Stack([1, 2, 3])\npop: 3\nlen: 2\nError: Expected int, got str",
+    explanation:"__class_getitem__はStack[int]のような型パラメータ構文を実現します。Generic[T]継承でmypy・pyright等の型チェッカーとも統合できます。Pydanticのモデル定義もこの仕組みを利用しています。"
   }
 ];
 
@@ -5931,6 +6630,190 @@ loop.queueMicrotask(() => console.log('micro 2'));
 loop.run();`,
     expected:"micro 1\nmicro 2\nmacro 1\nmacro 2\nmicro after macro 2",
     explanation:"Node.jsのイベントループはマイクロタスク（Promise.then・queueMicrotask）→マクロタスク（setTimeout・setInterval）の優先順位を持ちます。これを理解することでasync/awaitの実行順序が完全に予測できます。"
+  },
+  { id:59, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"Proxyと Reflectで透過的なメモ化",
+    question:"ProxyとReflectを使って任意の関数を透過的にメモ化するmemoize Proxyを実装してください。関数本体を変更せず、引数をキーとしてキャッシュし、キャッシュヒット時はキャッシュを返してください。",
+    hint:"new Proxy(fn, { apply(target, thisArg, args) { ... } }) / JSON.stringify(args) でキャッシュキー生成",
+    answer:
+`function createMemoProxy(fn) {
+  const cache = new Map();
+  return new Proxy(fn, {
+    apply(target, thisArg, args) {
+      const key = JSON.stringify(args);
+      if (cache.has(key)) {
+        console.log(\`cache hit: \${key}\`);
+        return cache.get(key);
+      }
+      const result = Reflect.apply(target, thisArg, args);
+      cache.set(key, result);
+      console.log(\`computed: \${key} => \${result}\`);
+      return result;
+    },
+    get(target, prop) {
+      if (prop === 'cache') return cache;
+      return Reflect.get(target, prop);
+    }
+  });
+}
+
+function fib(n) {
+  if (n <= 1) return n;
+  return fib(n - 1) + fib(n - 2);
+}
+
+const memoFib = createMemoProxy(fib);
+console.log(memoFib(5));
+console.log(memoFib(5)); // cache hit
+console.log(memoFib(3)); // cache hit
+console.log(\`cache size: \${memoFib.cache.size}\`);`,
+    expected:"computed: [5] => 5\ncache hit: [5]\n5\ncache hit: [3]\ncomputed: [5] => 5\ncache hit: [5]\n5\ncache hit: [3]\ncache size: 3",
+    explanation:"ProxyはJavaScriptオブジェクトへのアクセスをインターセプトするメタプログラミング機能。applyトラップで関数呼び出しを横取りしてメモ化を実装。Reflectは元の動作を実行するAPI。"
+  },
+  { id:60, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"Tagged Template LiteralでDSL",
+    question:"Tagged Template Literalを使ってSQLクエリビルダーとHTMLエスケープを実装してください。sql\`SELECT * FROM users WHERE name = \${name}\`でSQLインジェクションを防ぐタグ関数を作ってください。",
+    hint:"function sql(strings, ...values) { ... } / HTMLエスケープ関数と組み合わせる",
+    answer:
+`function escapeSQL(val) {
+  if (typeof val === 'string') return "'" + val.replace(/'/g, "''") + "'";
+  if (typeof val === 'number') return String(val);
+  if (val === null) return 'NULL';
+  return "'" + String(val).replace(/'/g, "''") + "'";
+}
+
+function sql(strings, ...values) {
+  const query = strings.reduce((acc, str, i) => {
+    const val = i < values.length ? escapeSQL(values[i]) : '';
+    return acc + str + val;
+  }, '');
+  return query.trim();
+}
+
+function html(strings, ...values) {
+  const escape = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return strings.reduce((acc, str, i) => {
+    const val = i < values.length ? escape(values[i]) : '';
+    return acc + str + val;
+  }, '').trim();
+}
+
+const name = "O'Brien";
+const age = 25;
+console.log(sql\`SELECT * FROM users WHERE name = \${name} AND age > \${age}\`);
+
+const username = "<script>alert('xss')</script>";
+console.log(html\`<p>Hello, <strong>\${username}</strong>!</p>\`);`,
+    expected:"SELECT * FROM users WHERE name = 'O''Brien' AND age > 25\n<p>Hello, <strong>&lt;script&gt;alert('xss')&lt;/script&gt;</strong>!</p>",
+    explanation:"Tagged Template Literalはタグ関数で文字列と埋め込み値を分離して処理できます。SQLインジェクション防止・HTMLエスケープ・i18n・CSSテンプレートなど多様なDSLを安全に実装できます。"
+  },
+  { id:61, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"WeakRefと FinalizationRegistryでメモリ管理",
+    question:"WeakRef・FinalizationRegistryを使ってキャッシュが不要になったらGCに回収されるWeakCacheを実装してください。",
+    hint:"new WeakRef(obj) / new FinalizationRegistry(key => cache.delete(key)) / weakRef.deref()",
+    answer:
+`class WeakCache {
+  #cache = new Map();
+  #registry = new FinalizationRegistry((key) => {
+    this.#cache.delete(key);
+    console.log(\`GC collected: \${key}\`);
+  });
+
+  set(key, value) {
+    const ref = new WeakRef(value);
+    this.#cache.set(key, ref);
+    this.#registry.register(value, key);
+  }
+
+  get(key) {
+    const ref = this.#cache.get(key);
+    if (!ref) return undefined;
+    const value = ref.deref();
+    if (value === undefined) {
+      this.#cache.delete(key); // 手動クリーンアップ
+      return undefined;
+    }
+    return value;
+  }
+
+  get size() { return this.#cache.size; }
+}
+
+const cache = new WeakCache();
+let user1 = { name: 'Alice', data: new Array(1000).fill(0) };
+let user2 = { name: 'Bob', data: new Array(1000).fill(0) };
+
+cache.set('user1', user1);
+cache.set('user2', user2);
+console.log('cache size:', cache.size);
+console.log('get user1:', cache.get('user1')?.name);
+console.log('get user2:', cache.get('user2')?.name);
+user1 = null; // user1への参照を手放す
+console.log('user1 ref released');
+// GCはタイミングによるため deref の状態を確認
+const u1ref = cache.get('user1');
+console.log('user1 from cache:', u1ref?.name ?? 'gc collected or still alive');`,
+    expected:"cache size: 2\nget user1: Alice\nget user2: Bob\nuser1 ref released\nuser1 from cache: Alice",
+    explanation:"WeakRefはGCに回収されうる弱参照。deref()でアクセスし、回収済みならundefinedを返します。FinalizationRegistryはGC時にコールバックを登録します。メモリリークを防ぐキャッシュ実装に有用です。"
+  },
+  { id:62, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"Observableパターン（RxJS風）",
+    question:"RxJS風のObservableクラスを実装してください。map・filter・take・subscribeオペレータを持ち、遅延評価でストリームを処理できるようにしてください。",
+    hint:"class Observable { constructor(subscribe) { ... } map(fn) { return new Observable(obs => this.subscribe({next: v => obs.next(fn(v)), ...})); } }",
+    answer:
+`class Observable {
+  constructor(subscribe) {
+    this._subscribe = subscribe;
+  }
+
+  subscribe(observer) {
+    if (typeof observer === 'function') observer = { next: observer };
+    const defaultObserver = { next: () => {}, error: console.error, complete: () => {} };
+    return this._subscribe({ ...defaultObserver, ...observer });
+  }
+
+  map(fn) {
+    return new Observable(obs => this.subscribe({
+      next: v => obs.next(fn(v)),
+      error: e => obs.error(e),
+      complete: () => obs.complete()
+    }));
+  }
+
+  filter(pred) {
+    return new Observable(obs => this.subscribe({
+      next: v => pred(v) && obs.next(v),
+      error: e => obs.error(e),
+      complete: () => obs.complete()
+    }));
+  }
+
+  take(n) {
+    let count = 0;
+    return new Observable(obs => this.subscribe({
+      next: v => { if (count++ < n) { obs.next(v); if (count >= n) obs.complete(); } },
+      error: e => obs.error(e),
+      complete: () => obs.complete()
+    }));
+  }
+}
+
+Observable.from = (arr) => new Observable(obs => {
+  arr.forEach(v => obs.next(v));
+  obs.complete();
+});
+
+const results = [];
+Observable.from([1,2,3,4,5,6,7,8,9,10])
+  .filter(x => x % 2 === 0)
+  .map(x => x * x)
+  .take(3)
+  .subscribe({
+    next: v => results.push(v),
+    complete: () => console.log(results.join(', '))
+  });`,
+    expected:"4, 16, 36",
+    explanation:"ReactiveX（RxJS）のObservableはlazy streamです。subscribeするまで何も実行しません。map・filter・takeはObservableを返す高階関数で、チェーンが遅延評価のパイプラインを形成します。"
   }
 ];
 
@@ -7227,6 +8110,162 @@ decoded = MiniPack.decode(encoded)
 puts decoded.inspect`,
     expected:"encoded bytes: 04 00 03 02 04 6e 61 6d ...\n{\"name\"=>\"Alice\", \"age\"=>30, \"scores\"=>[90, 85, 92]}",
     explanation:"バイナリプロトコルの実装はネットワークプログラミング・データベースエンジン・ゲーム開発の基礎です。MessagePack・Protocol Buffers・Apache Thriftはこの原理で実装されています。Rubyのpack/unpackメソッドが低レベルバイト操作を可能にします。"
+  },
+  { id: 59, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "メタプログラミング：method_missing と define_method",
+    question: "Rubyのメタプログラミングを使って以下を実装してください。\n①method_missing を使って `find_by_name`, `find_by_age` などの動的メソッドを処理する `DynamicFinder` モジュール\n②define_method を使って attr_accessor の独自実装 `my_attr_accessor(*names)` クラスメソッド\n③respond_to_missing? の実装（method_missingと対で必ずオーバーライド）\n動作確認してください。",
+    hint: "method_missing(name, *args) でメソッド名を文字列として受け取りnameをto_sで変換、正規表現でパターンマッチします。define_methodはブロックで動的にメソッドを定義します。",
+    answer:
+`module DynamicFinder
+  def self.included(base)
+    base.instance_variable_set(:@records, [])
+    base.extend(ClassMethods)
+  end
+
+  module ClassMethods
+    def records; @records; end
+    def add(record); @records << record; end
+
+    def method_missing(name, *args)
+      if name.to_s =~ /^find_by_(.+)$/
+        attr = $1
+        @records.select { |r| r[attr.to_sym] == args[0] }
+      else
+        super
+      end
+    end
+
+    def respond_to_missing?(name, include_private = false)
+      name.to_s.start_with?('find_by_') || super
+    end
+  end
+end
+
+class User
+  include DynamicFinder
+
+  def self.my_attr_accessor(*names)
+    names.each do |name|
+      define_method(name) { instance_variable_get("@#{name}") }
+      define_method("#{name}=") { |v| instance_variable_set("@#{name}", v) }
+    end
+  end
+
+  my_attr_accessor :name, :age
+  def to_h; { name: name, age: age }; end
+end
+
+User.add({ name: 'Alice', age: 30 })
+User.add({ name: 'Bob', age: 25 })
+User.add({ name: 'Alice', age: 28 })
+
+puts User.find_by_name('Alice').length
+puts User.respond_to?(:find_by_age)
+
+u = User.new
+u.name = 'Carol'
+u.age = 22
+puts "#{u.name}, #{u.age}"`,
+    expected:"2\ntrue\nCarol, 22",
+    explanation:"Rubyのメタプログラミングはフレームワーク（Rails）の基盤です。method_missingはメソッドが見つからない場合のフォールバックで、ActiveRecordのfind_by_カラム名はこの仕組みで実現されています。respond_to_missing?とセットで実装することがベストプラクティスです。"
+  },
+  { id: 60, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "DSLとinstance_eval：設定記述言語",
+    question: "instance_eval を使ったDSLビルダーを実装してください。\n①`RouteBuilder` クラス — ブロック内で `get '/path'`, `post '/path'` が使え、routes配列に追加される\n②`ConfigDSL` — ブロック内で `set :key, value` が使え、設定値を保持する\n③それぞれのDSLを使って設定を記述し、内容を出力",
+    hint: "instance_eval(&block) でブロックをそのオブジェクトのコンテキストで実行します。これによりブロック内の self がビルダーオブジェクトになります。",
+    answer:
+`class RouteBuilder
+  attr_reader :routes
+
+  def initialize
+    @routes = []
+  end
+
+  def self.define(&block)
+    builder = new
+    builder.instance_eval(&block)
+    builder
+  end
+
+  def get(path, &action)
+    @routes << { method: 'GET', path: path }
+  end
+
+  def post(path, &action)
+    @routes << { method: 'POST', path: path }
+  end
+end
+
+class ConfigDSL
+  def initialize
+    @config = {}
+  end
+
+  def self.configure(&block)
+    dsl = new
+    dsl.instance_eval(&block)
+    dsl
+  end
+
+  def set(key, value)
+    @config[key] = value
+  end
+
+  def [](key); @config[key]; end
+  def to_h; @config; end
+end
+
+router = RouteBuilder.define do
+  get  '/users'
+  post '/users'
+  get  '/users/:id'
+end
+
+router.routes.each { |r| puts "#{r[:method]} #{r[:path]}" }
+
+config = ConfigDSL.configure do
+  set :host, 'localhost'
+  set :port, 3000
+  set :debug, true
+end
+
+puts "#{config[:host]}:#{config[:port]} debug=#{config[:debug]}"`,
+    expected:"GET /users\nPOST /users\nGET /users/:id\nlocalhost:3000 debug=true",
+    explanation:"instance_evalはRubyのDSL実装の核心技術です。SinatraのルーティングDSL・Rspecのdescribeブロックはすべてこのパターンです。ブロック内のselfをビルダーに変えることで自然な設定記述言語が作れます。"
+  },
+  { id: 61, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Fiber とコルーチン：協調的マルチタスク",
+    question: "Fiber を使った協調的マルチタスクを実装してください。\n①無限数列を生成するFiber（Fibonacci、自然数）を作成しyield/resumeで値を取り出す\n②`Enumerator` を使って外部イテレータを実装（次の値をnextで取得）\n③複数のFiberをラウンドロビンでスケジュールする簡易スケジューラを実装",
+    hint: "Fiber.new { ... } でコルーチンを生成。Fiber.yield(value) で値を返しながら一時停止。fiber.resume で再開します。",
+    answer:
+`fib = Fiber.new do
+  a, b = 0, 1
+  loop do
+    Fiber.yield a
+    a, b = b, a + b
+  end
+end
+
+puts "フィボナッチ: #{10.times.map { fib.resume }.join(', ')}"
+
+counter = Enumerator.new do |yielder|
+  n = 1
+  loop { yielder << n; n += 1 }
+end
+
+puts "カウンタ: #{5.times.map { counter.next }.join(', ')}"
+
+tasks = [
+  Fiber.new { 3.times { |i| puts "タスクA #{i}"; Fiber.yield } },
+  Fiber.new { 3.times { |i| puts "タスクB #{i}"; Fiber.yield } },
+]
+
+begin
+  loop { tasks.each(&:resume) }
+rescue FiberError
+end`,
+    expected:"フィボナッチ: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34\nカウンタ: 1, 2, 3, 4, 5\nタスクA 0\nタスクB 0\nタスクA 1\nタスクB 1\nタスクA 2\nタスクB 2",
+    explanation:"FiberはRubyの軽量コルーチンで、スレッドと違い明示的なyield/resumeで制御を移します。Enumeratorの内部もFiberで実装されています。Ruby 3.0のRactorとFiberを組み合わせた非同期I/Oや、async gem（HTTPX等）の基盤技術です。"
   }
 ];
 
@@ -8617,6 +9656,128 @@ const withFallback = catchError(
 })();`,
     expected:"Result: 84\nfallback for negative",
     explanation:"エフェクトシステムは副作用（IO・エラー・非同期）を型で追跡します。Haskellの IO Monad、Scalaの ZIO、TypeScriptのeffect-tsはこの原理を実装しています。型エラーとして副作用の未処理を検出できます。"
+  },
+  { id:59, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"Template Literal Types でパスの型安全性",
+    question:"Template Literal Typesを使って、ネストされたオブジェクトの点区切りパス（'user.address.city'）の型を検証するGet<T, Path>型ユーティリティを実装してください。",
+    hint:"type Get<T, K extends string> = K extends \`\${infer F}.\${infer R}\` ? F extends keyof T ? Get<T[F], R> : never : K extends keyof T ? T[K] : never",
+    answer:
+`type Get<T, K extends string> =
+  K extends \`\${infer F}.\${infer R}\`
+    ? F extends keyof T
+      ? Get<T[F], R>
+      : never
+    : K extends keyof T
+      ? T[K]
+      : never;
+
+type DeepPath<T, Sep extends string = '.'> = T extends object
+  ? { [K in keyof T & string]: K | \`\${K}\${Sep}\${DeepPath<T[K]>}\` }[keyof T & string]
+  : never;
+
+interface User {
+  id: number;
+  name: string;
+  address: {
+    city: string;
+    zip: string;
+    country: { name: string; code: string };
+  };
+}
+
+function get<T, P extends DeepPath<T>>(obj: T, path: P): Get<T, P> {
+  return path.split('.').reduce((acc: any, key: string) => acc?.[key], obj) as Get<T, P>;
+}
+
+const user: User = { id: 1, name: 'Alice', address: { city: 'Tokyo', zip: '100-0001', country: { name: 'Japan', code: 'JP' } } };
+const city = get(user, 'address.city');
+const code = get(user, 'address.country.code');
+const name = get(user, 'name');
+console.log(city);
+console.log(code);
+console.log(name);
+// TypeScriptの型チェック（コンパイル時エラー）
+// const invalid = get(user, 'address.invalid'); // Type Error!`,
+    expected:"Tokyo\nJP\nAlice",
+    explanation:"Template Literal TypesはC strings extensionのような型操作。infer+再帰でネストパスの型を計算します。lodash.getのような型安全なバージョンをコンパイル時に検証できます。"
+  },
+  { id:60, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"Branded Types でドメインモデルの型安全性",
+    question:"Branded Types（Opaque Types）を使って、UserId・EmailAddress・PositiveNumberを型レベルで区別してください。誤った代入がコンパイル時エラーになることを確認してください。",
+    hint:"type Brand<B, T> = T & { readonly __brand: B }; type UserId = Brand<'UserId', string>",
+    answer:
+`type Brand<B, T> = T & { readonly __brand: B };
+
+type UserId = Brand<'UserId', string>;
+type Email = Brand<'Email', string>;
+type PositiveInt = Brand<'PositiveInt', number>;
+
+function userId(id: string): UserId {
+  if (!id.startsWith('user_')) throw new Error(\`Invalid UserId: \${id}\`);
+  return id as UserId;
+}
+
+function email(addr: string): Email {
+  if (!addr.includes('@')) throw new Error(\`Invalid Email: \${addr}\`);
+  return addr as Email;
+}
+
+function positiveInt(n: number): PositiveInt {
+  if (n <= 0 || !Number.isInteger(n)) throw new Error(\`Not a positive int: \${n}\`);
+  return n as PositiveInt;
+}
+
+interface User { id: UserId; email: Email; score: PositiveInt; }
+
+function createUser(id: UserId, email: Email, score: PositiveInt): User {
+  return { id, email, score };
+}
+
+const u = createUser(userId('user_001'), email('alice@example.com'), positiveInt(100));
+console.log(\`id: \${u.id}\`);
+console.log(\`email: \${u.email}\`);
+console.log(\`score: \${u.score}\`);
+// 型エラーになる（コンパイル時）：
+// createUser(email('a@b.com'), userId('user_x'), positiveInt(1)); // 引数順序ミス
+try { userId('invalid'); } catch (e) { console.log('Error:', (e as Error).message); }`,
+    expected:"id: user_001\nemail: alice@example.com\nscore: 100\nError: Invalid UserId: invalid",
+    explanation:"Branded Typesは型エイリアスに「ブランド」を付加して構造的型付けを名目的型付けに変えます。UserIdとEmailを誤って混同するバグをコンパイル時に防げます。"
+  },
+  { id:61, unit:"UNIT 15  ◆  OVERLORD — 言語の極致", rank:"OVERLORD",
+    title:"Variance（共変・反変・不変）の理解",
+    question:"TypeScriptの共変（covariance）・反変（contravariance）・不変（invariance）の動作を示してください。関数の引数・戻り値の型の互換性を実証してください。",
+    hint:"(a: Animal) => Cat は (a: Cat) => Animal のサブタイプ？ 引数は反変、戻り値は共変",
+    answer:
+`// 共変・反変のデモ
+interface Animal { name: string; }
+interface Dog extends Animal { breed: string; }
+interface Poodle extends Dog { size: 'small' | 'large'; }
+
+// 戻り値は共変（より具体的な型は互換）
+type AnimalFactory = () => Animal;
+type DogFactory = () => Dog;
+const dogFactory: DogFactory = () => ({ name: 'Rex', breed: 'Lab' });
+const animalFactory: AnimalFactory = dogFactory; // OK: Dog is Animal
+console.log(animalFactory().name);
+
+// 引数は反変（より汎用な型は互換）
+type AnimalHandler = (a: Animal) => void;
+type DogHandler = (a: Dog) => void;
+const handleAnimal: AnimalHandler = (a) => console.log(\`Animal: \${a.name}\`);
+const handleDog: DogHandler = handleAnimal; // OK: Animal handler can handle Dog
+handleDog({ name: 'Buddy', breed: 'Poodle' });
+
+// 不変：ジェネリッククラスのデフォルト
+class Box<T> { constructor(public value: T) {} }
+// const dogBox: Box<Animal> = new Box<Dog>({name:'x', breed:'y'}); // Error: 不変
+
+// readonly で共変に
+type ReadonlyBox<T> = { readonly value: T };
+const rDogBox: ReadonlyBox<Dog> = { value: { name: 'Max', breed: 'Husky' } };
+const rAnimalBox: ReadonlyBox<Animal> = rDogBox; // OK: 共変
+console.log(rAnimalBox.value.name);`,
+    expected:"Rex\nAnimal: Buddy\nMax",
+    explanation:"型の変性（Variance）はジェネリック型の互換性を決定します。戻り値は共変（より具体的→汎用に代入可）、引数は反変（より汎用→具体的に代入可）。TypeScriptは関数引数を双変（bivariant）にしていますが、strictFunctionTypesで反変を強制できます。"
   }
 ];
 
@@ -9945,6 +11106,127 @@ repeat(12) { stack.pop()?.let { results.add(it) } }
 println("popped: \${results.size}")`,
     expected:"size: 12\npopped: 12",
     explanation:"ロックフリーアルゴリズムはCAS（Compare And Swap）命令でスレッドセーフを実現します。mutexのオーバーヘッドなしに並行処理できます。java.util.concurrent.ConcurrentLinkedQueueもこの原理で実装されています。"
+  },
+  { id: 59, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "コルーチンと Flow：非同期データストリーム",
+    question: "Kotlin の Flow を使った非同期データパイプラインを実装してください（Wandbox上でkotlinx.coroutines使用）。\n①`tickerFlow(delayMs: Long, count: Int): Flow<Int>` — count個の数値を delayMs ずつ間隔で emit\n②Flow演算子チェーン（map/filter/take）でデータ変換\n③`combine` で2つのFlowを結合\n`runBlocking` 内で動作確認してください。",
+    hint: "flow { emit(value) } でFlowを作成します。collect { } でFlowを消費します。kotlinx.coroutines.flow.*をimportしてください。",
+    answer:
+`import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+
+fun tickerFlow(delayMs: Long, count: Int): Flow<Int> = flow {
+    for (i in 1..count) {
+        delay(delayMs)
+        emit(i)
+    }
+}
+
+fun main() = runBlocking {
+    tickerFlow(10, 10)
+        .filter { it % 2 == 0 }
+        .map { it * it }
+        .take(4)
+        .collect { println("偶数の2乗: $it") }
+
+    val flow1 = flow { for (i in listOf("A","B","C")) { delay(10); emit(i) } }
+    val flow2 = flow { for (i in listOf(1, 2, 3)) { delay(15); emit(i) } }
+
+    combine(flow1, flow2) { a, b -> "$a$b" }
+        .collect { println("結合: $it") }
+}`,
+    expected:"偶数の2乗: 4\n偶数の2乗: 16\n偶数の2乗: 36\n偶数の2乗: 64\n結合: A1\n結合: B1\n結合: B2\n結合: C2\n結合: C3",
+    explanation:"KotlinのFlowはコールドな非同期ストリームで、RxJavaのObservableに相当します。collectするまで処理が始まらないコールド性、map/filter/takeなどのRx風演算子、combineでの複数ストリーム合成がAndroid開発・バックエンドで広く使われています。"
+  },
+  { id: 60, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "sealed class とパターンマッチング：代数的データ型",
+    question: "sealed class を使って式評価器（代数的データ型）を実装してください。\n①`sealed class Expr` — Num(value: Double), Add(l: Expr, r: Expr), Mul(l: Expr, r: Expr), Neg(e: Expr), Div(l: Expr, r: Expr) を定義\n②`fun eval(expr: Expr): Double` — when式で再帰評価（Divは0除算でDouble.NaN）\n③`fun prettyPrint(expr: Expr): String` — 人間が読める形式に変換\n④式 `(3 + 4) * -(2 + 1)` を表現し評価して出力",
+    hint: "sealed classはwhen式で網羅性チェックができます。when(expr) { is Num -> ... is Add -> ... } の形で書きます。elselessなwhenにするとコンパイラが全ケースを強制します。",
+    answer:
+`sealed class Expr {
+    data class Num(val value: Double) : Expr()
+    data class Add(val l: Expr, val r: Expr) : Expr()
+    data class Mul(val l: Expr, val r: Expr) : Expr()
+    data class Neg(val e: Expr) : Expr()
+    data class Div(val l: Expr, val r: Expr) : Expr()
+}
+
+fun eval(expr: Expr): Double = when (expr) {
+    is Expr.Num -> expr.value
+    is Expr.Add -> eval(expr.l) + eval(expr.r)
+    is Expr.Mul -> eval(expr.l) * eval(expr.r)
+    is Expr.Neg -> -eval(expr.e)
+    is Expr.Div -> {
+        val d = eval(expr.r)
+        if (d == 0.0) Double.NaN else eval(expr.l) / d
+    }
+}
+
+fun prettyPrint(expr: Expr): String = when (expr) {
+    is Expr.Num -> expr.value.toInt().toString()
+    is Expr.Add -> "(${prettyPrint(expr.l)} + ${prettyPrint(expr.r)})"
+    is Expr.Mul -> "(${prettyPrint(expr.l)} * ${prettyPrint(expr.r)})"
+    is Expr.Neg -> "-(${prettyPrint(expr.e)})"
+    is Expr.Div -> "(${prettyPrint(expr.l)} / ${prettyPrint(expr.r)})"
+}
+
+fun main() {
+    val expr = Expr.Mul(
+        Expr.Add(Expr.Num(3.0), Expr.Num(4.0)),
+        Expr.Neg(Expr.Add(Expr.Num(2.0), Expr.Num(1.0)))
+    )
+    println("式: ${prettyPrint(expr)}")
+    println("結果: ${eval(expr).toInt()}")
+
+    val divByZero = Expr.Div(Expr.Num(5.0), Expr.Num(0.0))
+    println("0除算: ${eval(divByZero)}")
+}`,
+    expected:"式: ((3 + 4) * -((2 + 1)))\n結果: -21\n0除算: NaN",
+    explanation:"sealed classはKotlinの代数的データ型で、継承先をモジュール内に限定します。when式との組み合わせでHaskellのパターンマッチに近い網羅的な型安全コードが書けます。コンパイラが全ケースをカバーしているか検証するため、バグの混入を防げます。"
+  },
+  { id: 61, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Delegation と拡張関数：Kotlinらしい設計",
+    question: "Kotlinの委譲と拡張関数を使って以下を実装してください。\n①`interface Logger` (log(msg: String), warn(msg: String)) とその実装 `ConsoleLogger`\n②`class Service(private val logger: Logger) : Logger by logger` — インターフェース委譲\n③拡張関数 `String.toSlug()` — URLスラッグ変換（小文字、スペースをハイフン、英数字とハイフン以外を除去）\n④`List<T>.second()` 拡張関数\n⑤動作確認",
+    hint: "by キーワードでインターフェースの実装を別オブジェクトに委譲できます。拡張関数は既存クラスを変更せずにメソッドを追加します。",
+    answer:
+`interface Logger {
+    fun log(msg: String)
+    fun warn(msg: String)
+}
+
+class ConsoleLogger : Logger {
+    override fun log(msg: String)  = println("[LOG] $msg")
+    override fun warn(msg: String) = println("[WARN] $msg")
+}
+
+class Service(private val logger: Logger) : Logger by logger {
+    fun process(input: String) {
+        log("処理開始: $input")
+        if (input.isEmpty()) warn("入力が空です")
+        else log("処理完了")
+    }
+}
+
+fun String.toSlug(): String =
+    this.lowercase()
+        .replace(" ", "-")
+        .replace(Regex("[^a-z0-9-]"), "")
+
+fun <T> List<T>.second(): T {
+    if (size < 2) throw NoSuchElementException("List has less than 2 elements")
+    return this[1]
+}
+
+fun main() {
+    val service = Service(ConsoleLogger())
+    service.process("Hello World")
+    service.process("")
+
+    println("Hello World 2024!".toSlug())
+    println(listOf("a", "b", "c").second())
+}`,
+    expected:"[LOG] 処理開始: Hello World\n[LOG] 処理完了\n[LOG] 処理開始: \n[WARN] 入力が空です\nhello-world-2024\nb",
+    explanation:"Kotlinの委譲パターン（by）はデコレータ・ラッパーのボイラープレートを排除します。インターフェースの全メソッドを自動委譲し、必要なメソッドだけオーバーライドできます。拡張関数はC#の拡張メソッドに相当し、既存ライブラリのクラスにメソッドを追加できます。"
   }
 ];
 
@@ -11414,6 +12696,148 @@ Task {
 Thread.sleep(forTimeInterval: 0.5)`,
     expected:"[A] received: ping(from: \"B\")\n[A] sending pong to B\n[B] received: pong(from: \"A\")\n[B] got pong from A\ndone",
     explanation:"分散アクターシステムはErlang/Akkaのモデルです。Swift 5.9のDistributed Actorフレームワークはこれをリモートノードに拡張します。メッセージパッシングで状態共有なしに並行処理が安全に行えます。"
+  },
+  { id: 59, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "ResultBuilder：カスタムDSL構文",
+    question: "@resultBuilder を使ってHTMLビルダーDSLを実装してください。\n①`@resultBuilder struct HTMLBuilder` — String配列のブロックを1つの文字列に結合\n②`html { }`, `body { }`, `div { }`, `p(_ text: String) -> String` などのDSL関数\n③ビルダーを使って簡単なHTMLページを記述し、出力してください。",
+    hint: "@resultBuilderではstatic func buildBlock(_ components: String...) -> String を実装します。各DSL関数はString型の値を返し、@HTMLBuilderアノテーションのブロックに渡します。",
+    answer:
+`@resultBuilder
+struct HTMLBuilder {
+    static func buildBlock(_ components: String...) -> String {
+        components.joined(separator: "\\n")
+    }
+}
+
+func html(@HTMLBuilder content: () -> String) -> String {
+    "<html>\\n\\(content())\\n</html>"
+}
+
+func body(@HTMLBuilder content: () -> String) -> String {
+    "  <body>\\n\\(content().split(separator: "\\n").map { "    \\($0)" }.joined(separator: "\\n"))\\n  </body>"
+}
+
+func div(@HTMLBuilder content: () -> String) -> String {
+    "    <div>\\n\\(content().split(separator: "\\n").map { "      \\($0)" }.joined(separator: "\\n"))\\n    </div>"
+}
+
+func h1(_ text: String) -> String { "<h1>\\(text)</h1>" }
+func p(_ text: String) -> String { "<p>\\(text)</p>" }
+
+let page = html {
+    body {
+        div {
+            h1("Swift DSL")
+            p("ResultBuilderで型安全なHTMLを構築")
+            p("SwiftUIの内部もこの仕組みです")
+        }
+    }
+}
+
+print(page)`,
+    expected:"<html>\n  <body>\n    <div>\n      <h1>Swift DSL</h1>\n      <p>ResultBuilderで型安全なHTMLを構築</p>\n      <p>SwiftUIの内部もこの仕組みです</p>\n    </div>\n  </body>\n</html>",
+    explanation:"@resultBuilderはSwift 5.4で導入され、SwiftUIのViewBuilderがまさにこれです。通常の関数呼び出しの羅列をDSL的なブロック構文として書けるよう変換します。カスタムDSLをプログラミング言語レベルで設計できる強力な機能です。"
+  },
+  { id: 60, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Opaque Types と Protocol with associatedtype",
+    question: "Swiftのassociatedtype付きプロトコルとOpaque Typeを使って実装してください。\n①`protocol Container` — associatedtype Item と、append/count/subscript を定義\n②`struct IntStack: Container` を実装\n③`func makeContainer() -> some Container` でOpaque Typeを返す\n④`func printAllItems<C: Container>(_ container: C)` でジェネリック関数\n動作確認してください。",
+    hint: "some Container はコンパイラが型を知っているが呼び出し側には隠蔽されるOpaque Type。any Containerはexistential typeで実行時の型消去です。",
+    answer:
+`protocol Container {
+    associatedtype Item
+    mutating func append(_ item: Item)
+    var count: Int { get }
+    subscript(i: Int) -> Item { get }
+}
+
+struct IntStack: Container {
+    typealias Item = Int
+    private var items: [Int] = []
+
+    mutating func append(_ item: Int) { items.append(item) }
+    var count: Int { items.count }
+    subscript(i: Int) -> Int { items[i] }
+
+    mutating func push(_ n: Int) { append(n) }
+    mutating func pop() -> Int? { items.isEmpty ? nil : items.removeLast() }
+}
+
+func makeContainer() -> some Container {
+    var stack = IntStack()
+    stack.append(10)
+    stack.append(20)
+    stack.append(30)
+    return stack
+}
+
+func printAllItems<C: Container>(_ container: C) where C.Item: CustomStringConvertible {
+    for i in 0..<container.count {
+        print(container[i])
+    }
+}
+
+var stack = IntStack()
+stack.push(1); stack.push(2); stack.push(3)
+printAllItems(stack)
+
+let opaque = makeContainer()
+print("Opaque count:", opaque.count)`,
+    expected:"1\n2\n3\nOpaque count: 3",
+    explanation:"SwiftのOpaqueType（some Protocol）はSwiftUI 5.1で導入されBody型の隠蔽に使われます。associatedtypeがあるプロトコルは直接型として使えないため、generics（<C: Container>）かsome/any が必要です。APIの実装詳細を隠しながら型安全性を保てます。"
+  },
+  { id: 61, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "PropertyWrapper：カスタム属性",
+    question: "@propertyWrapper を使って以下を実装してください。\n①`@Clamped(min:max:)` — 値を指定範囲にクランプするラッパー\n②`@Logged` — get/setのたびにアクセスログを出力するラッパー（print使用）\n③`@UserDefault(key:defaultValue:)` — UserDefaultsへの読み書きをラップ（Wandboxでは通常のDictに代替）\n各ラッパーを使った構造体を定義し動作確認してください。",
+    hint: "@propertyWrapper struct では wrappedValue プロパティを定義します。projectedValue で $property でアクセスできる追加値を提供できます。",
+    answer:
+`@propertyWrapper
+struct Clamped<T: Comparable> {
+    private var value: T
+    let min: T, max: T
+
+    init(wrappedValue: T, min: T, max: T) {
+        self.min = min; self.max = max
+        self.value = Swift.max(min, Swift.min(max, wrappedValue))
+    }
+
+    var wrappedValue: T {
+        get { value }
+        set { value = Swift.max(min, Swift.min(max, newValue)) }
+    }
+}
+
+@propertyWrapper
+struct Logged<T> {
+    private var value: T
+    let label: String
+
+    init(wrappedValue: T, label: String) {
+        self.value = wrappedValue
+        self.label = label
+    }
+
+    var wrappedValue: T {
+        get { print("[GET] \\(label) = \\(value)"); return value }
+        set { print("[SET] \\(label): \\(value) → \\(newValue)"); value = newValue }
+    }
+}
+
+struct Settings {
+    @Clamped(min: 0, max: 100) var volume: Int = 50
+    @Clamped(min: -90.0, max: 90.0) var latitude: Double = 0.0
+    @Logged(label: "username") var username: String = "Guest"
+}
+
+var s = Settings()
+print("volume:", s.volume)
+s.volume = 150
+print("volume after 150:", s.volume)
+s.volume = -10
+print("volume after -10:", s.volume)
+s.username = "Alice"
+_ = s.username`,
+    expected:"volume: 50\nvolume after 150: 100\nvolume after -10: 0\n[SET] username: Guest → Alice\n[GET] username = Alice",
+    explanation:"@propertyWrapperはSwift 5.1の機能でSwiftUIの@State/@Binding/@Published実装に使われています。プロパティのアクセスに共通処理を宣言的に付与できます。RxSwift/Combineの@Publishedや型安全なUserDefaultsラッパーなど実務でも広く活用されます。"
   }
 ];
 
@@ -12768,6 +14192,137 @@ public class Main {
 }`,
     expected:"off-heap sum of squares: 285\nbyte size: 40\ntrue\nmemory released",
     explanation:"Java 21のFFM（Foreign Function & Memory）APIはUnsafeの安全な後継です。オフヒープメモリはGCの影響を受けず大容量データ処理に適しています。Netty・Apache Arrow・Luceneはオフヒープを活用します。"
+  },
+  { id: 59, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "sealed interface と Pattern Matching（Java 21）",
+    question: "Java 21のsealed interfaceとパターンマッチングを使って式評価器を実装してください。\n①`sealed interface Shape` — record Circle(double r), Rectangle(double w, double h), Triangle(double b, double h) を permits で許可\n②`double area(Shape s)` — switch式とパターンマッチング（case Circle c ->）で面積計算\n③`String describe(Shape s)` — guardパターン（case Circle c when c.r() > 10 ->）で詳細分類\n各Shapeのarea()とdescribe()を出力してください。",
+    hint: "Java 21のswitch expressionでcase Pattern when guard -> の形でガード条件付きパターンマッチができます。sealedによりswitchの網羅性チェックが機能します。",
+    answer:
+`public class Main {
+    sealed interface Shape permits Main.Circle, Main.Rectangle, Main.Triangle {}
+    record Circle(double r) implements Shape {}
+    record Rectangle(double w, double h) implements Shape {}
+    record Triangle(double b, double h) implements Shape {}
+
+    static double area(Shape s) {
+        return switch (s) {
+            case Circle c    -> Math.PI * c.r() * c.r();
+            case Rectangle r -> r.w() * r.h();
+            case Triangle t  -> 0.5 * t.b() * t.h();
+        };
+    }
+
+    static String describe(Shape s) {
+        return switch (s) {
+            case Circle c when c.r() > 10 -> "大きな円 (r=" + c.r() + ")";
+            case Circle c                 -> "小さな円 (r=" + c.r() + ")";
+            case Rectangle r when r.w() == r.h() -> "正方形 (辺=" + r.w() + ")";
+            case Rectangle r              -> "長方形 (" + r.w() + "x" + r.h() + ")";
+            case Triangle t               -> "三角形 (底=" + t.b() + " 高=" + t.h() + ")";
+        };
+    }
+
+    public static void main(String[] args) {
+        Shape[] shapes = {
+            new Circle(5), new Circle(15),
+            new Rectangle(4, 4), new Rectangle(3, 7),
+            new Triangle(6, 8)
+        };
+        for (Shape s : shapes) {
+            System.out.printf("%s: 面積=%.2f%n", describe(s), area(s));
+        }
+    }
+}`,
+    expected:"小さな円 (r=5.0): 面積=78.54\n大きな円 (r=15.0): 面積=706.86\n正方形 (辺=4.0): 面積=16.00\n長方形 (3.0x7.0): 面積=21.00\n三角形 (底=6.0 高=8.0): 面積=24.00",
+    explanation:"Java 21のsealed interface + record + switch pattern matchingはHaskellの代数的データ型に迫る表現力を持ちます。sealedにより継承先を限定し、switchの網羅性チェックでelse忘れをコンパイル時に検出します。Java 17から段階的に正式化された現代的なJavaの書き方です。"
+  },
+  { id: 60, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Virtual Threads（Java 21）と構造化並行性",
+    question: "Java 21のVirtual Threads（Project Loom）を使って以下を実装してください。\n①`Thread.ofVirtual().start()` でVirtual Threadを作成\n②`Executors.newVirtualThreadPerTaskExecutor()` で大量タスクを並行実行（1000タスク）\n③各タスクはThread.sleep(10)をシミュレートし完了カウンタをAtomicIntegerでインクリメント\n④実行時間と完了数を出力（Platform ThreadとVirtual Threadの違いをコメントで説明）",
+    hint: "Virtual ThreadはOSスレッドを消費せずJVMが管理する軽量スレッドです。ブロッキングI/O中はキャリアスレッドを解放します。",
+    answer:
+`import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        int taskCount = 1000;
+        AtomicInteger completed = new AtomicInteger(0);
+        long start = System.currentTimeMillis();
+
+        // Virtual Thread Per Task Executor
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            var futures = new java.util.ArrayList<Future<?>>();
+            for (int i = 0; i < taskCount; i++) {
+                futures.add(executor.submit(() -> {
+                    Thread.sleep(10); // I/Oをシミュレート
+                    completed.incrementAndGet();
+                    return null;
+                }));
+            }
+            for (var f : futures) f.get();
+        }
+
+        long elapsed = System.currentTimeMillis() - start;
+        System.out.println("完了タスク数: " + completed.get());
+        System.out.println("Virtual Thread使用: " + Thread.currentThread().isVirtual());
+        // Platform Threadなら ~10000ms、Virtual Threadなら ~10ms
+        System.out.println("高速完了: " + (elapsed < 1000));
+    }
+}`,
+    expected:"完了タスク数: 1000\nVirtual Thread使用: false\n高速完了: true",
+    explanation:"Java 21のVirtual Threads（Project Loom）は1つのOSスレッドで何千ものVirtual Threadを多重化します。ブロッキングI/O中はOSスレッドをブロックせず他のVirtual Threadが実行されます。Node.jsのイベントループ的な効率をJavaの同期スタイルのコードで実現できます。"
+  },
+  { id: 61, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Stream APIの高度活用とCollectors",
+    question: "Java Stream APIの高度な使い方を実装してください。\n①`record Employee(String name, String dept, int salary)` を使ってデータを定義\n②`Collectors.groupingBy` で部門ごとに集計（部門→従業員リスト）\n③`Collectors.groupingBy + Collectors.averagingInt` で部門ごと平均給与\n④`Collectors.teeing` で最高・最低給与を同時計算\n⑤`flatMap` でネストしたStreamを平坦化",
+    hint: "Collectors.teeing(downstream1, downstream2, merger)はJava 12で追加されストリームを2つのコレクタで並行収集します。",
+    answer:
+`import java.util.*;
+import java.util.stream.*;
+
+public class Main {
+    record Employee(String name, String dept, int salary) {}
+
+    public static void main(String[] args) {
+        List<Employee> employees = List.of(
+            new Employee("Alice",   "Engineering", 90000),
+            new Employee("Bob",     "Engineering", 85000),
+            new Employee("Carol",   "Marketing",   70000),
+            new Employee("Dave",    "Marketing",   75000),
+            new Employee("Eve",     "Engineering", 95000),
+            new Employee("Frank",   "HR",          60000)
+        );
+
+        // 部門ごと人数
+        Map<String, Long> countByDept = employees.stream()
+            .collect(Collectors.groupingBy(Employee::dept, Collectors.counting()));
+        countByDept.entrySet().stream()
+            .sorted(Map.Entry.comparingByKey())
+            .forEach(e -> System.out.println(e.getKey() + ": " + e.getValue() + "人"));
+
+        // 部門ごと平均給与
+        Map<String, Double> avgByDept = employees.stream()
+            .collect(Collectors.groupingBy(Employee::dept, Collectors.averagingInt(Employee::salary)));
+        System.out.println("Engineering平均: " + avgByDept.get("Engineering").intValue());
+
+        // teeingで最高・最低
+        var stats = employees.stream()
+            .collect(Collectors.teeing(
+                Collectors.maxBy(Comparator.comparingInt(Employee::salary)),
+                Collectors.minBy(Comparator.comparingInt(Employee::salary)),
+                (max, min) -> Map.of("max", max.get(), "min", min.get())
+            ));
+        System.out.println("最高: " + stats.get("max").name() + " " + stats.get("max").salary());
+        System.out.println("最低: " + stats.get("min").name() + " " + stats.get("min").salary());
+
+        // flatMap
+        List<List<Integer>> nested = List.of(List.of(1,2), List.of(3,4), List.of(5));
+        System.out.println(nested.stream().flatMap(Collection::stream).collect(Collectors.toList()));
+    }
+}`,
+    expected:"Engineering: 3人\nHR: 1人\nMarketing: 2人\nEngineering平均: 90000\n最高: Eve 95000\n最低: Frank 60000\n[1, 2, 3, 4, 5]",
+    explanation:"Java Stream APIのCollectorsは関数型プログラミングの集約操作を実現します。groupingByでSQLのGROUP BY相当、teeingは2つの集計を1パスで行うSQL的なWINDOW関数的処理です。大量データのメモリ効率的な処理にパラレルStream（.parallel()）と組み合わせます。"
   }
 ];
 
@@ -14286,6 +15841,154 @@ async Task Demo() {
 Demo().Wait();`,
     expected:"condition met: True, counter: 42\ntimeout: True",
     explanation:"INotifyCompletionを実装するとawait可能な独自型を作れます。Task・ValueTask・YieldAwaitable・ConfiguredTaskAwaitable も同じ仕組みです。高性能非同期コードではValueTask+プールされたAwaiterでアロケーションを削減します。"
+  },
+  { id: 59, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Source Generators：コンパイル時コード生成",
+    question: "C#のリフレクションを使ってSource Generatorの挙動をシミュレートしてください（Wandboxではリフレクションで代替）。\n①`[AttributeUsage(AttributeTargets.Property)] class AutoNotifyAttribute` を定義\n②リフレクションで AutoNotify属性を持つプロパティを検出し、INotifyPropertyChanged の実装コードを文字列として生成\n③`[AutoNotify] プロパティを持つ `PersonViewModel` クラスをProxyパターンで実装（INotifyPropertyChanged + SetProperty メソッド）\n④プロパティ変更イベントの発火を確認",
+    hint: "Source Generatorsは本来ISourceGeneratorを実装しますが、Wandboxでは実行時リフレクション＋Proxyパターンで同等の効果を実現します。",
+    answer:
+`using System;
+using System.ComponentModel;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+
+[AttributeUsage(AttributeTargets.Property)]
+class AutoNotifyAttribute : Attribute {}
+
+class ViewModelBase : INotifyPropertyChanged {
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? name = null) {
+        if (Equals(field, value)) return false;
+        field = value;
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        return true;
+    }
+}
+
+class PersonViewModel : ViewModelBase {
+    private string _name = "";
+    private int _age;
+
+    [AutoNotify]
+    public string Name {
+        get => _name;
+        set => SetProperty(ref _name, value);
+    }
+
+    [AutoNotify]
+    public int Age {
+        get => _age;
+        set => SetProperty(ref _age, value);
+    }
+}
+
+// AutoNotify属性を持つプロパティをリフレクションで検出（Source Generator の役割をシミュレート）
+static void InspectAutoNotify(Type t) {
+    Console.WriteLine($"AutoNotifyプロパティ in {t.Name}:");
+    foreach (var prop in t.GetProperties()) {
+        if (prop.GetCustomAttribute<AutoNotifyAttribute>() != null) {
+            Console.WriteLine($"  → {prop.Name}: {prop.PropertyType.Name}");
+        }
+    }
+}
+
+var vm = new PersonViewModel();
+vm.PropertyChanged += (s, e) => Console.WriteLine($"Changed: {e.PropertyName}");
+
+vm.Name = "Alice";
+vm.Age = 30;
+vm.Age = 30; // 同じ値は発火しない
+vm.Name = "Bob";
+
+InspectAutoNotify(typeof(PersonViewModel));`,
+    expected:"Changed: Name\nChanged: Age\nChanged: Name\nAutoNotifyプロパティ in PersonViewModel:\n  → Name: String\n  → Age: Int32",
+    explanation:"C# Source Generatorsはコンパイル時にコードを生成します。[AutoNotify]属性をマークするだけでINotifyPropertyChangedのボイラープレートを自動生成できます。.NET 6+のSystem.Text.JsonシリアライザはSource Generator版で実行時リフレクションを排除し高速化しています。"
+  },
+  { id: 60, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Span<T> と Memory<T>：ゼロコピー操作",
+    question: "C# の Span<T> と Memory<T> を使ってゼロコピーデータ処理を実装してください。\n①`Span<byte>` でバイト配列をスライス操作（コピーなし）\n②`MemoryMarshal.Cast<byte, int>` でバイト列をint列として再解釈\n③`ReadOnlySpan<char>` で文字列を切り出しパース（string.AsSpan()）\n④`stackalloc` でスタック上に配列を確保しSpanで操作",
+    hint: "Span<T>はスタック上に確保されるref構造体でヒープアロケーションなしにメモリスライスを操作します。Memory<T>はheapに保存可能なSpanの拡張です。",
+    answer:
+`using System;
+using System.Runtime.InteropServices;
+
+// 1. Span<byte>でスライス操作
+byte[] data = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+Span<byte> span = data.AsSpan();
+Span<byte> middle = span.Slice(2, 6);
+Console.WriteLine("スライス[2..8]: " + string.Join(",", middle.ToArray()));
+
+// 2. Cast: byte[] → int[] として再解釈（リトルエンディアン）
+byte[] intBytes = BitConverter.GetBytes(12345678);
+ReadOnlySpan<int> intSpan = MemoryMarshal.Cast<byte, int>(intBytes);
+Console.WriteLine("バイト→int: " + intSpan[0]);
+
+// 3. ReadOnlySpan<char> で文字列パース（allocなし）
+ReadOnlySpan<char> csv = "Alice,30,Tokyo".AsSpan();
+int idx1 = csv.IndexOf(',');
+ReadOnlySpan<char> name = csv.Slice(0, idx1);
+ReadOnlySpan<char> rest = csv.Slice(idx1 + 1);
+int idx2 = rest.IndexOf(',');
+int age = int.Parse(rest.Slice(0, idx2));
+Console.WriteLine($"名前: {name.ToString()}, 年齢: {age}");
+
+// 4. stackalloc でスタックに確保
+Span<int> stacked = stackalloc int[5];
+for (int i = 0; i < 5; i++) stacked[i] = (i + 1) * (i + 1);
+Console.WriteLine("stackalloc: " + string.Join(",", stacked.ToArray()));`,
+    expected:"スライス[2..8]: 3,4,5,6,7,8\nバイト→int: 12345678\n名前: Alice, 年齢: 30\nstackalloc: 1,4,9,16,25",
+    explanation:"Span<T>はC#のゼロコピー操作の要です。string.AsSpan()で部分文字列抽出にもアロケーションが不要です。ASP.NET CoreのHTTPパーサーやSystem.Text.JsonはSpan<T>で高速化されています。stackallocでスタックに確保しGCプレッシャーを削減します。"
+  },
+  { id: 61, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "LINQ の内部実装：カスタムIEnumerable",
+    question: "カスタムのIEnumerable<T>とIEnumerator<T>を実装してLINQの内部動作を理解してください。\n①`InfiniteRange` — 0から無限に続く整数シーケンスを `yield return` なしで IEnumerator として実装\n②`LazyWhere<T>` — フィルタの遅延評価をIEnumerable<T>として実装\n③`LazySelect<T, U>` — 変換の遅延評価を実装\n④カスタムIEnumerableをLINQの.Where()/.Select()/.Take()と組み合わせて動作確認",
+    hint: "IEnumerator<T>はMoveNext()/Current/Reset()を実装します。遅延評価により必要な要素だけ計算されます。",
+    answer:
+`using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+
+class InfiniteRange : IEnumerable<int> {
+    public IEnumerator<int> GetEnumerator() => new InfiniteEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    class InfiniteEnumerator : IEnumerator<int> {
+        private int _current = -1;
+        public int Current => _current;
+        object IEnumerator.Current => _current;
+        public bool MoveNext() { _current++; return true; }
+        public void Reset() { _current = -1; }
+        public void Dispose() {}
+    }
+}
+
+class LazyWhere<T> : IEnumerable<T> {
+    private readonly IEnumerable<T> _source;
+    private readonly Func<T, bool> _pred;
+    public LazyWhere(IEnumerable<T> source, Func<T, bool> pred) { _source = source; _pred = pred; }
+
+    public IEnumerator<T> GetEnumerator() {
+        foreach (var item in _source)
+            if (_pred(item)) yield return item;
+    }
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+}
+
+var range = new InfiniteRange();
+var evens = new LazyWhere<int>(range, n => n % 2 == 0);
+var first5even = evens.Take(5).Select(n => n * n).ToList();
+Console.WriteLine("偶数の2乗(最初の5個): " + string.Join(", ", first5even));
+
+// LINQ chainと組み合わせ
+var result = new InfiniteRange()
+    .Where(n => n % 3 == 0)
+    .Select(n => $"FizzMultiple:{n}")
+    .Take(4);
+foreach (var s in result) Console.WriteLine(s);`,
+    expected:"偶数の2乗(最初の5個): 0, 4, 16, 36, 64\nFizzMultiple:0\nFizzMultiple:3\nFizzMultiple:6\nFizzMultiple:9",
+    explanation:"LINQのWhereやSelectはIEnumerable<T>のデコレータパターンで遅延評価を実現します。要素は.GetEnumerator()でMoveNextが呼ばれるまで計算されません。InfiniteRangeが無限シーケンスでも.Take(5)まで評価されるのはこの遅延評価のためです。"
   }
 ];
 
@@ -16085,6 +17788,311 @@ func main() {
 }`,
     expected:"31\n80",
     explanation:"Lexer→Parser→Evaluatorのパイプラインはすべての言語処理系の基礎です。Goのシンプルなinterface設計がAST評価パターンを書きやすくします。Go自身のコンパイラもこの3段階で実装されています。"
+  },
+  { id: 59, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Generics：型制約と型パラメータ",
+    question: "Go 1.18+ のジェネリクスを使って以下を実装してください。\n①型制約 `Ordered`（int/float64/string を許容）を定義し、Min[T Ordered](a, b T) T を実装\n②型パラメータつき Stack[T any] 構造体（Push/Pop/Len メソッド）を実装\n③Map[T, U any](slice []T, f func(T) U) []U を実装\nそれぞれ動作確認してください。",
+    hint: "型制約は interface{ ~int | ~float64 | ~string } の形で定義します。Stack は内部に []T を持ちます。",
+    answer:
+`package main
+
+import "fmt"
+
+type Ordered interface {
+    ~int | ~float64 | ~string
+}
+
+func Min[T Ordered](a, b T) T {
+    if a < b { return a }
+    return b
+}
+
+type Stack[T any] struct {
+    items []T
+}
+
+func (s *Stack[T]) Push(v T)      { s.items = append(s.items, v) }
+func (s *Stack[T]) Pop() (T, bool) {
+    var zero T
+    if len(s.items) == 0 { return zero, false }
+    v := s.items[len(s.items)-1]
+    s.items = s.items[:len(s.items)-1]
+    return v, true
+}
+func (s *Stack[T]) Len() int { return len(s.items) }
+
+func Map[T, U any](slice []T, f func(T) U) []U {
+    result := make([]U, len(slice))
+    for i, v := range slice { result[i] = f(v) }
+    return result
+}
+
+func main() {
+    fmt.Println(Min(3, 7))
+    fmt.Println(Min("apple", "banana"))
+
+    s := &Stack[int]{}
+    s.Push(1); s.Push(2); s.Push(3)
+    fmt.Println(s.Len())
+    v, _ := s.Pop()
+    fmt.Println(v)
+
+    doubled := Map([]int{1, 2, 3, 4}, func(x int) int { return x * 2 })
+    fmt.Println(doubled)
+}`,
+    expected:"3\napple\n3\n3\n[2 4 6 8]",
+    explanation:"Go 1.18で導入されたジェネリクスは型安全なコレクション操作やアルゴリズムを実現します。~int はintの基底型がintのすべての型（type MyInt int等）を含む型集合です。型パラメータは関数・構造体・メソッドに付けられます。"
+  },
+  { id: 60, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "並行パターン：Fan-out / Fan-in",
+    question: "goroutine と channel を使ったパイプラインを実装してください。\n①generator(nums ...int) <-chan int でスライスをチャンネルに流す\n②sq(in <-chan int) <-chan int で各値を2乗するワーカー\n③merge(cs ...<-chan int) <-chan int で複数チャンネルをfan-inする\n2つの sq ワーカーで [1,2,3,4,5] を並列2乗してmergeし、結果をすべて出力してください（順不同可）。",
+    hint: "merge は sync.WaitGroup と goroutine を使って全入力チャンネルを並行読み取りします。出力チャンネルは全ワーカー完了後にcloseします。",
+    answer:
+`package main
+
+import (
+    "fmt"
+    "sort"
+    "sync"
+)
+
+func generator(nums ...int) <-chan int {
+    out := make(chan int)
+    go func() {
+        for _, n := range nums { out <- n }
+        close(out)
+    }()
+    return out
+}
+
+func sq(in <-chan int) <-chan int {
+    out := make(chan int)
+    go func() {
+        for n := range in { out <- n * n }
+        close(out)
+    }()
+    return out
+}
+
+func merge(cs ...<-chan int) <-chan int {
+    var wg sync.WaitGroup
+    out := make(chan int)
+    output := func(c <-chan int) {
+        for n := range c { out <- n }
+        wg.Done()
+    }
+    wg.Add(len(cs))
+    for _, c := range cs { go output(c) }
+    go func() { wg.Wait(); close(out) }()
+    return out
+}
+
+func main() {
+    in := generator(1, 2, 3, 4, 5)
+
+    c1 := sq(in)
+    c2 := sq(generator(0))
+    _ = c2
+
+    in2 := generator(1, 2, 3, 4, 5)
+    half1 := generator(1, 2, 3)
+    half2 := generator(4, 5)
+    _ = in2
+
+    results := []int{}
+    for n := range merge(sq(half1), sq(half2)) {
+        results = append(results, n)
+    }
+    sort.Ints(results)
+    fmt.Println(results)
+    _ = c1
+}`,
+    expected:"[1 4 9 16 25]",
+    explanation:"Fan-out/Fan-inパターンはGoの並行処理の基本です。複数のgoroutineで並列処理し、mergeで統合することでCPUを効率利用します。sync.WaitGroupで全ワーカーの完了を待ちchannelをcloseするのが定石です。"
+  },
+  { id: 61, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "reflect パッケージ：実行時型操作",
+    question: "reflect パッケージを使って以下を実装してください。\n①任意の構造体を受け取り、フィールド名とタグと値を出力する `Inspect(v interface{})` 関数\n②任意の構造体の `json` タグを読んで map[string]interface{} に変換する `ToMap(v interface{}) map[string]interface{}` 関数\n以下の構造体で動作確認してください：\ntype User struct { Name string `json:\"name\"`; Age int `json:\"age\"`; Email string `json:\"email,omitempty\"` }",
+    hint: "reflect.TypeOf でフィールド情報、reflect.ValueOf でフィールド値を取得します。Field(i).Tag.Get(\"json\")でタグを取得します。",
+    answer:
+`package main
+
+import (
+    "fmt"
+    "reflect"
+    "strings"
+)
+
+type User struct {
+    Name  string \`json:"name"\`
+    Age   int    \`json:"age"\`
+    Email string \`json:"email,omitempty"\`
+}
+
+func Inspect(v interface{}) {
+    t := reflect.TypeOf(v)
+    val := reflect.ValueOf(v)
+    if t.Kind() == reflect.Ptr {
+        t = t.Elem(); val = val.Elem()
+    }
+    for i := 0; i < t.NumField(); i++ {
+        f := t.Field(i)
+        fmt.Printf("Field: %s, Tag: %s, Value: %v\n", f.Name, f.Tag.Get("json"), val.Field(i).Interface())
+    }
+}
+
+func ToMap(v interface{}) map[string]interface{} {
+    result := make(map[string]interface{})
+    t := reflect.TypeOf(v)
+    val := reflect.ValueOf(v)
+    if t.Kind() == reflect.Ptr {
+        t = t.Elem(); val = val.Elem()
+    }
+    for i := 0; i < t.NumField(); i++ {
+        f := t.Field(i)
+        tag := f.Tag.Get("json")
+        if tag == "" || tag == "-" { continue }
+        key := strings.Split(tag, ",")[0]
+        result[key] = val.Field(i).Interface()
+    }
+    return result
+}
+
+func main() {
+    u := User{Name: "Alice", Age: 30, Email: "alice@example.com"}
+    Inspect(u)
+    m := ToMap(u)
+    fmt.Println(m["name"], m["age"], m["email"])
+}`,
+    expected:"Field: Name, Tag: name, Value: Alice\nField: Age, Tag: age, Value: 30\nField: Email, Tag: email,omitempty, Value: alice@example.com\nAlice 30 alice@example.com",
+    explanation:"reflectパッケージはGoのメタプログラミングの要です。encoding/jsonやgormのORMはreflectで実装されています。TypeOf/ValueOfでランタイムの型情報を取得し、フィールドのタグ・型・値を動的に操作できます。"
+  },
+  { id: 62, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Context：タイムアウトとキャンセル伝播",
+    question: "context パッケージを使ってキャンセル伝播を実装してください。\n①`fetchData(ctx context.Context, id int) (string, error)` — 200ms かかる処理をシミュレート（time.Sleep + select で ctx.Done を監視）\n②`processAll(ctx context.Context, ids []int) []string` — 各IDをgoroutineで並列フェッチし、100ms タイムアウトで打ち切る\n③メインでids=[1,2,3]を100msタイムアウトで実行し、取得できた結果数を出力してください。",
+    hint: "context.WithTimeout で親コンテキストにタイムアウトを設定します。goroutine内でselect { case <-ctx.Done(): return \"\", ctx.Err() } でキャンセルを検知します。",
+    answer:
+`package main
+
+import (
+    "context"
+    "fmt"
+    "sync"
+    "time"
+)
+
+func fetchData(ctx context.Context, id int) (string, error) {
+    select {
+    case <-time.After(200 * time.Millisecond):
+        return fmt.Sprintf("data-%d", id), nil
+    case <-ctx.Done():
+        return "", ctx.Err()
+    }
+}
+
+func processAll(ctx context.Context, ids []int) []string {
+    var mu sync.Mutex
+    var wg sync.WaitGroup
+    results := []string{}
+
+    for _, id := range ids {
+        wg.Add(1)
+        go func(id int) {
+            defer wg.Done()
+            v, err := fetchData(ctx, id)
+            if err == nil {
+                mu.Lock()
+                results = append(results, v)
+                mu.Unlock()
+            }
+        }(id)
+    }
+    wg.Wait()
+    return results
+}
+
+func main() {
+    ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+    defer cancel()
+
+    results := processAll(ctx, []int{1, 2, 3})
+    fmt.Printf("取得できた結果数: %d\n", len(results))
+
+    ctx2, cancel2 := context.WithTimeout(context.Background(), 300*time.Millisecond)
+    defer cancel2()
+    results2 := processAll(ctx2, []int{1, 2, 3})
+    fmt.Printf("取得できた結果数: %d\n", len(results2))
+}`,
+    expected:"取得できた結果数: 0\n取得できた結果数: 3",
+    explanation:"contextパッケージはGoにおけるキャンセル・タイムアウト・値伝播の標準メカニズムです。WithTimeout/WithCancelで親から子へキャンセルが伝播し、goroutineのリークを防ぎます。サーバーのリクエストハンドラでは必ずctxを第一引数で受け取り伝播させます。"
+  },
+  { id: 63, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "カスタムエラー型とエラーラッピング",
+    question: "Go 1.13+ のエラーラッピングを使って以下を実装してください。\n①`ValidationError` 型（Field string, Message string フィールドを持ち Error() を実装）\n②`DBError` 型（Op string, Err error を持ち Error()/Unwrap() を実装）\n③validate(age int) error — 0以下なら ValidationError を返す\n④saveUser(age int) error — validate を呼び、失敗なら DBError でラップして返す\n⑤エラーチェック: errors.Is / errors.As で型を確認し適切なメッセージを出力",
+    hint: "errors.As(err, &target) で特定の型のエラーを取り出せます。Unwrap() error を実装するとerrors.Isの連鎖検索に対応します。",
+    answer:
+`package main
+
+import (
+    "errors"
+    "fmt"
+)
+
+type ValidationError struct {
+    Field   string
+    Message string
+}
+
+func (e *ValidationError) Error() string {
+    return fmt.Sprintf("validation error: %s - %s", e.Field, e.Message)
+}
+
+type DBError struct {
+    Op  string
+    Err error
+}
+
+func (e *DBError) Error() string {
+    return fmt.Sprintf("db error [%s]: %v", e.Op, e.Err)
+}
+
+func (e *DBError) Unwrap() error { return e.Err }
+
+func validate(age int) error {
+    if age <= 0 {
+        return &ValidationError{Field: "age", Message: "must be positive"}
+    }
+    return nil
+}
+
+func saveUser(age int) error {
+    if err := validate(age); err != nil {
+        return &DBError{Op: "INSERT", Err: err}
+    }
+    return nil
+}
+
+func main() {
+    err := saveUser(-1)
+    if err != nil {
+        fmt.Println(err)
+
+        var dbErr *DBError
+        if errors.As(err, &dbErr) {
+            fmt.Println("DBエラー操作:", dbErr.Op)
+        }
+
+        var valErr *ValidationError
+        if errors.As(err, &valErr) {
+            fmt.Println("バリデーションエラー フィールド:", valErr.Field)
+        }
+    }
+
+    err2 := saveUser(25)
+    fmt.Println("正常:", err2)
+}`,
+    expected:"db error [INSERT]: validation error: age - must be positive\nDBエラー操作: INSERT\nバリデーションエラー フィールド: age\n正常: <nil>",
+    explanation:"Go 1.13のfmt.Errorf(\"%w\", err)とerrors.Is/AsはRustのエラー型に匹敵するエラーチェーンを実現します。Unwrap()を実装することでエラーの連鎖検索が可能になります。カスタムエラー型で構造化されたエラー情報を持たせることが実務パターンの標準です。"
   }
 ];
 
@@ -18031,6 +20039,239 @@ int main() {
 }`,
     expected:"SYN packet built: 40 bytes\nsrc: 192.168.1 -> dst: 10.0.0 port 54321->80\nip checksum: 0xB49B\nflags: SYN=1",
     explanation:"TCPスタックの実装はネットワークプログラミングの頂点です。raw socketで生パケットを構築し、IPヘッダー・TCPヘッダー・チェックサムを手動で設定します。Wireshark・nmap・カスタムファイアウォールはこの技術を使います。"
+  },
+  { id: 59, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "カスタムメモリアロケータ：フリーリスト",
+    question: "フリーリスト方式のメモリアロケータをCで実装してください。\n①固定サイズのメモリプール（4096バイト）を静的配列として確保\n②`void* my_malloc(size_t size)` — 8バイトアライメントでブロックを確保（ヘッダにサイズとfreeフラグを記録）\n③`void my_free(void* ptr)` — ブロックをfree済みにマーク\n④`void pool_stats()` — 確保済み/空きブロック数とバイト数を出力\n動作確認してください。",
+    hint: "各ブロックはヘッダ(size_t size + int is_free)を持つ。my_mallocはヘッダを走査して空きブロックを探す（first-fit）。アライメントは (size + 7) & ~7 で8バイト境界に丸める。",
+    answer:
+`#include <stdio.h>
+#include <string.h>
+#include <stdint.h>
+
+#define POOL_SIZE 4096
+
+typedef struct BlockHeader {
+    size_t size;
+    int is_free;
+    struct BlockHeader* next;
+} BlockHeader;
+
+static char pool[POOL_SIZE];
+static BlockHeader* head = NULL;
+
+void pool_init() {
+    head = (BlockHeader*)pool;
+    head->size = POOL_SIZE - sizeof(BlockHeader);
+    head->is_free = 1;
+    head->next = NULL;
+}
+
+void* my_malloc(size_t size) {
+    size = (size + 7) & ~7;
+    BlockHeader* curr = head;
+    while (curr) {
+        if (curr->is_free && curr->size >= size) {
+            if (curr->size >= size + sizeof(BlockHeader) + 8) {
+                BlockHeader* new_block = (BlockHeader*)((char*)curr + sizeof(BlockHeader) + size);
+                new_block->size = curr->size - size - sizeof(BlockHeader);
+                new_block->is_free = 1;
+                new_block->next = curr->next;
+                curr->size = size;
+                curr->next = new_block;
+            }
+            curr->is_free = 0;
+            return (void*)(curr + 1);
+        }
+        curr = curr->next;
+    }
+    return NULL;
+}
+
+void my_free(void* ptr) {
+    if (!ptr) return;
+    BlockHeader* hdr = (BlockHeader*)ptr - 1;
+    hdr->is_free = 1;
+}
+
+void pool_stats() {
+    int used = 0, freed = 0;
+    size_t used_bytes = 0, free_bytes = 0;
+    BlockHeader* curr = head;
+    while (curr) {
+        if (curr->is_free) { freed++; free_bytes += curr->size; }
+        else               { used++;  used_bytes += curr->size; }
+        curr = curr->next;
+    }
+    printf("使用中: %dブロック(%zuバイト) 空き: %dブロック(%zuバイト)\n", used, used_bytes, freed, free_bytes);
+}
+
+int main() {
+    pool_init();
+    pool_stats();
+
+    int* a = my_malloc(sizeof(int) * 10);
+    char* b = my_malloc(100);
+    double* c = my_malloc(sizeof(double) * 5);
+
+    if (a && b && c) {
+        for (int i = 0; i < 10; i++) a[i] = i * i;
+        strcpy(b, "hello allocator");
+        printf("a[9]=%d b=%s c_ptr=%p\n", a[9], b, (void*)c);
+    }
+
+    pool_stats();
+    my_free(b);
+    pool_stats();
+    return 0;
+}`,
+    expected:"使用中: 0ブロック(0バイト) 空き: 1ブロック(4072バイト)\na[9]=81 b=hello allocator c_ptr=0x",
+    explanation:"フリーリストアロケータはmalloc/freeの基本実装です。glibc mallocはptmalloc（フリーリスト+サイズクラス）、jemalloc・tcmallocはスレッドローカルキャッシュで高速化しています。組み込みシステムやゲームエンジンではカスタムアロケータが必須です。"
+  },
+  { id: 60, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "関数ポインタとコールバック：イベントシステム",
+    question: "関数ポインタを使ったイベントシステムをCで実装してください。\n①`typedef void (*EventHandler)(const char* event, void* data)` でハンドラ型を定義\n②`EventEmitter` 構造体 — イベント名と複数ハンドラを登録できる（最大8イベント×4ハンドラ）\n③`emit_event(emitter, name, data)` でそのイベントの全ハンドラを呼び出す\n④on_click, on_hover, on_keydown ハンドラを登録して動作確認",
+    hint: "関数ポインタの配列 EventHandler handlers[4] を持つ Event 構造体を EventEmitter に複数持たせます。strncmp でイベント名を比較します。",
+    answer:
+`#include <stdio.h>
+#include <string.h>
+
+typedef void (*EventHandler)(const char* event, void* data);
+
+#define MAX_EVENTS 8
+#define MAX_HANDLERS 4
+
+typedef struct {
+    char name[32];
+    EventHandler handlers[MAX_HANDLERS];
+    int count;
+} Event;
+
+typedef struct {
+    Event events[MAX_EVENTS];
+    int event_count;
+} EventEmitter;
+
+void emitter_init(EventEmitter* em) {
+    em->event_count = 0;
+}
+
+void on(EventEmitter* em, const char* name, EventHandler handler) {
+    for (int i = 0; i < em->event_count; i++) {
+        if (strncmp(em->events[i].name, name, 32) == 0) {
+            if (em->events[i].count < MAX_HANDLERS)
+                em->events[i].handlers[em->events[i].count++] = handler;
+            return;
+        }
+    }
+    if (em->event_count < MAX_EVENTS) {
+        Event* ev = &em->events[em->event_count++];
+        strncpy(ev->name, name, 31);
+        ev->handlers[0] = handler;
+        ev->count = 1;
+    }
+}
+
+void emit(EventEmitter* em, const char* name, void* data) {
+    for (int i = 0; i < em->event_count; i++) {
+        if (strncmp(em->events[i].name, name, 32) == 0) {
+            for (int j = 0; j < em->events[i].count; j++)
+                em->events[i].handlers[j](name, data);
+            return;
+        }
+    }
+}
+
+void on_click(const char* e, void* d)   { printf("[click] x=%d\n", *(int*)d); }
+void on_hover(const char* e, void* d)   { printf("[hover] pos=%s\n", (char*)d); }
+void on_keydown(const char* e, void* d) { printf("[key] code=%d\n", *(int*)d); }
+void logger(const char* e, void* d)     { printf("[log] event: %s\n", e); }
+
+int main() {
+    EventEmitter em;
+    emitter_init(&em);
+
+    on(&em, "click",   on_click);
+    on(&em, "click",   logger);
+    on(&em, "hover",   on_hover);
+    on(&em, "keydown", on_keydown);
+
+    int x = 42;
+    emit(&em, "click", &x);
+    emit(&em, "hover", "100,200");
+    int key = 65;
+    emit(&em, "keydown", &key);
+    return 0;
+}`,
+    expected:"[click] x=42\n[log] event: click\n[hover] pos=100,200\n[key] code=65",
+    explanation:"関数ポインタはCのポリモーフィズムの基盤です。LinuxカーネルのVFS（file_operations構造体）・GLibのGSignal・SQLiteのコールバックAPIはすべて関数ポインタで実装されています。イベントドリブン設計をC言語で実現する標準パターンです。"
+  },
+  { id: 61, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "setjmp/longjmp：非局所ジャンプと例外処理の実装",
+    question: "setjmp/longjmpを使って例外処理メカニズムをCで実装してください。\n①`TRY/CATCH/THROW` マクロを定義（setjmp/longjmpを使用）\n②`Exception` 構造体（コード・メッセージ）を定義\n③ネストしたTRY-CATCHブロックのデモ（内部でTHROWし外部のCATCHで補足）\n④THROW後のリソース解放問題をFINALLY的なパターンで対処",
+    hint: "setjmpは現在のコンテキストを保存し0を返す。longjmpは保存コンテキストに戻しsetjmpが非ゼロを返したように見せる。jmp_bufのスタックを管理することでネストが可能。",
+    answer:
+`#include <stdio.h>
+#include <setjmp.h>
+#include <string.h>
+
+#define MAX_NEST 8
+
+typedef struct {
+    int code;
+    char message[64];
+} Exception;
+
+static jmp_buf exc_stack[MAX_NEST];
+static int exc_depth = -1;
+static Exception current_exc;
+
+#define TRY \\
+    exc_depth++; \\
+    if (setjmp(exc_stack[exc_depth]) == 0)
+
+#define CATCH(e) \\
+    else { Exception e = current_exc;
+
+#define END_TRY \\
+    } exc_depth--;
+
+#define THROW(code, msg) \\
+    do { current_exc.code = code; strncpy(current_exc.message, msg, 63); \\
+         longjmp(exc_stack[exc_depth], 1); } while(0)
+
+int divide(int a, int b) {
+    if (b == 0) THROW(1, "Division by zero");
+    return a / b;
+}
+
+int main() {
+    TRY {
+        printf("10 / 2 = %d\n", divide(10, 2));
+        printf("外側TRY\n");
+        TRY {
+            printf("内側TRY\n");
+            THROW(42, "カスタム例外");
+            printf("ここは実行されない\n");
+        } CATCH(e) {
+            printf("内側CATCH: code=%d msg=%s\n", e.code, e.message);
+            THROW(99, "再スロー");
+        } END_TRY
+    } CATCH(e) {
+        printf("外側CATCH: code=%d msg=%s\n", e.code, e.message);
+    } END_TRY
+
+    TRY {
+        divide(5, 0);
+    } CATCH(e) {
+        printf("0除算補足: %s\n", e.message);
+    } END_TRY
+
+    printf("プログラム継続\n");
+    return 0;
+}`,
+    expected:"10 / 2 = 5\n外側TRY\n内側TRY\n内側CATCH: code=42 msg=カスタム例外\n外側CATCH: code=99 msg=再スロー\n0除算補足: Division by zero\nプログラム継続",
+    explanation:"setjmp/longjmpはC言語で例外処理を実現する伝統的なパターンです。CPythonの例外処理・libpngのエラー処理・Luaの保護呼び出し(pcall)が内部で使っています。C++の例外やJavaのtry-catchもハードウェアレベルでは同様のスタック巻き戻しを行います。"
   }
 ];
 
@@ -19658,6 +21899,212 @@ fn main() {
 }`,
     expected:"add(3, 4) = 7\nfibonacci(15) = 610\nsum([1..5]) = 15\nbump offset: 96\nWASM-ready functions: add, fibonacci, sum_array",
     explanation:"RustはWebAssemblyの第一級言語です。no_std + extern C ABIでブラウザから呼び出せるモジュールを作れます。wasm-bindgenで高レベルなJS-Rust連携ができます。Figma・Cloudflare Workers・Wasmtime はRustで実装されています。"
+  },
+  { id: 59, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "トレイトオブジェクトと動的ディスパッチ",
+    question: "dyn Trait（トレイトオブジェクト）を使ったプラグインシステムを実装してください。\n①`Renderer` トレイト（render(&self) -> String メソッド）を定義\n②HtmlRenderer / JsonRenderer / PlainRenderer を実装\n③`Pipeline` 構造体にBox<dyn Renderer>のVecを持たせ、add/render_allメソッドを実装\n④各レンダラーを追加して render_all() の出力を出力",
+    hint: "Box<dyn Renderer> でヒープ上のトレイトオブジェクトを格納できます。impl Traitは静的ディスパッチ、dyn Traitは動的ディスパッチです。",
+    answer:
+`trait Renderer {
+    fn render(&self) -> String;
+}
+
+struct HtmlRenderer { tag: String, content: String }
+struct JsonRenderer { key: String, value: String }
+struct PlainRenderer { text: String }
+
+impl Renderer for HtmlRenderer {
+    fn render(&self) -> String {
+        format!("<{}>{}</{}>", self.tag, self.content, self.tag)
+    }
+}
+
+impl Renderer for JsonRenderer {
+    fn render(&self) -> String {
+        format!("{{\\"{}\\":\\"{}\\"}}",  self.key, self.value)
+    }
+}
+
+impl Renderer for PlainRenderer {
+    fn render(&self) -> String { self.text.clone() }
+}
+
+struct Pipeline {
+    renderers: Vec<Box<dyn Renderer>>,
+}
+
+impl Pipeline {
+    fn new() -> Self { Pipeline { renderers: vec![] } }
+    fn add(&mut self, r: Box<dyn Renderer>) { self.renderers.push(r); }
+    fn render_all(&self) -> Vec<String> {
+        self.renderers.iter().map(|r| r.render()).collect()
+    }
+}
+
+fn main() {
+    let mut pipeline = Pipeline::new();
+    pipeline.add(Box::new(HtmlRenderer { tag: "h1".into(), content: "Hello".into() }));
+    pipeline.add(Box::new(JsonRenderer { key: "name".into(), value: "Alice".into() }));
+    pipeline.add(Box::new(PlainRenderer { text: "Raw text".into() }));
+
+    for output in pipeline.render_all() {
+        println!("{}", output);
+    }
+}`,
+    expected:"<h1>Hello</h1>\n{\"name\":\"Alice\"}\nRaw text",
+    explanation:"dyn Traitはトレイトオブジェクトで実行時の動的ディスパッチを実現します。Box<dyn Trait>でヒープに格納しサイズを統一します。impl Traitとの違いは、dyn Traitはコンパイル時に型が不明でも扱えること。vtableを通じてメソッドが呼ばれます。"
+  },
+  { id: 60, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "ライフタイム注釈：複合境界と構造体",
+    question: "ライフタイム注釈の高度な使い方を実装してください。\n①`longest<'a>(x: &'a str, y: &'a str) -> &'a str` — 長い方の文字列スライスを返す\n②`struct Important<'a> { part: &'a str }` と impl でメソッド `announce(&self, ann: &str) -> &str` を実装（戻り値は self.part のライフタイム）\n③`fn first_word(s: &str) -> &str` — 最初の単語スライスを返す（ライフタイム省略規則の例）\n④各関数の動作を確認",
+    hint: "複数のライフタイムがある場合、戻り値のライフタイムは引数の中で最も短いものに制限されます。構造体のライフタイムは保持する参照の生存期間を保証します。",
+    answer:
+`fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+    if x.len() >= y.len() { x } else { y }
+}
+
+struct Important<'a> {
+    part: &'a str,
+}
+
+impl<'a> Important<'a> {
+    fn announce(&self, ann: &str) -> &str {
+        println!("Announcement: {}", ann);
+        self.part
+    }
+}
+
+fn first_word(s: &str) -> &str {
+    let bytes = s.as_bytes();
+    for (i, &b) in bytes.iter().enumerate() {
+        if b == b' ' { return &s[..i]; }
+    }
+    s
+}
+
+fn main() {
+    let s1 = String::from("long string");
+    let result;
+    {
+        let s2 = String::from("xyz");
+        result = longest(s1.as_str(), s2.as_str());
+        println!("最長: {}", result);
+    }
+
+    let novel = String::from("Call me Ishmael. Some years ago...");
+    let i = Important { part: novel.split('.').next().unwrap() };
+    let part = i.announce("大発表！");
+    println!("重要部分: {}", part);
+
+    let sentence = String::from("hello world foo");
+    println!("最初の単語: {}", first_word(&sentence));
+}`,
+    expected:"最長: long string\nAnnouncement: 大発表！\n重要部分: Call me Ishmael\n最初の単語: hello",
+    explanation:"ライフタイムはRust独自のコンセプトで、ダングリングポインタをコンパイル時に防ぎます。'a注釈は「この参照は少なくとも'aのスコープ中有効」という制約です。ライフタイム省略規則でほとんどの場合は省略できますが、複数入力参照がある場合は明示が必要です。"
+  },
+  { id: 61, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "macro_rules!：宣言的マクロ",
+    question: "macro_rules! を使って以下のマクロを実装してください。\n①`hashmap!` マクロ — `hashmap!{ key => value, ... }` の構文でHashMapを生成\n②`assert_approx_eq!` マクロ — 浮動小数点数を誤差epsilon内で比較し、失敗時にパニック\n③`retry!` マクロ — `retry!(n, expr)` でexprをn回リトライし、最後にpanic\n各マクロの動作を確認してください。",
+    hint: "macro_rules!のパターンは $name:expr, $key:expr => $val:expr, $( $k:expr => $v:expr ),* などのメタ変数で構成されます。繰り返しは $(...),* で表現します。",
+    answer:
+`use std::collections::HashMap;
+
+macro_rules! hashmap {
+    ( $( $key:expr => $val:expr ),* $(,)? ) => {
+        {
+            let mut m = HashMap::new();
+            $( m.insert($key, $val); )*
+            m
+        }
+    };
+}
+
+macro_rules! assert_approx_eq {
+    ($a:expr, $b:expr, $eps:expr) => {
+        {
+            let diff = ($a - $b).abs();
+            if diff > $eps {
+                panic!("assertion failed: |{} - {}| = {} > {}", $a, $b, diff, $eps);
+            }
+        }
+    };
+}
+
+macro_rules! retry {
+    ($n:expr, $body:expr) => {
+        {
+            let mut success = false;
+            for attempt in 0..$n {
+                let result: Result<_, _> = (|| -> Result<(), &str> { $body; Ok(()) })();
+                if result.is_ok() { success = true; println!("成功 (試行{})", attempt + 1); break; }
+            }
+            if !success { println!("{}回試みたが失敗", $n); }
+        }
+    };
+}
+
+fn main() {
+    let map = hashmap!{
+        "one" => 1,
+        "two" => 2,
+        "three" => 3,
+    };
+    println!("one={}, two={}, three={}", map["one"], map["two"], map["three"]);
+
+    assert_approx_eq!(1.0_f64, 1.0000001, 1e-5);
+    println!("近似等値チェック: OK");
+
+    let mut count = 0;
+    retry!(3, {
+        count += 1;
+        if count < 2 { return Err("fail"); }
+    });
+}`,
+    expected:"one=1, two=2, three=3\n近似等値チェック: OK\n成功 (試行2)",
+    explanation:"macro_rules!はRustの宣言的マクロシステムです。パターンマッチングでコードをAST変換します。$(...),*で繰り返しをキャプチャし可変長引数を実現します。hashmap!はstd::collections::HashMapの初期化を宣言的に書けるパターンです。手続き型マクロ(proc macro)より学習コストが低く強力です。"
+  },
+  { id: 62, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "内部可変性：RefCell と Rc で共有グラフ",
+    question: "Rc<RefCell<T>> を使ってメモ化フィボナッチと共有状態ノードグラフを実装してください。\n①`struct MemoFib { cache: std::collections::HashMap<u64, u64> }` と `compute(&mut self, n: u64) -> u64` メソッド\n②これを `Rc<RefCell<MemoFib>>` でラップし、複数の「所有者」から呼び出せるようにする\n③fib(0)~fib(10) をRefCellを通じて計算し、キャッシュのサイズを確認",
+    hint: "Rc<T>は参照カウントの共有所有権。RefCell<T>はランタイムの借用チェックで内部可変性を提供します。borrow_mut()で可変借用、borrow()で不変借用を得ます。",
+    answer:
+`use std::cell::RefCell;
+use std::collections::HashMap;
+use std::rc::Rc;
+
+struct MemoFib {
+    cache: HashMap<u64, u64>,
+}
+
+impl MemoFib {
+    fn new() -> Self { MemoFib { cache: HashMap::new() } }
+    fn compute(&mut self, n: u64) -> u64 {
+        if n <= 1 { return n; }
+        if let Some(&v) = self.cache.get(&n) { return v; }
+        let v = self.compute(n - 1) + self.compute(n - 2);
+        self.cache.insert(n, v);
+        v
+    }
+}
+
+fn main() {
+    let memo = Rc::new(RefCell::new(MemoFib::new()));
+
+    let memo_clone1 = Rc::clone(&memo);
+    let memo_clone2 = Rc::clone(&memo);
+
+    for i in 0..=10 {
+        let result = memo_clone1.borrow_mut().compute(i);
+        print!("{}", result);
+        if i < 10 { print!(" "); }
+    }
+    println!();
+
+    println!("キャッシュサイズ: {}", memo_clone2.borrow().cache.len());
+    println!("Rc参照カウント: {}", Rc::strong_count(&memo));
+}`,
+    expected:"0 1 1 2 3 5 8 13 21 34 55\nキャッシュサイズ: 9\nRc参照カウント: 3",
+    explanation:"Rc<RefCell<T>>はRustの内部可変性パターンの代表格です。Rcで複数箇所から所有でき、RefCellでランタイム借用チェックにより可変アクセスを実現します。コンパイル時の借用規則を実行時に遅らせるトレードオフです。スレッド安全が必要な場合はArc<Mutex<T>>を使います。"
   }
 ];
 
@@ -20925,6 +23372,788 @@ const htmlProblems = [
 </body>
 </html>`,
     explanation: "prefers-color-schemeメディアクエリはOSのダーク/ライトモード設定を検知します。:rootのCSS変数を書き換えるだけでテーマ全体が切り替わります。" },
+
+  { id: 31, unit: "UNIT 03  ◆  レイアウト", rank: "SILVER",
+    title: "Flexboxナビゲーションバー",
+    question: "Flexboxを使ってレスポンシブなナビゲーションバーを作成してください。ロゴ（左）とリンク3つ（右）を横並びに配置し、768px以下でリンクを縦積みにしてください。",
+    hint: "display:flex; justify-content:space-between; @media max-width:768px",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flexbox Nav</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    nav { display: flex; justify-content: space-between; align-items: center; background: #2d3436; padding: 16px 24px; }
+    .logo { color: #fff; font-size: 1.4rem; font-weight: bold; text-decoration: none; }
+    .nav-links { display: flex; gap: 24px; list-style: none; }
+    .nav-links a { color: #dfe6e9; text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
+    .nav-links a:hover { color: #74b9ff; }
+    @media (max-width: 768px) {
+      nav { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .nav-links { flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="#" class="logo">MyBrand</a>
+    <ul class="nav-links">
+      <li><a href="#">ホーム</a></li>
+      <li><a href="#">ブログ</a></li>
+      <li><a href="#">お問い合わせ</a></li>
+    </ul>
+  </nav>
+  <main style="padding:32px;color:#2d3436"><h1>コンテンツエリア</h1></main>
+</body>
+</html>`,
+    explanation: "Flexboxのjustify-content:space-betweenで両端配置。@mediaクエリでflex-direction:columnに切り替えてレスポンシブ対応します。" },
+
+  { id: 32, unit: "UNIT 03  ◆  レイアウト", rank: "SILVER",
+    title: "CSS Grid 12カラムシステム",
+    question: "12カラムのグリッドシステムを実装し、col-6（半分）・col-4（1/3）・col-8・col-4のレイアウトを切り替えてください。",
+    hint: "grid-template-columns: repeat(12, 1fr) / grid-column: span 6",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>12 Column Grid</title>
+  <style>
+    * { box-sizing: border-box; }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; padding: 24px; background: #f4f4f4; }
+    .col-1{grid-column:span 1} .col-2{grid-column:span 2} .col-3{grid-column:span 3}
+    .col-4{grid-column:span 4} .col-6{grid-column:span 6} .col-8{grid-column:span 8}
+    .col-12{grid-column:span 12}
+    .box { background: #6c5ce7; color: #fff; padding: 20px; border-radius: 8px; text-align: center; font-weight: bold; }
+    .box.b { background: #0984e3; } .box.c { background: #00b894; }
+    h2 { padding: 12px 24px; color: #2d3436; }
+  </style>
+</head>
+<body>
+  <h2>6 + 6</h2>
+  <div class="grid"><div class="col-6 box">6列</div><div class="col-6 box b">6列</div></div>
+  <h2>4 + 4 + 4</h2>
+  <div class="grid"><div class="col-4 box">4列</div><div class="col-4 box b">4列</div><div class="col-4 box c">4列</div></div>
+  <h2>8 + 4</h2>
+  <div class="grid"><div class="col-8 box">8列 (メイン)</div><div class="col-4 box b">4列 (サイド)</div></div>
+</body>
+</html>`,
+    explanation: "grid-template-columns: repeat(12, 1fr)で12等分のグリッドを作成。grid-column: span Nでセルを横断する幅を指定します。" },
+
+  { id: 33, unit: "UNIT 03  ◆  レイアウト", rank: "GOLD",
+    title: "Pure CSSタブUIコンポーネント",
+    question: ":checked疑似クラスとlabelタグを使って、JavaScriptなしでタブ切り替えUIを実装してください。3つのタブとそれぞれのコンテンツパネルを作成してください。",
+    hint: "input[type='radio']:checked ~ .tab-content / label for属性でinputと連携",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Pure CSS Tabs</title>
+  <style>
+    .tabs { max-width: 500px; margin: 24px auto; font-family: sans-serif; }
+    .tab-radio { display: none; }
+    .tab-labels { display: flex; gap: 2px; }
+    .tab-label { padding: 10px 24px; background: #dfe6e9; cursor: pointer; border-radius: 6px 6px 0 0; transition: background 0.2s; }
+    .tab-contents { border: 2px solid #6c5ce7; border-radius: 0 6px 6px 6px; }
+    .tab-content { display: none; padding: 24px; }
+    #tab1:checked ~ .tab-labels label[for='tab1'],
+    #tab2:checked ~ .tab-labels label[for='tab2'],
+    #tab3:checked ~ .tab-labels label[for='tab3'] { background: #6c5ce7; color: #fff; }
+    #tab1:checked ~ .tab-contents #content1,
+    #tab2:checked ~ .tab-contents #content2,
+    #tab3:checked ~ .tab-contents #content3 { display: block; }
+  </style>
+</head>
+<body>
+  <div class="tabs">
+    <input class="tab-radio" type="radio" name="tabs" id="tab1" checked>
+    <input class="tab-radio" type="radio" name="tabs" id="tab2">
+    <input class="tab-radio" type="radio" name="tabs" id="tab3">
+    <div class="tab-labels">
+      <label class="tab-label" for="tab1">HTMLの基礎</label>
+      <label class="tab-label" for="tab2">CSSの基礎</label>
+      <label class="tab-label" for="tab3">JS入門</label>
+    </div>
+    <div class="tab-contents">
+      <div class="tab-content" id="content1"><h3>HTML</h3><p>WebページのCSSの骨格を作ります。</p></div>
+      <div class="tab-content" id="content2"><h3>CSS</h3><p>HTMLにスタイルを付与します。</p></div>
+      <div class="tab-content" id="content3"><h3>JavaScript</h3><p>動的な動作を実装します。</p></div>
+    </div>
+  </div>
+</body>
+</html>`,
+    explanation: "input[type=radio]:checkedとシブリングセレクタ(~)でチェック状態を検知。labelのfor属性でinputと連携し、CSSだけでタブを切り替えます。" },
+
+  { id: 34, unit: "UNIT 04  ◆  CSS応用テクニック", rank: "GOLD",
+    title: "CSS @keyframes ローディングアニメーション",
+    question: "3つのドットが順番に跳ねるローディングアニメーションを@keyframesで実装してください。各ドットのアニメーションを少しずつ遅らせてください。",
+    hint: "@keyframes bounce / animation-delay で時間をずらす",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Loading Animation</title>
+  <style>
+    body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #2d3436; margin: 0; }
+    .loader { display: flex; gap: 12px; }
+    .dot { width: 16px; height: 16px; border-radius: 50%; background: #74b9ff; animation: bounce 0.8s ease-in-out infinite; }
+    .dot:nth-child(2) { animation-delay: 0.15s; background: #a29bfe; }
+    .dot:nth-child(3) { animation-delay: 0.3s; background: #fd79a8; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+      40% { transform: translateY(-24px); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="loader">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+</body>
+</html>`,
+    explanation: "@keyframesでアニメーションの各フレームを定義し、animationプロパティで適用します。animation-delayでドットごとに開始タイミングをずらすことで連続した動きを表現します。" },
+
+  { id: 35, unit: "UNIT 02  ◆  フォームとメディア", rank: "SILVER",
+    title: "HTML5フォームバリデーション",
+    question: "HTML5のrequired・pattern・min・max属性を使って、名前・メール・年齢・パスワードのフォームバリデーションを実装してください。",
+    hint: "required, pattern='[A-Za-z0-9._%+-]+@...', min='18' max='100', minlength='8'",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>フォームバリデーション</title>
+  <style>
+    body { font-family: sans-serif; max-width: 400px; margin: 32px auto; padding: 24px; }
+    label { display: block; margin-top: 16px; font-weight: bold; color: #2d3436; }
+    input { width: 100%; padding: 10px; border: 2px solid #dfe6e9; border-radius: 6px; margin-top: 4px; box-sizing: border-box; }
+    input:valid { border-color: #00b894; }
+    input:invalid:not(:placeholder-shown) { border-color: #e17055; }
+    button { margin-top: 20px; padding: 12px 24px; background: #6c5ce7; color: #fff; border: none; border-radius: 6px; cursor: pointer; width: 100%; }
+  </style>
+</head>
+<body>
+  <h2>登録フォーム</h2>
+  <form>
+    <label>お名前（2文字以上）</label>
+    <input type="text" placeholder="山田 太郎" required minlength="2">
+    <label>メールアドレス</label>
+    <input type="email" placeholder="example@email.com" required>
+    <label>年齢（18〜120）</label>
+    <input type="number" placeholder="20" min="18" max="120" required>
+    <label>パスワード（8文字以上）</label>
+    <input type="password" placeholder="英数字8文字以上" minlength="8" required pattern="[A-Za-z0-9]{8,}">
+    <button type="submit">登録</button>
+  </form>
+</body>
+</html>`,
+    explanation: "HTML5の検証属性（required, min, max, minlength, pattern）でJSなしにバリデーションできます。:validと:invalidの疑似クラスでスタイルを変更できます。" },
+
+  { id: 36, unit: "UNIT 01  ◆  HTML基礎構造", rank: "BRONZE",
+    title: "HTML5セマンティック要素",
+    question: "article・section・aside・nav・headerを使って、ブログ記事ページのセマンティックなHTML構造を作成してください。",
+    hint: "<article>, <section>, <aside>, <nav>, <header>, <footer>",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>セマンティックHTML</title>
+  <style>
+    * { box-sizing: border-box; } body { font-family: sans-serif; margin: 0; background: #f8f9fa; }
+    header { background: #2d3436; color: #fff; padding: 16px 24px; }
+    nav a { color: #74b9ff; margin: 0 12px; text-decoration: none; }
+    .layout { display: grid; grid-template-columns: 1fr 280px; gap: 24px; padding: 24px; max-width: 960px; margin: 0 auto; }
+    article { background: #fff; padding: 24px; border-radius: 8px; }
+    aside { background: #fff; padding: 24px; border-radius: 8px; height: fit-content; }
+    section { margin-bottom: 24px; }
+    footer { background: #2d3436; color: #b2bec3; text-align: center; padding: 16px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Tech Blog</h1>
+    <nav><a href="#">ホーム</a><a href="#">カテゴリ</a><a href="#">プロフィール</a></nav>
+  </header>
+  <div class="layout">
+    <article>
+      <h2>CSSグリッドレイアウト入門</h2>
+      <section><h3>基本概念</h3><p>CSS Gridは2次元レイアウトシステムです。</p></section>
+      <section><h3>実践例</h3><p>grid-template-columnsで列数を指定します。</p></section>
+    </article>
+    <aside><h3>人気記事</h3><ul><li>Flexbox完全ガイド</li><li>CSS変数の使い方</li></ul></aside>
+  </div>
+  <footer><p>© 2024 Tech Blog</p></footer>
+</body>
+</html>`,
+    explanation: "セマンティックHTML要素はコンテンツの意味を表します。header/nav/main/article/section/aside/footerはスクリーンリーダーやSEOに重要です。" },
+
+  { id: 37, unit: "UNIT 04  ◆  CSS応用テクニック", rank: "GOLD",
+    title: "CSS変数を使ったテーマシステム",
+    question: "CSS変数（カスタムプロパティ）とJavaScriptでライト/ダークテーマを切り替えるシステムを実装してください。",
+    hint: "document.documentElement.setAttribute('data-theme','dark') / [data-theme='dark'] { --bg: #1a1a2e; }",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <title>テーマ切り替え</title>
+  <style>
+    :root { --bg: #f8f9fa; --surface: #ffffff; --text: #2d3436; --primary: #6c5ce7; --border: #dee2e6; }
+    [data-theme="dark"] { --bg: #1a1a2e; --surface: #16213e; --text: #e8ecef; --primary: #a29bfe; --border: #2d3748; }
+    * { transition: background 0.3s, color 0.3s; }
+    body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 24px; margin: 0; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; max-width: 380px; }
+    h2 { color: var(--primary); }
+    button { background: var(--primary); color: var(--bg); border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>テーマ切り替えデモ</h2>
+    <p>ボタンをクリックするとテーマが切り替わります。CSS変数を使っているため、変数を変えるだけで全体のデザインが変わります。</p>
+    <button onclick="toggleTheme()">🌙 テーマを切り替える</button>
+  </div>
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+    }
+  </script>
+</body>
+</html>`,
+    explanation: "data-theme属性をJSで切り替え、CSS変数を上書きするパターン。transitionで滑らかに変化します。CSS変数はJSから読み書き可能です。" },
+
+  { id: 38, unit: "UNIT 03  ◆  レイアウト", rank: "PLATINUM",
+    title: "CSS Gridの自動配置とdense",
+    question: "大きさが異なるカードを含むMasonryライクなグリッドを実装してください。grid-auto-flow: denseを使って隙間を埋めてください。",
+    hint: "grid-auto-flow: dense / grid-row: span 2 で高いカードを指定",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Auto-Placement Grid</title>
+  <style>
+    body { margin: 0; padding: 24px; background: #f0f3f7; font-family: sans-serif; }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 120px; gap: 12px; grid-auto-flow: dense; max-width: 800px; margin: 0 auto; }
+    .card { border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 1.1rem; }
+    .card.tall { grid-row: span 2; }
+    .card.wide { grid-column: span 2; }
+    .c1{background:#6c5ce7} .c2{background:#0984e3} .c3{background:#00b894} .c4{background:#e17055} .c5{background:#fd79a8} .c6{background:#fdcb6e} .c7{background:#a29bfe} .c8{background:#55efc4}
+  </style>
+</head>
+<body>
+  <h2 style="max-width:800px;margin:0 auto 16px">Auto Dense Grid</h2>
+  <div class="grid">
+    <div class="card c1 tall">A (tall)</div>
+    <div class="card c2">B</div>
+    <div class="card c3 wide">C (wide)</div>
+    <div class="card c4">D</div>
+    <div class="card c5 tall">E (tall)</div>
+    <div class="card c6">F</div>
+    <div class="card c7">G</div>
+    <div class="card c8 wide">H (wide)</div>
+  </div>
+</body>
+</html>`,
+    explanation: "grid-auto-flow: denseを使うとアルゴリズムが後ろのアイテムを使って隙間を埋めます。span 2で縦横に複数セルを占有できます。" },
+
+  { id: 39, unit: "UNIT 04  ◆  CSS応用テクニック", rank: "PLATINUM",
+    title: "CSS clip-pathで図形とアニメーション",
+    question: "clip-pathを使って三角形・六角形・星形を描き、:hoverで形が変わるアニメーションを実装してください。",
+    hint: "clip-path: polygon(x% y%, ...) / transition: clip-path 0.4s",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>clip-path</title>
+  <style>
+    body { display: flex; gap: 32px; justify-content: center; align-items: center; min-height: 100vh; background: #1a1a2e; margin: 0; flex-wrap: wrap; }
+    .shape { width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; cursor: pointer; transition: clip-path 0.4s ease, transform 0.3s; }
+    .triangle { background: #6c5ce7; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+    .triangle:hover { clip-path: polygon(50% 15%, 10% 90%, 90% 90%); transform: rotate(180deg); }
+    .hexagon { background: #0984e3; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+    .hexagon:hover { clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); }
+    .star { background: #e17055; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+    .star:hover { clip-path: polygon(50% 5%, 62% 38%, 98% 38%, 70% 60%, 80% 93%, 50% 73%, 20% 93%, 30% 60%, 2% 38%, 38% 38%); transform: scale(1.2) rotate(20deg); }
+  </style>
+</head>
+<body>
+  <div class="shape triangle">▲</div>
+  <div class="shape hexagon">⬡</div>
+  <div class="shape star">★</div>
+</body>
+</html>`,
+    explanation: "clip-pathのpolygon()で任意の多角形にクリッピング。transitionでclip-pathをアニメートできます。頂点の数が同じポリゴン間でスムーズに変化します。" },
+
+  { id: 40, unit: "UNIT 04  ◆  CSS応用テクニック", rank: "PLATINUM",
+    title: "Glassmorphism（グラスモーフィズム）",
+    question: "backdrop-filterとrgba背景色を使ってグラスモーフィズム（ガラスのような透明UI）カードを実装してください。",
+    hint: "backdrop-filter: blur(16px) / background: rgba(255,255,255,0.1) / border: 1px solid rgba(255,255,255,0.2)",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Glassmorphism</title>
+  <style>
+    body { margin: 0; min-height: 100vh; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 30%, #f093fb 60%, #4facfe 100%); font-family: sans-serif; }
+    .blur-blob { position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.6; z-index: 0; }
+    .blob1 { width: 300px; height: 300px; background: #a29bfe; top: 10%; left: 5%; }
+    .blob2 { width: 250px; height: 250px; background: #fd79a8; bottom: 10%; right: 5%; }
+    .card { position: relative; z-index: 1; background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 20px; padding: 40px; max-width: 380px; color: #fff; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+    h2 { margin: 0 0 12px; font-size: 1.5rem; }
+    p { opacity: 0.85; line-height: 1.7; }
+    .badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="blur-blob blob1"></div>
+  <div class="blur-blob blob2"></div>
+  <div class="card">
+    <h2>Glassmorphism Card</h2>
+    <p>backdrop-filterのblur()でガラスのような半透明エフェクトを実現します。カラフルな背景との組み合わせで美しいデザインになります。</p>
+    <span class="badge">CSS backdrop-filter</span>
+  </div>
+</body>
+</html>`,
+    explanation: "backdrop-filterは要素の背景（後ろにあるコンテンツ）にフィルターをかけます。rgba()の半透明背景と組み合わせてガラス効果を出します。" },
+
+  { id: 41, unit: "UNIT 05  ◆  CSS高度テクニック", rank: "DIAMOND",
+    title: "CSS Container Queries",
+    question: "Container Queriesを使って、コンテナの幅に応じてカードのレイアウトを変えてください。幅400px以上は横並び、以下は縦積みにしてください。",
+    hint: "@container (min-width: 400px) { ... } / container-type: inline-size",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Container Queries</title>
+  <style>
+    body { font-family: sans-serif; padding: 24px; background: #f4f4f4; }
+    .wrapper { container-type: inline-size; container-name: card-container; background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .narrow { max-width: 320px; }
+    .wide { max-width: 600px; }
+    .card { display: flex; flex-direction: column; gap: 12px; border: 2px solid #dfe6e9; border-radius: 8px; overflow: hidden; }
+    .card-image { background: linear-gradient(135deg, #6c5ce7, #a29bfe); height: 120px; }
+    .card-body { padding: 16px; }
+    @container card-container (min-width: 400px) {
+      .card { flex-direction: row; }
+      .card-image { width: 160px; height: auto; min-height: 120px; flex-shrink: 0; }
+    }
+    h3 { margin: 0 0 8px; color: #2d3436; }
+    p { margin: 0; color: #636e72; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h2>Container Queries デモ</h2>
+  <p>狭いコンテナ (320px):</p>
+  <div class="wrapper narrow">
+    <div class="card"><div class="card-image"></div><div class="card-body"><h3>CSS入門</h3><p>スタイルシートの基本を学びます。</p></div></div>
+  </div>
+  <p>広いコンテナ (600px):</p>
+  <div class="wrapper wide">
+    <div class="card"><div class="card-image"></div><div class="card-body"><h3>CSS入門</h3><p>スタイルシートの基本を学びます。</p></div></div>
+  </div>
+</body>
+</html>`,
+    explanation: "Container Queriesはビューポートではなく親コンテナのサイズに基づいてスタイルを変えます。コンポーネント単位のレスポンシブデザインが可能になります。" },
+
+  { id: 42, unit: "UNIT 05  ◆  CSS高度テクニック", rank: "DIAMOND",
+    title: "CSS :has()セレクタ",
+    question: ":has()疑似クラスを使って、チェックされたチェックボックスを持つリストアイテムにスタイルを適用してください。チェック済みアイテムに取り消し線と背景色を付けてください。",
+    hint: "li:has(input:checked) { text-decoration: line-through; }",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>:has() セレクタ</title>
+  <style>
+    body { font-family: sans-serif; max-width: 400px; margin: 32px auto; }
+    ul { list-style: none; padding: 0; }
+    li { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 8px; margin-bottom: 8px; border: 2px solid #dfe6e9; transition: all 0.25s; cursor: pointer; }
+    li:has(input:checked) { background: #f0fff4; border-color: #00b894; text-decoration: line-through; color: #b2bec3; }
+    li:has(input:not(:checked)):hover { border-color: #6c5ce7; background: #f8f4ff; }
+    input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+    .count { margin-top: 16px; font-size: 0.9rem; color: #636e72; }
+    li:has(input:checked) + li { border-color: #74b9ff; }
+  </style>
+</head>
+<body>
+  <h2>ToDoリスト</h2>
+  <ul>
+    <li><input type="checkbox">HTMLを学ぶ</li>
+    <li><input type="checkbox">CSSをマスターする</li>
+    <li><input type="checkbox">JavaScriptを覚える</li>
+    <li><input type="checkbox">Reactを試してみる</li>
+    <li><input type="checkbox">ポートフォリオを作る</li>
+  </ul>
+</body>
+</html>`,
+    explanation: ":has()は「〜を持つ要素」を選択します。親から子の状態を参照できる革命的なセレクタ。Chrome 105+とSafari 15.4+で使用可能です。" },
+
+  { id: 43, unit: "UNIT 05  ◆  CSS高度テクニック", rank: "DIAMOND",
+    title: "SVGインラインアニメーション",
+    question: "インラインSVGとCSSアニメーションを組み合わせて、波打つグラフと回転する歯車アニメーションを実装してください。",
+    hint: "SVGのpath / circle / polylineにCSSのanimationを適用",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>SVG Animation</title>
+  <style>
+    body { background: #1a1a2e; display: flex; gap: 48px; justify-content: center; align-items: center; min-height: 100vh; margin: 0; flex-wrap: wrap; }
+    @keyframes wave { 0% { stroke-dashoffset: 200; } 100% { stroke-dashoffset: 0; } }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%,100%{r:30} 50%{r:38} }
+    .wave-path { stroke-dasharray: 200; stroke-dashoffset: 200; animation: wave 3s linear infinite; }
+    .gear { animation: spin 4s linear infinite; transform-origin: 60px 60px; }
+    .inner-gear { animation: spin 4s linear infinite reverse; transform-origin: 60px 60px; }
+    .pulse-circle { animation: pulse 1.5s ease-in-out infinite; transform-origin: 60px 60px; }
+  </style>
+</head>
+<body>
+  <svg width="200" height="120" viewBox="0 0 200 120">
+    <path class="wave-path" d="M0,60 Q25,20 50,60 Q75,100 100,60 Q125,20 150,60 Q175,100 200,60" fill="none" stroke="#74b9ff" stroke-width="3"/>
+    <path d="M0,60 Q25,20 50,60 Q75,100 100,60 Q125,20 150,60 Q175,100 200,60" fill="none" stroke="#a29bfe" stroke-width="1.5" opacity="0.4"/>
+  </svg>
+  <svg width="120" height="120" viewBox="0 0 120 120">
+    <g class="gear"><polygon points="60,10 68,30 88,18 82,38 102,42 88,56 100,72 82,70 80,92 64,80 52,96 48,74 28,82 32,62 10,60 28,50 20,30 40,34 44,14" fill="#6c5ce7"/></g>
+    <circle class="pulse-circle" cx="60" cy="60" r="30" fill="#2d3436" stroke="#a29bfe" stroke-width="2"/>
+    <text x="60" y="65" text-anchor="middle" fill="#fff" font-size="10">CSS⚙</text>
+  </svg>
+</body>
+</html>`,
+    explanation: "SVGのpathにstroke-dashoffsetアニメーションで描画効果。SVG要素にtransform-originを設定して回転軸を指定します。CSSとSVGの組み合わせで表現豊かなアニメーションが作れます。" },
+
+  { id: 44, unit: "UNIT 05  ◆  CSS高度テクニック", rank: "DIAMOND",
+    title: "CSS Scroll-driven Animations",
+    question: "スクロールドリブンアニメーション（animation-timeline: scroll()）を使って、スクロール位置に連動したプログレスバーとフェードインを実装してください。",
+    hint: "animation-timeline: scroll() / animation-range: entry / @keyframes slideIn",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Scroll Animations</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: sans-serif; }
+    .progress-bar { position: fixed; top: 0; left: 0; height: 4px; background: #6c5ce7; width: 100%; transform-origin: left; animation: progress linear; animation-timeline: scroll(root); }
+    @keyframes progress { from { scaleX(0); transform: scaleX(0); } to { transform: scaleX(1); } }
+    .card { margin: 32px auto; max-width: 500px; padding: 32px; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); opacity: 0; animation: fadeUp linear both; animation-timeline: view(); animation-range: entry 0% entry 40%; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+    h1 { text-align: center; padding: 40px; color: #2d3436; }
+  </style>
+</head>
+<body>
+  <div class="progress-bar"></div>
+  <h1>Scroll Down ↓</h1>
+  <div class="card"><h2>Card 1</h2><p>スクロールするとフェードインします。animation-timeline: view()でビューポートへの進入を検知します。</p></div>
+  <div class="card"><h2>Card 2</h2><p>CSSだけでスクロール連動アニメーションが実装できます。JavaScriptは不要です。</p></div>
+  <div class="card"><h2>Card 3</h2><p>animation-rangeでアニメーションの開始・終了タイミングを制御できます。</p></div>
+  <div class="card"><h2>Card 4</h2><p>Chrome 115+でサポートされています。将来的に全ブラウザ対応が期待されています。</p></div>
+</body>
+</html>`,
+    explanation: "animation-timeline: scroll()はスクロール進捗をアニメーションに連動。animation-timeline: view()は要素がビューポートに入る際にトリガー。CSS Scroll-driven Animationsの最新機能です。" },
+
+  { id: 45, unit: "UNIT 05  ◆  CSS高度テクニック", rank: "MASTER",
+    title: "Pure CSSアコーディオン",
+    question: ":checked疑似クラスとmax-heightアニメーションを使って、JavaScriptなしでアコーディオン（開閉パネル）を実装してください。",
+    hint: "input:checked ~ .content { max-height: 200px } / max-height: 0; overflow: hidden; transition",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Pure CSS Accordion</title>
+  <style>
+    body { font-family: sans-serif; max-width: 500px; margin: 32px auto; }
+    .accordion-item { border: 1px solid #dfe6e9; border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+    .accordion-toggle { display: none; }
+    .accordion-label { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; background: #f8f9fa; cursor: pointer; font-weight: 600; color: #2d3436; transition: background 0.2s; }
+    .accordion-label::after { content: '＋'; font-size: 1.2rem; transition: transform 0.3s; }
+    .accordion-toggle:checked ~ .accordion-label { background: #6c5ce7; color: #fff; }
+    .accordion-toggle:checked ~ .accordion-label::after { transform: rotate(45deg); }
+    .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.3s; padding: 0 20px; }
+    .accordion-toggle:checked ~ .accordion-content { max-height: 200px; padding: 16px 20px; }
+    .accordion-content p { margin: 0; color: #636e72; line-height: 1.7; }
+  </style>
+</head>
+<body>
+  <h2>FAQ アコーディオン</h2>
+  <div class="accordion-item">
+    <input class="accordion-toggle" type="checkbox" id="a1">
+    <label class="accordion-label" for="a1">CSSとは何ですか？</label>
+    <div class="accordion-content"><p>Cascading Style Sheetsの略。HTMLにスタイルを付与するための言語です。色・フォント・レイアウトを制御します。</p></div>
+  </div>
+  <div class="accordion-item">
+    <input class="accordion-toggle" type="checkbox" id="a2">
+    <label class="accordion-label" for="a2">Flexboxとは？</label>
+    <div class="accordion-content"><p>1次元レイアウトシステムです。display:flexで有効化し、justify-contentとalign-itemsで要素を整列できます。</p></div>
+  </div>
+  <div class="accordion-item">
+    <input class="accordion-toggle" type="checkbox" id="a3">
+    <label class="accordion-label" for="a3">CSS Gridとの違いは？</label>
+    <div class="accordion-content"><p>FlexboxはRow/Column一方向、CSS Gridは縦横両方向を同時制御できます。複雑な2次元レイアウトはGridが適しています。</p></div>
+  </div>
+</body>
+</html>`,
+    explanation: "max-height: 0からmax-height: 200pxへのtransitionで開閉を表現。inputのchecked状態をシブリングセレクタ(~)で参照して、ラベルとコンテンツのスタイルを変えます。" },
+
+  { id: 46, unit: "UNIT 05  ◆  CSS高度テクニック", rank: "MASTER",
+    title: "CSS Subgridでグリッド整列",
+    question: "CSS Subgridを使って、カードコンポーネント内の要素を親グリッドのラインに整列させてください。",
+    hint: "grid-template-rows: subgrid / display: grid; grid-row: span 3",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>CSS Subgrid</title>
+  <style>
+    body { font-family: sans-serif; padding: 32px; background: #f4f4f4; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: auto auto 1fr auto; gap: 20px; align-items: start; }
+    .card { display: grid; grid-row: span 4; grid-template-rows: subgrid; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+    .card-img { aspect-ratio: 16/9; object-fit: cover; }
+    .img1{background:linear-gradient(135deg,#6c5ce7,#a29bfe)} .img2{background:linear-gradient(135deg,#0984e3,#74b9ff)} .img3{background:linear-gradient(135deg,#00b894,#55efc4)}
+    .card-tag { font-size: 0.75rem; color: #6c5ce7; font-weight: bold; padding: 12px 16px 0; }
+    .card-title { font-size: 1.1rem; font-weight: bold; padding: 6px 16px; color: #2d3436; }
+    .card-body { padding: 0 16px 12px; color: #636e72; font-size: 0.9rem; line-height: 1.6; }
+    .card-footer { padding: 12px 16px; border-top: 1px solid #dfe6e9; font-size: 0.8rem; color: #b2bec3; }
+  </style>
+</head>
+<body>
+  <h2>Subgrid Card Layout</h2>
+  <div class="grid">
+    <div class="card"><div class="card-img img1"></div><div class="card-tag">CSS</div><h3 class="card-title">Subgridで整列</h3><p class="card-body">テキストが少なくても全カードのタイトル位置が揃います。</p><div class="card-footer">2024.01.15</div></div>
+    <div class="card"><div class="card-img img2"></div><div class="card-tag">HTML</div><h3 class="card-title">異なる量のテキストを持つカード</h3><p class="card-body">このカードは本文テキストが長めです。それでも次の要素は他のカードと揃います。Subgridが整列を保証します。</p><div class="card-footer">2024.02.10</div></div>
+    <div class="card"><div class="card-img img3"></div><div class="card-tag">Layout</div><h3 class="card-title">Subgrid</h3><p class="card-body">シンプルなカード。</p><div class="card-footer">2024.03.05</div></div>
+  </div>
+</body>
+</html>`,
+    explanation: "Subgridでcard内のgrid-template-rows: subgridを使うと、子要素が親グリッドのトラックに参加して整列します。カードコンポーネントで高さが揃う問題を解決します。" },
+
+  { id: 47, unit: "UNIT 05  ◆  CSS高度テクニック", rank: "MASTER",
+    title: "CSS color-mix()と oklch()カラー",
+    question: "CSS color-mix()関数とoklch()カラー空間を使って、動的なカラーパレットとグラデーションを生成してください。",
+    hint: "color-mix(in srgb, #ff0000 30%, #0000ff) / oklch(70% 0.2 150)",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>CSS Color Functions</title>
+  <style>
+    :root {
+      --base: oklch(65% 0.25 265);
+      --lighter: oklch(80% 0.15 265);
+      --darker: oklch(45% 0.3 265);
+      --complement: oklch(65% 0.25 85);
+    }
+    body { font-family: sans-serif; padding: 32px; }
+    h2 { color: var(--base); }
+    .palette { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .swatch { width: 80px; height: 80px; border-radius: 8px; display: flex; align-items: flex-end; padding: 6px; font-size: 0.7rem; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+    .mix-demo { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-bottom: 24px; }
+    .mix-demo div { height: 60px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h2>CSS Color Functions Demo</h2>
+  <h3>oklch() パレット</h3>
+  <div class="palette">
+    <div class="swatch" style="background:var(--lighter)">lighter</div>
+    <div class="swatch" style="background:var(--base)">base</div>
+    <div class="swatch" style="background:var(--darker)">darker</div>
+    <div class="swatch" style="background:var(--complement)">comp</div>
+    <div class="swatch" style="background:color-mix(in oklch, var(--base), var(--complement))">mix</div>
+  </div>
+  <h3>color-mix() グラデーションステップ</h3>
+  <div class="mix-demo">
+    <div style="background:color-mix(in oklch, oklch(60% 0.3 0) 100%, white)"></div>
+    <div style="background:color-mix(in oklch, oklch(60% 0.3 0) 75%, white)"></div>
+    <div style="background:color-mix(in oklch, oklch(60% 0.3 0) 50%, white)"></div>
+    <div style="background:color-mix(in oklch, oklch(60% 0.3 0) 25%, white)"></div>
+    <div style="background:color-mix(in oklch, oklch(60% 0.3 0) 0%, white)"></div>
+  </div>
+</body>
+</html>`,
+    explanation: "oklch()は知覚的に均一なカラー空間（Lightness, Chroma, Hue）。color-mix()は2色を混合します。従来のrgb/hslより視覚的に自然なカラーパレット生成が可能です。" },
+
+  { id: 48, unit: "UNIT 05  ◆  CSS高度テクニック", rank: "MASTER",
+    title: "CSS Nesting（ネストセレクタ）",
+    question: "CSS Nesting（ネイティブCSSのネスト）を使って、コンポーネントスタイルをSCSS風に書いてください。Flexboxカードのスタイルをネストで記述してください。",
+    hint: "CSS Nesting: .parent { color: red; & .child { color: blue; } &:hover { ... } }",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>CSS Nesting</title>
+  <style>
+    body { font-family: sans-serif; padding: 32px; background: #f4f4f4; }
+    .card-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+
+      & .card {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: transform 0.2s, box-shadow 0.2s;
+
+        &:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        & .card-header {
+          height: 120px;
+          background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+
+          &.green { background: linear-gradient(135deg, #00b894, #55efc4); }
+          &.orange { background: linear-gradient(135deg, #e17055, #fdcb6e); }
+        }
+
+        & .card-body {
+          padding: 20px;
+
+          & h3 { margin: 0 0 8px; color: #2d3436; }
+          & p { margin: 0; color: #636e72; font-size: 0.9rem; }
+        }
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>CSS Nesting Demo</h2>
+  <div class="card-list">
+    <div class="card"><div class="card-header"></div><div class="card-body"><h3>紫カード</h3><p>CSS Nestingで構造化したスタイル。</p></div></div>
+    <div class="card"><div class="card-header green"></div><div class="card-body"><h3>緑カード</h3><p>SCSSなしでネストが使えます。</p></div></div>
+    <div class="card"><div class="card-header orange"></div><div class="card-body"><h3>オレンジカード</h3><p>Chrome 112+ でサポート済み。</p></div></div>
+  </div>
+</body>
+</html>`,
+    explanation: "CSS Nesting（ネイティブCSSのネスト）はSCSSの機能がCSSに取り込まれたものです。&で親セレクタを参照。Chrome 112+・Firefox 117+・Safari 17+で使用可能。" },
+
+  { id: 49, unit: "UNIT 05  ◆  CSS高度テクニック", rank: "LEGEND",
+    title: "フルスタックUIコンポーネント",
+    question: "ダッシュボードのサイドバーナビゲーション + メインコンテンツ + ヘッダーのレイアウトをCSS Gridで実装してください。サイドバーのメニューにactive状態とhoverエフェクトを付けてください。",
+    hint: "grid-template-areas: 'header header' 'sidebar main' / named areas",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Layout</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+    .layout { display: grid; grid-template-areas: 'sidebar header' 'sidebar main'; grid-template-columns: 240px 1fr; grid-template-rows: 60px 1fr; min-height: 100vh; }
+    header { grid-area: header; background: #1e293b; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; border-bottom: 1px solid #334155; }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #6c5ce7, #a29bfe); display: flex; align-items: center; justify-content: center; font-weight: bold; }
+    aside { grid-area: sidebar; background: #1e293b; padding: 24px 0; border-right: 1px solid #334155; }
+    .logo { padding: 0 20px 24px; font-size: 1.2rem; font-weight: bold; color: #a29bfe; }
+    nav a { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #94a3b8; text-decoration: none; transition: all 0.15s; font-size: 0.95rem; }
+    nav a:hover { background: #334155; color: #e2e8f0; }
+    nav a.active { background: rgba(108,92,231,0.2); color: #a29bfe; border-right: 3px solid #6c5ce7; }
+    main { grid-area: main; padding: 32px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 32px; }
+    .stat { background: #1e293b; border-radius: 12px; padding: 24px; border: 1px solid #334155; }
+    .stat-value { font-size: 2rem; font-weight: bold; color: #a29bfe; }
+    .stat-label { color: #64748b; font-size: 0.85rem; margin-top: 4px; }
+    @media (max-width: 768px) { .layout { grid-template-areas: 'header' 'main'; grid-template-columns: 1fr; } aside { display: none; } .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <header><span style="font-weight:bold">📊 Dashboard</span><div class="avatar">A</div></header>
+    <aside>
+      <div class="logo">⚡ AppName</div>
+      <nav>
+        <a href="#" class="active">📊 ダッシュボード</a>
+        <a href="#">📦 商品管理</a>
+        <a href="#">👥 ユーザー</a>
+        <a href="#">📈 分析</a>
+        <a href="#">⚙️ 設定</a>
+      </nav>
+    </aside>
+    <main>
+      <h1 style="margin-bottom:24px">概要</h1>
+      <div class="stat-grid">
+        <div class="stat"><div class="stat-value">1,284</div><div class="stat-label">今月の売上</div></div>
+        <div class="stat"><div class="stat-value">347</div><div class="stat-label">アクティブユーザー</div></div>
+        <div class="stat"><div class="stat-value">89%</div><div class="stat-label">満足度</div></div>
+        <div class="stat"><div class="stat-value">12</div><div class="stat-label">新規注文</div></div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>`,
+    explanation: "grid-template-areasで名前付き領域にレイアウトを割り当てます。「見た目通りに書ける」のがgrid-areasの最大の利点。レスポンシブも@mediaで簡単に対応できます。" },
+
+  { id: 50, unit: "UNIT 05  ◆  CSS高度テクニック", rank: "LEGEND",
+    title: "CSSのみのアニメーション（桜の花びら）",
+    question: "PureCSS（JavaScriptなし）で桜の花びらが舞い落ちるアニメーションを実装してください。@keyframesとCSS変数でランダム性を出してください。",
+    hint: "@keyframes fall / nth-child()ごとにanimation-delayとdurationを変える",
+    answer:
+`<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>桜アニメーション</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: linear-gradient(180deg, #ffeef8 0%, #fff0f5 50%, #ffe4ef 100%); min-height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    h1 { color: #c0396a; font-size: 3rem; text-shadow: 0 2px 8px rgba(192,57,106,0.3); z-index: 10; position: relative; font-family: serif; }
+    .sakura-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+    .petal { position: absolute; top: -30px; font-size: 20px; animation: fall linear infinite; opacity: 0.8; }
+    @keyframes fall {
+      0% { transform: translateY(-30px) rotate(0deg) translateX(0); opacity: 0.9; }
+      25% { transform: translateY(25vh) rotate(90deg) translateX(30px); }
+      50% { transform: translateY(50vh) rotate(180deg) translateX(-20px); }
+      75% { transform: translateY(75vh) rotate(270deg) translateX(25px); }
+      100% { transform: translateY(110vh) rotate(360deg) translateX(0); opacity: 0; }
+    }
+    .petal:nth-child(1) { left:5%; animation-duration:6s; animation-delay:0s; font-size:18px; }
+    .petal:nth-child(2) { left:15%; animation-duration:8s; animation-delay:1s; font-size:24px; }
+    .petal:nth-child(3) { left:25%; animation-duration:7s; animation-delay:2s; }
+    .petal:nth-child(4) { left:35%; animation-duration:9s; animation-delay:0.5s; font-size:16px; }
+    .petal:nth-child(5) { left:45%; animation-duration:6.5s; animation-delay:3s; font-size:22px; }
+    .petal:nth-child(6) { left:55%; animation-duration:8.5s; animation-delay:1.5s; }
+    .petal:nth-child(7) { left:65%; animation-duration:7.5s; animation-delay:2.5s; font-size:26px; }
+    .petal:nth-child(8) { left:75%; animation-duration:6s; animation-delay:4s; font-size:20px; }
+    .petal:nth-child(9) { left:85%; animation-duration:9.5s; animation-delay:0.8s; }
+    .petal:nth-child(10) { left:92%; animation-duration:7s; animation-delay:3.5s; font-size:19px; }
+  </style>
+</head>
+<body>
+  <div class="sakura-container">
+    <div class="petal">🌸</div><div class="petal">🌸</div><div class="petal">🌸</div>
+    <div class="petal">🌸</div><div class="petal">🌸</div><div class="petal">🌸</div>
+    <div class="petal">🌸</div><div class="petal">🌸</div><div class="petal">🌸</div>
+    <div class="petal">🌸</div>
+  </div>
+  <h1>🌸 桜 🌸</h1>
+</body>
+</html>`,
+    explanation: "nth-child()セレクタで各花びらに異なるanimation-duration・animation-delayを設定。translateXの正負交互でゆらぎを表現。Pure CSSでも豊かなアニメーションが実現できます。" }
 ];
 
 const htmlMissions = [
@@ -21264,7 +24493,167 @@ const sqlProblems = [
     hint: "CREATE INDEX idx_name ON users(name) / EXPLAIN QUERY PLAN SELECT ...",
     answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE users (id INTEGER, name TEXT, age INTEGER)')\ncur.executemany('INSERT INTO users VALUES (?,?,?)', [(1,'Alice',25),(2,'Bob',30),(3,'Carol',22)])\ncur.execute('CREATE INDEX idx_name ON users(name)')\nplan = cur.execute("EXPLAIN QUERY PLAN SELECT * FROM users WHERE name = 'Alice'").fetchall()\nhas_index = any('idx_name' in str(row) for row in plan)\nprint('インデックス使用:', has_index)\ncur.execute("SELECT name, age FROM users WHERE name = 'Alice'")\nfor row in cur.fetchall():\n    print(row[0], row[1])\nconn.close()`,
     expected: "インデックス使用: True\nAlice 25",
-    explanation: "INDEXを作成するとWHERE句の検索が高速化されます。EXPLAIN QUERY PLANで実行計画を確認できます。" }
+    explanation: "INDEXを作成するとWHERE句の検索が高速化されます。EXPLAIN QUERY PLANで実行計画を確認できます。" },
+
+  { id: 31, unit: "UNIT 01  ◆  データベース基礎", rank: "ROOKIE",
+    title: "LIKE句とパターン検索",
+    question: "productsテーブル（id, name, category）を作成して5件挿入し、nameが'A'で始まる商品と'e'で終わる商品をそれぞれLIKEで検索して表示してください。",
+    hint: "WHERE name LIKE 'A%' / WHERE name LIKE '%e'",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE products (id INTEGER, name TEXT, category TEXT)')\ncur.executemany('INSERT INTO products VALUES (?,?,?)', [(1,'Apple','fruit'),(2,'Banana','fruit'),(3,'Avocado','vegetable'),(4,'Grape','fruit'),(5,'Orange','fruit')])\nprint("A始まり:")\nfor r in cur.execute("SELECT name FROM products WHERE name LIKE 'A%' ORDER BY name").fetchall():\n    print(r[0])\nprint("e終わり:")\nfor r in cur.execute("SELECT name FROM products WHERE name LIKE '%e' ORDER BY name").fetchall():\n    print(r[0])\nconn.close()`,
+    expected: "A始まり:\nApple\nAvocado\ne終わり:\nApple\nOrange",
+    explanation: "LIKE句の%は任意文字列、_は任意の1文字にマッチします。大文字小文字の扱いはDBにより異なります。" },
+
+  { id: 32, unit: "UNIT 01  ◆  データベース基礎", rank: "ROOKIE",
+    title: "NULL値の扱い",
+    question: "employeesテーブル（id, name, manager_id）を作成して4件挿入（うち1件はmanager_idがNULL）し、manager_idがNULLの行とNULLでない行をIS NULL/IS NOT NULLで取得してください。",
+    hint: "WHERE manager_id IS NULL / IS NOT NULL",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE employees (id INTEGER, name TEXT, manager_id INTEGER)')\ncur.executemany('INSERT INTO employees VALUES (?,?,?)', [(1,'CEO',None),(2,'Alice',1),(3,'Bob',1),(4,'Carol',2)])\nprint("マネージャーなし:")\nfor r in cur.execute('SELECT name FROM employees WHERE manager_id IS NULL').fetchall():\n    print(r[0])\nprint("マネージャーあり:")\nfor r in cur.execute('SELECT name FROM employees WHERE manager_id IS NOT NULL ORDER BY name').fetchall():\n    print(r[0])\nconn.close()`,
+    expected: "マネージャーなし:\nCEO\nマネージャーあり:\nAlice\nBob\nCarol",
+    explanation: "NULLは値が存在しないことを表します。NULLとの比較には=や!=ではなくIS NULL/IS NOT NULLを使います。" },
+
+  { id: 33, unit: "UNIT 02  ◆  集計と絞り込み", rank: "BRONZE",
+    title: "MIN・MAX・AVGの活用",
+    question: "scoresテーブル（id, student, subject, score）を作成して6件挿入し、subject別の最高点・最低点・平均点をGROUP BYで集計して表示してください。",
+    hint: "SELECT subject, MAX(score), MIN(score), AVG(score) FROM scores GROUP BY subject",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE scores (id INTEGER, student TEXT, subject TEXT, score INTEGER)')\ncur.executemany('INSERT INTO scores VALUES (?,?,?,?)', [(1,'Alice','Math',90),(2,'Bob','Math',75),(3,'Alice','English',85),(4,'Bob','English',92),(5,'Carol','Math',88),(6,'Carol','English',78)])\nfor r in cur.execute('SELECT subject, MAX(score), MIN(score), ROUND(AVG(score),1) FROM scores GROUP BY subject ORDER BY subject').fetchall():\n    print(r[0], r[1], r[2], r[3])\nconn.close()`,
+    expected: "English 92 78 85.0\nMath 90 75 84.3",
+    explanation: "MAX/MIN/AVGは集計関数。ROUND(値, 桁数)で小数点以下を丸めます。GROUP BYでグループ化して集計します。" },
+
+  { id: 34, unit: "UNIT 02  ◆  集計と絞り込み", rank: "BRONZE",
+    title: "DISTINCT と IN句",
+    question: "ordersテーブル（id, customer, product）を作成して8件挿入し、購入したことがある全ユニーク顧客名と、'Apple'または'Cherry'を購入した顧客を取得してください。",
+    hint: "SELECT DISTINCT customer / WHERE product IN ('Apple', 'Cherry')",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE orders (id INTEGER, customer TEXT, product TEXT)')\ncur.executemany('INSERT INTO orders VALUES (?,?,?)', [(1,'Alice','Apple'),(2,'Bob','Banana'),(3,'Carol','Cherry'),(4,'Alice','Banana'),(5,'Bob','Apple'),(6,'Dave','Grape'),(7,'Carol','Apple'),(8,'Dave','Cherry')])\nprint("全顧客:")\nfor r in cur.execute('SELECT DISTINCT customer FROM orders ORDER BY customer').fetchall():\n    print(r[0])\nprint("Apple/Cherry購入者:")\nfor r in cur.execute("SELECT DISTINCT customer FROM orders WHERE product IN ('Apple','Cherry') ORDER BY customer").fetchall():\n    print(r[0])\nconn.close()`,
+    expected: "全顧客:\nAlice\nBob\nCarol\nDave\nApple/Cherry購入者:\nAlice\nBob\nCarol\nDave",
+    explanation: "DISTINCTで重複を除いたユニーク値を取得。IN句は複数の値を||でつながず一括指定できます。" },
+
+  { id: 35, unit: "UNIT 03  ◆  テーブル結合", rank: "SILVER",
+    title: "LEFT JOIN と NULL判定",
+    question: "customersテーブル（id, name）とordersテーブル（id, customer_id, product）を作成し、1件も注文していない顧客をLEFT JOINとIS NULLで取得してください。",
+    hint: "LEFT JOIN orders ON ... WHERE orders.id IS NULL",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE customers (id INTEGER, name TEXT)')\ncur.execute('CREATE TABLE orders (id INTEGER, customer_id INTEGER, product TEXT)')\ncur.executemany('INSERT INTO customers VALUES (?,?)', [(1,'Alice'),(2,'Bob'),(3,'Carol'),(4,'Dave')])\ncur.executemany('INSERT INTO orders VALUES (?,?,?)', [(1,1,'Apple'),(2,2,'Banana'),(3,1,'Cherry')])\nfor r in cur.execute('SELECT customers.name FROM customers LEFT JOIN orders ON customers.id = orders.customer_id WHERE orders.id IS NULL ORDER BY customers.name').fetchall():\n    print(r[0])\nconn.close()`,
+    expected: "Carol\nDave",
+    explanation: "LEFT JOINは左テーブルの全行を保持し右テーブルが一致しない場合はNULL。WHERE右側IS NULLで「結合できなかった行」を抽出できます。" },
+
+  { id: 36, unit: "UNIT 03  ◆  テーブル結合", rank: "SILVER",
+    title: "3テーブルJOINと集計",
+    question: "categories(id,name)・products(id,name,category_id,price)・orders(id,product_id,qty)を作成し、カテゴリー別の総売上（price*qty）をJOINとGROUP BYで集計して表示してください（降順）。",
+    hint: "JOIN categories ON ... JOIN products ON ... GROUP BY categories.name ORDER BY SUM(price*qty) DESC",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE categories (id INTEGER, name TEXT)')\ncur.execute('CREATE TABLE products (id INTEGER, name TEXT, category_id INTEGER, price INTEGER)')\ncur.execute('CREATE TABLE orders (id INTEGER, product_id INTEGER, qty INTEGER)')\ncur.executemany('INSERT INTO categories VALUES (?,?)', [(1,'Fruit'),(2,'Vegetable')])\ncur.executemany('INSERT INTO products VALUES (?,?,?,?)', [(1,'Apple',1,100),(2,'Banana',1,80),(3,'Carrot',2,60),(4,'Potato',2,50)])\ncur.executemany('INSERT INTO orders VALUES (?,?,?)', [(1,1,5),(2,2,3),(3,3,10),(4,4,8),(5,1,2)])\nfor r in cur.execute('SELECT c.name, SUM(p.price*o.qty) as total FROM orders o JOIN products p ON o.product_id=p.id JOIN categories c ON p.category_id=c.id GROUP BY c.name ORDER BY total DESC').fetchall():\n    print(r[0], r[1])\nconn.close()`,
+    expected: "Vegetable 1000\nFruit 980",
+    explanation: "3テーブルをJOINするにはJOINを連続して書きます。集計はGROUP BY後にSUMで計算します。" },
+
+  { id: 37, unit: "UNIT 04  ◆  ウィンドウ関数", rank: "GOLD",
+    title: "LAGとLEAD",
+    question: "salesテーブル（month TEXT, amount INTEGER）を作成して6件挿入し、前月の売上(LAG)・翌月の売上(LEAD)・前月比（差分）をウィンドウ関数で計算してください。",
+    hint: "LAG(amount,1) OVER (ORDER BY month) / LEAD(amount,1) OVER (...)",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE sales (month TEXT, amount INTEGER)')\ncur.executemany('INSERT INTO sales VALUES (?,?)', [('2024-01',100),('2024-02',120),('2024-03',90),('2024-04',150),('2024-05',130),('2024-06',160)])\nfor r in cur.execute('SELECT month, amount, LAG(amount,1) OVER (ORDER BY month) as prev, LEAD(amount,1) OVER (ORDER BY month) as next, amount - LAG(amount,1,amount) OVER (ORDER BY month) as diff FROM sales').fetchall():\n    print(r[0], r[1], r[2], r[3], r[4])\nconn.close()`,
+    expected: "2024-01 100 None None 0\n2024-02 120 100 90 20\n2024-03 90 120 150 -30\n2024-04 150 90 130 60\n2024-05 130 150 160 -20\n2024-06 160 130 None 30",
+    explanation: "LAG(col,n)は前のn行の値、LEAD(col,n)は後のn行の値を返します。前月比の計算や時系列分析に活用できます。" },
+
+  { id: 38, unit: "UNIT 04  ◆  ウィンドウ関数", rank: "GOLD",
+    title: "移動平均とNTILE",
+    question: "scoresテーブル（name TEXT, score INTEGER）を作成して8件挿入し、3行移動平均とNTILE(4)で4分割グループ（1位グループ=1）を計算して表示してください。",
+    hint: "AVG(score) OVER (ORDER BY score ROWS 2 PRECEDING) / NTILE(4) OVER (ORDER BY score DESC)",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE scores (name TEXT, score INTEGER)')\ncur.executemany('INSERT INTO scores VALUES (?,?)', [('A',95),('B',82),('C',78),('D',91),('E',65),('F',88),('G',73),('H',85)])\nfor r in cur.execute('SELECT name, score, ROUND(AVG(score) OVER (ORDER BY score DESC ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING),1) as ma3, NTILE(4) OVER (ORDER BY score DESC) as quartile FROM scores ORDER BY score DESC').fetchall():\n    print(r[0], r[1], r[2], r[3])\nconn.close()`,
+    expected: "A 95 93.0 1\nD 91 88.0 1\nF 88 86.0 2\nH 85 83.5 2\nB 82 80.0 3\nC 78 74.3 3\nG 73 72.0 4\nE 65 69.0 4",
+    explanation: "ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING で前後1行を含む移動平均。NTILE(n)でn等分したグループ番号を返します。" },
+
+  { id: 39, unit: "UNIT 05  ◆  高度なSQL", rank: "PLATINUM",
+    title: "UNION ALL と集合演算",
+    question: "2024年と2025年の売上テーブル（year, product, amount）を作成し、UNION ALLで縦結合して年別・商品別の合計をGROUP BYで集計してください。",
+    hint: "SELECT ... FROM sales2024 UNION ALL SELECT ... FROM sales2025",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE s2024 (product TEXT, amount INTEGER)')\ncur.execute('CREATE TABLE s2025 (product TEXT, amount INTEGER)')\ncur.executemany('INSERT INTO s2024 VALUES (?,?)', [('Apple',500),('Banana',300),('Cherry',200)])\ncur.executemany('INSERT INTO s2025 VALUES (?,?)', [('Apple',600),('Banana',250),('Date',400)])\nfor r in cur.execute("SELECT product, SUM(amount) as total FROM (SELECT product, amount FROM s2024 UNION ALL SELECT product, amount FROM s2025) GROUP BY product ORDER BY total DESC").fetchall():\n    print(r[0], r[1])\nconn.close()`,
+    expected: "Apple 1100\nDate 400\nBanana 550\nCherry 200",
+    explanation: "UNION ALLは2つのSELECT結果を重複含めて縦結合します。UNIONは重複を除去します。サブクエリでまとめてからGROUP BYできます。" },
+
+  { id: 40, unit: "UNIT 05  ◆  高度なSQL", rank: "PLATINUM",
+    title: "CASE WHEN による条件集計",
+    question: "salesテーブル（product, month, amount）を作成して6件挿入し、CASE WHENを使ってQ1(1-3月)とQ2(4-6月)の売上を横断集計（ピボット）してください。",
+    hint: "SUM(CASE WHEN month <= 3 THEN amount ELSE 0 END) as Q1",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE sales (product TEXT, month INTEGER, amount INTEGER)')\ncur.executemany('INSERT INTO sales VALUES (?,?,?)', [('Apple',1,100),('Apple',2,120),('Apple',4,130),('Banana',2,80),('Banana',5,90),('Banana',6,110)])\nfor r in cur.execute('SELECT product, SUM(CASE WHEN month BETWEEN 1 AND 3 THEN amount ELSE 0 END) as Q1, SUM(CASE WHEN month BETWEEN 4 AND 6 THEN amount ELSE 0 END) as Q2 FROM sales GROUP BY product ORDER BY product').fetchall():\n    print(r[0], r[1], r[2])\nconn.close()`,
+    expected: "Apple 220 130\nBanana 80 200",
+    explanation: "CASE WHEN...THEN...ELSE...ENDで条件分岐。SUM(CASE WHEN...)で条件付き集計（ピボット）が実現できます。" },
+
+  { id: 41, unit: "UNIT 05  ◆  高度なSQL", rank: "DIAMOND",
+    title: "複数CTEの連鎖",
+    question: "employeesテーブル（id, name, dept_id, salary）とdeptsテーブル（id, name）を作成し、WITH句（CTE）を2つ連鎖させて「部署平均給与」→「部署平均より高い社員」を取得してください。",
+    hint: "WITH dept_avg AS (...), high_earners AS (...) SELECT ... FROM high_earners",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE depts (id INTEGER, name TEXT)')\ncur.execute('CREATE TABLE employees (id INTEGER, name TEXT, dept_id INTEGER, salary INTEGER)')\ncur.executemany('INSERT INTO depts VALUES (?,?)', [(1,'Engineering'),(2,'Sales')])\ncur.executemany('INSERT INTO employees VALUES (?,?,?,?)', [(1,'Alice',1,90000),(2,'Bob',1,75000),(3,'Carol',2,65000),(4,'Dave',2,70000),(5,'Eve',1,85000)])\nresult = cur.execute('''\n    WITH dept_avg AS (\n        SELECT dept_id, AVG(salary) as avg_sal FROM employees GROUP BY dept_id\n    ), high_earners AS (\n        SELECT e.name, e.salary, d.name as dept, da.avg_sal\n        FROM employees e\n        JOIN depts d ON e.dept_id = d.id\n        JOIN dept_avg da ON e.dept_id = da.dept_id\n        WHERE e.salary > da.avg_sal\n    )\n    SELECT name, salary, dept FROM high_earners ORDER BY salary DESC\n''').fetchall()\nfor r in result:\n    print(r[0], r[1], r[2])\nconn.close()`,
+    expected: "Alice 90000 Engineering\nEve 85000 Engineering\nDave 70000 Sales",
+    explanation: "CTEは複数定義でき、後のCTEで前のCTEを参照できます。複雑なクエリを読みやすく分割できます。" },
+
+  { id: 42, unit: "UNIT 05  ◆  高度なSQL", rank: "DIAMOND",
+    title: "ウィンドウ関数で累積割合",
+    question: "salesテーブル（product, amount）を作成して5件挿入し、各商品の売上割合（全体に対する%）と累積売上割合をウィンドウ関数で計算してください。",
+    hint: "SUM(amount) OVER () as total / SUM(amount) OVER (ORDER BY amount DESC) as running",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE sales (product TEXT, amount INTEGER)')\ncur.executemany('INSERT INTO sales VALUES (?,?)', [('A',500),('B',300),('C',150),('D',100),('E',50)])\nfor r in cur.execute('SELECT product, amount, ROUND(100.0*amount/SUM(amount) OVER (),1) as pct, ROUND(100.0*SUM(amount) OVER (ORDER BY amount DESC)/SUM(amount) OVER (),1) as cum_pct FROM sales ORDER BY amount DESC').fetchall():\n    print(r[0], r[1], r[2], r[3])\nconn.close()`,
+    expected: "A 500 45.5 45.5\nB 300 27.3 72.7\nC 150 13.6 86.4\nD 100 9.1 95.5\nE 50 4.5 100.0",
+    explanation: "SUM(col) OVER ()はWHERE全体の合計。SUM(col) OVER (ORDER BY ...)は順位累積和。割り算で割合を計算します。" },
+
+  { id: 43, unit: "UNIT 05  ◆  高度なSQL", rank: "DIAMOND",
+    title: "再帰CTEで連番生成",
+    question: "テーブルなしで再帰CTEを使って1から10の連番を生成し、各数値とその二乗を表示してください。",
+    hint: "WITH RECURSIVE nums(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM nums WHERE n < 10)",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\nfor r in cur.execute('''\n    WITH RECURSIVE nums(n) AS (\n        SELECT 1\n        UNION ALL\n        SELECT n + 1 FROM nums WHERE n < 10\n    )\n    SELECT n, n*n FROM nums\n''').fetchall():\n    print(r[0], r[1])\nconn.close()`,
+    expected: "1 1\n2 4\n3 9\n4 16\n5 25\n6 36\n7 49\n8 64\n9 81\n10 100",
+    explanation: "WITH RECURSIVEでテーブルなしに連番や数列を生成できます。UNION ALLで再帰的に行を追加します。" },
+
+  { id: 44, unit: "UNIT 05  ◆  高度なSQL", rank: "DIAMOND",
+    title: "GROUP_CONCATで行を結合",
+    question: "studentsテーブル（name, club）を作成して7件挿入し、クラブ別に所属学生名をカンマ区切りで結合して表示してください（名前はアルファベット順）。",
+    hint: "GROUP_CONCAT(name, ', ') / ORDER BY 内の name 指定",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE students (name TEXT, club TEXT)')\ncur.executemany('INSERT INTO students VALUES (?,?)', [('Alice','Soccer'),('Bob','Tennis'),('Carol','Soccer'),('Dave','Tennis'),('Eve','Basketball'),('Frank','Soccer'),('Grace','Basketball')])\nfor r in cur.execute('SELECT club, GROUP_CONCAT(name, \\', \\' ORDER BY name) as members FROM students GROUP BY club ORDER BY club').fetchall():\n    print(r[0], r[1])\nconn.close()`,
+    expected: "Basketball Eve, Grace\nSoccer Alice, Carol, Frank\nTennis Bob, Dave",
+    explanation: "GROUP_CONCAT(col, sep)でグループ内の値を区切り文字で結合します。SQLiteではORDER BYをGROUP_CONCAT内で指定できます。" },
+
+  { id: 45, unit: "UNIT 05  ◆  高度なSQL", rank: "MASTER",
+    title: "DENSE_RANKと重複なしランキング",
+    question: "scoresテーブル（student, score）を作成して6件挿入（同点あり）し、RANK・DENSE_RANK・ROW_NUMBERの違いを確認して全て表示してください。",
+    hint: "RANK() / DENSE_RANK() / ROW_NUMBER() OVER (ORDER BY score DESC)",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE scores (student TEXT, score INTEGER)')\ncur.executemany('INSERT INTO scores VALUES (?,?)', [('Alice',95),('Bob',85),('Carol',95),('Dave',75),('Eve',85),('Frank',70)])\nfor r in cur.execute('SELECT student, score, RANK() OVER (ORDER BY score DESC) as rank, DENSE_RANK() OVER (ORDER BY score DESC) as dense_rank, ROW_NUMBER() OVER (ORDER BY score DESC) as row_num FROM scores ORDER BY score DESC, student').fetchall():\n    print(r[0], r[1], r[2], r[3], r[4])\nconn.close()`,
+    expected: "Alice 95 1 1 1\nCarol 95 1 1 2\nBob 85 3 2 3\nEve 85 3 2 4\nDave 75 5 3 5\nFrank 70 6 4 6",
+    explanation: "RANK()は同順位後に番号を飛ばす。DENSE_RANKは飛ばさない。ROW_NUMBERは常に一意の連番。用途に応じて使い分けます。" },
+
+  { id: 46, unit: "UNIT 05  ◆  高度なSQL", rank: "MASTER",
+    title: "EXISTSサブクエリの最適化",
+    question: "customersとpurchasesテーブルを作成し、'2024'年に購入した顧客をINを使う方法とEXISTSを使う方法の両方で取得して同じ結果を確認してください。",
+    hint: "WHERE id IN (SELECT customer_id FROM...) / WHERE EXISTS (SELECT 1 FROM... WHERE...)",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE customers (id INTEGER, name TEXT)')\ncur.execute('CREATE TABLE purchases (id INTEGER, customer_id INTEGER, year INTEGER)')\ncur.executemany('INSERT INTO customers VALUES (?,?)', [(1,'Alice'),(2,'Bob'),(3,'Carol'),(4,'Dave')])\ncur.executemany('INSERT INTO purchases VALUES (?,?,?)', [(1,1,2024),(2,2,2023),(3,3,2024),(4,1,2023)])\nprint("IN使用:")\nfor r in cur.execute('SELECT name FROM customers WHERE id IN (SELECT customer_id FROM purchases WHERE year=2024) ORDER BY name').fetchall():\n    print(r[0])\nprint("EXISTS使用:")\nfor r in cur.execute('SELECT name FROM customers c WHERE EXISTS (SELECT 1 FROM purchases p WHERE p.customer_id=c.id AND p.year=2024) ORDER BY name').fetchall():\n    print(r[0])\nconn.close()`,
+    expected: "IN使用:\nAlice\nCarol\nEXISTS使用:\nAlice\nCarol",
+    explanation: "INはサブクエリ結果をリスト化してから比較。EXISTSは行が存在するかだけ確認するため大量データで有利な場合があります。" },
+
+  { id: 47, unit: "UNIT 05  ◆  高度なSQL", rank: "MASTER",
+    title: "再帰CTEで階層の深さ計算",
+    question: "カテゴリーテーブル（id, name, parent_id）を作成して階層構造（root→child→grandchild）を挿入し、再帰CTEで各カテゴリーの深さとパスを計算して表示してください。",
+    hint: "WITH RECURSIVE cat_tree(id,name,level,path) AS (... UNION ALL ...)",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE categories (id INTEGER, name TEXT, parent_id INTEGER)')\ncur.executemany('INSERT INTO categories VALUES (?,?,?)', [(1,'Root',None),(2,'Electronics',1),(3,'Clothing',1),(4,'Phones',2),(5,'Laptops',2),(6,'T-Shirts',3)])\nfor r in cur.execute('''\n    WITH RECURSIVE cat_tree(id, name, level, path) AS (\n        SELECT id, name, 0, name FROM categories WHERE parent_id IS NULL\n        UNION ALL\n        SELECT c.id, c.name, ct.level+1, ct.path||\\' > \\'||c.name\n        FROM categories c JOIN cat_tree ct ON c.parent_id = ct.id\n    )\n    SELECT level, name, path FROM cat_tree ORDER BY path\n''').fetchall():\n    indent = '  ' * r[0]\n    print(indent + r[1])\nconn.close()`,
+    expected: "Root\n  Electronics\n    Laptops\n    Phones\n  Clothing\n    T-Shirts",
+    explanation: "再帰CTEでlevelとpathを引き継ぎながら階層を展開します。パスの文字列連結で各ノードのフルパスを構築できます。" },
+
+  { id: 48, unit: "UNIT 05  ◆  高度なSQL", rank: "MASTER",
+    title: "ウィンドウ関数で前後の差分検出",
+    question: "stocksテーブル（date TEXT, close REAL）を作成して5件挿入し、前日比・5日間の最高値・最安値をウィンドウ関数で計算してください。",
+    hint: "LAG(close) OVER / MAX(close) OVER (ROWS 4 PRECEDING)",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE stocks (date TEXT, close REAL)')\ncur.executemany('INSERT INTO stocks VALUES (?,?)', [('2024-01-01',100.0),('2024-01-02',105.5),('2024-01-03',98.0),('2024-01-04',110.0),('2024-01-05',107.5)])\nfor r in cur.execute('''\n    SELECT date, close,\n           ROUND(close - LAG(close,1,close) OVER (ORDER BY date), 1) as daily_change,\n           MAX(close) OVER (ORDER BY date ROWS BETWEEN 4 PRECEDING AND CURRENT ROW) as high5,\n           MIN(close) OVER (ORDER BY date ROWS BETWEEN 4 PRECEDING AND CURRENT ROW) as low5\n    FROM stocks\n''').fetchall():\n    print(r[0], r[1], r[2], r[3], r[4])\nconn.close()`,
+    expected: "2024-01-01 100.0 0.0 100.0 100.0\n2024-01-02 105.5 5.5 105.5 100.0\n2024-01-03 98.0 -7.5 105.5 98.0\n2024-01-04 110.0 12.0 110.0 98.0\n2024-01-05 107.5 -2.5 110.0 98.0",
+    explanation: "ROWS BETWEEN 4 PRECEDING AND CURRENT ROWで過去5行のウィンドウを定義。株価分析などの時系列処理で使います。" },
+
+  { id: 49, unit: "UNIT 05  ◆  高度なSQL", rank: "LEGEND",
+    title: "コーホート分析（月次リテンション）",
+    question: "usersテーブル（id, signup_month）とloginsテーブル（user_id, login_month）を作成し、サインアップ月ごとのリテンション率（翌月も利用したユーザーの割合）を集計してください。",
+    hint: "GROUP BY signup_month / COUNT(DISTINCT l.user_id) / COUNT(DISTINCT u.id)",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE users (id INTEGER, signup_month TEXT)')\ncur.execute('CREATE TABLE logins (user_id INTEGER, login_month TEXT)')\ncur.executemany('INSERT INTO users VALUES (?,?)', [(1,'2024-01'),(2,'2024-01'),(3,'2024-01'),(4,'2024-02'),(5,'2024-02')])\ncur.executemany('INSERT INTO logins VALUES (?,?)', [(1,'2024-01'),(1,'2024-02'),(2,'2024-01'),(3,'2024-01'),(3,'2024-02'),(4,'2024-02'),(4,'2024-03'),(5,'2024-02')])\nfor r in cur.execute('''\n    SELECT u.signup_month, COUNT(DISTINCT u.id) as total, COUNT(DISTINCT l.user_id) as retained,\n           ROUND(100.0*COUNT(DISTINCT l.user_id)/COUNT(DISTINCT u.id),1) as retention_pct\n    FROM users u\n    LEFT JOIN logins l ON u.id = l.user_id\n        AND l.login_month = SUBSTR(u.signup_month,1,4)||\\'\\'-\\'||CAST(CAST(SUBSTR(u.signup_month,6,2) AS INTEGER)+1 AS TEXT)\n    GROUP BY u.signup_month ORDER BY u.signup_month\n''').fetchall():\n    print(r[0], r[1], r[2], r[3])\nconn.close()`,
+    expected: "2024-01 3 2 66.7\n2024-02 2 1 50.0",
+    explanation: "コーホート分析はサインアップ月ごとにユーザーをグループ化し、翌月の継続率を計測します。マーケティング指標の基本です。" },
+
+  { id: 50, unit: "UNIT 05  ◆  高度なSQL", rank: "LEGEND",
+    title: "ギャップ検出（連続番号の欠番）",
+    question: "numbersテーブル（n INTEGER）を作成して不連続な数値列（1,2,3,5,6,9,10,11）を挿入し、再帰CTEと外部結合でgap（欠番）を検出して表示してください。",
+    hint: "WITH RECURSIVE all_nums AS (...) SELECT an.n FROM all_nums LEFT JOIN numbers ON... WHERE numbers.n IS NULL",
+    answer: `import sqlite3\nconn = sqlite3.connect(':memory:')\ncur = conn.cursor()\ncur.execute('CREATE TABLE numbers (n INTEGER)')\ncur.executemany('INSERT INTO numbers VALUES (?)', [(1,),(2,),(3,),(5,),(6,),(9,),(10,),(11,)])\nfor r in cur.execute('''\n    WITH RECURSIVE all_nums(n) AS (\n        SELECT MIN(n) FROM numbers\n        UNION ALL\n        SELECT n+1 FROM all_nums WHERE n < (SELECT MAX(n) FROM numbers)\n    )\n    SELECT an.n as missing\n    FROM all_nums an\n    LEFT JOIN numbers num ON an.n = num.n\n    WHERE num.n IS NULL\n    ORDER BY an.n\n''').fetchall():\n    print(r[0])\nconn.close()`,
+    expected: "4\n7\n8",
+    explanation: "再帰CTEで連番を生成し、LEFT JOINで実テーブルと結合。IS NULLで欠番を検出します。IDのシーケンスギャップ検出などに応用できます。" }
 ];
 
 const sqlMissions = [
@@ -21609,7 +24998,167 @@ const bashProblems = [
     hint: "for i in 1 2 3; do コマンド && return 0; done; return 1",
     answer: `retry() {\n  local cmd="$1"\n  local max=3\n  for i in $(seq 1 $max); do\n    eval "$cmd" && echo "success" && return 0\n    echo "retry $i failed"\n  done\n  echo "failed"\n  return 1\n}\nretry "exit 0"`,
     expected: "success",
-    explanation: "evalは文字列をコマンドとして実行します。&&で成功時のみ次の処理を行う短絡評価です。" }
+    explanation: "evalは文字列をコマンドとして実行します。&&で成功時のみ次の処理を行う短絡評価です。" },
+
+  { id: 31, unit: "UNIT 02  ◆  文字列と演算", rank: "GOLD",
+    title: "文字列の分割とパース",
+    question: "CSV形式の文字列\"Alice,25,Engineer\"をIFSを使ってフィールドに分割し、各フィールドをラベル付きで表示してください。",
+    hint: "IFS=',' read -r name age job <<< \"$csv\"",
+    answer: `csv="Alice,25,Engineer"\nIFS=',' read -r name age job <<< "$csv"\necho "Name: $name"\necho "Age: $age"\necho "Job: $job"`,
+    expected: "Name: Alice\nAge: 25\nJob: Engineer",
+    explanation: "IFSを区切り文字に設定してreadコマンドと<<<（ヒアストリング）を使うとCSV行を変数に分割できます。" },
+
+  { id: 32, unit: "UNIT 02  ◆  文字列と演算", rank: "GOLD",
+    title: "連想配列（辞書）",
+    question: "declare -Aで連想配列を作成してフルーツの価格（Apple:150, Banana:80, Cherry:200）を格納し、キー順に表示してからCherryの値を更新して再表示してください。",
+    hint: "declare -A prices / prices[Apple]=150 / for key in ...",
+    answer: `declare -A prices\nprices[Apple]=150\nprices[Banana]=80\nprices[Cherry]=200\necho "初期値:"\nfor key in $(echo "${!prices[@]}" | tr ' ' '\\n' | sort); do\n  echo "$key: ${prices[$key]}"\ndone\nprices[Cherry]=250\necho "Cherry更新後: ${prices[Cherry]}"`,
+    expected: "初期値:\nApple: 150\nBanana: 80\nCherry: 200\nCherry更新後: 250",
+    explanation: "declare -Aで連想配列を宣言。${!array[@]}でキー一覧、${array[@]}で値一覧を取得できます。" },
+
+  { id: 33, unit: "UNIT 03  ◆  ファイル操作", rank: "GOLD",
+    title: "awkで高度なフィールド処理",
+    question: "名前・スコアのデータをechoで生成し、awkでスコアが80以上の行だけ抽出して名前とスコアと「PASS/FAIL」を表示してください。",
+    hint: "awk '$2 >= 80 {print $1, $2, \"PASS\"} $2 < 80 {print $1, $2, \"FAIL\"}'",
+    answer: `data="Alice 95\nBob 72\nCarol 88\nDave 65\nEve 91"\necho -e "$data" | awk '{\n  if ($2 >= 80) status="PASS"\n  else status="FAIL"\n  printf "%-6s %3d %s\\n", $1, $2, status\n}'`,
+    expected: "Alice   95 PASS\nBob     72 FAIL\nCarol   88 PASS\nDave    65 FAIL\nEve     91 PASS",
+    explanation: "awkのif/elseで条件分岐し、printfで書式付き出力ができます。%-6sは左揃え6文字、%3dは右揃え3桁整数です。" },
+
+  { id: 34, unit: "UNIT 03  ◆  ファイル操作", rank: "GOLD",
+    title: "sedで複数置換",
+    question: "HTMLテンプレート文字列に対してsedで「{{name}}」を「Alice」に、「{{age}}」を「25」に置換して出力してください。",
+    hint: "sed -e 's/{{name}}/Alice/g' -e 's/{{age}}/25/g'",
+    answer: `template='<h1>Hello, {{name}}!</h1>\n<p>Age: {{age}}</p>\n<p>Hi {{name}}, welcome!</p>'\necho -e "$template" | sed -e 's/{{name}}/Alice/g' -e 's/{{age}}/25/g'`,
+    expected: "<h1>Hello, Alice!</h1>\n<p>Age: 25</p>\n<p>Hi Alice, welcome!</p>",
+    explanation: "sed -eで複数のs///コマンドを適用できます。gフラグで行内の全マッチを置換します。テンプレートエンジンの簡易実装に使えます。" },
+
+  { id: 35, unit: "UNIT 03  ◆  ファイル操作", rank: "GOLD",
+    title: "find と xargs の組み合わせ",
+    question: "/tmpに拡張子.tmpのファイルを3件作成し、findとxargsを組み合わせてファイル名一覧を表示してから削除してください。",
+    hint: "find /tmp -name '*.tmp' | xargs ls / xargs rm",
+    answer: `mkdir -p /tmp/test_xargs\ntouch /tmp/test_xargs/a.tmp /tmp/test_xargs/b.tmp /tmp/test_xargs/c.tmp\necho "tmpファイル:"\nfind /tmp/test_xargs -name '*.tmp' | sort | xargs -I{} basename {}\nfind /tmp/test_xargs -name '*.tmp' | xargs rm\nremaining=$(find /tmp/test_xargs -name '*.tmp' | wc -l)\necho "削除後残数: $remaining"\nrmdir /tmp/test_xargs`,
+    expected: "tmpファイル:\na.tmp\nb.tmp\nc.tmp\n削除後残数: 0",
+    explanation: "xargsはパイプからの入力を引数としてコマンドに渡します。-I{}で引数の位置を指定できます。findと組み合わせてファイル一括処理に使います。" },
+
+  { id: 36, unit: "UNIT 04  ◆  スクリプト実践", rank: "GOLD",
+    title: "getopts でオプション解析",
+    question: "getoptsを使って-n（名前）と-c（カウント）オプションを解析し、名前をカウント回数表示するスクリプトを書いてください。デフォルトはname=World, count=1。",
+    hint: "while getopts 'n:c:' opt; do case $opt in n) name=$OPTARG;; c) count=$OPTARG;; esac; done",
+    answer: `parse_and_run() {\n  local name="World" count=1\n  local OPTIND=1\n  while getopts 'n:c:' opt; do\n    case $opt in\n      n) name="$OPTARG" ;;\n      c) count="$OPTARG" ;;\n      *) echo "Usage: -n name -c count" ; return 1 ;;\n    esac\n  done\n  for i in $(seq 1 $count); do\n    echo "Hello, $name! ($i/$count)"\n  done\n}\nparse_and_run -n Alice -c 3`,
+    expected: "Hello, Alice! (1/3)\nHello, Alice! (2/3)\nHello, Alice! (3/3)",
+    explanation: "getoptsは引数を解析するBash組み込みコマンド。コロン付き(n:)は引数あり、なし(v)はフラグ。OPTARGに引数値が格納されます。" },
+
+  { id: 37, unit: "UNIT 04  ◆  スクリプト実践", rank: "PLATINUM",
+    title: "パイプラインとtee",
+    question: "1から20の数値を生成し、teeを使って偶数のみをファイルと画面に同時出力して、最後にファイルから偶数の個数を取得して表示してください。",
+    hint: "seq 1 20 | awk '$1%2==0' | tee /tmp/evens.txt | wc -l",
+    answer: `tmpfile=$(mktemp)\nseq 1 20 | awk '$1%2==0' | tee "$tmpfile" > /dev/null\necho "偶数一覧:"\ncat "$tmpfile"\ncount=$(wc -l < "$tmpfile")\necho "偶数の個数: $count"\nrm "$tmpfile"`,
+    expected: "偶数一覧:\n2\n4\n6\n8\n10\n12\n14\n16\n18\n20\n偶数の個数: 10",
+    explanation: "teeは入力を標準出力とファイルの両方に書き出します。mktemp で安全な一時ファイルを作成できます。" },
+
+  { id: 38, unit: "UNIT 04  ◆  スクリプト実践", rank: "PLATINUM",
+    title: "バックグラウンド並列処理",
+    question: "3つのタスク（sleep 0.1 && echo Task1など）をバックグラウンドで並列実行し、全て完了するまでwaitして各タスクの完了を確認してください。",
+    hint: "cmd & PID=$! / wait $PID",
+    answer: `pids=()\nfor i in 1 2 3; do\n  (sleep 0.$i && echo "Task$i done") &\n  pids+=($!)\ndone\necho "全タスク開始"\nfor pid in "${pids[@]}"; do\n  wait $pid\ndone\necho "全タスク完了"`,
+    expected: "全タスク開始\nTask1 done\nTask2 done\nTask3 done\n全タスク完了",
+    explanation: "&でバックグラウンド実行し$!でPIDを取得。wait PIDで特定プロセスの終了を待機します。並列処理でスループットを向上できます。" },
+
+  { id: 39, unit: "UNIT 05  ◆  上級テクニック", rank: "PLATINUM",
+    title: "プロセス置換",
+    question: "2つのリスト（奇数1,3,5,7,9と偶数2,4,6,8,10）を生成し、プロセス置換でdiffを取って差異を確認し、またcommコマンドで共通要素（なし）を確認してください。",
+    hint: "diff <(seq 1 2 9) <(seq 2 2 10) / comm -12 <(sorted1) <(sorted2)",
+    answer: `echo "=== diff ==="\ndiff <(seq 1 2 9) <(seq 2 2 10) | head -5\necho "=== comm 共通 ==="\ncommon=$(comm -12 <(seq 1 2 9 | sort) <(seq 2 2 10 | sort) | wc -l)\necho "共通要素数: $common"`,
+    expected: "=== diff ===\n1,5c1,5\n< 1\n< 3\n< 5\n=== comm 共通 ===\n共通要素数: 0",
+    explanation: "<(コマンド)はプロセス置換。コマンドの出力を一時ファイルのように扱えます。diffやcommに2つのストリームを渡すときに使います。" },
+
+  { id: 40, unit: "UNIT 05  ◆  上級テクニック", rank: "PLATINUM",
+    title: "名前付きパイプ（FIFO）",
+    question: "mkfifoで名前付きパイプを作成し、バックグラウンドプロセスがパイプに書き込み、フォアグラウンドで読み取るプロデューサー・コンシューマーパターンを実装してください。",
+    hint: "mkfifo /tmp/mypipe / echo data > /tmp/mypipe & / read line < /tmp/mypipe",
+    answer: `pipe=$(mktemp -u)\nmkfifo "$pipe"\n(for msg in "Hello" "World" "Done"; do\n  echo "$msg" > "$pipe"\ndone) &\nfor i in 1 2 3; do\n  read -r line < "$pipe"\n  echo "Received: $line"\ndone\nwait\nrm -f "$pipe"`,
+    expected: "Received: Hello\nReceived: World\nReceived: Done",
+    explanation: "名前付きパイプ（FIFO）はファイルシステム上に存在するパイプ。プロセス間通信に使えます。片方が書くと片方が読めるブロッキング動作です。" },
+
+  { id: 41, unit: "UNIT 05  ◆  上級テクニック", rank: "DIAMOND",
+    title: "JSON処理（jqなし）",
+    question: "JSON文字列\"[{\\\"name\\\":\\\"Alice\\\",\\\"score\\\":95},{\\\"name\\\":\\\"Bob\\\",\\\"score\\\":82}]\"からgrepとsedを使って名前と点数を抽出して表示してください。",
+    hint: "grep -oP '\"name\":\"\\K[^\"]+' / grep -oP '\"score\":\\K\\d+'",
+    answer: `json='[{"name":"Alice","score":95},{"name":"Bob","score":82},{"name":"Carol","score":88}]'\nnames=$(echo "$json" | grep -oP '"name":"\\K[^"]+')\nscores=$(echo "$json" | grep -oP '"score":\\K[0-9]+')\npaste <(echo "$names") <(echo "$scores") | while IFS=$'\\t' read -r name score; do\n  echo "$name: $score"\ndone`,
+    expected: "Alice: 95\nBob: 82\nCarol: 88",
+    explanation: "grep -oP と\\K（後読みリセット）でJSONから値を抽出できます。pasteで2つのストリームをタブ区切りで結合します。" },
+
+  { id: 42, unit: "UNIT 05  ◆  上級テクニック", rank: "DIAMOND",
+    title: "ヒアドキュメントとテンプレート",
+    question: "ヒアドキュメント（cat <<EOF）を使って複数行のHTMLテンプレートを変数に格納し、変数展開で値を埋め込んで表示してください。",
+    hint: "html=$(cat <<EOF ... EOF)",
+    answer: `name="Alice"\nage=25\ncolor="blue"\nhtml=$(cat <<EOF\n<!DOCTYPE html>\n<html>\n<head><title>Profile: $name</title></head>\n<body style="color: $color">\n  <h1>$name</h1>\n  <p>Age: $age</p>\n</body>\n</html>\nEOF\n)\necho "$html"`,
+    expected: "<!DOCTYPE html>\n<html>\n<head><title>Profile: Alice</title></head>\n<body style=\"color: blue\">\n  <h1>Alice</h1>\n  <p>Age: 25</p>\n</body>\n</html>",
+    explanation: "ヒアドキュメント$(cat <<EOF...EOF)で複数行文字列を変数に格納できます。変数は自動的に展開されます。単引用符'EOF'なら変数展開を抑制できます。" },
+
+  { id: 43, unit: "UNIT 05  ◆  上級テクニック", rank: "DIAMOND",
+    title: "コプロセス（coproc）",
+    question: "coprocを使って対話型のPythonセッションとBashから通信し、Pythonで1+1=2の計算をさせて結果を受け取ってください。",
+    hint: "coproc PY { python3 -c 'import sys; ...' ; } / echo ... >&${PY[1]} / read ... <&${PY[0]}",
+    answer: `coproc CALC {\n  while IFS= read -r line; do\n    python3 -c "print(eval('$line'))"\n  done\n}\necho "1+1" >&${CALC[1]}\nread result <&${CALC[0]}\necho "1+1 = $result"\necho "3*7" >&${CALC[1]}\nread result <&${CALC[0]}\necho "3*7 = $result"\nkill $CALC_PID 2>/dev/null\nwait $CALC_PID 2>/dev/null`,
+    expected: "1+1 = 2\n3*7 = 21",
+    explanation: "coprocは双方向パイプでサブプロセスと通信できます。${PROC[0]}が読み取り、${PROC[1]}が書き込みのファイルディスクリプタです。" },
+
+  { id: 44, unit: "UNIT 05  ◆  上級テクニック", rank: "DIAMOND",
+    title: "bashコンプレッション（文字列圧縮）",
+    question: "ランレングス圧縮（連続した同じ文字をカウントで表す）を実装してください。例：\"aaabbcccc\"→\"a3b2c4\"",
+    hint: "1文字ずつ比較してカウント / prev・count変数を使う",
+    answer: `rle_encode() {\n  local str="$1"\n  local result="" prev="" count=0\n  for ((i=0; i<${#str}; i++)); do\n    char="${str:$i:1}"\n    if [[ "$char" == "$prev" ]]; then\n      ((count++))\n    else\n      [[ -n "$prev" ]] && result+="${prev}${count}"\n      prev="$char"\n      count=1\n    fi\n  done\n  [[ -n "$prev" ]] && result+="${prev}${count}"\n  echo "$result"\n}\nrle_encode "aaabbcccc"\nrle_encode "abcde"\nrle_encode "aaaa"`,
+    expected: "a3b2c4\na1b1c1d1e1\na4",
+    explanation: "${str:i:1}で文字列の特定位置の1文字を取得できます。for ((i=0; i<len; i++))はC言語スタイルの算術forループです。" },
+
+  { id: 45, unit: "UNIT 05  ◆  上級テクニック", rank: "MASTER",
+    title: "ディスパッチテーブル（関数の配列）",
+    question: "連想配列を使って文字列操作のディスパッチテーブルを実装してください（upper/lower/reverse/length）。コマンド名と引数を受け取って対応する処理を実行。",
+    hint: "declare -A dispatch / dispatch[upper]='echo ... | tr a-z A-Z'",
+    answer: `do_upper() { echo "${1^^}"; }\ndo_lower() { echo "${1,,}"; }\ndo_reverse() { echo "$1" | rev; }\ndo_length() { echo "${#1}"; }\n\ndispatch() {\n  local cmd="$1" arg="$2"\n  case "$cmd" in\n    upper)   do_upper "$arg" ;;\n    lower)   do_lower "$arg" ;;\n    reverse) do_reverse "$arg" ;;\n    length)  do_length "$arg" ;;\n    *) echo "Unknown: $cmd" ;;\n  esac\n}\n\nfor cmd in upper lower reverse length; do\n  result=$(dispatch "$cmd" "Hello")\n  echo "$cmd(Hello) = $result"\ndone`,
+    expected: "upper(Hello) = HELLO\nlower(Hello) = hello\nreverse(Hello) = olleH\nlength(Hello) = 5",
+    explanation: "case文を使って文字列コマンドをディスパッチします。${var^^}で大文字、${var,,}で小文字変換。revコマンドで文字列反転ができます。" },
+
+  { id: 46, unit: "UNIT 05  ◆  上級テクニック", rank: "MASTER",
+    title: "ウォッチドッグタイマー",
+    question: "timeoutコマンドを使ってコマンドの実行時間を制限し、タイムアウトした場合とした場合しない場合で異なるメッセージを表示してください。",
+    hint: "timeout 2s cmd; if [[ $? -eq 124 ]]; then echo timeout; fi",
+    answer: `run_with_timeout() {\n  local timeout="$1"\n  shift\n  timeout "$timeout" bash -c "$@"\n  local exit_code=$?\n  if [[ $exit_code -eq 124 ]]; then\n    echo "TIMEOUT: ${timeout}秒超過"\n    return 1\n  elif [[ $exit_code -eq 0 ]]; then\n    echo "OK: 正常完了"\n    return 0\n  else\n    echo "ERROR: 終了コード $exit_code"\n    return $exit_code\n  fi\n}\nrun_with_timeout 2s "echo '高速処理'; sleep 0.1"\nrun_with_timeout 0.1s "sleep 1"`,
+    expected: "高速処理\nOK: 正常完了\nTIMEOUT: 0.1s秒超過",
+    explanation: "timeoutコマンドは指定時間でプロセスを強制終了。タイムアウト時は終了コード124を返します。本番スクリプトの安全策として重要です。" },
+
+  { id: 47, unit: "UNIT 05  ◆  上級テクニック", rank: "MASTER",
+    title: "セマフォによる並行数制限",
+    question: "最大2並行でタスクを実行するセマフォを実装してください。5つのタスクを並行数2制限で実行し、各タスクの開始・完了を表示してください。",
+    hint: "wait -n (bash 5.1+) または PID配列で並行数を管理",
+    answer: `MAX_PARALLEL=2\npids=()\nfor i in $(seq 1 5); do\n  while [[ ${#pids[@]} -ge $MAX_PARALLEL ]]; do\n    new_pids=()\n    for pid in "${pids[@]}"; do\n      if kill -0 "$pid" 2>/dev/null; then\n        new_pids+=("$pid")\n      fi\n    done\n    pids=("${new_pids[@]}")\n    [[ ${#pids[@]} -ge $MAX_PARALLEL ]] && sleep 0.05\n  done\n  (sleep 0.1 && echo "Task$i done") &\n  echo "Task$i start"\n  pids+=($!)\ndone\nfor pid in "${pids[@]}"; do wait "$pid"; done`,
+    expected: "Task1 start\nTask2 start\nTask1 done\nTask3 start\nTask2 done\nTask4 start\nTask3 done\nTask5 start\nTask4 done\nTask5 done",
+    explanation: "アクティブPIDリストを管理して並行数を制限するパターンです。大量ファイル処理でCPUを使い切りつつシステム過負荷を防げます。" },
+
+  { id: 48, unit: "UNIT 05  ◆  上級テクニック", rank: "MASTER",
+    title: "動的関数生成",
+    question: "evalを使って動的に関数を生成してください。「greet_en」「greet_ja」「greet_fr」の3つの関数を動的に生成し、各言語で挨拶を表示してください。",
+    hint: "eval \"greet_${lang}() { echo ...; }\"",
+    answer: `declare -A greetings=([en]="Hello" [ja]="こんにちは" [fr]="Bonjour")\nfor lang in "${!greetings[@]}"; do\n  greeting="${greetings[$lang]}"\n  eval "greet_${lang}() { echo \"${greeting}, \\$1!\"; }"\ndone\nfor lang in en ja fr; do\n  "greet_${lang}" "World"\ndone`,
+    expected: "Hello, World!\nこんにちは, World!\nBonjour, World!",
+    explanation: "evalで文字列を動的に関数定義として実行できます。メタプログラミングの一種ですが、外部入力には使わないよう注意が必要です。" },
+
+  { id: 49, unit: "UNIT 05  ◆  上級テクニック", rank: "LEGEND",
+    title: "ステートマシン実装",
+    question: "交通信号（red→green→yellow→red）のステートマシンをBashで実装し、5回の状態遷移を表示してください。",
+    hint: "case $state in red) next=green;; green) next=yellow;; yellow) next=red;; esac",
+    answer: `state="red"\ndeclare -A transitions=([red]="green" [green]="yellow" [yellow]="red")\ndeclare -A actions=([red]="STOP" [green]="GO" [yellow]="CAUTION")\necho "初期状態: $state - ${actions[$state]}"\nfor i in $(seq 1 5); do\n  state="${transitions[$state]}"\n  echo "遷移$i: $state - ${actions[$state]}"\ndone`,
+    expected: "初期状態: red - STOP\n遷移1: green - GO\n遷移2: yellow - CAUTION\n遷移3: red - STOP\n遷移4: green - GO\n遷移5: yellow - CAUTION",
+    explanation: "連想配列で状態遷移テーブルを実装するステートマシンパターン。ワークフロー・プロトコル実装などに応用できます。" },
+
+  { id: 50, unit: "UNIT 05  ◆  上級テクニック", rank: "LEGEND",
+    title: "シェルスクリプトのユニットテスト",
+    question: "簡易テストフレームワーク（assert_eq関数）を実装し、文字列操作関数（trim/reverse/palindrome_check）をテストして結果を表示してください。",
+    hint: "assert_eq() { [[ \"$1\" == \"$2\" ]] && echo PASS || echo \"FAIL: got '$1' want '$2'\"; }",
+    answer: `passed=0; failed=0\nassert_eq() {\n  local got="$1" want="$2" label="$3"\n  if [[ "$got" == "$want" ]]; then\n    echo "PASS: $label"\n    ((passed++))\n  else\n    echo "FAIL: $label (got='$got' want='$want')"\n    ((failed++))\n  fi\n}\ntrim() { echo "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'; }\nreverse_str() { echo "$1" | rev; }\nis_palindrome() { [[ "$1" == "$(echo "$1" | rev)" ]] && echo true || echo false; }\nassert_eq "$(trim '  hello  ')" "hello" "trim spaces"\nassert_eq "$(reverse_str 'abcde')" "edcba" "reverse string"\nassert_eq "$(is_palindrome 'racecar')" "true" "palindrome true"\nassert_eq "$(is_palindrome 'hello')" "false" "palindrome false"\necho "Results: $passed passed, $failed failed"`,
+    expected: "PASS: trim spaces\nPASS: reverse string\nPASS: palindrome true\nPASS: palindrome false\nResults: 4 passed, 0 failed",
+    explanation: "シェルスクリプトにもテストを書けます。カウンター変数と条件分岐でassert関数を実装。自動テストはスクリプトの品質を保証します。" }
 ];
 
 const bashMissions = [
@@ -21954,7 +25503,167 @@ const regexProblems = [
     hint: "keyword.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')",
     answer: `function escapeRegex(str) {\n  return str.replace(/[.*+?^\${}()|[\\]\\\\]/g, "\\\\$&");\n}\nconst text = "Hello (World) and [Regex]!";\nconst keyword = "(World)";\nconst re = new RegExp(escapeRegex(keyword), "g");\nconst result = text.replace(re, "<mark>$&</mark>");\nconsole.log(result);`,
     expected: "Hello <mark>(World)</mark> and [Regex]!",
-    explanation: "RegExpのメタ文字をエスケープしてから動的にRegExpを作ることで、ユーザー入力を安全に使えます。" }
+    explanation: "RegExpのメタ文字をエスケープしてから動的にRegExpを作ることで、ユーザー入力を安全に使えます。" },
+
+  { id: 31, unit: "UNIT 01  ◆  Regex基礎", rank: "ROOKIE",
+    title: "文字クラスと範囲",
+    question: "文字列\"a1B2c3D4\"から数字のみ、小文字のみ、大文字のみをそれぞれmatchで抽出して表示してください。",
+    hint: "/[0-9]/g / /[a-z]/g / /[A-Z]/g",
+    answer: `const s = "a1B2c3D4";\nconsole.log(s.match(/[0-9]/g).join(''));\nconsole.log(s.match(/[a-z]/g).join(''));\nconsole.log(s.match(/[A-Z]/g).join(''));`,
+    expected: "1234\nac\nBD",
+    explanation: "[0-9]は数字、[a-z]は小文字、[A-Z]は大文字の文字クラスです。gフラグで全マッチを返します。" },
+
+  { id: 32, unit: "UNIT 01  ◆  Regex基礎", rank: "ROOKIE",
+    title: "量指定子の使い分け",
+    question: "\"color\"と\"colour\"の両方にマッチし、\"colr\"にはマッチしないRegexを書いてください。次に1桁以上の数字列にマッチするRegexも示してください。",
+    hint: "colou?r / \\d+ または [0-9]+",
+    answer: `const words = ["color", "colour", "colr", "colouur"];\nconst re1 = /^colou?r$/;\nwords.forEach(w => console.log(w + ": " + re1.test(w)));\nconst nums = ["1", "123", "", "12.3", "00"];\nconst re2 = /^\\d+$/;\nnums.forEach(n => console.log('"' + n + '": ' + re2.test(n)));`,
+    expected: "color: true\ncolour: true\ncolr: false\ncolouur: false\n\"1\": true\n\"123\": true\n\"\": false\n\"12.3\": false\n\"00\": true",
+    explanation: "u?はuが0回か1回。^と$でmatchではなくtest用に完全一致を強制。\\d+は1桁以上の数字にマッチします。" },
+
+  { id: 33, unit: "UNIT 02  ◆  グループとキャプチャ", rank: "BRONZE",
+    title: "名前付きキャプチャでデータ抽出",
+    question: "\"John Smith, age 30, NYC\"から名前（姓名）・年齢・都市を名前付きキャプチャグループで抽出して表示してください。",
+    hint: "/(?<first>\\w+) (?<last>\\w+), age (?<age>\\d+), (?<city>\\w+)/",
+    answer: `const str = "John Smith, age 30, NYC";\nconst m = str.match(/(?<first>\\w+) (?<last>\\w+), age (?<age>\\d+), (?<city>\\w+)/);\nif (m) {\n  const { first, last, age, city } = m.groups;\n  console.log("名前: " + first + " " + last);\n  console.log("年齢: " + age);\n  console.log("都市: " + city);\n}`,
+    expected: "名前: John Smith\n年齢: 30\n都市: NYC",
+    explanation: "(?<name>...)の名前付きキャプチャはmatch().groupsオブジェクトから.nameでアクセスできます。コードの可読性が向上します。" },
+
+  { id: 34, unit: "UNIT 02  ◆  グループとキャプチャ", rank: "BRONZE",
+    title: "matchAllで全マッチを反復",
+    question: "\"2024-01-15, 2024-03-22, 2025-06-10\"から全ての日付（YYYY-MM-DD形式）をmatchAllで抽出し、年・月・日を分解して表示してください。",
+    hint: "/(?<y>\\d{4})-(?<m>\\d{2})-(?<d>\\d{2})/g と matchAll()",
+    answer: `const str = "2024-01-15, 2024-03-22, 2025-06-10";\nconst re = /(?<y>\\d{4})-(?<m>\\d{2})-(?<d>\\d{2})/g;\nfor (const m of str.matchAll(re)) {\n  const { y, m: mo, d } = m.groups;\n  console.log(\`${y}年${mo}月${d}日\`);\n}`,
+    expected: "2024年01月15日\n2024年03月22日\n2025年06月10日",
+    explanation: "matchAll()はgフラグのRegExpで全マッチのイテレータを返します。各マッチがgroups付きのmatch objectで、for...ofで反復できます。" },
+
+  { id: 35, unit: "UNIT 02  ◆  グループとキャプチャ", rank: "SILVER",
+    title: "後方参照による重複検出",
+    question: "\"hello world\"「aabbcc」「the the quick brown brown fox」から後方参照を使って重複する単語または文字を検出してください。",
+    hint: "/(\\b\\w+\\b) \\1/g で重複単語 / /(.)\\1/g で重複文字",
+    answer: `const texts = ["hello world", "aabbcc", "the the quick brown brown fox"];\n// 重複単語\ntexts.forEach(t => {\n  const dups = t.match(/(\\b\\w+\\b) \\1/gi);\n  if (dups) console.log("重複単語:", dups.join(", "));\n  else console.log(t + ": 重複なし");\n});\n// 重複文字\nconsole.log("aabbcc重複文字:", "aabbcc".match(/(.)\\1/g).join(","));`,
+    expected: "hello world: 重複なし\naabbcc: 重複なし\n重複単語: the the, brown brown\naabbcc重複文字: aa,bb,cc",
+    explanation: "\\1は1番目のキャプチャグループと同じ文字にマッチする後方参照。\\b\\w+\\bは単語境界で囲まれた単語にマッチします。" },
+
+  { id: 36, unit: "UNIT 03  ◆  先読みと後読み", rank: "SILVER",
+    title: "肯定先読みと否定先読み",
+    question: "パスワード強度チェックを先読みで実装してください。大文字・小文字・数字・特殊文字(@#$%^&*)を全て含む8文字以上をvalidとしてください。",
+    hint: "/^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&*]).{8,}$/",
+    answer: `const passwords = ["weak", "Password1", "P@ssw0rd", "Short1!", "NoSpecial1", "AllGood@1Abc"];\nconst re = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&*]).{8,}$/;\npasswords.forEach(p => {\n  console.log(p + ": " + (re.test(p) ? "valid" : "invalid"));\n});`,
+    expected: "weak: invalid\nPassword1: invalid\nP@ssw0rd: valid\nShort1!: invalid\nNoSpecial1: invalid\nAllGood@1Abc: valid",
+    explanation: "(?=.*X)は「この位置の後ろのどこかにXがある」を意味する先読みアサーション。並べることで「全て含む」をチェックできます。" },
+
+  { id: 37, unit: "UNIT 03  ◆  先読みと後読み", rank: "SILVER",
+    title: "後読み（lookbehind）で値抽出",
+    question: "\"Price: $100, Discount: $20, Total: $80\"から後読みを使って$マークの後の数字のみを抽出して合計を計算してください。",
+    hint: "/(?<=\\$)\\d+/g で$の後の数字にマッチ",
+    answer: `const str = "Price: $100, Discount: $20, Total: $80";\nconst nums = [...str.matchAll(/(?<=\\$)\\d+/g)].map(m => parseInt(m[0]));\nnums.forEach(n => console.log(n));\nconsole.log("合計:", nums.reduce((a, b) => a + b, 0));`,
+    expected: "100\n20\n80\n合計: 200",
+    explanation: "(?<=\\$)は「$の後」という後読みアサーション。文字を消費せずに位置をアサートします。ES2018以降のV8エンジンで使用可能です。" },
+
+  { id: 38, unit: "UNIT 03  ◆  先読みと後読み", rank: "GOLD",
+    title: "非貪欲マッチでHTMLタグ抽出",
+    question: "\"<b>太字</b>と<i>斜体</i>と<b>もう一つ</b>\"から各タグペアとその内容を非貪欲マッチで正しく抽出してください。",
+    hint: "/<(\\w+)>.*?<\\/\\1>/g と非貪欲の.*?",
+    answer: `const html = "<b>太字</b>と<i>斜体</i>と<b>もう一つ</b>";\n// 貪欲（間違い）\nconst greedy = html.match(/<b>.*<\\/b>/);\nconsole.log("貪欲:", greedy[0]);\n// 非貪欲（正しい）\nconst lazy = html.match(/<b>.*?<\\/b>/g);\nlazy.forEach(m => console.log("非貪欲:", m));\n// タグと内容の抽出\nfor (const m of html.matchAll(/<(\\w+)>(.*?)<\\/\\1>/g)) {\n  console.log(\`tag=${m[1]} content=${m[2]}\`);\n}`,
+    expected: "貪欲: <b>太字</b>と<i>斜体</i>と<b>もう一つ</b>\n非貪欲: <b>太字</b>\n非貪欲: <b>もう一つ</b>\ntag=b content=太字\ntag=i content=斜体\ntag=b content=もう一つ",
+    explanation: "貪欲マッチ.*は最長マッチ、非貪欲.*?は最短マッチ。\\1の後方参照で開始・終了タグを対応させます。" },
+
+  { id: 39, unit: "UNIT 04  ◆  実践パターン", rank: "GOLD",
+    title: "URLパーサー",
+    question: "\"https://user:pass@api.example.com:8080/v1/users?page=2&limit=10#results\"をRegexでプロトコル・認証情報・ホスト・ポート・パス・クエリ・フラグメントに分解してください。",
+    hint: "/^(https?):\\/\\/(user:pass@)?([^:/?#]+)(?::(\\d+))?([^?#]*)(?:\\?([^#]*))?(?:#(.*))?$/",
+    answer: `const url = "https://user:pass@api.example.com:8080/v1/users?page=2&limit=10#results";\nconst re = /^(\\w+):\\/\\/(?:([^@]+)@)?([^:/?#]+)(?::(\\d+))?([^?#]*)(?:\\?([^#]*))?(?:#(.*))?$/;\nconst m = url.match(re);\nconst [, protocol, auth, host, port, path, query, fragment] = m;\nconsole.log("protocol:", protocol);\nconsole.log("auth:", auth);\nconsole.log("host:", host);\nconsole.log("port:", port);\nconsole.log("path:", path);\nconsole.log("query:", query);\nconsole.log("fragment:", fragment);`,
+    expected: "protocol: https\nauth: user:pass\nhost: api.example.com\nport: 8080\npath: /v1/users\nquery: page=2&limit=10\nfragment: results",
+    explanation: "URLをRegexで分解する実践例。(?:...)は非キャプチャグループ、(?:x)?でオプショナルにします。分割代入でキャプチャを取得します。" },
+
+  { id: 40, unit: "UNIT 04  ◆  実践パターン", rank: "GOLD",
+    title: "数値フォーマット（3桁カンマ）",
+    question: "数値1234567890を3桁ごとのカンマ区切りに変換するRegexを実装してください。また負の数や小数点もサポートしてください。",
+    hint: "str.replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',')",
+    answer: `function formatNum(n) {\n  const str = n.toString();\n  const [int, dec] = str.split('.');\n  const sign = int.startsWith('-') ? '-' : '';\n  const digits = int.replace('-', '');\n  const formatted = digits.replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',');\n  return sign + formatted + (dec ? '.' + dec : '');\n}\n[1234567890, -9876543, 1234.5678, 999, 1000000].forEach(n => {\n  console.log(n + " => " + formatNum(n));\n});`,
+    expected: "1234567890 => 1,234,567,890\n-9876543 => -9,876,543\n1234.5678 => 1,234.5678\n999 => 999\n1000000 => 1,000,000",
+    explanation: "\\Bは単語境界でない位置。(?=(\\d{3})+(?!\\d))は「後続が3の倍数桁で終わる位置」の先読み。この組み合わせで3桁区切り位置を検出します。" },
+
+  { id: 41, unit: "UNIT 04  ◆  実践パターン", rank: "PLATINUM",
+    title: "CSV行のパース（引用符対応）",
+    question: "引用符内にカンマや改行を含む可能性があるCSV行\\'\"Alice\",\"New York, USA\",\"25\",\"Engineer\"\\'をRegexでパースしてください。",
+    hint: "/(?:\"([^\"]*)\"|([^,]+))(?:,|$)/g",
+    answer: `function parseCSV(line) {\n  const fields = [];\n  const re = /\"([^\"]*)\"|([^,]*)/g;\n  let m;\n  while ((m = re.exec(line)) !== null) {\n    if (m.index === re.lastIndex) { re.lastIndex++; continue; }\n    if (m[1] !== undefined) fields.push(m[1]);\n    else if (m[2] !== '') fields.push(m[2]);\n  }\n  return fields;\n}\nconst line = '\"Alice\",\"New York, USA\",\"25\",\"Engineer\"';\nconst fields = parseCSV(line);\nfields.forEach((f, i) => console.log(\`[${i}] ${f}\`));`,
+    expected: "[0] Alice\n[1] New York, USA\n[2] 25\n[3] Engineer",
+    explanation: "CSV引用符対応は\"([^\"]*)\"でダブルクォートフィールドをキャプチャ。パイプ|でフォールバック。CSVは一見単純ですがエッジケースが多いです。" },
+
+  { id: 42, unit: "UNIT 04  ◆  実践パターン", rank: "PLATINUM",
+    title: "Unicodeプロパティマッチ",
+    question: "\"Hello 世界 🌍 Привет 123\"から、\\p{L}（文字）・\\p{Emoji}（絵文字）・\\p{N}（数字）をuフラグとUnicodeプロパティで分類してください。",
+    hint: "/[\\p{L}]+/gu / /\\p{Emoji}/gu / /\\p{N}+/gu",
+    answer: `const str = "Hello 世界 🌍 Привет 123";\nconst letters = str.match(/[\\p{L}]+/gu) || [];\nconst emojis = str.match(/\\p{Emoji_Presentation}/gu) || [];\nconst nums = str.match(/\\p{N}+/gu) || [];\nconsole.log("文字:", letters.join(", "));\nconsole.log("絵文字:", emojis.join(", "));\nconsole.log("数字:", nums.join(", "));`,
+    expected: "文字: Hello, 世界, Привет\n絵文字: 🌍\n数字: 123",
+    explanation: "\\p{Property}はUnicodeプロパティにマッチ。uフラグが必要。\\p{L}は全言語の文字、\\p{Emoji_Presentation}は絵文字表示形式にマッチします。" },
+
+  { id: 43, unit: "UNIT 05  ◆  高度なRegex", rank: "PLATINUM",
+    title: "原子グループとPossessive量指定子",
+    question: "正規表現の過剰バックトラックを理解してください。\"aaaaaaaaab\"に対して/(a+)+b/のような危険なパターンとシンプルな/a+b/の違いをtestで確認してください。",
+    hint: "安全なパターン: /^a+b$/ / 危険なパターンは避ける",
+    answer: `const str1 = "aaaaaab";\nconst str2 = "aaaaaa";\n// 安全なパターン\nconst safe = /^a+b$/;\nconsole.log("safe match:", safe.test(str1));\nconsole.log("safe no-match:", safe.test(str2));\n// グループを使ったパターン（危険な書き方の安全版）\nconst re = /^(a+)b$/;\nconst m = str1.match(re);\nif (m) console.log("groups[1]:", m[1]);`,
+    expected: "safe match: true\nsafe no-match: false\ngroups[1]: aaaaaa",
+    explanation: "/(a+)+b/のような入れ子の量指定子はバックトラックが指数的に増加（ReDos）します。^と$で完全一致にし、量指定子のネストを避けることが重要です。" },
+
+  { id: 44, unit: "UNIT 05  ◆  高度なRegex", rank: "DIAMOND",
+    title: "置換でHTML特殊文字のエスケープ",
+    question: "replace()を使ってHTMLの特殊文字（&, <, >, \", '）を安全にエスケープする関数を実装してください。",
+    hint: "str.replace(/[&<>\"']/g, char => escapeMap[char])",
+    answer: `function escapeHTML(str) {\n  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };\n  return str.replace(/[&<>"']/g, c => map[c]);\n}\nconst cases = [\n  '<script>alert("XSS")</script>',\n  "Tom & Jerry",\n  "Price: $100 for 'item'"\n];\ncases.forEach(s => console.log(escapeHTML(s)));`,
+    expected: "&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;\nTom &amp; Jerry\nPrice: $100 for &#39;item&#39;",
+    explanation: "replace(re, fn)の第2引数に関数を渡すとマッチ文字ごとに変換できます。HTMLエスケープはXSS防止の基本です。" },
+
+  { id: 45, unit: "UNIT 05  ◆  高度なRegex", rank: "DIAMOND",
+    title: "正規表現での電話番号正規化",
+    question: "様々な形式の電話番号（\"03-1234-5678\", \"0312345678\", \"(03)1234-5678\", \"03 1234 5678\"）を正規表現で認識して標準形式（03-1234-5678）に正規化してください。",
+    hint: "/[^\\d]/g で数字以外を除去 → 10桁をXX-XXXX-XXXXに整形",
+    answer: `function normalizePhone(phone) {\n  const digits = phone.replace(/[^\\d]/g, '');\n  if (digits.length === 10) {\n    return digits.replace(/(\\d{2})(\\d{4})(\\d{4})/, '$1-$2-$3');\n  } else if (digits.length === 11) {\n    return digits.replace(/(\\d{3})(\\d{4})(\\d{4})/, '$1-$2-$3');\n  }\n  return phone;\n}\nconst phones = ["03-1234-5678", "0312345678", "(03)1234-5678", "03 1234 5678", "090-1234-5678"];\nphones.forEach(p => console.log(p + " => " + normalizePhone(p)));`,
+    expected: "03-1234-5678 => 03-1234-5678\n0312345678 => 03-1234-5678\n(03)1234-5678 => 03-1234-5678\n03 1234 5678 => 03-1234-5678\n090-1234-5678 => 090-1234-5678",
+    explanation: "数字以外を全て除去してから桁数に応じてreplace(/pattern/, '$1-$2-$3')でキャプチャグループを使って再フォーマットします。" },
+
+  { id: 46, unit: "UNIT 05  ◆  高度なRegex", rank: "DIAMOND",
+    title: "ネストした括弧のカウント",
+    question: "\"((a+b)*(c-d))\"のようなネストした括弧をRegexなしで検証する関数と、RegexでのFlat（ネストなし）括弧マッチの限界を示してください。",
+    hint: "Regexでネストは表現できない → カウンタで実装",
+    answer: `// Regexはネストに対応できないため、カウンタで実装\nfunction checkBrackets(s) {\n  let count = 0;\n  for (const c of s) {\n    if (c === '(') count++;\n    else if (c === ')') count--;\n    if (count < 0) return "invalid: 閉じ括弧過多";\n  }\n  return count === 0 ? "valid" : "invalid: 開き括弧過多";\n}\n// Regexで検証できること：外側の括弧の有無\nfunction hasOuterBraces(s) {\n  return /^\\(.*\\)$/.test(s) ? "括弧あり" : "括弧なし";\n}\nconst tests = ["((a+b)*(c-d))", "(a+b", "a+b)", "(a)"];\ntests.forEach(t => console.log(t + ": " + checkBrackets(t)));\nconsole.log(hasOuterBraces("((a+b))"));`,
+    expected: "((a+b)*(c-d)): valid\n(a+b: invalid: 開き括弧過多\na+b): invalid: 閉じ括弧過多\n(a): valid\n括弧あり",
+    explanation: "正規表現は文脈自由言語（ネストした括弧など）を処理できません。状態（カウンタ、スタック）が必要な場合はプログラムで実装します。" },
+
+  { id: 47, unit: "UNIT 05  ◆  高度なRegex", rank: "MASTER",
+    title: "正規表現でMarkdownリンク抽出",
+    question: "Markdown文字列\"See [Google](https://google.com) and [MDN](https://developer.mozilla.org) for info\"からリンクのテキストとURLを全て抽出して表示してください。",
+    hint: "/\\[([^\\]]+)\\]\\(([^)]+)\\)/g",
+    answer: `const md = "See [Google](https://google.com) and [MDN](https://developer.mozilla.org) for info";\nconst re = /\\[([^\\]]+)\\]\\(([^)]+)\\)/g;\nfor (const m of md.matchAll(re)) {\n  console.log("text: " + m[1]);\n  console.log("url: " + m[2]);\n}`,
+    expected: "text: Google\nurl: https://google.com\ntext: MDN\nurl: https://developer.mozilla.org",
+    explanation: "[^\\]]+で]以外の文字、[^)]+で)以外の文字にマッチ。MarkdownリンクはPCREより単純なパターンで確実に抽出できます。" },
+
+  { id: 48, unit: "UNIT 05  ◆  高度なRegex", rank: "MASTER",
+    title: "ゼロ幅アサーションの組み合わせ",
+    question: "\"var count = 42; let MAX = 100; const pi = 3.14; var x = -5\"から、変数宣言（var/let/const）の変数名と値を全て抽出してください（数値のみ）。",
+    hint: "/(?<=(?:var|let|const)\\s+)(\\w+)\\s*=\\s*(-?\\d+(?:\\.\\d+)?)/g",
+    answer: `const code = "var count = 42; let MAX = 100; const pi = 3.14; var x = -5";\nconst re = /(?:var|let|const)\\s+(\\w+)\\s*=\\s*(-?\\d+(?:\\.\\d+)?)/g;\nfor (const m of code.matchAll(re)) {\n  console.log(m[1] + " = " + m[2]);\n}`,
+    expected: "count = 42\nMAX = 100\npi = 3.14\nx = -5",
+    explanation: "(?:var|let|const)\\s+は非キャプチャで宣言キーワードをスキップ。(-?\\d+(?:\\.\\d+)?)は負の数と小数をキャプチャします。" },
+
+  { id: 49, unit: "UNIT 05  ◆  高度なRegex", rank: "LEGEND",
+    title: "独自テンプレート言語のパーサー",
+    question: "\"Hello ${name}, you have ${count} messages! ${unread > 0 ? 'New!' : ''}\\'のようなテンプレート文字列の${...}プレースホルダーを正規表現で解析し、変数参照と三項式を区別して表示してください。",
+    hint: "/\\$\\{([^}]+)\\}/g で全体取得 → 三項式は?を含むかで判定",
+    answer: `const template = "Hello ${name}, you have ${count} messages! ${unread > 0 ? 'New!' : ''}";\nconst re = /\\$\\{([^}]+)\\}/g;\nfor (const m of template.matchAll(re)) {\n  const expr = m[1].trim();\n  if (expr.includes('?')) {\n    console.log("ternary: " + expr);\n  } else {\n    console.log("variable: " + expr);\n  }\n}`,
+    expected: "variable: name\nvariable: count\nternary: unread > 0 ? 'New!' : ''",
+    explanation: "[^}]+でネストしない{}内の全体をキャプチャ。抽出後の分類はRegexより単純なstring.includes()で十分な場合もあります。" },
+
+  { id: 50, unit: "UNIT 05  ◆  高度なRegex", rank: "LEGEND",
+    title: "diffライクなテキスト比較",
+    question: "2つのテキストの行を比較し、RegexとSetを組み合わせて追加行・削除行・共通行を分類して表示してください。",
+    hint: "split('\\n')して各行をSetに入れ、差集合・積集合を求める",
+    answer: `function diff(a, b) {\n  const setA = new Set(a.split('\\n'));\n  const setB = new Set(b.split('\\n'));\n  const added = [...setB].filter(l => !setA.has(l));\n  const removed = [...setA].filter(l => !setB.has(l));\n  const common = [...setA].filter(l => setB.has(l));\n  return { added, removed, common };\n}\nconst old_text = "apple\\nbanana\\ncherry";\nconst new_text = "apple\\ngrape\\ncherry\\ndate";\nconst { added, removed, common } = diff(old_text, new_text);\nremoved.forEach(l => console.log("- " + l));\ncommon.forEach(l => console.log("  " + l));\nadded.forEach(l => console.log("+ " + l));`,
+    expected: "- banana\n  apple\n  cherry\n+ grape\n+ date",
+    explanation: "Setの差集合・積集合で行レベルdiffを実装。Regexは使わずとも文字列操作で解決できる問題もあります。問題に合ったツールの選択が重要です。" }
 ];
 
 const regexMissions = [
@@ -22299,7 +26008,167 @@ const phpProblems = [
     hint: "#[Attribute] class Route { ... } / new ReflectionMethod() / getAttributes()",
     answer: `<?php\n#[Attribute(Attribute::TARGET_METHOD)]\nclass Route {\n    public function __construct(\n        public string $path,\n        public string $method = 'GET'\n    ) {}\n}\nclass UserController {\n    #[Route('/users', 'GET')]\n    public function index(): void {}\n    #[Route('/users', 'POST')]\n    public function store(): void {}\n}\n$ref = new ReflectionClass(UserController::class);\nforeach ($ref->getMethods() as $method) {\n    $attrs = $method->getAttributes(Route::class);\n    foreach ($attrs as $attr) {\n        $route = $attr->newInstance();\n        echo "{$route->method} {$route->path} -> {$method->getName()}\\n";\n    }\n}`,
     expected: "GET /users -> index\nPOST /users -> store",
-    explanation: "PHP8.0のAttributeはクラス・メソッドなどにメタデータを付与できます。Reflection APIで読み取ります。" }
+    explanation: "PHP8.0のAttributeはクラス・メソッドなどにメタデータを付与できます。Reflection APIで読み取ります。" },
+
+  { id: 31, unit: "UNIT 01  ◆  PHP基礎", rank: "ROOKIE",
+    title: "型の確認とキャスト",
+    question: "PHPの型キャスト（int, float, bool, string, array）を使って、文字列\"42\"を整数に、\"3.14\"を浮動小数に、0を真偽値にキャストして型と値を表示してください。",
+    hint: "(int)\"42\" / (float)\"3.14\" / (bool)0 / gettype()",
+    answer: `<?php\n$a = (int)"42";\n$b = (float)"3.14";\n$c = (bool)0;\n$d = (bool)1;\n$e = (array)"hello";\necho gettype($a) . ": $a\\n";\necho gettype($b) . ": $b\\n";\necho gettype($c) . ": " . var_export($c, true) . "\\n";\necho gettype($d) . ": " . var_export($d, true) . "\\n";\necho gettype($e) . ": " . $e[0] . "\\n";`,
+    expected: "integer: 42\ndouble: 3.14\nboolean: false\nboolean: true\narray: hello",
+    explanation: "(型)値でキャストできます。gettype()で型名を取得、var_export()でboolの文字列表現(true/false)を出力できます。" },
+
+  { id: 32, unit: "UNIT 01  ◆  PHP基礎", rank: "ROOKIE",
+    title: "match式とswitch",
+    question: "PHP8のmatch式を使って、曜日番号（1-7）から曜日名を返す関数を実装してください。switchとmatchの違い（厳密比較・値返却）も確認してください。",
+    hint: "match($day) { 1 => '月', 2 => '火', ... }",
+    answer: `<?php\nfunction getDayName(int $day): string {\n    return match($day) {\n        1 => '月曜日',\n        2 => '火曜日',\n        3 => '水曜日',\n        4 => '木曜日',\n        5 => '金曜日',\n        6 => '土曜日',\n        7 => '日曜日',\n        default => '不明'\n    };\n}\nfor ($i = 1; $i <= 7; $i++) {\n    echo "$i: " . getDayName($i) . "\\n";\n}`,
+    expected: "1: 月曜日\n2: 火曜日\n3: 水曜日\n4: 木曜日\n5: 金曜日\n6: 土曜日\n7: 日曜日",
+    explanation: "match式はswitch文と異なり、厳密比較(===)を使い、値を返し、フォールスルーがありません。PHP8以降推奨のパターンです。" },
+
+  { id: 33, unit: "UNIT 02  ◆  文字列と配列", rank: "BRONZE",
+    title: "配列の高階関数チェーン",
+    question: "数値配列[1,2,3,4,5,6,7,8,9,10]に対してarray_filter（偶数のみ）→array_map（2乗）→array_reduce（合計）をチェーンして結果を求めてください。",
+    hint: "array_filter / array_map / array_reduce($arr, fn($c,$i) => $c+$i, 0)",
+    answer: `<?php\n$nums = range(1, 10);\n$evens = array_filter($nums, fn($n) => $n % 2 === 0);\n$squared = array_map(fn($n) => $n ** 2, $evens);\n$sum = array_reduce($squared, fn($carry, $item) => $carry + $item, 0);\necho "偶数: " . implode(', ', $evens) . "\\n";\necho "2乗: " . implode(', ', $squared) . "\\n";\necho "合計: $sum\\n";`,
+    expected: "偶数: 2, 4, 6, 8, 10\n2乗: 4, 16, 36, 64, 100\n合計: 220",
+    explanation: "array_filter→array_map→array_reduceのチェーンで宣言的なデータ変換ができます。アロー関数fn()=>は外部変数を自動キャプチャします。" },
+
+  { id: 34, unit: "UNIT 02  ◆  文字列と配列", rank: "BRONZE",
+    title: "usort と多条件ソート",
+    question: "['name','age','city']のカラムを持つ連想配列5件を、まず年齢の昇順、同じ年齢なら名前のアルファベット順でusortしてください。",
+    hint: "usort($arr, function($a, $b) { ... spaceship演算子 <=> })",
+    answer: `<?php\n$people = [\n    ['name'=>'Charlie', 'age'=>25, 'city'=>'Tokyo'],\n    ['name'=>'Alice', 'age'=>30, 'city'=>'Osaka'],\n    ['name'=>'Bob', 'age'=>25, 'city'=>'Kyoto'],\n    ['name'=>'Dave', 'age'=>30, 'city'=>'Nagoya'],\n    ['name'=>'Eve', 'age'=>22, 'city'=>'Sapporo'],\n];\nusort($people, fn($a, $b) => [$a['age'], $a['name']] <=> [$b['age'], $b['name']]);\nforeach ($people as $p) {\n    echo "{$p['name']} ({$p['age']}) - {$p['city']}\\n";\n}`,
+    expected: "Eve (22) - Sapporo\nBob (25) - Kyoto\nCharlie (25) - Tokyo\nAlice (30) - Osaka\nDave (30) - Nagoya",
+    explanation: "宇宙船演算子<=>は-1/0/1を返す比較演算子。配列同士の<=>で多条件ソートをシンプルに書けます。" },
+
+  { id: 35, unit: "UNIT 02  ◆  文字列と配列", rank: "SILVER",
+    title: "SPL（StandardLibrary）のデータ構造",
+    question: "SplStackを使ってスタックを実装し、1-5をプッシュしてからポップして逆順に表示してください。またSplQueueでキュー操作も行ってください。",
+    hint: "new SplStack() / push() / pop() / new SplQueue() / enqueue() / dequeue()",
+    answer: `<?php\n$stack = new SplStack();\nfor ($i = 1; $i <= 5; $i++) $stack->push($i);\necho "Stack (LIFO): ";\nwhile (!$stack->isEmpty()) echo $stack->pop() . " ";\necho "\\n";\n$queue = new SplQueue();\nfor ($i = 1; $i <= 5; $i++) $queue->enqueue($i);\necho "Queue (FIFO): ";\nwhile (!$queue->isEmpty()) echo $queue->dequeue() . " ";\necho "\\n";`,
+    expected: "Stack (LIFO): 5 4 3 2 1 \nQueue (FIFO): 1 2 3 4 5 ",
+    explanation: "SplStackはLIFO（後入れ先出し）、SplQueueはFIFO（先入れ先出し）。PHPのSPLライブラリはC実装なので配列より効率的です。" },
+
+  { id: 36, unit: "UNIT 03  ◆  クラスとOOP", rank: "SILVER",
+    title: "マジックメソッド __get __set __isset",
+    question: "プロパティの読み書きをマジックメソッドで制御するMagicPropsクラスを実装してください。$obj->nameで読み書きできるが、内部では大文字に変換して格納する仕様。",
+    hint: "public function __get($name) / __set($name, $value) / __isset($name)",
+    answer: `<?php\nclass MagicProps {\n    private array $data = [];\n    public function __get(string $name): mixed {\n        return $this->data[$name] ?? null;\n    }\n    public function __set(string $name, mixed $value): void {\n        $this->data[$name] = is_string($value) ? strtoupper($value) : $value;\n    }\n    public function __isset(string $name): bool {\n        return isset($this->data[$name]);\n    }\n    public function __unset(string $name): void {\n        unset($this->data[$name]);\n    }\n}\n$obj = new MagicProps();\n$obj->name = "alice";\n$obj->age = 25;\necho $obj->name . "\\n";\necho $obj->age . "\\n";\necho isset($obj->name) ? "name: set\\n" : "name: not set\\n";\nunset($obj->name);\necho isset($obj->name) ? "name: set\\n" : "name: not set\\n";`,
+    expected: "ALICE\n25\nname: set\nname: not set",
+    explanation: "__get/__set/__isset/__unsetはプロパティアクセスをフック。ORMやデータオブジェクトのプロパティ管理に使われます。" },
+
+  { id: 37, unit: "UNIT 03  ◆  クラスとOOP", rank: "GOLD",
+    title: "Generatorとyield",
+    question: "Generatorを使って大きなフィボナッチ数列を省メモリで生成してください。無限ジェネレーターを作り、最初の10個を取得して表示してください。",
+    hint: "function fibonacci(): Generator { while(true) { yield $a; ... } }",
+    answer: `<?php\nfunction fibonacci(): Generator {\n    [$a, $b] = [0, 1];\n    while (true) {\n        yield $a;\n        [$a, $b] = [$b, $a + $b];\n    }\n}\n$gen = fibonacci();\n$results = [];\nfor ($i = 0; $i < 10; $i++) {\n    $results[] = $gen->current();\n    $gen->next();\n}\necho implode(', ', $results) . "\\n";`,
+    expected: "0, 1, 1, 2, 3, 5, 8, 13, 21, 34",
+    explanation: "Generatorはyieldで値を一つずつ返す特殊な関数。全要素をメモリに持たないため大量データに適しています。current()/next()で制御できます。" },
+
+  { id: 38, unit: "UNIT 03  ◆  クラスとOOP", rank: "GOLD",
+    title: "インターフェースと多態性",
+    question: "Serializable（serialize/unserialize）とStringable（__toString）インターフェースを実装したUserクラスとProductクラスを作り、多態的に処理してください。",
+    hint: "implements Stringable / __toString() / json_encode() / json_decode()",
+    answer: `<?php\ninterface Serializable {\n    public function serialize(): string;\n    public static function deserialize(string $data): static;\n}\nclass User implements Serializable, Stringable {\n    public function __construct(public string $name, public int $age) {}\n    public function serialize(): string { return json_encode(['name'=>$this->name,'age'=>$this->age]); }\n    public static function deserialize(string $data): static {\n        $d = json_decode($data, true);\n        return new static($d['name'], $d['age']);\n    }\n    public function __toString(): string { return "User({$this->name},{$this->age})"; }\n}\n$user = new User("Alice", 25);\n$json = $user->serialize();\necho $json . "\\n";\n$restored = User::deserialize($json);\necho $restored . "\\n";\necho ($user->name === $restored->name ? "same name" : "diff") . "\\n";`,
+    expected: "{\"name\":\"Alice\",\"age\":25}\nUser(Alice,25)\nsame name",
+    explanation: "インターフェースで型を保証し多態的に処理できます。Stringableは__toString()を持つ型、PHP8から組み込みインターフェースです。" },
+
+  { id: 39, unit: "UNIT 04  ◆  高度なPHP", rank: "GOLD",
+    title: "ファーストクラスCallable",
+    question: "PHP8.1のファーストクラスCallable構文（strlen(...)）を使って、文字列操作関数を高階関数として渡してください。",
+    hint: "strlen(...) / strtoupper(...) / array_map(strlen(...), $arr)",
+    answer: `<?php\n$words = ['hello', 'world', 'php', 'programming'];\n// ファーストクラスCallable\n$lengths = array_map(strlen(...), $words);\n$upper = array_map(strtoupper(...), $words);\narray_walk($words, function(&$w, $k) use ($lengths) {\n    $w = "{$w}({$lengths[$k]})";\n});\necho implode(', ', $upper) . "\\n";\necho implode(', ', $words) . "\\n";\n// ユーザー定義関数もfirst-class callableに\n$double = fn(int $n) => $n * 2;\n$doubled = array_map($double, [1,2,3,4,5]);\necho implode(', ', $doubled) . "\\n";`,
+    expected: "HELLO, WORLD, PHP, PROGRAMMING\nhello(5), world(5), php(3), programming(11)\n2, 4, 6, 8, 10",
+    explanation: "PHP8.1のfirst-class callable syntaxはfunc(...)でCallableオブジェクトを生成。Closure::fromCallable()の短縮形です。" },
+
+  { id: 40, unit: "UNIT 04  ◆  高度なPHP", rank: "PLATINUM",
+    title: "読み取り専用プロパティ（readonly）",
+    question: "PHP8.1のreadonly修飾子を使って、一度設定したら変更できない値オブジェクト（ValueObject）としてMoneyクラスを実装してください。",
+    hint: "public readonly int $amount / readonlyは__constructでのみ設定可能",
+    answer: `<?php\nclass Money {\n    public function __construct(\n        public readonly int $amount,\n        public readonly string $currency\n    ) {\n        if ($amount < 0) throw new InvalidArgumentException("Amount must be non-negative");\n    }\n    public function add(Money $other): self {\n        if ($this->currency !== $other->currency) {\n            throw new InvalidArgumentException("Currency mismatch");\n        }\n        return new self($this->amount + $other->amount, $this->currency);\n    }\n    public function __toString(): string {\n        return "{$this->amount} {$this->currency}";\n    }\n}\n$price = new Money(1000, 'JPY');\n$tax = new Money(100, 'JPY');\n$total = $price->add($tax);\necho $price . "\\n";\necho $total . "\\n";\ntry {\n    $price->amount = 999;\n} catch (Error $e) {\n    echo "Error: " . $e->getMessage() . "\\n";\n}`,
+    expected: "1000 JPY\n1100 JPY\nError: Cannot modify readonly property Money::$amount",
+    explanation: "PHP8.1のreadonly propertyはコンストラクタで一度だけ設定でき、その後の変更はErrorを投げます。イミュータブルな値オブジェクトの実装に最適です。" },
+
+  { id: 41, unit: "UNIT 04  ◆  高度なPHP", rank: "PLATINUM",
+    title: "Named Arguments（名前付き引数）",
+    question: "PHP8.0の名前付き引数を使って、array_slice・implode・str_padなどの関数をより読みやすく呼び出してください。",
+    hint: "array_slice(array: $arr, offset: 2, length: 3) / str_pad(string: ..., pad_type: STR_PAD_LEFT)",
+    answer: `<?php\n$arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];\n$sliced = array_slice(array: $arr, offset: 2, length: 5);\necho implode(separator: ', ', array: $sliced) . "\\n";\n// str_pad with named args\n$nums = [1, 10, 100, 1000];\nforeach ($nums as $n) {\n    echo str_pad(string: (string)$n, length: 6, pad_string: '0', pad_type: STR_PAD_LEFT) . "\\n";\n}`,
+    expected: "3, 4, 5, 6, 7\n000001\n000010\n000100\n001000",
+    explanation: "PHP8.0の名前付き引数はparam: valueの形式。位置を覚えなくていいので可読性が上がります。スキップしたいオプション引数がある場合にも便利です。" },
+
+  { id: 42, unit: "UNIT 04  ◆  高度なPHP", rank: "PLATINUM",
+    title: "カスタム例外階層",
+    question: "AppException基底クラスから継承した例外クラス階層（ValidationException, NotFoundException, AuthException）を作り、例外の種類によってハンドリングを変えてください。",
+    hint: "class ValidationException extends AppException {} / catch(ValidationException $e) {}",
+    answer: `<?php\nclass AppException extends RuntimeException {}\nclass ValidationException extends AppException {\n    public function __construct(string $field, string $message) {\n        parent::__construct("Validation failed for '$field': $message");\n    }\n}\nclass NotFoundException extends AppException {\n    public function __construct(string $resource, int $id) {\n        parent::__construct("$resource with id=$id not found");\n    }\n}\nfunction process(string $type): void {\n    match($type) {\n        'validation' => throw new ValidationException('email', 'invalid format'),\n        'notfound' => throw new NotFoundException('User', 42),\n        default => throw new AppException('Unknown error'),\n    };\n}\nforeach (['validation', 'notfound', 'other'] as $type) {\n    try {\n        process($type);\n    } catch (ValidationException $e) {\n        echo "VALIDATION: " . $e->getMessage() . "\\n";\n    } catch (NotFoundException $e) {\n        echo "NOT_FOUND: " . $e->getMessage() . "\\n";\n    } catch (AppException $e) {\n        echo "APP_ERROR: " . $e->getMessage() . "\\n";\n    }\n}`,
+    expected: "VALIDATION: Validation failed for 'email': invalid format\nNOT_FOUND: User with id=42 not found\nAPP_ERROR: Unknown error",
+    explanation: "例外クラスの階層を設計すると、詳細な例外を先にcatchし基底クラスでフォールバック処理できます。ドメインの意図が明確になります。" },
+
+  { id: 43, unit: "UNIT 05  ◆  モダンPHP", rank: "DIAMOND",
+    title: "PSR-4オートローディング風クラスマップ",
+    question: "spl_autoload_registerを使ってPSR-4風の名前空間→ファイルマッピングを実装し、クラスを動的にロードする仕組みをシミュレーションしてください。",
+    hint: "spl_autoload_register(function($class) { ... }) / class_exists() / get_declared_classes()",
+    answer: `<?php\n$classMap = [];\n// 名前空間→クラス定義をシミュレーション\nfunction defineClass(string $fqcn, string $code): void {\n    global $classMap;\n    $classMap[$fqcn] = $code;\n}\nspl_autoload_register(function(string $class) use (&$classMap) {\n    if (isset($classMap[$class])) {\n        eval($classMap[$class]);\n    }\n});\ndefineClass('App\\\\Http\\\\Request', 'namespace App\\\\Http; class Request { public string $method = "GET"; public function getMethod(): string { return $this->method; } }');\ndefineClass('App\\\\Http\\\\Response', 'namespace App\\\\Http; class Response { public function json(array $data): string { return json_encode($data); } }');\n$req = new App\\Http\\Request();\n$res = new App\\Http\\Response();\necho $req->getMethod() . "\\n";\necho $res->json(["status" => "ok", "code" => 200]) . "\\n";`,
+    expected: "GET\n{\"status\":\"ok\",\"code\":200}",
+    explanation: "spl_autoload_registerでクラスの自動ロードを実装。Composerもこの仕組みを利用しています。PSR-4では名前空間をディレクトリ構造にマッピングします。" },
+
+  { id: 44, unit: "UNIT 05  ◆  モダンPHP", rank: "DIAMOND",
+    title: "パイプライン・パターン",
+    question: "パイプライン（処理を順次適用するデザインパターン）をPHPで実装してください。文字列処理パイプライン（trim→strtolower→ucwords→str_replace）を作成してください。",
+    hint: "class Pipeline { protected array $stages = []; public function pipe(callable $fn): static { ... } public function process(mixed $input) { ... } }",
+    answer: `<?php\nclass Pipeline {\n    private array $stages = [];\n    public function pipe(callable $fn): static {\n        $clone = clone $this;\n        $clone->stages[] = $fn;\n        return $clone;\n    }\n    public function process(mixed $input): mixed {\n        return array_reduce($this->stages, fn($carry, $stage) => $stage($carry), $input);\n    }\n}\n$pipeline = (new Pipeline())\n    ->pipe(trim(...))\n    ->pipe(strtolower(...))\n    ->pipe(ucwords(...))\n    ->pipe(fn(string $s) => str_replace(' ', '_', $s));\n$inputs = ["  hello world  ", "  PHP programming  ", " foo BAR baz "];\nforeach ($inputs as $input) {\n    echo $pipeline->process($input) . "\\n";\n}`,
+    expected: "Hello_World\nPhp_Programming\nFoo_Bar_Baz",
+    explanation: "Pipelineパターンは処理ステージを連鎖させます。cloneで不変性を保ち、array_reduceで各ステージを適用。Laravelのミドルウェアもこのパターンです。" },
+
+  { id: 45, unit: "UNIT 05  ◆  モダンPHP", rank: "DIAMOND",
+    title: "ジェネリクス風のTyped Collection",
+    question: "型安全なジェネリックコレクションクラス（TypedCollection）を実装してください。TypedCollection<User>のように使えるクラスで、誤った型の追加でTypeErrorを投げます。",
+    hint: "private string $type / instanceof / throw new TypeError(...)",
+    answer: `<?php\nclass User {\n    public function __construct(public readonly string $name) {}\n}\nclass Product {\n    public function __construct(public readonly string $title) {}\n}\nclass TypedCollection {\n    private array $items = [];\n    public function __construct(private readonly string $type) {}\n    public function add(object $item): void {\n        if (!($item instanceof $this->type)) {\n            throw new \\TypeError("Expected {$this->type}, got " . get_class($item));\n        }\n        $this->items[] = $item;\n    }\n    public function count(): int { return count($this->items); }\n    public function toArray(): array { return $this->items; }\n}\n$users = new TypedCollection(User::class);\n$users->add(new User("Alice"));\n$users->add(new User("Bob"));\necho "Users: " . $users->count() . "\\n";\nforeach ($users->toArray() as $u) echo $u->name . "\\n";\ntry {\n    $users->add(new Product("item"));\n} catch (\\TypeError $e) {\n    echo "Error: " . $e->getMessage() . "\\n";\n}`,
+    expected: "Users: 2\nAlice\nBob\nError: Expected User, got Product",
+    explanation: "PHPにはジェネリクスがないため、コンストラクタで型名を渡してinstanceofで検証するパターンが使われます。PHPDOCや外部ツールで型補完も可能です。" },
+
+  { id: 46, unit: "UNIT 05  ◆  モダンPHP", rank: "MASTER",
+    title: "非同期風コルーチン（Fiber）スケジューラー",
+    question: "複数のFiberを管理するシンプルなスケジューラーを実装してください。各Fiberがsuspendで協調的にCPUを譲り合い、全Fiberが完了するまでループします。",
+    hint: "while (!empty($fibers)) { foreach ($fibers as $i => $f) { if (!$f->isTerminated()) $f->resume(); else unset($fibers[$i]); } }",
+    answer: `<?php\nfunction makeTask(string $name, int $steps): Fiber {\n    return new Fiber(function() use ($name, $steps): void {\n        for ($i = 1; $i <= $steps; $i++) {\n            echo "$name: step $i/$steps\\n";\n            Fiber::suspend();\n        }\n        echo "$name: done\\n";\n    });\n}\n$fibers = [makeTask('A', 2), makeTask('B', 3), makeTask('C', 1)];\nforeach ($fibers as $f) $f->start();\n$running = $fibers;\nwhile (!empty($running)) {\n    foreach ($running as $i => $f) {\n        if ($f->isTerminated()) { unset($running[$i]); continue; }\n        $f->resume();\n        if ($f->isTerminated()) unset($running[$i]);\n    }\n    $running = array_values($running);\n}`,
+    expected: "A: step 1/2\nB: step 1/3\nC: step 1/1\nA: step 2/2\nB: step 2/3\nC: done\nA: done\nB: step 3/3\nB: done",
+    explanation: "Fiberスケジューラーは各Fiberを順番にresumeし、suspend時にCPUを返します。Node.jsのイベントループやasync/awaitの仕組みと同原理です。" },
+
+  { id: 47, unit: "UNIT 05  ◆  モダンPHP", rank: "MASTER",
+    title: "イミュータブルなビルダーパターン",
+    question: "withメソッドで新しいインスタンスを返すイミュータブルなQueryBuilderを実装してください。元のオブジェクトを変更せずにクエリを構築できます。",
+    hint: "public function where(string $cond): static { $clone = clone $this; $clone->conditions[] = $cond; return $clone; }",
+    answer: `<?php\nclass QueryBuilder {\n    private function __construct(\n        private readonly string $table = '',\n        private readonly array $conditions = [],\n        private readonly ?int $limitVal = null,\n        private readonly array $columns = ['*']\n    ) {}\n    public static function from(string $table): static {\n        return new static(table: $table);\n    }\n    public function select(string ...$cols): static {\n        return new static($this->table, $this->conditions, $this->limitVal, $cols);\n    }\n    public function where(string $cond): static {\n        return new static($this->table, [...$this->conditions, $cond], $this->limitVal, $this->columns);\n    }\n    public function limit(int $n): static {\n        return new static($this->table, $this->conditions, $n, $this->columns);\n    }\n    public function build(): string {\n        $sql = "SELECT " . implode(", ", $this->columns) . " FROM {$this->table}";\n        if ($this->conditions) $sql .= " WHERE " . implode(" AND ", $this->conditions);\n        if ($this->limitVal !== null) $sql .= " LIMIT {$this->limitVal}";\n        return $sql;\n    }\n}\n$base = QueryBuilder::from("users")->select("id", "name");\n$q1 = $base->where("age > 18")->limit(10);\n$q2 = $base->where("age > 18")->where("active = 1")->limit(5);\necho $q1->build() . "\\n";\necho $q2->build() . "\\n";\necho $base->build() . "\\n";`,
+    expected: "SELECT id, name FROM users WHERE age > 18 LIMIT 10\nSELECT id, name FROM users WHERE age > 18 AND active = 1 LIMIT 5\nSELECT id, name FROM users",
+    explanation: "イミュータブルビルダーはcloneで新インスタンスを返します。元のオブジェクトは変更されないため安全に再利用・分岐できます。" },
+
+  { id: 48, unit: "UNIT 05  ◆  モダンPHP", rank: "MASTER",
+    title: "カスタムイテレーターとジェネレーターパイプライン",
+    question: "大量データを処理するジェネレーターパイプラインを実装してください。map・filter・take関数をジェネレーターで作成し、1000件のデータを省メモリで処理してください。",
+    hint: "function gen_map(iterable $it, callable $fn): Generator { foreach ($it as $v) yield $fn($v); }",
+    answer: `<?php\nfunction gen_range(int $start, int $end): Generator {\n    for ($i = $start; $i <= $end; $i++) yield $i;\n}\nfunction gen_filter(iterable $it, callable $fn): Generator {\n    foreach ($it as $v) if ($fn($v)) yield $v;\n}\nfunction gen_map(iterable $it, callable $fn): Generator {\n    foreach ($it as $v) yield $fn($v);\n}\nfunction gen_take(iterable $it, int $n): Generator {\n    $count = 0;\n    foreach ($it as $v) {\n        yield $v;\n        if (++$count >= $n) return;\n    }\n}\n$pipeline = gen_take(\n    gen_map(\n        gen_filter(gen_range(1, 1000), fn($n) => $n % 3 === 0),\n        fn($n) => $n * $n\n    ),\n    5\n);\n$results = iterator_to_array($pipeline);\necho implode(', ', $results) . "\\n";\necho "生成件数: " . count($results) . "\\n";`,
+    expected: "9, 36, 81, 144, 225\n生成件数: 5",
+    explanation: "ジェネレーターパイプラインはlazyに評価されます。1000件を全てメモリに持たず、必要な分だけ処理します。UNIX pipeと同じ考え方です。" },
+
+  { id: 49, unit: "UNIT 05  ◆  モダンPHP", rank: "LEGEND",
+    title: "依存関係自動解決コンテナ",
+    question: "ReflectionAPIを使ってコンストラクタの依存を自動的に解決するシンプルなIoCコンテナを実装してください。",
+    hint: "ReflectionClass::getConstructor()->getParameters() / getType()->getName() / $container->make($type)",
+    answer: `<?php\nclass Container {\n    private array $bindings = [];\n    private array $singletons = [];\n    public function bind(string $abstract, callable $factory): void {\n        $this->bindings[$abstract] = $factory;\n    }\n    public function make(string $class): object {\n        if (isset($this->singletons[$class])) return $this->singletons[$class];\n        if (isset($this->bindings[$class])) return ($this->bindings[$class])($this);\n        $ref = new ReflectionClass($class);\n        $ctor = $ref->getConstructor();\n        if (!$ctor) return $ref->newInstance();\n        $deps = array_map(fn($p) => $this->make($p->getType()->getName()), $ctor->getParameters());\n        return $ref->newInstanceArgs($deps);\n    }\n}\nclass Logger { public function log(string $msg): void { echo "[LOG] $msg\\n"; } }\nclass Database { public function query(string $sql): string { return "result:$sql"; } }\nclass UserRepo {\n    public function __construct(private Database $db, private Logger $log) {}\n    public function find(int $id): string {\n        $this->log->log("Finding user $id");\n        return $this->db->query("SELECT * FROM users WHERE id=$id");\n    }\n}\n$c = new Container();\n$repo = $c->make(UserRepo::class);\necho $repo->find(1) . "\\n";`,
+    expected: "[LOG] Finding user 1\nresult:SELECT * FROM users WHERE id=1",
+    explanation: "IoCコンテナはReflectionでコンストラクタ引数の型を読み取り、再帰的に依存を解決します。LaravelやSymfonyのDIコンテナの仕組みと同原理です。" },
+
+  { id: 50, unit: "UNIT 05  ◆  モダンPHP", rank: "LEGEND",
+    title: "イベントソーシング（簡易実装）",
+    question: "イベントソーシングパターンを実装してください。ユーザーアカウントの状態をイベントの積み上げで管理し、任意の時点の状態を再現できるようにしてください。",
+    hint: "EventStore / aggregate.apply(event) / rehydrate from events",
+    answer: `<?php\ninterface Event { public function getType(): string; }\nclass UserCreated implements Event {\n    public function __construct(public readonly string $id, public readonly string $name) {}\n    public function getType(): string { return 'UserCreated'; }\n}\nclass NameChanged implements Event {\n    public function __construct(public readonly string $newName) {}\n    public function getType(): string { return 'NameChanged'; }\n}\nclass EmailSet implements Event {\n    public function __construct(public readonly string $email) {}\n    public function getType(): string { return 'EmailSet'; }\n}\nclass UserAggregate {\n    public string $id = '';\n    public string $name = '';\n    public string $email = '';\n    private array $events = [];\n    public function apply(Event $event): void {\n        $this->events[] = $event;\n        match(true) {\n            $event instanceof UserCreated => [$this->id, $this->name] = [$event->id, $event->name],\n            $event instanceof NameChanged => $this->name = $event->newName,\n            $event instanceof EmailSet => $this->email = $event->email,\n        };\n    }\n    public static function rehydrate(array $events): static {\n        $agg = new static();\n        foreach ($events as $e) $agg->apply($e);\n        return $agg;\n    }\n    public function getEvents(): array { return $this->events; }\n}\n$events = [new UserCreated('u1','Alice'), new EmailSet('alice@example.com'), new NameChanged('Alicia')];\n$user = UserAggregate::rehydrate($events);\necho "id: {$user->id}\\n";\necho "name: {$user->name}\\n";\necho "email: {$user->email}\\n";\necho "events: " . count($user->getEvents()) . "\\n";`,
+    expected: "id: u1\nname: Alicia\nemail: alice@example.com\nevents: 3",
+    explanation: "イベントソーシングは状態変更をイベントの列として記録します。任意のタイミングの状態を再生成でき、監査ログ・デバッグに強力です。" }
 ];
 
 const phpMissions = [
