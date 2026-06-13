@@ -572,6 +572,31 @@ function getProfileRank(total) {
   return                    { name: 'ROOKIE',  color: '#9B9B9B' };
 }
 
+// 言語ごとの重み付き実力スコア計算
+function calcLangStrengthData(langKey, problemArray) {
+  var prog = JSON.parse(localStorage.getItem(langKey + '_progress') || '[]');
+  var maxExp = 0, earnedExp = 0;
+  problemArray.forEach(function(p) {
+    var exp = RANK_EXP[p.rank.toLowerCase()] || 15;
+    maxExp += exp;
+    if (prog.indexOf(p.id) !== -1) earnedExp += exp;
+  });
+  var pct = maxExp > 0 ? Math.min(100, Math.round(earnedExp / maxExp * 100)) : 0;
+  return { pct: pct, earned: earnedExp, max: maxExp };
+}
+
+function getLangStrengthRank(pct) {
+  if (pct >= 100) return { name: 'TITAN',    color: '#FF2020' };
+  if (pct >= 90)  return { name: 'LEGEND',   color: '#FF2244' };
+  if (pct >= 75)  return { name: 'MASTER',   color: '#C040FF' };
+  if (pct >= 55)  return { name: 'DIAMOND',  color: '#5588FF' };
+  if (pct >= 38)  return { name: 'PLATINUM', color: '#00C8B4' };
+  if (pct >= 24)  return { name: 'GOLD',     color: '#EFC050' };
+  if (pct >= 12)  return { name: 'SILVER',   color: '#B8C8D8' };
+  if (pct >= 4)   return { name: 'BRONZE',   color: '#C47A2F' };
+  return               { name: 'ROOKIE',  color: '#9B9B9B' };
+}
+
 // ===== EXP・レベルシステム =====
 
 // 問題ランク別 EXP
@@ -24057,19 +24082,19 @@ async function renderProfile() {
     );
   }
 
-  var pct = {
-    cpp:    Math.min(100, stats.cpp    / 58 * 100),
-    python: Math.min(100, stats.python / 58 * 100),
-    js:     Math.min(100, stats.js     / 58 * 100),
-    ruby:   Math.min(100, stats.ruby   / 58 * 100),
-    ts:     Math.min(100, stats.ts     / 58 * 100),
-    kotlin: Math.min(100, stats.kotlin / 58 * 100),
-    swift:  Math.min(100, stats.swift  / 58 * 100),
-    java:   Math.min(100, stats.java   / 58 * 100),
-    csharp: Math.min(100, stats.csharp / 58 * 100),
-    go:     Math.min(100, stats.go     / 58 * 100),
-    c:      Math.min(100, stats.c      / 58 * 100),
-    rust:   Math.min(100, stats.rust   / 58 * 100)
+  var strength = {
+    cpp:    calcLangStrengthData('cpp',        problems),
+    python: calcLangStrengthData('python',     pythonProblems),
+    js:     calcLangStrengthData('javascript', javascriptProblems),
+    ruby:   calcLangStrengthData('ruby',       rubyProblems),
+    ts:     calcLangStrengthData('typescript', typescriptProblems),
+    kotlin: calcLangStrengthData('kotlin',     kotlinProblems),
+    swift:  calcLangStrengthData('swift',      swiftProblems),
+    java:   calcLangStrengthData('java',       javaProblems),
+    csharp: calcLangStrengthData('csharp',     csharpProblems),
+    go:     calcLangStrengthData('go',         goProblems),
+    c:      calcLangStrengthData('c',          cProblems),
+    rust:   calcLangStrengthData('rust',       rustProblems),
   };
 
   // ストリーク状態の判定（今日ログイン済みかどうか）
@@ -24270,18 +24295,18 @@ async function renderProfile() {
     '<div class="profile-section">' +
       '<div class="profile-section-title">// LANGUAGE STATS</div>' +
       '<div class="profile-stats-grid">' +
-        _statCardHTML('C++',        '#00599C', stats.cpp,    pct.cpp,    stats.cppM,    31) +
-        _statCardHTML('Python',     '#3776AB', stats.python, pct.python, stats.pyM,     31) +
-        _statCardHTML('JavaScript', '#F0C040', stats.js,     pct.js,     stats.jsM,     31) +
-        _statCardHTML('Ruby',       '#CC342D', stats.ruby,   pct.ruby,   stats.rubyM,   30) +
-        _statCardHTML('TypeScript', '#3178C6', stats.ts,     pct.ts,     stats.tsM,     30) +
-        _statCardHTML('Kotlin',     '#7F52FF', stats.kotlin, pct.kotlin, stats.kotlinM, 30) +
-        _statCardHTML('Swift',      '#FA7343', stats.swift,  pct.swift,  stats.swiftM,  30) +
-        _statCardHTML('Java',       '#ED8B00', stats.java,   pct.java,   stats.javaM,   30) +
-        _statCardHTML('C#',         '#9B4F96', stats.csharp, pct.csharp, stats.csharpM, 30) +
-        _statCardHTML('Go',         '#00ADD8', stats.go,     pct.go,     stats.goM,     30) +
-        _statCardHTML('C',          '#A8B9CC', stats.c,      pct.c,      stats.cM,      30) +
-        _statCardHTML('Rust',       '#CE412B', stats.rust,   pct.rust,   stats.rustM,   30) +
+        _statCardHTML('C++',        '#00599C', stats.cpp,    strength.cpp,    stats.cppM,    58) +
+        _statCardHTML('Python',     '#3776AB', stats.python, strength.python, stats.pyM,     58) +
+        _statCardHTML('JavaScript', '#F0C040', stats.js,     strength.js,     stats.jsM,     58) +
+        _statCardHTML('Ruby',       '#CC342D', stats.ruby,   strength.ruby,   stats.rubyM,   30) +
+        _statCardHTML('TypeScript', '#3178C6', stats.ts,     strength.ts,     stats.tsM,     30) +
+        _statCardHTML('Kotlin',     '#7F52FF', stats.kotlin, strength.kotlin, stats.kotlinM, 30) +
+        _statCardHTML('Swift',      '#FA7343', stats.swift,  strength.swift,  stats.swiftM,  30) +
+        _statCardHTML('Java',       '#ED8B00', stats.java,   strength.java,   stats.javaM,   58) +
+        _statCardHTML('C#',         '#9B4F96', stats.csharp, strength.csharp, stats.csharpM, 30) +
+        _statCardHTML('Go',         '#00ADD8', stats.go,     strength.go,     stats.goM,     30) +
+        _statCardHTML('C',          '#A8B9CC', stats.c,      strength.c,      stats.cM,      30) +
+        _statCardHTML('Rust',       '#CE412B', stats.rust,   strength.rust,   stats.rustM,   58) +
       '</div>' +
     '</div>' +
 
@@ -24297,16 +24322,30 @@ async function renderProfile() {
     '</div>';
 }
 
-function _statCardHTML(lang, color, count, pct, missions, max) {
-  var maxProblems = max || 30;
+function _statCardHTML(lang, color, count, strengthData, missions, maxProblems) {
+  var s = strengthData || { pct: 0, earned: 0, max: 0 };
+  var rank = getLangStrengthRank(s.pct);
+  var isActive = count > 0;
   return (
-    '<div class="profile-stat-card">' +
-      '<div class="stat-lang" style="color:' + color + '">' + lang + '</div>' +
-      '<div class="stat-num">' + count + '<span class="stat-denom"> / ' + maxProblems + '</span></div>' +
-      '<div class="stat-bar-wrap">' +
-        '<div class="stat-bar" style="width:' + pct + '%;background:' + color + '"></div>' +
+    '<div class="profile-stat-card' + (isActive ? ' stat-card-active' : '') + '"' +
+        ' style="--stat-rank-color:' + rank.color + '">' +
+      '<div class="stat-card-top">' +
+        '<div class="stat-lang" style="color:' + color + '">' + lang + '</div>' +
+        (isActive
+          ? '<div class="stat-rank-badge" style="color:' + rank.color + ';border-color:' + rank.color + '55">' + rank.name + '</div>'
+          : '<div class="stat-rank-badge stat-rank-locked">— 未挑戦 —</div>') +
       '</div>' +
-      '<div class="stat-mission">' + missions + ' / 6 ミッション</div>' +
+      '<div class="stat-strength-num" style="color:' + (isActive ? rank.color : 'rgba(160,144,112,0.2)') + '">' +
+        s.pct + '<span class="stat-pct-sym">%</span>' +
+      '</div>' +
+      '<div class="stat-bar-wrap">' +
+        '<div class="stat-bar" style="width:' + s.pct + '%;background:' + rank.color +
+            ';box-shadow:' + (isActive ? '0 0 8px ' + rank.color + '88' : 'none') + '"></div>' +
+      '</div>' +
+      '<div class="stat-bottom">' +
+        '<span class="stat-clear-text">' + count + ' / ' + maxProblems + ' CLEARED</span>' +
+        '<span class="stat-mission">' + missions + '/6 M</span>' +
+      '</div>' +
     '</div>'
   );
 }

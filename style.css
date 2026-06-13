@@ -2489,40 +2489,81 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 }
 
 .profile-stat-card {
-  background: rgba(14,12,9,0.80);
-  border: 1px solid rgba(255,107,0,0.10);
-  border-top: 2px solid rgba(255,107,0,0.10);
-  padding: 16px 18px;
+  background: rgba(10,16,22,0.90);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-top: 2px solid rgba(255,255,255,0.06);
+  padding: 14px 16px;
   clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
 }
-.profile-stat-card:hover { border-color: rgba(255,107,0,0.22); }
+.profile-stat-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at top left, var(--stat-rank-color, transparent) 0%, transparent 65%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.stat-card-active::before { opacity: 0.06; }
+.stat-card-active {
+  border-color: color-mix(in srgb, var(--stat-rank-color) 25%, transparent);
+}
+.stat-card-active:hover {
+  border-color: color-mix(in srgb, var(--stat-rank-color) 45%, transparent);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--stat-rank-color) 12%, transparent);
+}
+
+.stat-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
 
 .stat-lang {
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.10em;
-  margin-bottom: 8px;
   font-family: 'Share Tech Mono', monospace;
 }
 
-.stat-num {
-  font-size: 2.2rem;
+.stat-rank-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  border: 1px solid;
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-family: 'Share Tech Mono', monospace;
+}
+.stat-rank-locked {
+  color: rgba(160,144,112,0.25);
+  border-color: rgba(160,144,112,0.12);
+}
+
+.stat-strength-num {
+  font-size: 2.4rem;
   font-weight: 800;
-  color: var(--bright);
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Barlow Condensed', 'Share Tech Mono', sans-serif;
   line-height: 1;
   margin-bottom: 10px;
+  letter-spacing: -0.02em;
+  transition: color 0.3s;
 }
-.stat-denom {
-  font-size: 0.82rem;
-  color: rgba(237,224,200,0.25);
-  font-weight: 400;
+.stat-pct-sym {
+  font-size: 1rem;
+  font-weight: 600;
+  opacity: 0.7;
+  margin-left: 1px;
 }
 
 .stat-bar-wrap {
-  height: 3px;
+  height: 4px;
   background: rgba(255,255,255,0.06);
+  border-radius: 2px;
   margin-bottom: 10px;
   overflow: hidden;
 }
@@ -2530,9 +2571,21 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   height: 100%;
   min-width: 0;
   max-width: 100%;
-  transition: width 0.9s cubic-bezier(0.22,1,0.36,1);
+  border-radius: 2px;
+  transition: width 1s cubic-bezier(0.22,1,0.36,1);
 }
 
+.stat-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.stat-clear-text {
+  font-size: 0.62rem;
+  color: rgba(160,144,112,0.45);
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 0.06em;
+}
 .stat-mission {
   font-size: 0.62rem;
   color: rgba(160,144,112,0.40);
