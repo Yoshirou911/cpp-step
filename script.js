@@ -22854,6 +22854,18 @@ function renderDetail(id) {
       '<div id="explain-area-' + p.id + '" class="explain-area hidden"></div>' +
     '</div>' +
 
+    '<div class="section golf-section">' +
+      '<div class="golf-header">' +
+        '<span class="golf-title">⛳ CODE GOLF</span>' +
+        '<span class="golf-live">現在: <span id="golf-counter-' + p.id + '">0</span> 文字</span>' +
+      '</div>' +
+      '<div id="golf-board-' + p.id + '" class="golf-board"><span class="golf-loading">読込中...</span></div>' +
+      (currentUser
+        ? '<button class="golf-submit-btn" onclick="submitAndRefreshGolf(' + p.id + ')">⛳ このコードを提出する</button>'
+        : '<p class="golf-login-hint">ログインするとランキングに参加できます</p>'
+      ) +
+    '</div>' +
+
     '<div class="section">' +
       (learned
         ? '<button id="learn-btn" class="learn-btn learned" onclick="toggleLearned(' + p.id + ')">✔ CLEARED  ／  クリックで取り消す</button>'
@@ -22863,6 +22875,7 @@ function renderDetail(id) {
 
   // Ace Editor を初期化（再描画のときはコードを引き継ぐ）
   initAceEditor(savedCode !== null ? savedCode : getStarterCode());
+  refreshGolfBoard(p.id);
 }
 
 // ===== 書き方メニュー =====
@@ -23302,6 +23315,14 @@ function initAceEditor(initialCode) {
     bindKey: { win: 'Tab', mac: 'Tab' },
     exec: function(editor) { editor.insert('    '); }
   });
+
+  // CODE GOLF ライブ文字数カウンター
+  function _updateGolfCounter() {
+    var counter = document.getElementById('golf-counter-' + currentProblemId);
+    if (counter) counter.textContent = aceEditor.getValue().length;
+  }
+  aceEditor.session.on('change', _updateGolfCounter);
+  _updateGolfCounter();
 }
 
 // ===== 穴埋めスケルトン生成 =====
@@ -24061,11 +24082,13 @@ function toggleLearned(id) {
   if (isLearned(id)) {
     removeProgress(id);
   } else {
+    var _golfLen = aceEditor ? aceEditor.getValue().length : 0;
     saveProgress(id);
     playClearSound();
     showClearEffect();
     _checkSilverUnlock(id);
     checkTitanTheme();
+    if (_golfLen > 0) submitCodeGolfEntry(id, _golfLen);
   }
   renderDetail(id);
   updateProgressDisplay();
@@ -24213,6 +24236,71 @@ function showTitanThemeUnlock() {
   }
   el.addEventListener('click', dismiss);
   setTimeout(dismiss, 7000);
+}
+
+// ===== CODE GOLF =====
+
+async function submitCodeGolfEntry(problemId, codeLength) {
+  if (!currentUser || !_supabase || !codeLength) return;
+  var ex = await _supabase.from('code_golf')
+    .select('code_length')
+    .eq('user_id', currentUser.id)
+    .eq('language', currentLanguage)
+    .eq('problem_id', problemId)
+    .maybeSingle();
+  if (ex.data && ex.data.code_length <= codeLength) return;
+  await _supabase.from('code_golf').upsert(
+    { user_id: currentUser.id, language: currentLanguage, problem_id: problemId, code_length: codeLength },
+    { onConflict: 'user_id,language,problem_id' }
+  );
+}
+
+async function refreshGolfBoard(problemId) {
+  var board = document.getElementById('golf-board-' + problemId);
+  if (!board) return;
+  if (!_supabase) { board.innerHTML = '<p class="golf-empty">// OFFLINE</p>'; return; }
+  var res = await _supabase.from('code_golf')
+    .select('user_id, code_length')
+    .eq('language', currentLanguage)
+    .eq('problem_id', problemId)
+    .order('code_length', { ascending: true })
+    .limit(10);
+  if (res.error || !res.data || res.data.length === 0) {
+    board.innerHTML = '<p class="golf-empty">まだ提出がありません。最初の挑戦者になろう！</p>';
+    return;
+  }
+  var data = res.data;
+  var minLen = data[0].code_length;
+  var myIdx = currentUser ? data.findIndex(function(r) { return r.user_id === currentUser.id; }) : -1;
+  var html = '';
+  if (myIdx !== -1) {
+    html += '<div class="golf-my-best">あなたのベスト <span class="golf-my-len">' + data[myIdx].code_length + '</span> 文字 · ' + (myIdx + 1) + '位 / ' + data.length + '人</div>';
+  }
+  html += '<ol class="golf-list">';
+  data.forEach(function(r, i) {
+    var isMe = currentUser && r.user_id === currentUser.id;
+    var barW = Math.round(minLen / r.code_length * 100);
+    html += '<li class="golf-entry' + (isMe ? ' golf-entry-me' : '') + '">' +
+      '<span class="golf-rank">' + (i + 1) + '</span>' +
+      '<div class="golf-bar-wrap"><div class="golf-bar" style="width:' + barW + '%"></div></div>' +
+      '<span class="golf-len-num">' + r.code_length + '文字</span>' +
+      (isMe ? '<span class="golf-you-tag">YOU</span>' : '') +
+    '</li>';
+  });
+  html += '</ol>';
+  board.innerHTML = html;
+}
+
+async function submitAndRefreshGolf(problemId) {
+  if (!currentUser) { alert('ログインが必要です'); return; }
+  if (!aceEditor) return;
+  var len = aceEditor.getValue().length;
+  if (len === 0) return;
+  var btn = document.querySelector('.golf-submit-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '送信中...'; }
+  await submitCodeGolfEntry(problemId, len);
+  await refreshGolfBoard(problemId);
+  if (btn) { btn.disabled = false; btn.textContent = '✓ 提出しました！'; setTimeout(function() { if (btn) btn.textContent = '⛳ このコードを提出する'; }, 2000); }
 }
 
 // ===== アクティビティヒートマップ =====

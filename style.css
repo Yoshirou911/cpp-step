@@ -4996,3 +4996,157 @@ body.titan-theme .profile-rank-badge {
   0%, 100% { opacity: 0.3; }
   50%       { opacity: 0.7; }
 }
+
+/* ===== CODE GOLF ===== */
+
+.golf-section {
+  border-top: 1px solid rgba(255, 165, 0, 0.15);
+  padding-top: 1rem;
+}
+
+.golf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.golf-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: #c8a830;
+}
+
+.golf-live {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: rgba(200, 168, 48, 0.7);
+  letter-spacing: 0.06em;
+}
+
+.golf-board {
+  min-height: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.golf-loading,
+.golf-empty {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.25);
+  letter-spacing: 0.06em;
+}
+
+.golf-my-best {
+  font-size: 0.75rem;
+  color: rgba(200, 168, 48, 0.85);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.04em;
+}
+
+.golf-my-len {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #c8a830;
+}
+
+.golf-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.golf-entry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.golf-rank {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.3);
+  width: 1.4rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.golf-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.golf-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #a07820, #c8a830);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.golf-entry-me .golf-bar {
+  background: linear-gradient(90deg, #e09020, #ffcc40);
+  box-shadow: 0 0 6px rgba(255, 200, 48, 0.5);
+}
+
+.golf-len-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+  width: 4.5rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.golf-entry-me .golf-len-num {
+  color: #c8a830;
+}
+
+.golf-you-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #ffcc40;
+  letter-spacing: 0.1em;
+  flex-shrink: 0;
+}
+
+.golf-submit-btn {
+  display: block;
+  width: 100%;
+  padding: 8px 16px;
+  background: rgba(200, 168, 48, 0.1);
+  border: 1px solid rgba(200, 168, 48, 0.35);
+  color: #c8a830;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.golf-submit-btn:hover:not(:disabled) {
+  background: rgba(200, 168, 48, 0.18);
+  box-shadow: 0 0 10px rgba(200, 168, 48, 0.25);
+}
+
+.golf-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.golf-login-hint {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.25);
+  letter-spacing: 0.04em;
+  margin: 0;
+}
