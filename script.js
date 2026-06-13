@@ -307,6 +307,9 @@ var currentUserIsPremium = false;
 var currentUserIsAdmin = false;
 var _premiumStatusCache = false;  // 実際のSupabase値（管理者プレビュー用に保持）
 var _adminPreviewFree = false;    // 管理者が「無料ユーザーとして表示」テスト中
+var currentUserAgeGroup   = null;
+var currentUserJobClass   = null;
+var currentUserExperience = null;
 var PREMIUM_RANKS = ['SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND', 'TITAN'];
 var _currentAuthTab = 'login';
 // 進捗のインメモリキャッシュ（言語切替時にリセット）
@@ -1051,12 +1054,15 @@ async function fetchUserProfile() {
   try {
     var result = await _supabase
       .from('user_profiles')
-      .select('is_premium, is_admin')
+      .select('is_premium, is_admin, age_group, job_class, experience')
       .eq('user_id', currentUser.id)
       .maybeSingle();
     if (result.data) {
-      _premiumStatusCache  = !!result.data.is_premium;
-      currentUserIsAdmin   = !!result.data.is_admin;
+      _premiumStatusCache      = !!result.data.is_premium;
+      currentUserIsAdmin       = !!result.data.is_admin;
+      currentUserAgeGroup      = result.data.age_group   || null;
+      currentUserJobClass      = result.data.job_class   || null;
+      currentUserExperience    = result.data.experience  || null;
     } else {
       // プロフィールが存在しなければ作成
       await _supabase.from('user_profiles').upsert({
@@ -24130,6 +24136,52 @@ async function renderProfile() {
       ? '<button id="admin-panel-btn" class="admin-open-btn" onclick="openAdminPanel()">⚙ 管理者パネルを開く</button>'
       : '') +
 
+    // ─── ギルドカード ───
+    (function() {
+      var hasCard = currentUserAgeGroup && currentUserJobClass && currentUserExperience;
+      var AGE_ICON = { '10代': '🌱', '20代': '⚡', '30代以上': '🔥' };
+      var JOB_ICON = { '学生': '🎓', '会社員': '💼', 'フリーランス': '🚀', 'その他': '🎲' };
+      var EXP_ICON = { '完全未経験': '🥚', '少し触ったことがある': '🐣', '実務経験あり': '🦅' };
+      if (!currentUser) return '';
+      if (!hasCard) {
+        return '<div class="profile-section gc-section-empty">' +
+          '<div class="profile-section-title">// GUILD CARD</div>' +
+          '<div class="gc-empty-body">' +
+            '<p class="gc-empty-text">ギルドカードを登録すると、同じ属性の人の中での<br>ランキングが解放されます。</p>' +
+            '<button class="gc-create-btn" onclick="openGuildCardModal()">🎖️ ギルドカードを作成する</button>' +
+          '</div>' +
+        '</div>';
+      }
+      return '<div class="profile-section gc-section">' +
+        '<div class="profile-section-title">// GUILD CARD ' +
+          '<button class="gc-edit-btn" onclick="openGuildCardModal()">編集</button>' +
+        '</div>' +
+        '<div class="gc-card">' +
+          '<div class="gc-card-item">' +
+            '<span class="gc-card-icon">' + (AGE_ICON[currentUserAgeGroup] || '👤') + '</span>' +
+            '<div class="gc-card-info">' +
+              '<div class="gc-card-key">年齢層</div>' +
+              '<div class="gc-card-val">' + escapeHtml(currentUserAgeGroup) + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="gc-card-item">' +
+            '<span class="gc-card-icon">' + (JOB_ICON[currentUserJobClass] || '💼') + '</span>' +
+            '<div class="gc-card-info">' +
+              '<div class="gc-card-key">職業クラス</div>' +
+              '<div class="gc-card-val">' + escapeHtml(currentUserJobClass) + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="gc-card-item">' +
+            '<span class="gc-card-icon">' + (EXP_ICON[currentUserExperience] || '🐣') + '</span>' +
+            '<div class="gc-card-info">' +
+              '<div class="gc-card-key">経験</div>' +
+              '<div class="gc-card-val">' + escapeHtml(currentUserExperience) + '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    })() +
+
     // ─── EXP・レベル ───
     '<div class="profile-section exp-section">' +
       '<div class="profile-section-title">// LEVEL & EXP</div>' +
@@ -24285,6 +24337,131 @@ function translateAuthError(msg) {
 
 // 確認待ちメールアドレスを保持（再送用）
 var _pendingConfirmEmail = null;
+
+// ===== ギルドカードモーダル =====
+
+var _gcSelected = { age: null, job: null, exp: null };
+
+function openGuildCardModal() {
+  _gcSelected = {
+    age: currentUserAgeGroup,
+    job: currentUserJobClass,
+    exp: currentUserExperience
+  };
+
+  var existing = document.getElementById('gc-modal');
+  if (existing) existing.remove();
+
+  var AGE_OPTS = [
+    { v: '10代',    icon: '🌱', label: '10代' },
+    { v: '20代',    icon: '⚡', label: '20代' },
+    { v: '30代以上', icon: '🔥', label: '30代以上' },
+  ];
+  var JOB_OPTS = [
+    { v: '学生',             icon: '🎓', label: '学生' },
+    { v: '会社員',           icon: '💼', label: '会社員' },
+    { v: 'フリーランス',      icon: '🚀', label: 'フリーランス' },
+    { v: 'その他',           icon: '🎲', label: 'その他' },
+  ];
+  var EXP_OPTS = [
+    { v: '完全未経験',           icon: '🥚', label: '完全未経験' },
+    { v: '少し触ったことがある',   icon: '🐣', label: '少し触れたことがある' },
+    { v: '実務経験あり',          icon: '🦅', label: '実務経験あり' },
+  ];
+
+  function _optHTML(key, opts) {
+    return opts.map(function(o) {
+      var sel = _gcSelected[key] === o.v;
+      return '<button class="gc-opt' + (sel ? ' gc-opt-sel' : '') + '" ' +
+        'onclick="_gcPick(\'' + key + '\',\'' + o.v.replace(/'/g, "\\'") + '\',this)">' +
+        '<span class="gc-opt-icon">' + o.icon + '</span>' +
+        '<span class="gc-opt-label">' + o.label + '</span>' +
+        '</button>';
+    }).join('');
+  }
+
+  var modal = document.createElement('div');
+  modal.id = 'gc-modal';
+  modal.className = 'gc-modal';
+  modal.innerHTML =
+    '<div class="gc-overlay" onclick="closeGuildCardModal()"></div>' +
+    '<div class="gc-panel">' +
+      '<div class="gc-header">' +
+        '<div class="gc-header-title">🎖️ ギルドカード作成</div>' +
+        '<button class="syntax-close" onclick="closeGuildCardModal()">✕</button>' +
+      '</div>' +
+      '<div class="gc-body">' +
+        '<p class="gc-desc">プロフィールを登録すると、同じ属性の人の中での<br>ランキングが解放されます。</p>' +
+        '<div class="gc-group">' +
+          '<div class="gc-group-label">年齢層</div>' +
+          '<div class="gc-opts" id="gc-age">' + _optHTML('age', AGE_OPTS) + '</div>' +
+        '</div>' +
+        '<div class="gc-group">' +
+          '<div class="gc-group-label">職業クラス</div>' +
+          '<div class="gc-opts" id="gc-job">' + _optHTML('job', JOB_OPTS) + '</div>' +
+        '</div>' +
+        '<div class="gc-group">' +
+          '<div class="gc-group-label">プログラミング経験</div>' +
+          '<div class="gc-opts" id="gc-exp">' + _optHTML('exp', EXP_OPTS) + '</div>' +
+        '</div>' +
+        '<p id="gc-error" class="gc-error hidden">すべての項目を選択してください</p>' +
+        '<button class="gc-save-btn" onclick="saveGuildCard()">カードを登録する</button>' +
+      '</div>' +
+    '</div>';
+
+  document.body.appendChild(modal);
+  requestAnimationFrame(function() { modal.classList.add('open'); });
+}
+
+function _gcPick(key, val, el) {
+  _gcSelected[key] = val;
+  var group = el.parentElement;
+  group.querySelectorAll('.gc-opt').forEach(function(b) { b.classList.remove('gc-opt-sel'); });
+  el.classList.add('gc-opt-sel');
+  document.getElementById('gc-error').classList.add('hidden');
+}
+
+function closeGuildCardModal() {
+  var modal = document.getElementById('gc-modal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  setTimeout(function() { if (modal.parentNode) modal.remove(); }, 250);
+}
+
+async function saveGuildCard() {
+  if (!_gcSelected.age || !_gcSelected.job || !_gcSelected.exp) {
+    document.getElementById('gc-error').classList.remove('hidden');
+    return;
+  }
+  if (!_supabase || !currentUser) return;
+
+  var btn = document.querySelector('.gc-save-btn');
+  btn.disabled = true;
+  btn.textContent = '保存中...';
+
+  try {
+    var res = await _supabase.from('user_profiles').upsert({
+      user_id:    currentUser.id,
+      age_group:  _gcSelected.age,
+      job_class:  _gcSelected.job,
+      experience: _gcSelected.exp
+    }, { onConflict: 'user_id' });
+
+    if (res.error) throw res.error;
+
+    currentUserAgeGroup   = _gcSelected.age;
+    currentUserJobClass   = _gcSelected.job;
+    currentUserExperience = _gcSelected.exp;
+
+    closeGuildCardModal();
+    renderProfile();
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = 'カードを登録する';
+    document.getElementById('gc-error').textContent = '保存に失敗しました: ' + e.message;
+    document.getElementById('gc-error').classList.remove('hidden');
+  }
+}
 
 function openAuthModal() {
   playUIClick();

@@ -4391,3 +4391,223 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
     border-top: 1px solid #1e3a50;
   }
 }
+
+/* ===== ギルドカード ===== */
+
+/* プロフィールページ内表示 */
+.gc-section-empty {
+  text-align: center;
+}
+.gc-empty-body {
+  padding: 20px 0 8px;
+}
+.gc-empty-text {
+  color: #6080a0;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  margin: 0 0 16px;
+}
+.gc-create-btn {
+  background: linear-gradient(135deg, #1a2e1a 0%, #0d1f0d 100%);
+  border: 1px solid #2a5a2a;
+  color: #7ec87e;
+  padding: 11px 24px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+.gc-create-btn:hover {
+  background: linear-gradient(135deg, #243424 0%, #152515 100%);
+  border-color: #4a9a4a;
+  transform: translateY(-2px);
+}
+.gc-card {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.gc-card-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #0a1820;
+  border: 1px solid #1a3040;
+  border-radius: 10px;
+  padding: 12px 18px;
+  flex: 1;
+  min-width: 140px;
+}
+.gc-card-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+.gc-card-key {
+  font-size: 0.7rem;
+  color: #4a7090;
+  letter-spacing: 0.06em;
+  margin-bottom: 3px;
+}
+.gc-card-val {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #c8dce8;
+}
+.gc-section .profile-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.gc-edit-btn {
+  background: none;
+  border: 1px solid #2a4a6a;
+  color: #5090b0;
+  font-size: 0.72rem;
+  padding: 2px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.gc-edit-btn:hover {
+  border-color: #4a8aba;
+  color: #7ec8e3;
+}
+
+/* ギルドカードモーダル */
+.gc-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.gc-modal.open {
+  pointer-events: auto;
+}
+.gc-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  opacity: 0;
+  transition: opacity 0.22s;
+}
+.gc-modal.open .gc-overlay {
+  opacity: 1;
+}
+.gc-panel {
+  position: relative;
+  width: min(480px, 94vw);
+  background: #0d1820;
+  border: 1px solid #1e3a50;
+  border-radius: 16px;
+  overflow: hidden;
+  transform: translateY(24px) scale(0.97);
+  opacity: 0;
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.22s;
+}
+.gc-modal.open .gc-panel {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+.gc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #1e3a50;
+  background: #0a1418;
+}
+.gc-header-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e8f4fc;
+  letter-spacing: 0.04em;
+}
+.gc-body {
+  padding: 20px;
+  max-height: 78vh;
+  overflow-y: auto;
+}
+.gc-desc {
+  font-size: 0.82rem;
+  color: #5080a0;
+  line-height: 1.7;
+  margin: 0 0 20px;
+}
+.gc-group {
+  margin-bottom: 20px;
+}
+.gc-group-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #4a8aba;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+.gc-opts {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.gc-opt {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #0a1820;
+  border: 1px solid #1a3040;
+  border-radius: 8px;
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.12s;
+  font-size: 0.85rem;
+  color: #8090a0;
+}
+.gc-opt:hover {
+  border-color: #2a5a7a;
+  color: #c0d0e0;
+  transform: translateY(-1px);
+}
+.gc-opt-sel {
+  border-color: #4a9a4a !important;
+  background: #0d1f0d !important;
+  color: #a0e0a0 !important;
+}
+.gc-opt-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.gc-opt-label {
+  font-weight: 600;
+}
+.gc-error {
+  color: #ff6b6b;
+  font-size: 0.82rem;
+  margin: 4px 0 12px;
+}
+.gc-save-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #1a3a1a 0%, #0d2510 100%);
+  border: 1px solid #2a6a2a;
+  color: #7ec87e;
+  padding: 13px;
+  border-radius: 9px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  margin-top: 8px;
+}
+.gc-save-btn:hover {
+  background: linear-gradient(135deg, #243424 0%, #152515 100%);
+  border-color: #4a9a4a;
+  transform: translateY(-2px);
+}
+.gc-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
