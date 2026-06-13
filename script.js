@@ -23764,15 +23764,12 @@ function setEditorMode(mode) {
   var activeBtn = document.getElementById('mode-' + mode);
   if (activeBtn) activeBtn.classList.add('active');
 
-  // エディタが空のときだけ内容を挿入（書きかけのコードは消さない）
-  if (aceEditor.getValue().trim() === '') {
-    if (mode === 'zero') {
-      aceEditor.setValue('', -1);
-    } else if (mode === 'scratch') {
-      aceEditor.setValue(getStarterCode(), -1);
-    } else {
-      aceEditor.setValue(p ? buildSkeleton(p) : getStarterCode(), -1);
-    }
+  if (mode === 'zero') {
+    aceEditor.setValue('', -1);
+  } else if (mode === 'scratch') {
+    aceEditor.setValue(getStarterCode(), -1);
+  } else {
+    aceEditor.setValue(p ? buildSkeleton(p) : getStarterCode(), -1);
   }
   aceEditor.focus();
 }
