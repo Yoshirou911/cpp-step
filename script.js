@@ -23750,17 +23750,6 @@ function setEditorMode(mode) {
   if (!aceEditor) return;
   var p = getProblems().find(function(x) { return x.id === currentProblemId; });
 
-  // コードが書かれていたら確認
-  var current = aceEditor.getValue().trim();
-  var isDefault = current === ''
-    || current === ACE_STARTER.trim()
-    || current === getStarterCode().trim()
-    || current === '# ここにコードを書いてください'
-    || current === (p ? buildSkeleton(p).trim() : '');
-  if (!isDefault) {
-    if (!confirm('現在のコードが消えます。よいですか？')) return;
-  }
-
   currentEditorMode = mode;
 
   // ボタンのactive状態を更新
@@ -23771,12 +23760,15 @@ function setEditorMode(mode) {
   var activeBtn = document.getElementById('mode-' + mode);
   if (activeBtn) activeBtn.classList.add('active');
 
-  if (mode === 'zero') {
-    aceEditor.setValue('', -1);
-  } else if (mode === 'scratch') {
-    aceEditor.setValue(getStarterCode(), -1);
-  } else {
-    aceEditor.setValue(p ? buildSkeleton(p) : getStarterCode(), -1);
+  // エディタが空のときだけ内容を挿入（書きかけのコードは消さない）
+  if (aceEditor.getValue().trim() === '') {
+    if (mode === 'zero') {
+      aceEditor.setValue('', -1);
+    } else if (mode === 'scratch') {
+      aceEditor.setValue(getStarterCode(), -1);
+    } else {
+      aceEditor.setValue(p ? buildSkeleton(p) : getStarterCode(), -1);
+    }
   }
   aceEditor.focus();
 }
