@@ -597,6 +597,148 @@ function getLangStrengthRank(pct) {
   return               { name: 'ROOKIE',  color: '#9B9B9B' };
 }
 
+// ===== Dev Status レーダーチャート =====
+
+var DEV_STATUS_AXES = [
+  { name: 'アルゴリズム', color: '#C040FF', langs: [
+    { key: 'cpp',    g: function() { return problems; },           w: 1.0 },
+    { key: 'rust',   g: function() { return rustProblems; },       w: 0.8 },
+    { key: 'python', g: function() { return pythonProblems; },     w: 0.6 },
+    { key: 'java',   g: function() { return javaProblems; },       w: 0.5 },
+  ]},
+  { name: 'フロントエンド', color: '#F0C040', langs: [
+    { key: 'html',       g: function() { return htmlProblems; },       w: 1.0 },
+    { key: 'javascript', g: function() { return javascriptProblems; }, w: 1.0 },
+    { key: 'typescript', g: function() { return typescriptProblems; }, w: 0.7 },
+  ]},
+  { name: 'バックエンド', color: '#3776AB', langs: [
+    { key: 'python', g: function() { return pythonProblems; }, w: 1.0 },
+    { key: 'php',    g: function() { return phpProblems; },    w: 1.0 },
+    { key: 'ruby',   g: function() { return rubyProblems; },   w: 0.8 },
+    { key: 'java',   g: function() { return javaProblems; },   w: 0.5 },
+  ]},
+  { name: 'インフラ', color: '#00C8B4', langs: [
+    { key: 'bash',  g: function() { return bashProblems; },  w: 1.0 },
+    { key: 'sql',   g: function() { return sqlProblems; },   w: 0.8 },
+    { key: 'go',    g: function() { return goProblems; },    w: 0.6 },
+    { key: 'regex', g: function() { return regexProblems; }, w: 0.5 },
+  ]},
+  { name: '設計力', color: '#00ADD8', langs: [
+    { key: 'go',         g: function() { return goProblems; },         w: 1.0 },
+    { key: 'kotlin',     g: function() { return kotlinProblems; },     w: 0.7 },
+    { key: 'csharp',     g: function() { return csharpProblems; },     w: 0.6 },
+    { key: 'typescript', g: function() { return typescriptProblems; }, w: 0.5 },
+  ]},
+  { name: '低レイヤ', color: '#CE412B', langs: [
+    { key: 'cpp',  g: function() { return problems; },     w: 1.0 },
+    { key: 'c',    g: function() { return cProblems; },    w: 1.0 },
+    { key: 'rust', g: function() { return rustProblems; }, w: 0.9 },
+  ]},
+];
+
+function calcDevStatus() {
+  return DEV_STATUS_AXES.map(function(axis) {
+    var tw = 0, ws = 0;
+    axis.langs.forEach(function(l) {
+      var sd = calcLangStrengthData(l.key, l.g());
+      ws += sd.pct * l.w;
+      tw += l.w;
+    });
+    return { name: axis.name, score: tw > 0 ? Math.round(ws / tw) : 0, color: axis.color };
+  });
+}
+
+function _buildDevStatusSVG(scores) {
+  var cx = 200, cy = 200, maxR = 115, n = 6;
+
+  function pt(i, r) {
+    var a = -Math.PI / 2 + (2 * Math.PI / n) * i;
+    return [+(cx + r * Math.cos(a)).toFixed(1), +(cy + r * Math.sin(a)).toFixed(1)];
+  }
+
+  function poly(r, stroke, sw, fill, opacity) {
+    var d = '';
+    for (var i = 0; i < n; i++) {
+      var p = pt(i, r);
+      d += (i === 0 ? 'M' : 'L') + p[0] + ',' + p[1];
+    }
+    d += ' Z';
+    return '<path d="' + d + '" fill="' + fill + '" fill-opacity="' + opacity + '" stroke="' + stroke + '" stroke-width="' + sw + '"/>';
+  }
+
+  // グリッド
+  var gridSVG = '';
+  [20, 40, 60, 80, 100].forEach(function(pct, gi) {
+    var r = maxR * pct / 100;
+    var isOuter = pct === 100;
+    gridSVG += poly(r, isOuter ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)', isOuter ? 1.5 : 1, 'none', 0);
+    if (pct === 50) {
+      var lp = pt(1, r);
+      gridSVG += '<text x="' + (lp[0]+3) + '" y="' + (lp[1]-2) + '" font-size="8" fill="rgba(255,255,255,0.18)" font-family="monospace">50</text>';
+    }
+  });
+
+  // 軸線
+  var axesSVG = '';
+  for (var i = 0; i < n; i++) {
+    var ep = pt(i, maxR);
+    axesSVG += '<line x1="' + cx + '" y1="' + cy + '" x2="' + ep[0] + '" y2="' + ep[1] + '" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>';
+  }
+
+  // スコアポリゴン
+  var spd = '';
+  for (var i = 0; i < n; i++) {
+    var r = maxR * Math.max(scores[i].score, 1) / 100;
+    var p = pt(i, r);
+    spd += (i === 0 ? 'M' : 'L') + p[0] + ',' + p[1];
+  }
+  spd += ' Z';
+
+  // 頂点ドット
+  var dotsSVG = '';
+  for (var i = 0; i < n; i++) {
+    var r = maxR * Math.max(scores[i].score, 1) / 100;
+    var p = pt(i, r);
+    if (scores[i].score > 0) {
+      dotsSVG += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.5" fill="' + scores[i].color + '" stroke="#0a1020" stroke-width="1.5"/>';
+    }
+  }
+
+  // ラベル（名前 + スコア%）
+  var labelSVG = '';
+  for (var i = 0; i < n; i++) {
+    var lp = pt(i, maxR + 26);
+    var anc = lp[0] < cx - 8 ? 'end' : lp[0] > cx + 8 ? 'start' : 'middle';
+    var s = scores[i];
+    var scoreY = lp[1] + 13;
+    labelSVG +=
+      '<text x="' + lp[0] + '" y="' + lp[1] + '" text-anchor="' + anc + '" ' +
+        'font-size="9.5" fill="' + s.color + 'bb" font-family="\'Share Tech Mono\',monospace" font-weight="700" letter-spacing="0.03em">' + s.name + '</text>' +
+      '<text x="' + lp[0] + '" y="' + scoreY + '" text-anchor="' + anc + '" ' +
+        'font-size="15" fill="' + s.color + '" font-family="\'Barlow Condensed\',sans-serif" font-weight="800">' + s.score + '%</text>';
+  }
+
+  return (
+    '<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" class="dev-status-chart">' +
+      '<defs>' +
+        '<radialGradient id="dsGrad" cx="50%" cy="50%" r="50%">' +
+          '<stop offset="0%" stop-color="#8060FF" stop-opacity="0.28"/>' +
+          '<stop offset="100%" stop-color="#FF6B00" stop-opacity="0.04"/>' +
+        '</radialGradient>' +
+        '<filter id="dsGlow" x="-20%" y="-20%" width="140%" height="140%">' +
+          '<feGaussianBlur stdDeviation="4" result="blur"/>' +
+          '<feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>' +
+        '</filter>' +
+      '</defs>' +
+      gridSVG +
+      axesSVG +
+      '<path d="' + spd + '" fill="url(#dsGrad)" stroke="#FF6B00" stroke-width="1.8" stroke-linejoin="round" filter="url(#dsGlow)"/>' +
+      dotsSVG +
+      labelSVG +
+    '</svg>'
+  );
+}
+
 // ===== EXP・レベルシステム =====
 
 // 問題ランク別 EXP
@@ -24302,6 +24444,15 @@ async function renderProfile() {
         '</div>' +
       '</div>' +
     '</div>' +
+
+    // ─── Dev Status ───
+    (function() {
+      var ds = calcDevStatus();
+      return '<div class="profile-section dev-status-section">' +
+        '<div class="profile-section-title">// DEV STATUS</div>' +
+        _buildDevStatusSVG(ds) +
+      '</div>';
+    })() +
 
     // ─── 言語スタッツ ───
     '<div class="profile-section">' +

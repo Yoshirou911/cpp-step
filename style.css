@@ -4664,3 +4664,24 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   cursor: not-allowed;
   transform: none;
 }
+
+/* ===== Dev Status レーダーチャート ===== */
+
+.dev-status-section {
+  text-align: center;
+}
+
+.dev-status-chart {
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+@media (max-width: 480px) {
+  .dev-status-chart {
+    max-width: 100%;
+  }
+}
