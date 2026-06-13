@@ -22512,10 +22512,22 @@ function showPage(name) {
 // ===== 進捗バーの更新 =====
 
 function updateProgressDisplay() {
-  const count = loadProgress().length;
-  const total = getProblems().length;
-  document.getElementById("progress-text").textContent = count + " / " + total + " 問 クリア";
-  document.getElementById("progress-bar").style.width = (count / total * 100) + "%";
+  var count = loadProgress().length;
+  var total = getProblems().length;
+  var langKey = currentLanguage || 'cpp';
+  var sd   = calcLangStrengthData(langKey, getProblems());
+  var rank = getLangStrengthRank(sd.pct);
+
+  document.getElementById('progress-text').innerHTML =
+    count + ' / ' + total + ' クリア' +
+    '&nbsp;&nbsp;<span style="color:' + rank.color + ';letter-spacing:0.12em">' +
+      '◆ 実力 ' + sd.pct + '% &nbsp;' + rank.name +
+    '</span>';
+
+  var bar = document.getElementById('progress-bar');
+  bar.style.width      = sd.pct + '%';
+  bar.style.background = 'linear-gradient(90deg,' + rank.color + '99,' + rank.color + ')';
+  bar.style.boxShadow  = '0 0 12px ' + rank.color + '88';
 }
 
 // ===== 問題一覧の描画（単元グループ） =====
