@@ -1189,7 +1189,7 @@ function showNavAndProgress() {
 }
 
 function setActiveTab(tab) {
-  ['problems', 'missions', 'guide'].forEach(function(t) {
+  ['problems', 'missions', 'guide', 'textbook'].forEach(function(t) {
     document.getElementById('tab-' + t).classList.toggle('active', t === tab);
   });
 }
@@ -1517,6 +1517,10 @@ function restoreState(state) {
     setActiveTab('guide');
     renderGuide();
     showPage('guide');
+  } else if (state.page === 'textbook') {
+    setActiveTab('textbook');
+    renderTextbook();
+    showPage('textbook');
   } else if (state.page === 'mission-list') {
     setActiveTab('missions');
     renderMissionList();
@@ -22684,7 +22688,7 @@ function showPage(name) {
   stopStudyTimer();
   // 全ページを非表示にしてから対象だけ表示
   ["page-landing", "page-lang", "page-list", "page-detail", "page-guide",
-   "page-mission-list", "page-mission-detail", "page-profile"].forEach(function(id) {
+   "page-mission-list", "page-mission-detail", "page-profile", "page-textbook"].forEach(function(id) {
     document.getElementById(id).classList.add("hidden");
   });
   document.getElementById("page-" + name).classList.remove("hidden");
@@ -22738,6 +22742,18 @@ function renderList() {
         '<span class="ad-text">Google AdSenseコードをここに貼り付けます</span>' +
       '</div>';
     list.appendChild(adTop);
+  }
+
+  // 教本バナー（初心者向け）
+  if (langTextbooks[currentLanguage]) {
+    var tb = langTextbooks[currentLanguage];
+    var tbBanner = document.createElement('div');
+    tbBanner.className = 'textbook-list-banner';
+    tbBanner.innerHTML =
+      '<span class="textbook-banner-icon">' + tb.emoji + '</span>' +
+      '<span class="textbook-banner-text"><strong>' + tb.name + ' 入門ガイド</strong> — まずはここから！基礎文法・パターン・Tipsをまとめています</span>' +
+      '<button class="textbook-banner-btn" onclick="switchTab(\'textbook\')">📖 見る</button>';
+    list.appendChild(tbBanner);
   }
 
   // 単元ごとにグループ化
@@ -22828,6 +22844,7 @@ function escapeHtml(text) {
 
 function renderDetail(id) {
   const p = getProblems().find(function(x) { return x.id === id; });
+  if (!p) return;
   const learned = isLearned(p.id);
 
   // 既存エディタのコードを保存してから破棄
@@ -22842,6 +22859,9 @@ function renderDetail(id) {
   detail.innerHTML =
     '<div class="detail-meta">' +
       '<span class="detail-unit">' + p.unit + '</span>' +
+      (langTextbooks[currentLanguage]
+        ? '<button class="detail-textbook-btn" onclick="switchTab(\'textbook\')">📖 ' + langTextbooks[currentLanguage].name + ' 入門ガイド</button>'
+        : '') +
     '</div>' +
     '<h2>' + p.title + '</h2>' +
     '<span class="rank-badge rank-' + p.rank.toLowerCase() + ' rank-badge-lg" style="display:inline-block;margin-bottom:18px;">' + p.rank + '</span>' +
@@ -23648,17 +23668,15 @@ function initAceEditor(initialCode) {
     exec: function(editor) { editor.insert('    '); }
   });
 
-  // ユーザーが入力したら dirty フラグを立てる
-  aceEditor.session.on('change', function() {
-    if (!_suppressDirty) editorDirty = true;
-  });
-
-  // CODE GOLF ライブ文字数カウンター
+  // change リスナーを一本化（dirtyフラグ ＋ Golfカウンター）
   function _updateGolfCounter() {
     var counter = document.getElementById('golf-counter-' + currentProblemId);
     if (counter) counter.textContent = aceEditor.getValue().length;
   }
-  aceEditor.session.on('change', _updateGolfCounter);
+  aceEditor.session.on('change', function() {
+    if (!_suppressDirty) editorDirty = true;
+    _updateGolfCounter();
+  });
   _updateGolfCounter();
 }
 
@@ -24073,11 +24091,1285 @@ function switchTab(tab) {
     history.pushState({ page: 'mission-list', lang: currentLanguage, tab: 'missions' }, '');
     renderMissionList();
     showPage('mission-list');
+  } else if (tab === 'textbook') {
+    history.pushState({ page: 'textbook', lang: currentLanguage, tab: 'textbook' }, '');
+    renderTextbook();
+    showPage('textbook');
   } else {
     history.pushState({ page: 'guide', lang: currentLanguage, tab: 'guide' }, '');
     renderGuide();
     showPage('guide');
   }
+}
+
+// ===== 教本データ =====
+
+var langTextbooks = {
+  cpp: {
+    name: 'C++', emoji: '⚙️',
+    intro: 'C++はシステムプログラミングからゲーム開発まで幅広く使われる高性能言語です。C言語を拡張し、オブジェクト指向・テンプレート・標準ライブラリ（STL）を加えた多機能な言語です。',
+    features: ['高速実行（ゼロコスト抽象化）', 'メモリを直接操作できるポインタ', 'クラス・継承・多態性によるOOP', 'テンプレートによるジェネリックプログラミング', 'STL（vector, map, set など豊富なコンテナ）'],
+    sections: [
+      { title: '基本的な構造', code: `#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "Hello, World!" << endl;
+    return 0;
+}` },
+      { title: '変数と型', code: `int age = 20;
+double pi = 3.14;
+bool flag = true;
+string name = "Taro";
+char grade = 'A';` },
+      { title: '制御構文', code: `// if文
+if (x > 0) { cout << "正" << endl; }
+else if (x < 0) { cout << "負" << endl; }
+else { cout << "ゼロ" << endl; }
+
+// forループ
+for (int i = 0; i < 5; i++) {
+    cout << i << endl;
+}
+
+// while
+int n = 0;
+while (n < 3) { cout << n++; }` },
+      { title: '関数', code: `int add(int a, int b) {
+    return a + b;
+}
+
+// 参照渡し（元の変数を変更できる）
+void doubleVal(int& x) { x *= 2; }
+
+int main() {
+    int v = 5;
+    doubleVal(v);
+    cout << v; // 10
+}` },
+      { title: 'vectorと配列', code: `#include <vector>
+vector<int> v = {1, 2, 3, 4, 5};
+v.push_back(6);
+v.pop_back();
+
+for (int x : v) { // 範囲for
+    cout << x << " ";
+}
+cout << v.size(); // 要素数` },
+      { title: 'クラス', code: `class Dog {
+public:
+    string name;
+    Dog(string n) : name(n) {}
+    void bark() { cout << name << ": Woof!" << endl; }
+};
+
+Dog d("Pochi");
+d.bark();` },
+      { title: 'よくあるエラーと対策', code: `// 配列の範囲外アクセス → vectorのat()で安全に
+vector<int> v = {1,2,3};
+cout << v.at(10); // 例外が発生して安全に停止
+
+// ポインタのnullチェック
+int* p = nullptr;
+if (p != nullptr) { *p = 5; } // 安全
+
+// new → delete でメモリリーク防止
+int* arr = new int[10];
+delete[] arr;` }
+    ],
+    tips: ['#include <bits/stdc++.h> で競技プログラミングでは全ヘッダを一括インクルード', 'cout << endl; より cout << "\\n"; の方が高速', 'auto キーワードで型推論が使える（C++11以降）', 'const をつけると変更できない変数になる']
+  },
+  python: {
+    name: 'Python', emoji: '🐍',
+    intro: 'Pythonはシンプルな文法で初心者にも学びやすく、データサイエンス・AI・Web開発・自動化など幅広い分野で使われる人気言語です。インタープリタ型で実行しながら学べます。',
+    features: ['インデントでブロックを表現（波括弧なし）', '型宣言不要（動的型付け）', 'リスト・辞書・タプル・セットなど豊富なデータ型', 'NumPy・Pandas・TensorFlow など強力なライブラリ', 'ワンライナーで複雑な処理を書ける']
+    , sections: [
+      { title: '基本構造', code: `# コメントは#で書く
+print("Hello, World!")
+
+# 複数行コメント
+"""
+これは
+複数行コメント
+"""` },
+      { title: '変数と型', code: `age = 20           # int
+height = 172.5     # float
+name = "Taro"      # str
+is_student = True  # bool
+data = None        # None
+
+print(type(age))   # <class 'int'>` },
+      { title: '制御構文', code: `# if文
+x = 10
+if x > 0:
+    print("正")
+elif x < 0:
+    print("負")
+else:
+    print("ゼロ")
+
+# forループ
+for i in range(5):
+    print(i)
+
+# while
+n = 0
+while n < 3:
+    print(n)
+    n += 1` },
+      { title: '関数', code: `def greet(name, greeting="こんにちは"):
+    return f"{greeting}、{name}さん！"
+
+print(greet("Alice"))
+print(greet("Bob", "おはよう"))
+
+# ラムダ（無名関数）
+square = lambda x: x ** 2
+print(square(5))  # 25` },
+      { title: 'リストと辞書', code: `# リスト
+nums = [1, 2, 3, 4, 5]
+nums.append(6)
+nums.pop()
+print(nums[0], nums[-1])  # 先頭・末尾
+
+# 内包表記
+squares = [x**2 for x in range(5)]
+
+# 辞書
+person = {"name": "Alice", "age": 25}
+person["city"] = "Tokyo"
+for k, v in person.items():
+    print(f"{k}: {v}")` },
+      { title: 'クラス', code: `class Dog:
+    def __init__(self, name):
+        self.name = name
+
+    def bark(self):
+        print(f"{self.name}: ワン！")
+
+d = Dog("ポチ")
+d.bark()` },
+      { title: '例外処理', code: `try:
+    x = int(input("数字を入力: "))
+    print(10 / x)
+except ValueError:
+    print("数字ではありません")
+except ZeroDivisionError:
+    print("0で割れません")
+finally:
+    print("終了")` }
+    ],
+    tips: ['f文字列（f"{変数}"）を使うと文字列の中に変数を埋め込める', 'list(range(10)) で0〜9のリストを作れる', 'enumerate() でインデックスと値を同時に取得できる', 'zip() で2つのリストを同時にループできる']
+  },
+  javascript: {
+    name: 'JavaScript', emoji: '🌐',
+    intro: 'JavaScriptはWebブラウザで動く唯一の言語で、フロントエンド開発の基礎です。Node.jsを使えばサーバーサイドでも動きます。現代のWeb開発には欠かせない言語です。',
+    features: ['ブラウザで直接実行できる', '非同期処理（Promise / async-await）が得意', 'DOM操作でWebページを動的に変更できる', 'オブジェクト指向＋関数型の両方が使える', 'Node.jsでサーバーサイドも書ける'],
+    sections: [
+      { title: '変数と型', code: `const name = "Alice";    // 変更不可
+let count = 0;           // 変更可
+var old = "古い書き方";  // 非推奨
+
+// 型は動的
+let x = 42;
+x = "文字列";  // OK
+
+console.log(typeof x);  // "string"` },
+      { title: '制御構文', code: `// if文
+if (score >= 90) {
+  console.log("A");
+} else if (score >= 70) {
+  console.log("B");
+} else {
+  console.log("C");
+}
+
+// for...of（配列ループ）
+const arr = [1, 2, 3];
+for (const item of arr) {
+  console.log(item);
+}
+
+// 三項演算子
+const label = x > 0 ? "正" : "非正";` },
+      { title: '関数', code: `// 通常の関数
+function add(a, b) { return a + b; }
+
+// アロー関数
+const mul = (a, b) => a * b;
+
+// デフォルト引数
+const greet = (name = "World") => \`Hello, \${name}!\`;
+
+console.log(greet());       // Hello, World!
+console.log(greet("Alice")); // Hello, Alice!` },
+      { title: '配列とオブジェクト', code: `const arr = [1, 2, 3, 4, 5];
+arr.push(6);
+arr.pop();
+
+// 高階関数
+const doubled = arr.map(x => x * 2);
+const evens   = arr.filter(x => x % 2 === 0);
+const sum      = arr.reduce((acc, x) => acc + x, 0);
+
+// オブジェクト
+const person = { name: "Bob", age: 30 };
+const { name, age } = person;  // 分割代入` },
+      { title: '非同期処理', code: `// Promise
+fetch("/api/data")
+  .then(res => res.json())
+  .then(data => console.log(data))
+  .catch(err => console.error(err));
+
+// async/await（推奨）
+async function loadData() {
+  try {
+    const res = await fetch("/api/data");
+    const data = await res.json();
+    console.log(data);
+  } catch (e) {
+    console.error(e);
+  }
+}` },
+      { title: 'クラス', code: `class Animal {
+  constructor(name) { this.name = name; }
+  speak() { console.log(\`\${this.name} makes a sound.\`); }
+}
+
+class Dog extends Animal {
+  speak() { console.log(\`\${this.name}: Woof!\`); }
+}
+
+const d = new Dog("Rex");
+d.speak();` }
+    ],
+    tips: ['=== を使う（== は型変換あり）', 'console.log() でデバッグ', 'スプレッド演算子 [...arr] で配列をコピー', 'オプショナルチェーン obj?.prop でnullエラーを防げる']
+  },
+  typescript: {
+    name: 'TypeScript', emoji: '🔷',
+    intro: 'TypeScriptはJavaScriptに型システムを追加した言語です。コンパイル時にエラーを発見でき、大規模アプリの開発に適しています。最終的にはJavaScriptにコンパイルされます。',
+    features: ['静的型付けでコンパイル時にバグを発見', 'インターフェース・ジェネリクスで型安全なコード', 'IDEの補完・リファクタリングサポートが強力', 'JavaScriptとの互換性が高い', 'null安全（strictNullChecks）'],
+    sections: [
+      { title: '型アノテーション', code: `const name: string = "Alice";
+const age: number = 25;
+const isStudent: boolean = true;
+let data: string | null = null;
+
+function add(a: number, b: number): number {
+  return a + b;
+}` },
+      { title: 'インターフェース', code: `interface User {
+  id: number;
+  name: string;
+  email?: string;  // オプショナル
+}
+
+const user: User = { id: 1, name: "Bob" };
+
+function greet(u: User): string {
+  return \`Hello, \${u.name}\`;
+}` },
+      { title: '型エイリアスとユニオン型', code: `type Status = "active" | "inactive" | "pending";
+type ID = number | string;
+
+let status: Status = "active";
+// status = "deleted"; // エラー！
+
+type Result<T> = { ok: true; data: T } | { ok: false; error: string };` },
+      { title: 'ジェネリクス', code: `function identity<T>(arg: T): T {
+  return arg;
+}
+
+const s = identity<string>("hello");
+const n = identity<number>(42);
+
+// ジェネリクスクラス
+class Stack<T> {
+  private items: T[] = [];
+  push(item: T) { this.items.push(item); }
+  pop(): T | undefined { return this.items.pop(); }
+}` },
+      { title: 'Enum', code: `enum Direction {
+  Up = "UP",
+  Down = "DOWN",
+  Left = "LEFT",
+  Right = "RIGHT",
+}
+
+function move(dir: Direction) {
+  console.log(\`Moving \${dir}\`);
+}
+move(Direction.Up);` }
+    ],
+    tips: ['any 型は極力避ける（型の恩恵がなくなる）', 'unknown 型は any より安全な代替', 'as const でオブジェクトを読み取り専用にできる', 'Partial<T> / Required<T> など Utility Types が便利']
+  },
+  java: {
+    name: 'Java', emoji: '☕',
+    intro: 'Javaは「一度書けばどこでも動く」をコンセプトにした言語で、企業のバックエンド開発に広く使われています。強い静的型付けとオブジェクト指向が特徴です。',
+    features: ['JVM上で動くため高い移植性', '強い静的型付け', '完全なオブジェクト指向（全てクラス内）', 'ガベージコレクション', 'Spring・Hibernateなど強力なエコシステム'],
+    sections: [
+      { title: '基本構造', code: `public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}` },
+      { title: '変数と型', code: `int age = 20;
+double pi = 3.14;
+boolean flag = true;
+String name = "Taro";
+char grade = 'A';
+
+// 型キャスト
+int x = (int) 3.7;  // 3` },
+      { title: 'クラスとオブジェクト', code: `public class Dog {
+    private String name;
+
+    public Dog(String name) {
+        this.name = name;
+    }
+
+    public void bark() {
+        System.out.println(name + ": Woof!");
+    }
+}
+
+Dog d = new Dog("Rex");
+d.bark();` },
+      { title: 'コレクション', code: `import java.util.*;
+
+List<Integer> list = new ArrayList<>();
+list.add(1); list.add(2); list.add(3);
+
+Map<String, Integer> map = new HashMap<>();
+map.put("Alice", 90);
+map.put("Bob", 85);
+
+for (Map.Entry<String, Integer> e : map.entrySet()) {
+    System.out.println(e.getKey() + ": " + e.getValue());
+}` },
+      { title: 'ラムダとStream', code: `import java.util.*;
+import java.util.stream.*;
+
+List<Integer> nums = Arrays.asList(1,2,3,4,5);
+
+// Stream API
+int sum = nums.stream()
+    .filter(n -> n % 2 == 0)
+    .mapToInt(Integer::intValue)
+    .sum();
+
+List<String> names = Arrays.asList("Bob","Alice","Carol");
+names.stream().sorted().forEach(System.out::println);` }
+    ],
+    tips: ['String の比較は == ではなく .equals() を使う', 'NullPointerException に注意（Optional を活用）', 'インターフェースを積極的に使う（疎結合）', 'final をつけると変更不可な変数になる']
+  },
+  ruby: {
+    name: 'Ruby', emoji: '💎',
+    intro: 'Rubyは「プログラマの幸福」を重視した言語で、読みやすく書きやすい文法が特徴です。Webフレームワーク Ruby on Rails で有名です。全てのものがオブジェクトです。',
+    features: ['全てがオブジェクト（数字・trueもオブジェクト）', '柔軟な文法（多様な書き方が可能）', 'ブロック・proc・lambdaによる関数型プログラミング', 'メタプログラミングが強力', 'Ruby on Rails での Web 開発'],
+    sections: [
+      { title: '基本構造', code: `# コメントは#
+puts "Hello, World!"
+
+# 複数行出力
+print "Hello "
+puts "Ruby"` },
+      { title: '変数と型', code: `age = 25            # 整数
+pi = 3.14           # 浮動小数
+name = "Alice"      # 文字列
+flag = true         # 真偽値
+
+# 文字列展開
+puts "#{name}は#{age}歳です"
+
+# シンボル（軽量な識別子）
+status = :active` },
+      { title: 'コレクション', code: `# 配列
+arr = [1, 2, 3, 4, 5]
+arr << 6            # 末尾に追加
+arr.push(7)
+arr.pop             # 末尾を削除
+
+# ハッシュ（Rubyの辞書）
+person = { name: "Bob", age: 30 }
+person[:city] = "Tokyo"
+
+# 便利なメソッド
+arr.map { |x| x * 2 }
+arr.select { |x| x.even? }
+arr.reduce(0) { |sum, x| sum + x }` },
+      { title: '制御構文', code: `# if/unless
+if x > 0
+  puts "正"
+elsif x < 0
+  puts "負"
+else
+  puts "ゼロ"
+end
+
+unless x == 0
+  puts "非ゼロ"
+end
+
+# ループ
+5.times { |i| puts i }
+(1..5).each { |i| puts i }` },
+      { title: 'メソッドとブロック', code: `def greet(name, greeting: "こんにちは")
+  "#{greeting}、#{name}さん！"
+end
+
+puts greet("Alice")
+puts greet("Bob", greeting: "おはよう")
+
+# ブロック
+[1,2,3].each do |n|
+  puts n * 2
+end` }
+    ],
+    tips: ['? で終わるメソッドは真偽値を返す慣習（empty?, include?）', '! で終わるメソッドはオブジェクト自身を変更する慣習（sort!）', 'puts は末尾に改行あり、print は改行なし', 'nil は「何もない」を表すオブジェクト']
+  },
+  kotlin: {
+    name: 'Kotlin', emoji: '🎯',
+    intro: 'KotlinはJetBrainsが開発したJVM言語で、Androidアプリ開発の公式言語です。Javaより簡潔に書け、null安全・コルーチンなどモダンな機能を持ちます。',
+    features: ['null安全（Null Pointer Exception を防ぐ）', 'データクラスで定型コードを削減', 'コルーチンで非同期処理を簡潔に書ける', 'Javaとの完全な相互運用性', 'Android開発の公式言語'],
+    sections: [
+      { title: '変数', code: `val name = "Alice"   // 変更不可（推奨）
+var count = 0        // 変更可
+
+val pi: Double = 3.14
+
+// null安全
+var str: String? = null
+println(str?.length) // null → クラッシュしない
+println(str ?: "デフォルト") // nullなら代替値` },
+      { title: '関数', code: `fun add(a: Int, b: Int): Int = a + b
+
+fun greet(name: String, greeting: String = "Hello"): String {
+    return "$greeting, $name!"
+}
+
+// ラムダ
+val square: (Int) -> Int = { x -> x * x }
+
+// 拡張関数
+fun String.shout() = this.uppercase() + "!"` },
+      { title: 'コレクション', code: `val list = listOf(1, 2, 3, 4, 5)  // イミュータブル
+val mList = mutableListOf(1, 2, 3)
+mList.add(4)
+
+val map = mapOf("a" to 1, "b" to 2)
+val mMap = mutableMapOf("x" to 10)
+
+// 高階関数
+val doubled = list.map { it * 2 }
+val evens   = list.filter { it % 2 == 0 }
+val sum      = list.reduce { acc, x -> acc + x }` },
+      { title: 'データクラスとシールドクラス', code: `data class User(val id: Int, val name: String)
+
+val u1 = User(1, "Alice")
+val u2 = u1.copy(name = "Bob")
+
+// シールドクラス
+sealed class Result<out T>
+data class Success<T>(val data: T) : Result<T>()
+data class Error(val msg: String) : Result<Nothing>()` },
+      { title: 'コルーチン', code: `import kotlinx.coroutines.*
+
+suspend fun fetchData(): String {
+    delay(1000) // 非同期の遅延
+    return "データ取得完了"
+}
+
+fun main() = runBlocking {
+    val result = async { fetchData() }
+    println(result.await())
+}` }
+    ],
+    tips: ['val を優先して val/var を使い分ける', 'when 式は switch の代替（値を返せる）', 'data class で equals/hashCode/toString/copy が自動生成', 'let/run/also/apply などのスコープ関数を活用']
+  },
+  swift: {
+    name: 'Swift', emoji: '🦅',
+    intro: 'SwiftはAppleが開発したiOS・macOS・watchOSアプリ開発向けの言語です。安全性を重視した設計で、Obj-Cより簡潔に書けます。パフォーマンスも非常に高いです。',
+    features: ['型安全・null安全（Optional型）', 'クロージャによる関数型プログラミング', 'プロトコル指向プログラミング', 'iOSアプリ開発の標準言語', 'SwiftUI による宣言的UIプログラミング'],
+    sections: [
+      { title: '変数と定数', code: `let name = "Alice"    // 定数（変更不可・推奨）
+var count = 0         // 変数（変更可）
+
+// Optional（nilが入る可能性がある型）
+var email: String? = nil
+email = "alice@example.com"
+
+// アンラップ
+if let e = email {
+    print("メール: \(e)")
+}
+
+// nil合体演算子
+let display = email ?? "未設定"` },
+      { title: '制御構文', code: `// if
+let x = 10
+if x > 0 { print("正") } else { print("非正") }
+
+// switch（パターンマッチが強力）
+switch x {
+case 1...5: print("小")
+case 6...10: print("中")
+default: print("大")
+}
+
+// for-in
+for i in 1...5 { print(i) }
+for item in ["a","b","c"] { print(item) }` },
+      { title: '関数とクロージャ', code: `func greet(name: String, greeting: String = "Hello") -> String {
+    return "\(greeting), \(name)!"
+}
+
+print(greet(name: "Bob"))
+print(greet(name: "Alice", greeting: "Hi"))
+
+// クロージャ
+let square: (Int) -> Int = { $0 * $0 }
+
+let nums = [1,2,3,4,5]
+let doubled = nums.map { $0 * 2 }` },
+      { title: '構造体とクラス', code: `struct Point {
+    var x: Double
+    var y: Double
+
+    func distance(to other: Point) -> Double {
+        let dx = x - other.x, dy = y - other.y
+        return (dx*dx + dy*dy).squareRoot()
+    }
+}
+
+class Animal {
+    var name: String
+    init(name: String) { self.name = name }
+    func speak() { print("\(name) makes a sound") }
+}` }
+    ],
+    tips: ['guard let で早期リターンパターンを使う', '構造体（struct）はコピー、クラスは参照', 'enum に associated value で豊富なデータを持てる', 'Codable で JSON の encode/decode が簡単']
+  },
+  csharp: {
+    name: 'C#', emoji: '🔵',
+    intro: 'C#はMicrosoftが開発した言語で、.NETエコシステムで動きます。UnityでのゲームB発や、Windowsアプリ・Web API（ASP.NET）開発に広く使われます。',
+    features: ['強い静的型付け', 'LINQ でコレクション操作を簡潔に', 'async/await で非同期処理を書きやすい', 'Unityゲーム開発の標準言語', 'プロパティ・イベントなど洗練されたOOP機能'],
+    sections: [
+      { title: '基本構造', code: `using System;
+
+class Program {
+    static void Main() {
+        Console.WriteLine("Hello, World!");
+    }
+}` },
+      { title: '変数と型', code: `int age = 25;
+double pi = 3.14;
+bool flag = true;
+string name = "Alice";
+
+// var で型推論
+var count = 0;
+var greeting = "Hello";
+
+// null許容型
+string? nullable = null;
+int? num = null;` },
+      { title: 'クラスとプロパティ', code: `class Person {
+    public string Name { get; set; }
+    public int Age { get; init; }  // C# 9: 初期化専用
+
+    public Person(string name, int age) {
+        Name = name; Age = age;
+    }
+
+    public override string ToString() => $"{Name} ({Age})";
+}
+
+var p = new Person("Alice", 25);
+Console.WriteLine(p);` },
+      { title: 'LINQ', code: `using System.Linq;
+using System.Collections.Generic;
+
+var nums = new List<int> {1,2,3,4,5,6};
+
+var evens = nums.Where(x => x % 2 == 0);
+var doubled = nums.Select(x => x * 2);
+var sum = nums.Sum();
+var max = nums.Max();
+
+// クエリ構文
+var query = from n in nums
+            where n > 3
+            orderby n descending
+            select n;` },
+      { title: 'async/await', code: `using System.Net.Http;
+
+async Task<string> FetchAsync(string url) {
+    using var client = new HttpClient();
+    return await client.GetStringAsync(url);
+}
+
+// 複数の非同期処理を並列実行
+var t1 = FetchAsync("url1");
+var t2 = FetchAsync("url2");
+await Task.WhenAll(t1, t2);` }
+    ],
+    tips: ['string 補間: $"{変数}" で文字列に変数を埋め込める', 'using で IDisposable なオブジェクトを自動解放', 'record クラス（C# 9）でイミュータブルなデータ型を簡単に定義', 'パターンマッチング（switch expression）を活用する']
+  },
+  go: {
+    name: 'Go', emoji: '🐹',
+    intro: 'Goはシンプルさと高速さを重視したGoogleが開発した言語です。並行処理（goroutine/channel）が組み込みで、クラウドインフラやマイクロサービス開発に人気があります。',
+    features: ['シンプルな文法（予約語が少ない）', 'goroutineで軽量な並行処理', 'channelでgoroutine間の通信', '高速コンパイル・実行', 'ガベージコレクション付きだが低レイテンシ'],
+    sections: [
+      { title: '基本構造', code: `package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello, World!")
+}` },
+      { title: '変数', code: `// var宣言
+var name string = "Alice"
+var age int = 25
+
+// 短縮宣言（:= は関数内のみ）
+count := 0
+pi := 3.14
+
+// 複数代入
+x, y := 1, 2
+x, y = y, x  // スワップ` },
+      { title: '関数と多値返却', code: `func divide(a, b float64) (float64, error) {
+    if b == 0 {
+        return 0, fmt.Errorf("division by zero")
+    }
+    return a / b, nil
+}
+
+result, err := divide(10, 3)
+if err != nil {
+    fmt.Println("Error:", err)
+    return
+}
+fmt.Printf("%.2f\n", result)` },
+      { title: '構造体とメソッド', code: `type Dog struct {
+    Name string
+    Age  int
+}
+
+func (d Dog) Bark() string {
+    return d.Name + ": Woof!"
+}
+
+func (d *Dog) Birthday() {
+    d.Age++  // ポインタレシーバで変更
+}
+
+d := Dog{Name: "Rex", Age: 3}
+fmt.Println(d.Bark())` },
+      { title: 'goroutineとchannel', code: `func worker(id int, ch chan<- string) {
+    ch <- fmt.Sprintf("worker %d done", id)
+}
+
+func main() {
+    ch := make(chan string, 3)
+    for i := 1; i <= 3; i++ {
+        go worker(i, ch)
+    }
+    for i := 0; i < 3; i++ {
+        fmt.Println(<-ch)
+    }
+}` }
+    ],
+    tips: ['エラーは戻り値で返す（例外がない）', ':= は型推論付き短縮宣言（関数内のみ）', 'スライスはGoで最もよく使うデータ構造', 'defer でリソース解放を関数終了時に確実に実行']
+  },
+  c: {
+    name: 'C', emoji: '🔩',
+    intro: 'CはUNIX・Linuxカーネル・組み込みシステムなど低レイヤーで使われる最も古い主要言語の一つです。メモリを直接操作でき、OSや言語処理系の実装に使われます。',
+    features: ['ハードウェアに近い低レベル制御', 'ポインタによるメモリ直接操作', 'OSやシステムプログラミングの基礎', 'コンパイルして高速実行', '全ての言語の基礎となる概念が学べる'],
+    sections: [
+      { title: '基本構造', code: `#include <stdio.h>
+
+int main() {
+    printf("Hello, World!\\n");
+    return 0;
+}` },
+      { title: '変数と型', code: `int age = 20;
+float pi = 3.14f;
+double precise = 3.14159;
+char grade = 'A';
+char name[] = "Taro";
+
+// 型確認
+printf("%d %f %c %s\\n", age, pi, grade, name);` },
+      { title: 'ポインタ', code: `int x = 10;
+int *p = &x;   // xのアドレスをpに格納
+
+printf("%d\\n", *p);  // 10（間接参照）
+*p = 20;
+printf("%d\\n", x);   // 20（xが変わった）
+
+// 動的メモリ確保
+int *arr = malloc(5 * sizeof(int));
+for (int i = 0; i < 5; i++) arr[i] = i;
+free(arr);  // 必ずfreeする` },
+      { title: '関数', code: `// プロトタイプ宣言
+int add(int a, int b);
+
+int main() {
+    printf("%d\\n", add(3, 4));
+    return 0;
+}
+
+int add(int a, int b) {
+    return a + b;
+}
+
+// ポインタ渡し（値を変更するには必要）
+void swap(int *a, int *b) {
+    int tmp = *a; *a = *b; *b = tmp;
+}` },
+      { title: '構造体', code: `struct Point {
+    int x;
+    int y;
+};
+
+struct Point p = {3, 4};
+printf("(%d, %d)\\n", p.x, p.y);
+
+// typedefで型エイリアス
+typedef struct {
+    char name[50];
+    int age;
+} Person;
+
+Person alice = {"Alice", 25};` }
+    ],
+    tips: ['free() は必ず malloc() とペアで使う（メモリリーク防止）', 'scanf では & を忘れないようにする', '文字列は char[] または char* を使う', 'NULL ポインタのデリファレンスはセグフォルトになる']
+  },
+  rust: {
+    name: 'Rust', emoji: '🦀',
+    intro: 'RustはMozillaが開発したシステムプログラミング言語です。メモリ安全性をコンパイル時に保証し、GCなしで高速実行できます。Webassembly・ゲームエンジン・OSカーネルにも使われます。',
+    features: ['所有権システムでメモリ安全を保証（GCなし）', 'ゼロコスト抽象化', '型システムが非常に強力', 'パターンマッチングが豊富', 'concurrencyが安全（data race コンパイルエラー）'],
+    sections: [
+      { title: '基本構造', code: `fn main() {
+    println!("Hello, World!");
+    println!("{} + {} = {}", 3, 4, 3 + 4);
+}` },
+      { title: '変数と型', code: `let x = 5;         // 不変（デフォルト）
+let mut y = 10;    // 可変（mutが必要）
+y += 1;
+
+let pi: f64 = 3.14159;
+let flag: bool = true;
+let s: &str = "hello";
+let owned: String = String::from("world");` },
+      { title: '所有権と借用', code: `let s1 = String::from("hello");
+let s2 = s1;       // s1はmoveされs2が所有者
+// println!("{}", s1); // エラー！s1は無効
+
+let s3 = String::from("world");
+let s4 = &s3;      // 借用（s3は有効のまま）
+println!("{} {}", s3, s4);
+
+// 関数への参照渡し
+fn print_str(s: &String) {
+    println!("{}", s);
+}` },
+      { title: 'enum とパターンマッチング', code: `enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+
+fn divide(a: f64, b: f64) -> Result<f64, String> {
+    if b == 0.0 { Err("division by zero".to_string()) }
+    else { Ok(a / b) }
+}
+
+match divide(10.0, 3.0) {
+    Ok(v)  => println!("{:.2}", v),
+    Err(e) => println!("Error: {}", e),
+}` },
+      { title: '構造体とimpl', code: `struct Rectangle {
+    width: f64,
+    height: f64,
+}
+
+impl Rectangle {
+    fn new(w: f64, h: f64) -> Self {
+        Rectangle { width: w, height: h }
+    }
+    fn area(&self) -> f64 { self.width * self.height }
+}
+
+let r = Rectangle::new(3.0, 4.0);
+println!("面積: {}", r.area());` }
+    ],
+    tips: ['変数はデフォルト不変。変更するには mut が必要', '所有権・借用はコンパイラが守ってくれる', 'unwrap() はパニックになるので本番では避ける', '? 演算子でエラーを伝播させる']
+  },
+  html: {
+    name: 'HTML/CSS', emoji: '🎨',
+    intro: 'HTMLはWebページの構造を定義するマークアップ言語で、CSSはそのスタイル（見た目）を定義する言語です。すべてのWebサイトの基礎です。',
+    features: ['HTMLで構造・CSSで見た目を分離', 'セマンティックタグで意味のあるマークアップ', 'Flexbox・Grid でレイアウト', 'メディアクエリでレスポンシブデザイン', 'アニメーション・トランジションで動きをつける'],
+    sections: [
+      { title: 'HTMLの基本構造', code: `<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <title>ページタイトル</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>見出し</h1>
+  <p>段落テキスト</p>
+</body>
+</html>` },
+      { title: 'よく使うHTMLタグ', code: `<!-- 見出し -->
+<h1>〜<h6>
+
+<!-- テキスト -->
+<p>段落</p>
+<strong>太字</strong>  <em>斜体</em>
+<a href="URL">リンク</a>
+
+<!-- リスト -->
+<ul><li>箇条書き</li></ul>
+<ol><li>番号付き</li></ol>
+
+<!-- 画像 -->
+<img src="image.png" alt="説明">
+
+<!-- フォーム -->
+<input type="text" placeholder="入力">
+<button type="submit">送信</button>` },
+      { title: 'CSSセレクタと基本スタイル', code: `/* 要素セレクタ */
+p { color: red; }
+
+/* クラス */
+.highlight { background: yellow; }
+
+/* ID */
+#header { font-size: 2rem; }
+
+/* 子孫 */
+.nav a { text-decoration: none; }
+
+/* 擬似クラス */
+a:hover { color: blue; }
+li:first-child { font-weight: bold; }` },
+      { title: 'Flexbox', code: `.container {
+  display: flex;
+  justify-content: center;   /* 横方向 */
+  align-items: center;        /* 縦方向 */
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.item {
+  flex: 1;      /* 均等に広がる */
+  min-width: 200px;
+}` },
+      { title: 'CSS Grid', code: `.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto;
+  gap: 20px;
+}
+
+/* レスポンシブ */
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}` },
+      { title: 'アニメーション', code: `/* トランジション */
+.btn {
+  background: blue;
+  transition: background 0.3s ease;
+}
+.btn:hover { background: darkblue; }
+
+/* @keyframes アニメーション */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.card { animation: fadeIn 0.4s ease; }` }
+    ],
+    tips: ['box-sizing: border-box; を全要素に適用するのが現代のベストプラクティス', 'clamp(最小, 推奨, 最大) でレスポンシブなサイズ指定ができる', 'CSS変数（--color: #fff）でテーマ管理', 'Flexbox: 一方向、Grid: 二次元レイアウトと使い分ける']
+  },
+  sql: {
+    name: 'SQL', emoji: '🗄️',
+    intro: 'SQLはリレーショナルデータベースを操作する言語です。データの取得・追加・更新・削除ができます。バックエンド開発やデータ分析に不可欠なスキルです。',
+    features: ['SELECT/INSERT/UPDATE/DELETE でデータ操作', 'JOIN で複数テーブルを結合', 'GROUP BY + 集計関数で分析', 'ウィンドウ関数で高度な分析', 'CTE でクエリを分割・再利用'],
+    sections: [
+      { title: 'テーブル作成とデータ操作', code: `-- テーブル作成
+CREATE TABLE users (
+  id   INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  age  INTEGER
+);
+
+-- データ挿入
+INSERT INTO users VALUES (1, 'Alice', 25);
+INSERT INTO users VALUES (2, 'Bob', 30);
+
+-- 更新・削除
+UPDATE users SET age = 26 WHERE name = 'Alice';
+DELETE FROM users WHERE id = 2;` },
+      { title: 'SELECT とフィルタリング', code: `-- 全件取得
+SELECT * FROM users;
+
+-- 条件絞り込み
+SELECT name, age FROM users WHERE age >= 25;
+
+-- ソートと件数制限
+SELECT * FROM users ORDER BY age DESC LIMIT 3;
+
+-- LIKE でパターンマッチ
+SELECT * FROM users WHERE name LIKE 'A%';` },
+      { title: '集計関数とGROUP BY', code: `-- 集計
+SELECT COUNT(*), AVG(age), MAX(age) FROM users;
+
+-- グループ別集計
+SELECT department, COUNT(*), AVG(salary)
+FROM employees
+GROUP BY department
+HAVING AVG(salary) > 50000
+ORDER BY AVG(salary) DESC;` },
+      { title: 'JOIN（テーブル結合）', code: `-- INNER JOIN（両テーブルに一致）
+SELECT users.name, orders.amount
+FROM users
+INNER JOIN orders ON users.id = orders.user_id;
+
+-- LEFT JOIN（左テーブル全行）
+SELECT users.name, orders.amount
+FROM users
+LEFT JOIN orders ON users.id = orders.user_id;
+
+-- サブクエリ
+SELECT * FROM users
+WHERE age > (SELECT AVG(age) FROM users);` },
+      { title: 'ウィンドウ関数', code: `-- ランキング
+SELECT name, score,
+  RANK() OVER (ORDER BY score DESC) AS rank
+FROM scores;
+
+-- 部門別ランキング
+SELECT name, dept, salary,
+  RANK() OVER (PARTITION BY dept ORDER BY salary DESC) AS dept_rank
+FROM employees;
+
+-- 前行との差分
+SELECT date, sales,
+  sales - LAG(sales) OVER (ORDER BY date) AS diff
+FROM daily_sales;` }
+    ],
+    tips: ['WHERE は行の絞り込み、HAVING はGROUP BY後の絞り込み', 'NULL との比較は = ではなく IS NULL / IS NOT NULL を使う', 'インデックスはWHERE・JOIN・ORDER BYの対象列に作成すると高速化', 'EXPLAIN QUERY PLAN でクエリの実行計画を確認できる']
+  },
+  bash: {
+    name: 'Bash', emoji: '🖥️',
+    intro: 'BashはLinux/macOSのデフォルトシェルです。コマンドを組み合わせて自動化スクリプトを書けます。ファイル処理・デプロイ・CI/CDなどで活躍します。',
+    features: ['コマンドのパイプラインで処理を連鎖', '条件分岐・ループで自動化', 'find/grep/awk/sed でテキスト処理', 'cron で定期実行', 'エラーハンドリングと終了コード'],
+    sections: [
+      { title: '基本コマンドと変数', code: `#!/bin/bash
+# コメント
+
+# 変数（スペースなし）
+name="Alice"
+age=25
+echo "$name は $age 歳です"
+
+# コマンド置換
+current_dir=$(pwd)
+files=$(ls -l | wc -l)
+echo "ファイル数: $files"` },
+      { title: '条件分岐', code: `# if文
+if [ $age -ge 20 ]; then
+  echo "成人"
+elif [ $age -ge 13 ]; then
+  echo "ティーン"
+else
+  echo "子ども"
+fi
+
+# ファイル存在チェック
+if [ -f "/etc/passwd" ]; then
+  echo "ファイルあり"
+fi
+
+# 文字列比較
+if [ "$name" = "Alice" ]; then
+  echo "こんにちは Alice"
+fi` },
+      { title: 'ループ', code: `# forループ
+for i in 1 2 3 4 5; do
+  echo "数: $i"
+done
+
+# 範囲ループ
+for i in {1..10}; do
+  echo $i
+done
+
+# whileループ
+count=0
+while [ $count -lt 5 ]; do
+  echo "count: $count"
+  ((count++))
+done` },
+      { title: '関数', code: `# 関数定義
+greet() {
+  local name="$1"   # ローカル変数
+  echo "こんにちは、$name さん！"
+  return 0          # 終了コード
+}
+
+greet "Alice"
+greet "Bob"
+
+# 関数の戻り値（echoで返す）
+add() {
+  echo $(($1 + $2))
+}
+result=$(add 3 4)
+echo "3 + 4 = $result"` },
+      { title: 'パイプとリダイレクト', code: `# パイプ（|）で出力を次のコマンドへ
+cat /etc/passwd | grep "root" | cut -d: -f1
+
+# リダイレクト
+echo "Hello" > output.txt      # 上書き
+echo "World" >> output.txt     # 追記
+cat output.txt 2>/dev/null     # エラーを捨てる
+
+# テキスト処理
+grep -i "error" log.txt        # パターン検索
+sort file.txt | uniq -c        # ソートして重複カウント
+awk '{print $1}' data.csv      # 1列目を取り出す
+sed 's/old/new/g' file.txt     # 文字列置換` }
+    ],
+    tips: ['set -e でスクリプトエラー時に即停止', 'set -u で未定義変数を参照時にエラー', '"$変数" とクォートで空白を含む値を安全に扱う', 'shellcheck コマンドでスクリプトの問題を自動検出']
+  },
+  regex: {
+    name: 'Regex', emoji: '🔍',
+    intro: '正規表現（Regex）はテキストのパターンマッチングに使う記法です。メールアドレスのバリデーション・ログ解析・文字列置換など幅広い場面で使われます。',
+    features: ['あらゆる言語で使えるパターン記法', '文字列の検索・抽出・置換が一行で書ける', 'フォームバリデーションに必須', 'ログ解析・データクレンジングに活躍', 'キャプチャグループで部分抽出が可能'],
+    sections: [
+      { title: '基本メタ文字', code: `// JavaScriptでの例
+const str = "Hello, World! 2024";
+
+/Hello/         // 固定文字列
+/./             // 任意の1文字
+/H.llo/         // Hillo, Hello, H1lloなど
+/\\d/            // 数字1文字 [0-9]
+/\\w/            // 単語文字 [a-zA-Z0-9_]
+/\\s/            // 空白文字（スペース・タブ・改行）
+/\\D/            // 非数字
+/\\W/            // 非単語文字` },
+      { title: '量指定子', code: `/a*/    // 0回以上
+/a+/    // 1回以上
+/a?/    // 0か1回
+/a{3}/  // ちょうど3回
+/a{2,4}/ // 2〜4回
+
+// 貪欲 vs 非貪欲
+/<.*>/   // 貪欲（できるだけ長く）
+/<.*?>/  // 非貪欲（できるだけ短く）
+
+// 例
+"<b>太字</b>".match(/<.*>/)   // <b>太字</b> 全体
+"<b>太字</b>".match(/<.*?>/)  // <b> のみ` },
+      { title: 'アンカーとフラグ', code: `/^Hello/    // 行頭がHello
+/World$/    // 行末がWorld
+/^Hello$/   // Hello のみ（前後に何もない）
+
+// フラグ
+/hello/i    // i: 大文字小文字無視
+/\\d+/g     // g: 全マッチ（グローバル）
+/^.+$/m    // m: 複数行モード（各行の先頭・末尾）
+
+// test()で判定
+/^\\d+$/.test("123")  // true
+/^\\d+$/.test("12a")  // false` },
+      { title: 'キャプチャグループ', code: `const date = "2024-01-15";
+
+// グループでキャプチャ
+const m = date.match(/(\\d{4})-(\\d{2})-(\\d{2})/);
+console.log(m[1]);  // 2024（年）
+console.log(m[2]);  // 01（月）
+console.log(m[3]);  // 15（日）
+
+// 名前付きキャプチャ
+const m2 = date.match(/(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})/);
+console.log(m2.groups.year);  // 2024` },
+      { title: 'よく使うパターン', code: `// メールアドレス
+/^[^@]+@[^@]+\\.[^@]+$/
+
+// 日本の電話番号
+/^0\\d{1,4}-?\\d{1,4}-?\\d{4}$/
+
+// 郵便番号
+/^\\d{3}-?\\d{4}$/
+
+// 数字のみ
+/^\\d+$/
+
+// URLの簡易チェック
+/^https?:\\/\\/.+\\..+/
+
+// HTMLタグ除去
+str.replace(/<[^>]*>/g, "")` }
+    ],
+    tips: ['test() は判定のみ、match() はマッチ内容を取得', '文字クラス内の - は先頭か末尾に置くか \\- でエスケープ', 'グローバルフラグ /g を使うと lastIndex に注意', 'regexr.com などのツールでリアルタイムに動作確認できる']
+  },
+  php: {
+    name: 'PHP', emoji: '🐘',
+    intro: 'PHPはWebサーバーサイド開発に特化したスクリプト言語です。WordPressやLaravelなど多くのCMSやフレームワークで使われており、世界のWebサーバーの多くがPHPを使っています。',
+    features: ['HTMLに直接埋め込める', 'WordPressなどのCMSに使われる', 'Laravelなど強力なフレームワーク', '豊富な組み込み関数', 'PHP 8でJIT・Fiberなどモダン機能追加'],
+    sections: [
+      { title: '基本構造', code: `<?php
+// PHPはこのタグで始まる
+echo "Hello, World!\\n";
+
+// 変数は$で始まる
+$name = "Alice";
+$age = 25;
+echo "$name は {$age}歳です\\n";` },
+      { title: '変数と型', code: `<?php
+$int   = 42;
+$float = 3.14;
+$str   = "Hello";
+$bool  = true;
+$arr   = [1, 2, 3];
+$null  = null;
+
+// 型チェック
+var_dump($int);      // int(42)
+var_dump($str);      // string(5) "Hello"
+
+// 文字列連結は .
+echo "Hello" . " " . "World";` },
+      { title: '制御構文', code: `<?php
+// if文
+$age = 20;
+if ($age >= 18) {
+    echo "成人";
+} elseif ($age >= 13) {
+    echo "ティーン";
+} else {
+    echo "子ども";
+}
+
+// match式（PHP 8）
+$status = "active";
+$label = match($status) {
+    "active"   => "有効",
+    "inactive" => "無効",
+    default    => "不明",
+};` },
+      { title: '配列と関数', code: `<?php
+// 配列
+$arr = [1, 2, 3, 4, 5];
+$arr[] = 6;  // 末尾追加
+array_push($arr, 7);
+
+// 高階関数
+$doubled = array_map(fn($x) => $x * 2, $arr);
+$evens   = array_filter($arr, fn($x) => $x % 2 === 0);
+$sum     = array_reduce($arr, fn($acc, $x) => $acc + $x, 0);
+
+// 連想配列
+$person = ["name" => "Alice", "age" => 25];
+foreach ($person as $key => $value) {
+    echo "$key: $value\\n";
+}` },
+      { title: 'クラスとOOP', code: `<?php
+class Animal {
+    public function __construct(
+        private string $name  // コンストラクタプロモーション
+    ) {}
+
+    public function speak(): string {
+        return "{$this->name} makes a sound";
+    }
+}
+
+class Dog extends Animal {
+    public function speak(): string {
+        return parent::speak() . " (Woof!)";
+    }
+}
+
+$d = new Dog("Rex");
+echo $d->speak();` }
+    ],
+    tips: ['=== を使う（== はPHPの型ジャグリングで意図しない結果になることがある）', 'echo は ; を忘れないこと', 'htmlspecialchars() でXSS対策（ユーザー入力を出力する場合）', 'null合体演算子 ?? で $a ?? $b と書ける（PHP 7以降）']
+  }
+};
+
+// ===== 教本ページの描画 =====
+
+function renderTextbook() {
+  var content = document.getElementById('textbook-content');
+  content.innerHTML = '';
+
+  var tb = langTextbooks[currentLanguage] || langTextbooks['cpp'];
+
+  // ヘッダー
+  var header = document.createElement('div');
+  header.className = 'textbook-header';
+  header.innerHTML =
+    '<div class="textbook-title">' + tb.emoji + ' ' + tb.name + ' 入門ガイド</div>' +
+    '<div class="textbook-intro">' + tb.intro + '</div>' +
+    '<div class="textbook-features">' +
+      tb.features.map(function(f) {
+        return '<span class="textbook-feature-tag">✓ ' + f + '</span>';
+      }).join('') +
+    '</div>';
+  content.appendChild(header);
+
+  // コードセクション
+  tb.sections.forEach(function(sec, idx) {
+    var section = document.createElement('div');
+    section.className = 'textbook-section';
+
+    section.innerHTML =
+      '<div class="textbook-section-header" onclick="toggleTextbookSection(' + idx + ')">' +
+        '<span class="textbook-section-num">' + String(idx + 1).padStart(2, '0') + '</span>' +
+        '<span class="textbook-section-title">' + sec.title + '</span>' +
+        '<span class="textbook-toggle-icon" id="tb-icon-' + idx + '">▶</span>' +
+      '</div>' +
+      '<div class="textbook-section-body hidden" id="tb-body-' + idx + '">' +
+        '<pre class="textbook-code"><code>' + escapeHtml(sec.code) + '</code></pre>' +
+      '</div>';
+
+    content.appendChild(section);
+  });
+
+  // Tipsセクション
+  var tips = document.createElement('div');
+  tips.className = 'textbook-tips';
+  tips.innerHTML =
+    '<div class="textbook-tips-title">💡 ポイント・Tips</div>' +
+    '<ul class="textbook-tips-list">' +
+      tb.tips.map(function(t) { return '<li>' + t + '</li>'; }).join('') +
+    '</ul>';
+  content.appendChild(tips);
+
+  // 問題一覧へのリンク
+  var cta = document.createElement('div');
+  cta.className = 'textbook-cta';
+  cta.innerHTML =
+    '<button class="textbook-cta-btn" onclick="switchTab(\'problems\')">◆ 問題を解いてみよう</button>';
+  content.appendChild(cta);
+}
+
+function toggleTextbookSection(idx) {
+  var body = document.getElementById('tb-body-' + idx);
+  var icon = document.getElementById('tb-icon-' + idx);
+  body.classList.toggle('hidden');
+  icon.textContent = body.classList.contains('hidden') ? '▶' : '▼';
 }
 
 // ===== ガイドページの描画 =====
@@ -24281,6 +25573,7 @@ function renderMissionList() {
 
 function renderMissionDetail(id) {
   const m = getMissions().find(function(x) { return x.id === id; });
+  if (!m) return;
   const cleared = isMissionCleared(m.id);
   const detail = document.getElementById('mission-detail-content');
 
