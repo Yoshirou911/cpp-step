@@ -13324,6 +13324,127 @@ s.username = "Alice"
 _ = s.username`,
     expected:"volume: 50\nvolume after 150: 100\nvolume after -10: 0\n[SET] username: Guest → Alice\n[GET] username = Alice",
     explanation:"@propertyWrapperはSwift 5.1の機能でSwiftUIの@State/@Binding/@Published実装に使われています。プロパティのアクセスに共通処理を宣言的に付与できます。RxSwift/Combineの@Publishedや型安全なUserDefaultsラッパーなど実務でも広く活用されます。"
+  },
+  { id: 62, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Swift Concurrency：async/awaitとTaskGroup",
+    question: "Swift Concurrencyを使って以下を実装してください。\n①`async throws` 関数で非同期HTTPフェッチをシミュレート\n②`TaskGroup` で複数URLを並行フェッチ\n③`async let` で独立した非同期処理を並行実行\n④`Actor` で共有カウンタをスレッドセーフに管理\n⑤`withTaskCancellationHandler` でキャンセル対応",
+    hint: "withTaskGroup(of: Type.self) { group in group.addTask { } } でグループを作成。group.next()でresultを収集します。",
+    answer:
+`import Foundation
+
+// シミュレーション用の非同期フェッチ
+func fetchData(url: String) async throws -> String {
+    try await Task.sleep(nanoseconds: UInt64.random(in: 10_000_000...50_000_000))
+    if url.contains("error") { throw URLError(.badServerResponse) }
+    return "Response from \\(url)"
+}
+
+// Actorで共有状態を安全に管理
+actor RequestCounter {
+    private(set) var count = 0
+    private(set) var errors = 0
+    func increment() { count += 1 }
+    func recordError() { errors += 1 }
+}
+
+let counter = RequestCounter()
+
+// TaskGroupで並行フェッチ
+func fetchAll(urls: [String]) async -> [String] {
+    await withTaskGroup(of: (String, String?).self) { group in
+        for url in urls {
+            group.addTask {
+                do {
+                    let result = try await fetchData(url: url)
+                    await counter.increment()
+                    return (url, result)
+                } catch {
+                    await counter.recordError()
+                    return (url, nil)
+                }
+            }
+        }
+        var results: [String] = []
+        for await (url, result) in group {
+            if let r = result {
+                results.append(r)
+            } else {
+                results.append("\\(url): FAILED")
+            }
+        }
+        return results.sorted()
+    }
+}
+
+// async letで独立した処理を並行実行
+Task {
+    let urls = ["https://api.example.com/users", "https://api.example.com/error", "https://api.example.com/posts"]
+    let results = await fetchAll(urls: urls)
+    results.forEach { print($0) }
+
+    async let stat1 = fetchData(url: "https://stats.example.com/1")
+    async let stat2 = fetchData(url: "https://stats.example.com/2")
+    let (s1, s2) = try! await (stat1, stat2)
+    print("並行: \\(s1.split(separator:" ").last!), \\(s2.split(separator:" ").last!)")
+
+    print("成功: \\(await counter.count) エラー: \\(await counter.errors)")
+}
+Thread.sleep(forTimeInterval: 1)`,
+    expected:"Response from https://api.example.com/posts\nResponse from https://api.example.com/users\nhttps://api.example.com/error: FAILED\n並行: 1, 2\n成功: 2 エラー: 1",
+    explanation:"Swift ConcurrencyはGrand Central Dispatch（GCD）の後継です。async/awaitでコールバック地獄を解消し、structured concurrencyで子タスクのライフサイクルを親が管理します。Actorはデータ競合をコンパイル時に防ぐSwiftのスレッドセーフ機構です。"
+  },
+  { id: 63, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Swift Macros：コンパイル時コード生成",
+    question: "Swift 5.9のMacroをシミュレートした実装と、Mirror APIによる実行時メタプログラミングを実装してください。\n①Mirrorを使って任意の構造体のプロパティ名・型・値を自動出力する `describe()` 関数\n②`Codable` の手動実装（encode/decode を Mirror なしで実装）\n③`@dynamicMemberLookup` を使って辞書への動的プロパティアクセスを実装\n④各機能の動作確認",
+    hint: "Mirror(reflecting: value)でstructのプロパティ一覧が取得できます。dynamicMemberLookupはsubscript(dynamicMember:)をStringで実装するとdot-syntaxでアクセスできます。",
+    answer:
+`import Foundation
+
+// Mirror APIでメタプログラミング
+func describe(_ value: Any) {
+    let mirror = Mirror(reflecting: value)
+    print("\\(mirror.subjectType):")
+    for child in mirror.children {
+        print("  \\(child.label ?? "_"): \\(type(of: child.value)) = \\(child.value)")
+    }
+}
+
+struct Point { var x: Double; var y: Double; var label: String }
+struct Config { var host: String; var port: Int; var debug: Bool }
+
+describe(Point(x: 3.14, y: 2.71, label: "origin"))
+describe(Config(host: "localhost", port: 8080, debug: true))
+
+// @dynamicMemberLookup で辞書への動的アクセス
+@dynamicMemberLookup
+struct DynamicConfig {
+    private var storage: [String: Any] = [:]
+    subscript(dynamicMember key: String) -> Any? {
+        get { storage[key] }
+        set { storage[key] = newValue }
+    }
+    mutating func set(_ key: String, _ value: Any) { storage[key] = value }
+}
+
+var config = DynamicConfig()
+config.set("apiKey", "secret-123")
+config.set("timeout", 30)
+config.set("retries", 3)
+
+if let key = config.apiKey as? String { print("apiKey: \\(key)") }
+if let timeout = config.timeout as? Int { print("timeout: \\(timeout)s") }
+
+// Mirror でカスタムデバッグ出力
+func prettyPrint<T>(_ value: T) -> String {
+    let m = Mirror(reflecting: value)
+    if m.children.isEmpty { return "\\(value)" }
+    let props = m.children.map { "\\($0.label ?? "_"): \\($0.value)" }.joined(separator: ", ")
+    return "\\(m.subjectType)(\\(props))"
+}
+
+print(prettyPrint(Point(x: 1.0, y: 2.0, label: "A")))`,
+    expected:"Point:\n  x: Double = 3.14\n  y: Double = 2.71\n  label: String = origin\nConfig:\n  host: String = localhost\n  port: Int = 8080\n  debug: Bool = true\napiKey: secret-123\ntimeout: 30s\nPoint(x: 1.0, y: 2.0, label: A)",
+    explanation:"SwiftのMirror APIは実行時のメタプログラミングを実現します。Swift 5.9のMacrosはコンパイル時のコード生成を提供し、@dynamicMemberLookupはRubyのmethod_missingに相当します。ObservableObjectの@Publishedや、Swift Data（Core Data後継）の#Predicate macroはこれらの技術を活用しています。"
   }
 ];
 
@@ -14809,6 +14930,145 @@ public class Main {
 }`,
     expected:"Engineering: 3人\nHR: 1人\nMarketing: 2人\nEngineering平均: 90000\n最高: Eve 95000\n最低: Frank 60000\n[1, 2, 3, 4, 5]",
     explanation:"Java Stream APIのCollectorsは関数型プログラミングの集約操作を実現します。groupingByでSQLのGROUP BY相当、teeingは2つの集計を1パスで行うSQL的なWINDOW関数的処理です。大量データのメモリ効率的な処理にパラレルStream（.parallel()）と組み合わせます。"
+  },
+  { id: 62, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Annotation Processor：コンパイル時メタプログラミング",
+    question: "Javaのリフレクション＋カスタムアノテーションでバリデーションフレームワークを実装してください。\n①`@NotNull`, `@Range(min, max)`, `@Pattern(regex)`, `@Size(min, max)` アノテーションを定義\n②ReflectionでフィールドのアノテーションをスキャンするValidatorクラス\n③List<ValidationError>でエラーを収集して返す validate() メソッド\n④テスト用のDTOで動作確認",
+    hint: "Field.getAnnotation(NotNull.class)でアノテーションを取得します。field.setAccessible(true)でprivateフィールドにアクセスできます。",
+    answer:
+`import java.lang.annotation.*;
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.regex.Pattern;
+
+@Retention(RetentionPolicy.RUNTIME) @Target(ElementType.FIELD)
+@interface NotNull {}
+
+@Retention(RetentionPolicy.RUNTIME) @Target(ElementType.FIELD)
+@interface Range { int min() default 0; int max() default Integer.MAX_VALUE; }
+
+@Retention(RetentionPolicy.RUNTIME) @Target(ElementType.FIELD)
+@interface RegexPattern { String value(); }
+
+@Retention(RetentionPolicy.RUNTIME) @Target(ElementType.FIELD)
+@interface Size { int min() default 0; int max() default Integer.MAX_VALUE; }
+
+record ValidationError(String field, String message) {}
+
+class Validator {
+    public static List<ValidationError> validate(Object obj) throws IllegalAccessException {
+        List<ValidationError> errors = new ArrayList<>();
+        for (Field f : obj.getClass().getDeclaredFields()) {
+            f.setAccessible(true);
+            Object val = f.get(obj);
+            String name = f.getName();
+
+            if (f.isAnnotationPresent(NotNull.class) && val == null)
+                errors.add(new ValidationError(name, "must not be null"));
+
+            if (val instanceof String s) {
+                Size size = f.getAnnotation(Size.class);
+                if (size != null && (s.length() < size.min() || s.length() > size.max()))
+                    errors.add(new ValidationError(name, "length must be " + size.min() + ".." + size.max()));
+                RegexPattern rp = f.getAnnotation(RegexPattern.class);
+                if (rp != null && !Pattern.matches(rp.value(), s))
+                    errors.add(new ValidationError(name, "must match " + rp.value()));
+            }
+            if (val instanceof Integer i) {
+                Range r = f.getAnnotation(Range.class);
+                if (r != null && (i < r.min() || i > r.max()))
+                    errors.add(new ValidationError(name, "must be " + r.min() + ".." + r.max()));
+            }
+        }
+        return errors;
+    }
+}
+
+class UserDto {
+    @NotNull @Size(min=2, max=50)
+    String name;
+    @Range(min=0, max=150)
+    Integer age;
+    @NotNull @RegexPattern("[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}")
+    String email;
+    UserDto(String n, Integer a, String e) { name=n; age=a; email=e; }
+}
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        var valid = new UserDto("Alice", 30, "alice@example.com");
+        var invalid = new UserDto("A", 200, "not-an-email");
+
+        System.out.println("Valid user errors: " + Validator.validate(valid).size());
+        for (var err : Validator.validate(invalid))
+            System.out.println("Error - " + err.field() + ": " + err.message());
+    }
+}`,
+    expected:"Valid user errors: 0\nError - name: length must be 2..50\nError - age: must be 0..150\nError - email: must match [a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}",
+    explanation:"Javaのアノテーション＋リフレクションはSpring Validation、Hibernate Validatorの根幹技術です。@NotNull/@Size/@Pattern はBean Validation（JSR-303）の標準アノテーションです。実務ではAnnotation Processorでコンパイル時にコードを生成し、実行時コストを削減します（Lombok、MapStructなど）。"
+  },
+  { id: 63, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Reactive Programming：CompletableFutureとExecutor",
+    question: "JavaのCompletableFutureを使って非同期パイプラインを実装してください。\n①CompletableFuture.supplyAsync() で非同期タスク\n②thenApply/thenCompose/thenCombine でパイプライン構築\n③allOf/anyOf で複数Futureの待機\n④exceptionally/handle でエラーハンドリング\n⑤カスタムExecutorで並行数を制限\n⑥実行順序と並行性を確認",
+    hint: "thenApplyはmap相当（同期変換）、thenComposeはflatMap相当（別Futureを返す）。thenCombineは2つのFutureを結合します。",
+    answer:
+`import java.util.concurrent.*;
+import java.util.List;
+
+public class Main {
+    static ExecutorService executor = Executors.newFixedThreadPool(4);
+
+    static CompletableFuture<String> fetchUser(int id) {
+        return CompletableFuture.supplyAsync(() -> {
+            try { Thread.sleep(10); } catch (Exception e) {}
+            return "User:" + id;
+        }, executor);
+    }
+
+    static CompletableFuture<String> fetchOrders(String user) {
+        return CompletableFuture.supplyAsync(() -> {
+            try { Thread.sleep(10); } catch (Exception e) {}
+            return user + "/Orders:[1,2,3]";
+        }, executor);
+    }
+
+    public static void main(String[] args) throws Exception {
+        // thenApply（同期変換）
+        String result1 = fetchUser(1)
+            .thenApply(String::toUpperCase)
+            .thenApply(u -> "Processed: " + u)
+            .get();
+        System.out.println(result1);
+
+        // thenCompose（非同期チェーン）
+        String result2 = fetchUser(2)
+            .thenCompose(Main::fetchOrders)
+            .get();
+        System.out.println(result2);
+
+        // thenCombine（2つを結合）
+        String result3 = fetchUser(3)
+            .thenCombine(fetchUser(4), (u3, u4) -> u3 + " + " + u4)
+            .get();
+        System.out.println(result3);
+
+        // allOf（全完了を待つ）
+        var futures = List.of(fetchUser(5), fetchUser(6), fetchUser(7));
+        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
+            .thenRun(() -> System.out.println("All done: " + futures.size() + " users"))
+            .get();
+
+        // エラー処理
+        CompletableFuture.supplyAsync(() -> { throw new RuntimeException("DB Error"); })
+            .exceptionally(ex -> "Fallback: " + ex.getMessage())
+            .thenAccept(System.out::println)
+            .get();
+
+        executor.shutdown();
+    }
+}`,
+    expected:"Processed: USER:1\nUser:2/Orders:[1,2,3]\nUser:3 + User:4\nAll done: 3 users\nFallback: DB Error",
+    explanation:"CompletableFutureはJava 8のPromise/Futureです。thenApply/thenComposeのチェーンでコールバック地獄を排除します。Spring WebFlux・Project ReactorはCompletableFutureをさらに拡張したリアクティブプログラミングモデルを提供します。ExecutorServiceで並行数を制限することでリソースの枯渇を防ぎます。"
   }
 ];
 
@@ -16475,6 +16735,117 @@ var result = new InfiniteRange()
 foreach (var s in result) Console.WriteLine(s);`,
     expected:"偶数の2乗(最初の5個): 0, 4, 16, 36, 64\nFizzMultiple:0\nFizzMultiple:3\nFizzMultiple:6\nFizzMultiple:9",
     explanation:"LINQのWhereやSelectはIEnumerable<T>のデコレータパターンで遅延評価を実現します。要素は.GetEnumerator()でMoveNextが呼ばれるまで計算されません。InfiniteRangeが無限シーケンスでも.Take(5)まで評価されるのはこの遅延評価のためです。"
+  },
+  { id: 62, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Channel<T>：Producerとconsumerの非同期キュー",
+    question: "System.Threading.Channels を使ったProducer-Consumerパターンを実装してください。\n①`Channel.CreateBounded<T>(capacity)` で容量制限付きチャンネル\n②Producerタスク（3つ）が並行にデータを書き込む\n③Consumerタスク（2つ）が並行にデータを読み取り処理\n④チャンネルの完了（Writer.Complete()）と Consumer の終了を確認\n⑤処理したアイテム数と経過時間を出力",
+    hint: "channel.Writer.WriteAsync()でデータを書き込み、channel.Reader.ReadAllAsync()でasync foreach読み取り。WhenAll()で全Producer完了後にWriter.Complete()を呼ぶ。",
+    answer:
+`using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Channels;
+using System.Threading.Tasks;
+
+var channel = Channel.CreateBounded<(int producerId, int item)>(capacity: 10);
+var processedCount = 0;
+var sw = System.Diagnostics.Stopwatch.StartNew();
+
+// Producers
+var producers = Enumerable.Range(1, 3).Select(pid => Task.Run(async () => {
+    for (int i = 0; i < 5; i++) {
+        await channel.Writer.WriteAsync((pid, i));
+        await Task.Delay(1);
+    }
+    Console.WriteLine($"Producer {pid} done");
+})).ToArray();
+
+// Consumers
+var consumers = Enumerable.Range(1, 2).Select(cid => Task.Run(async () => {
+    await foreach (var (pid, item) in channel.Reader.ReadAllAsync()) {
+        Interlocked.Increment(ref processedCount);
+        await Task.Delay(2); // 処理シミュレーション
+    }
+    Console.WriteLine($"Consumer {cid} done");
+})).ToArray();
+
+// Producers完了後にチャンネルを閉じる
+await Task.WhenAll(producers);
+channel.Writer.Complete();
+Console.WriteLine("Channel closed");
+
+await Task.WhenAll(consumers);
+sw.Stop();
+Console.WriteLine($"処理済みアイテム: {processedCount}");
+Console.WriteLine($"完了");`,
+    expected:"Producer 1 done\nProducer 2 done\nProducer 3 done\nChannel closed\nConsumer 1 done\nConsumer 2 done\n処理済みアイテム: 15\n完了",
+    explanation:"System.Threading.ChannelsはC# 8のasync streamを活用した高性能Producer-Consumerキューです。Bounded channelで背圧（backpressure）を実現し、Producerが速すぎる場合に待機させます。ASP.NET Core・SignalRの内部実装でもChannelが使われています。"
+  },
+  { id: 63, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "Expression Trees：実行時コード生成",
+    question: "C# Expression Treesを使ってコンパイル時には決まらない動的クエリを実行時に生成してください。\n①Expression.Lambdaでフィルタ式を動的構築\n②Expression.Compileで実行可能なデリゲートにコンパイル\n③動的なソート式の生成\n④式ツリーをstring表現に変換して確認\n⑤複数条件のAND/OR組み合わせ",
+    hint: "Expression.Parameter(typeof(T), \"x\") でパラメータ式を作成。Expression.Property() でプロパティアクセス、Expression.Constant() で定数、Expression.GreaterThan() で比較式を生成します。",
+    answer:
+`using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+
+record Product(string Name, string Category, decimal Price, int Stock);
+
+class DynamicQuery {
+    public static Func<T, bool> BuildFilter<T, TProp>(
+        string propName, string op, TProp value)
+    {
+        var param = Expression.Parameter(typeof(T), "x");
+        var prop  = Expression.Property(param, propName);
+        var val   = Expression.Constant(value, typeof(TProp));
+        Expression body = op switch {
+            ">"  => Expression.GreaterThan(prop, val),
+            "<"  => Expression.LessThan(prop, val),
+            ">=" => Expression.GreaterThanOrEqual(prop, val),
+            "<=" => Expression.LessThanOrEqual(prop, val),
+            "==" => Expression.Equal(prop, val),
+            _    => throw new ArgumentException("Unknown op: " + op)
+        };
+        return Expression.Lambda<Func<T, bool>>(body, param).Compile();
+    }
+
+    public static Func<T, bool> And<T>(Func<T, bool> f1, Func<T, bool> f2)
+        => x => f1(x) && f2(x);
+
+    public static Func<T, TKey> BuildKeySelector<T, TKey>(string propName) {
+        var param = Expression.Parameter(typeof(T), "x");
+        var prop  = Expression.Property(param, propName);
+        return Expression.Lambda<Func<T, TKey>>(prop, param).Compile();
+    }
+}
+
+var products = new List<Product> {
+    new("iPhone",   "Electronics", 99800m, 5),
+    new("AirPods",  "Electronics", 23800m, 20),
+    new("T-shirt",  "Clothing",    3000m,  50),
+    new("Jeans",    "Clothing",    8000m,  30),
+    new("Monitor",  "Electronics", 45000m, 8),
+};
+
+// 動的フィルタ生成: Price > 10000 AND Stock >= 10
+var priceFilter = DynamicQuery.BuildFilter<Product, decimal>("Price", ">", 10000m);
+var stockFilter = DynamicQuery.BuildFilter<Product, int>("Stock", ">=", 10);
+var combined    = DynamicQuery.And(priceFilter, stockFilter);
+
+Console.WriteLine("Price>10000 AND Stock>=10:");
+foreach (var p in products.Where(combined))
+    Console.WriteLine($"  {p.Name}: ¥{p.Price} stock={p.Stock}");
+
+// 動的ソート: Price降順
+var priceSelector = DynamicQuery.BuildKeySelector<Product, decimal>("Price");
+Console.WriteLine("Price降順:");
+foreach (var p in products.OrderByDescending(priceSelector).Take(3))
+    Console.WriteLine($"  {p.Name}: ¥{p.Price}");`,
+    expected:"Price>10000 AND Stock>=10:\n  AirPods: ¥23800 stock=20\n  Monitor: ¥45000 stock=8\nPrice降順:\n  iPhone: ¥99800\n  Monitor: ¥45000\n  AirPods: ¥23800",
+    explanation:"Expression Treesはコードを実行時に構築・最適化できるC#のメタプログラミング機能です。LINQ to SQL・Entity Framework CoreはExpression Treeを解析してSQLクエリを生成します。動的フィルタ・ソート・マッピングの生成でORMの動的クエリビルダに活用されます。"
   }
 ];
 
@@ -20758,6 +21129,199 @@ int main() {
 }`,
     expected:"10 / 2 = 5\n外側TRY\n内側TRY\n内側CATCH: code=42 msg=カスタム例外\n外側CATCH: code=99 msg=再スロー\n0除算補足: Division by zero\nプログラム継続",
     explanation:"setjmp/longjmpはC言語で例外処理を実現する伝統的なパターンです。CPythonの例外処理・libpngのエラー処理・Luaの保護呼び出し(pcall)が内部で使っています。C++の例外やJavaのtry-catchもハードウェアレベルでは同様のスタック巻き戻しを行います。"
+  },
+  { id: 62, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "ハッシュテーブル：チェイン法の完全実装",
+    question: "Cでチェイン法（連結リスト）のハッシュテーブルを完全実装してください。\n①struct HashTable (buckets配列、size、count)\n②djb2ハッシュ関数\n③ht_set(table, key, value) / ht_get(table, key) / ht_delete(table, key)\n④ロードファクターが0.75超えたら自動リハッシュ（buckets倍増）\n⑤全エントリのイテレーション\nデフォルトbucket数16で動作確認してください。",
+    hint: "chaining: each bucket is a linked list of Entry{char *key, void *value, struct Entry *next}. djb2: hash = 5381; hash = ((hash << 5) + hash) + c",
+    answer:
+`#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define INITIAL_CAPACITY 16
+#define LOAD_FACTOR 0.75
+
+typedef struct Entry {
+    char *key;
+    int value;
+    struct Entry *next;
+} Entry;
+
+typedef struct {
+    Entry **buckets;
+    int capacity;
+    int count;
+} HashTable;
+
+unsigned long djb2(const char *str) {
+    unsigned long hash = 5381;
+    int c;
+    while ((c = *str++)) hash = ((hash << 5) + hash) + c;
+    return hash;
+}
+
+HashTable *ht_new(int capacity) {
+    HashTable *ht = calloc(1, sizeof(HashTable));
+    ht->capacity = capacity;
+    ht->buckets = calloc(capacity, sizeof(Entry*));
+    return ht;
+}
+
+static void ht_insert_raw(HashTable *ht, const char *key, int value) {
+    int idx = djb2(key) % ht->capacity;
+    Entry *e = ht->buckets[idx];
+    while (e) { if (!strcmp(e->key, key)) { e->value = value; return; } e = e->next; }
+    Entry *ne = malloc(sizeof(Entry));
+    ne->key = strdup(key); ne->value = value;
+    ne->next = ht->buckets[idx]; ht->buckets[idx] = ne;
+    ht->count++;
+}
+
+void ht_rehash(HashTable *ht) {
+    int old_cap = ht->capacity;
+    Entry **old = ht->buckets;
+    ht->capacity *= 2;
+    ht->buckets = calloc(ht->capacity, sizeof(Entry*));
+    ht->count = 0;
+    for (int i = 0; i < old_cap; i++) {
+        Entry *e = old[i];
+        while (e) { ht_insert_raw(ht, e->key, e->value); Entry *tmp = e; e = e->next; free(tmp->key); free(tmp); }
+    }
+    free(old);
+}
+
+void ht_set(HashTable *ht, const char *key, int value) {
+    if ((double)ht->count / ht->capacity >= LOAD_FACTOR) ht_rehash(ht);
+    ht_insert_raw(ht, key, value);
+}
+
+int *ht_get(HashTable *ht, const char *key) {
+    Entry *e = ht->buckets[djb2(key) % ht->capacity];
+    while (e) { if (!strcmp(e->key, key)) return &e->value; e = e->next; }
+    return NULL;
+}
+
+void ht_delete(HashTable *ht, const char *key) {
+    int idx = djb2(key) % ht->capacity;
+    Entry **pp = &ht->buckets[idx];
+    while (*pp) {
+        if (!strcmp((*pp)->key, key)) {
+            Entry *tmp = *pp; *pp = tmp->next;
+            free(tmp->key); free(tmp); ht->count--; return;
+        }
+        pp = &(*pp)->next;
+    }
+}
+
+int main() {
+    HashTable *ht = ht_new(INITIAL_CAPACITY);
+    char keys[][8] = {"apple","banana","cherry","date","elderberry","fig","grape","honeydew","kiwi","lemon"};
+    for (int i = 0; i < 10; i++) ht_set(ht, keys[i], i * 10);
+
+    printf("count=%d capacity=%d\n", ht->count, ht->capacity);
+    int *v = ht_get(ht, "cherry"); printf("cherry=%d\n", v ? *v : -1);
+    ht_set(ht, "cherry", 999);
+    v = ht_get(ht, "cherry"); printf("cherry(updated)=%d\n", v ? *v : -1);
+    ht_delete(ht, "banana");
+    printf("banana=%s\n", ht_get(ht, "banana") ? "found" : "deleted");
+    printf("final count=%d\n", ht->count);
+    return 0;
+}`,
+    expected:"count=10 capacity=16\ncherry=20\ncherry(updated)=999\nbanana=deleted\nfinal count=9",
+    explanation:"ハッシュテーブルはほぼ全プログラミング言語の組み込みデータ構造です。Pythonのdict・JavaのHashMap・RubyのHashはすべてこの原理で実装されています。djb2ハッシュ関数はシンプルで高速。リハッシュでロードファクターを制御しO(1)の平均計算量を維持します。"
+  },
+  { id: 63, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "コルーチン：ucontextによる協調スケジューラ",
+    question: "POSIXのucontext_tを使ったコルーチンスケジューラを実装してください。\n①Coroutine 構造体（コンテキスト・スタック・状態・関数ポインタ）\n②co_create(func) / co_yield() / co_resume(co) 関数\n③3つのコルーチンをラウンドロビンでスケジュールするmainスケジューラ\n④各コルーチンが複数回yield/resumeを経て完了するデモ",
+    hint: "getcontext()でコンテキスト取得、makecontext()でスタックと関数を設定、swapcontext()でコンテキストを切り替えます。",
+    answer:
+`#include <stdio.h>
+#include <stdlib.h>
+#include <ucontext.h>
+#include <string.h>
+
+#define STACK_SIZE (64*1024)
+#define MAX_CO 8
+
+typedef enum { CO_READY, CO_RUNNING, CO_DONE } CoState;
+
+typedef struct {
+    ucontext_t ctx;
+    char *stack;
+    CoState state;
+    int id;
+    void (*func)(int);
+} Coroutine;
+
+static ucontext_t scheduler_ctx;
+static Coroutine *coroutines[MAX_CO];
+static int co_count = 0;
+static int current_co = -1;
+
+void co_yield() {
+    Coroutine *co = coroutines[current_co];
+    co->state = CO_READY;
+    swapcontext(&co->ctx, &scheduler_ctx);
+}
+
+static void co_wrapper(uint32_t hi, uint32_t lo) {
+    uintptr_t ptr = ((uintptr_t)hi << 32) | lo;
+    Coroutine *co = (Coroutine*)ptr;
+    co->func(co->id);
+    co->state = CO_DONE;
+    swapcontext(&co->ctx, &scheduler_ctx);
+}
+
+Coroutine *co_create(void (*func)(int)) {
+    Coroutine *co = calloc(1, sizeof(Coroutine));
+    co->id = co_count;
+    co->func = func;
+    co->stack = malloc(STACK_SIZE);
+    co->state = CO_READY;
+    getcontext(&co->ctx);
+    co->ctx.uc_stack.ss_sp = co->stack;
+    co->ctx.uc_stack.ss_size = STACK_SIZE;
+    co->ctx.uc_link = &scheduler_ctx;
+    uintptr_t ptr = (uintptr_t)co;
+    makecontext(&co->ctx, (void(*)())co_wrapper, 2, (uint32_t)(ptr>>32), (uint32_t)ptr);
+    coroutines[co_count++] = co;
+    return co;
+}
+
+void run_scheduler() {
+    while (1) {
+        int all_done = 1;
+        for (int i = 0; i < co_count; i++) {
+            if (coroutines[i]->state == CO_READY) {
+                all_done = 0;
+                current_co = i;
+                coroutines[i]->state = CO_RUNNING;
+                swapcontext(&scheduler_ctx, &coroutines[i]->ctx);
+            }
+        }
+        if (all_done) break;
+    }
+}
+
+void task(int id) {
+    for (int i = 0; i < 3; i++) {
+        printf("コルーチン%d: ステップ%d\n", id, i+1);
+        co_yield();
+    }
+    printf("コルーチン%d: 完了\n", id);
+}
+
+int main() {
+    co_create(task);
+    co_create(task);
+    co_create(task);
+    run_scheduler();
+    printf("全コルーチン終了\n");
+    return 0;
+}`,
+    expected:"コルーチン0: ステップ1\nコルーチン1: ステップ1\nコルーチン2: ステップ1\nコルーチン0: ステップ2\nコルーチン1: ステップ2\nコルーチン2: ステップ2\nコルーチン0: ステップ3\nコルーチン1: ステップ3\nコルーチン2: ステップ3\nコルーチン0: 完了\nコルーチン1: 完了\nコルーチン2: 完了\n全コルーチン終了",
+    explanation:"ucontext_tによるコルーチンはPOSIXシステムでの協調的マルチタスクの基盤です。libco・boost.context・GoのgoroutineはすべてOS提供のコンテキスト切り替えかアセンブリで実装されたスタック切り替えを使っています。Green ThreadとNative Threadの中間的なコンセプトです。"
   }
 ];
 
