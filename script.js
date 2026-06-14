@@ -25456,7 +25456,7 @@ const htmlProblems = [
           const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
           const d=Math.sqrt(dx*dx+dy*dy);
           if (d<100) {
-            ctx.strokeStyle = `rgba(108,99,255,\${1-d/100})`;
+            ctx.strokeStyle = \`rgba(108,99,255,\${1-d/100})\`;
             ctx.lineWidth=.5;
             ctx.beginPath();
             ctx.moveTo(particles[i].x,particles[i].y);
