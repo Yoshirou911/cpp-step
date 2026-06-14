@@ -174,9 +174,16 @@ function makeUserCard(u) {
       ? '<div class="user-titan-count">👑 TITAN達成: ' + u.titan_lang_count + '言語</div>'
       : '') +
     '<button class="user-scout-btn" style="color:' + color + ';border-color:' + color + '44"' +
-      ' onclick="openScoutModal(\'' + u.user_id + '\',\'' + u.rank_tier + '\')">' +
+      ' data-uid="' + u.user_id + '" data-rank="' + u.rank_tier + '">' +
       'スカウトを送る' +
     '</button>';
+
+  var btn = card.querySelector('.user-scout-btn');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      openScoutModal(this.dataset.uid, this.dataset.rank);
+    });
+  }
 
   return card;
 }
