@@ -27323,7 +27323,7 @@ parse_env() {
 render_template() {
   local template="$1"
   # ${VAR_NAME} を変数値に置換
-  echo "$template" | sed 's/\${\([A-Za-z_][A-Za-z0-9_]*\)}/$(echo $\1)/g' | \
+  echo "$template" | sed 's/\${\([A-Za-z_][A-Za-z0-9_]*\)}/$(echo $\\1)/g' | \
     while IFS= read -r line; do eval "echo \"$line\""; done
 }
 
