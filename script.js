@@ -11526,10 +11526,10 @@ fun eval(expr: Expr): Double = when (expr) {
 
 fun prettyPrint(expr: Expr): String = when (expr) {
     is Expr.Num -> expr.value.toInt().toString()
-    is Expr.Add -> "(${prettyPrint(expr.l)} + ${prettyPrint(expr.r)})"
-    is Expr.Mul -> "(${prettyPrint(expr.l)} * ${prettyPrint(expr.r)})"
-    is Expr.Neg -> "-(${prettyPrint(expr.e)})"
-    is Expr.Div -> "(${prettyPrint(expr.l)} / ${prettyPrint(expr.r)})"
+    is Expr.Add -> "(\${prettyPrint(expr.l)} + \${prettyPrint(expr.r)})"
+    is Expr.Mul -> "(\${prettyPrint(expr.l)} * \${prettyPrint(expr.r)})"
+    is Expr.Neg -> "-(\${prettyPrint(expr.e)})"
+    is Expr.Div -> "(\${prettyPrint(expr.l)} / \${prettyPrint(expr.r)})"
 }
 
 fun main() {
@@ -11537,11 +11537,11 @@ fun main() {
         Expr.Add(Expr.Num(3.0), Expr.Num(4.0)),
         Expr.Neg(Expr.Add(Expr.Num(2.0), Expr.Num(1.0)))
     )
-    println("式: ${prettyPrint(expr)}")
-    println("結果: ${eval(expr).toInt()}")
+    println("式: \${prettyPrint(expr)}")
+    println("結果: \${eval(expr).toInt()}")
 
     val divByZero = Expr.Div(Expr.Num(5.0), Expr.Num(0.0))
-    println("0除算: ${eval(divByZero)}")
+    println("0除算: \${eval(divByZero)}")
 }`,
     expected:"式: ((3 + 4) * -((2 + 1)))\n結果: -21\n0除算: NaN",
     explanation:"sealed classはKotlinの代数的データ型で、継承先をモジュール内に限定します。when式との組み合わせでHaskellのパターンマッチに近い網羅的な型安全コードが書けます。コンパイラが全ケースをカバーしているか検証するため、バグの混入を防げます。"
@@ -11643,8 +11643,8 @@ fun main() {
     for (id in listOf(1, 2, 3)) {
         val ar = androidUseCase.execute(id)
         val ir = iosUseCase.execute(id)
-        println("[${ar.platform}] id=$id: ${if(ar.found) ar.name else "Not found"}")
-        println("[${ir.platform}] id=$id: ${if(ir.found) ir.name else "Not found"}")
+        println("[\${ar.platform}] id=$id: \${if(ar.found) ar.name else "Not found"}")
+        println("[\${ir.platform}] id=$id: \${if(ir.found) ir.name else "Not found"}")
     }
 }`,
     expected:"[Android] id=1: Bob\n[iOS] id=1: Alice\n[Android] id=2: Carol\n[iOS] id=2: Not found\n[Android] id=3: Not found\n[iOS] id=3: Not found",
@@ -11708,7 +11708,7 @@ listOf(
 ).forEach { result ->
     result.fold(
         onLeft  = { println("Error: $it") },
-        onRight = { println("OK: ${it.name} (${it.age})")  }
+        onRight = { println("OK: \${it.name} (\${it.age})")  }
     )
 }`,
     expected:"副作用: DBに保存\nSAVED\nOK: Alice (30)\nError: Invalid age: -1\nError: Invalid email: not-an-email",
@@ -25456,7 +25456,7 @@ const htmlProblems = [
           const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
           const d=Math.sqrt(dx*dx+dy*dy);
           if (d<100) {
-            ctx.strokeStyle = `rgba(108,99,255,${1-d/100})`;
+            ctx.strokeStyle = `rgba(108,99,255,\${1-d/100})`;
             ctx.lineWidth=.5;
             ctx.beginPath();
             ctx.moveTo(particles[i].x,particles[i].y);
@@ -26973,7 +26973,7 @@ const bashProblems = [
     title: "連想配列（辞書）",
     question: "declare -Aで連想配列を作成してフルーツの価格（Apple:150, Banana:80, Cherry:200）を格納し、キー順に表示してからCherryの値を更新して再表示してください。",
     hint: "declare -A prices / prices[Apple]=150 / for key in ...",
-    answer: `declare -A prices\nprices[Apple]=150\nprices[Banana]=80\nprices[Cherry]=200\necho "初期値:"\nfor key in $(echo "${!prices[@]}" | tr ' ' '\\n' | sort); do\n  echo "$key: ${prices[$key]}"\ndone\nprices[Cherry]=250\necho "Cherry更新後: ${prices[Cherry]}"`,
+    answer: `declare -A prices\nprices[Apple]=150\nprices[Banana]=80\nprices[Cherry]=200\necho "初期値:"\nfor key in $(echo "\${!prices[@]}" | tr ' ' '\\n' | sort); do\n  echo "$key: \${prices[$key]}"\ndone\nprices[Cherry]=250\necho "Cherry更新後: \${prices[Cherry]}"`,
     expected: "初期値:\nApple: 150\nBanana: 80\nCherry: 200\nCherry更新後: 250",
     explanation: "declare -Aで連想配列を宣言。${!array[@]}でキー一覧、${array[@]}で値一覧を取得できます。" },
 
@@ -27021,7 +27021,7 @@ const bashProblems = [
     title: "バックグラウンド並列処理",
     question: "3つのタスク（sleep 0.1 && echo Task1など）をバックグラウンドで並列実行し、全て完了するまでwaitして各タスクの完了を確認してください。",
     hint: "cmd & PID=$! / wait $PID",
-    answer: `pids=()\nfor i in 1 2 3; do\n  (sleep 0.$i && echo "Task$i done") &\n  pids+=($!)\ndone\necho "全タスク開始"\nfor pid in "${pids[@]}"; do\n  wait $pid\ndone\necho "全タスク完了"`,
+    answer: `pids=()\nfor i in 1 2 3; do\n  (sleep 0.$i && echo "Task$i done") &\n  pids+=($!)\ndone\necho "全タスク開始"\nfor pid in "\${pids[@]}"; do\n  wait $pid\ndone\necho "全タスク完了"`,
     expected: "全タスク開始\nTask1 done\nTask2 done\nTask3 done\n全タスク完了",
     explanation: "&でバックグラウンド実行し$!でPIDを取得。wait PIDで特定プロセスの終了を待機します。並列処理でスループットを向上できます。" },
 
@@ -27061,7 +27061,7 @@ const bashProblems = [
     title: "コプロセス（coproc）",
     question: "coprocを使って対話型のPythonセッションとBashから通信し、Pythonで1+1=2の計算をさせて結果を受け取ってください。",
     hint: "coproc PY { python3 -c 'import sys; ...' ; } / echo ... >&${PY[1]} / read ... <&${PY[0]}",
-    answer: `coproc CALC {\n  while IFS= read -r line; do\n    python3 -c "print(eval('$line'))"\n  done\n}\necho "1+1" >&${CALC[1]}\nread result <&${CALC[0]}\necho "1+1 = $result"\necho "3*7" >&${CALC[1]}\nread result <&${CALC[0]}\necho "3*7 = $result"\nkill $CALC_PID 2>/dev/null\nwait $CALC_PID 2>/dev/null`,
+    answer: `coproc CALC {\n  while IFS= read -r line; do\n    python3 -c "print(eval('$line'))"\n  done\n}\necho "1+1" >&\${CALC[1]}\nread result <&\${CALC[0]}\necho "1+1 = $result"\necho "3*7" >&\${CALC[1]}\nread result <&\${CALC[0]}\necho "3*7 = $result"\nkill $CALC_PID 2>/dev/null\nwait $CALC_PID 2>/dev/null`,
     expected: "1+1 = 2\n3*7 = 21",
     explanation: "coprocは双方向パイプでサブプロセスと通信できます。${PROC[0]}が読み取り、${PROC[1]}が書き込みのファイルディスクリプタです。" },
 
@@ -27069,7 +27069,7 @@ const bashProblems = [
     title: "bashコンプレッション（文字列圧縮）",
     question: "ランレングス圧縮（連続した同じ文字をカウントで表す）を実装してください。例：\"aaabbcccc\"→\"a3b2c4\"",
     hint: "1文字ずつ比較してカウント / prev・count変数を使う",
-    answer: `rle_encode() {\n  local str="$1"\n  local result="" prev="" count=0\n  for ((i=0; i<${#str}; i++)); do\n    char="${str:$i:1}"\n    if [[ "$char" == "$prev" ]]; then\n      ((count++))\n    else\n      [[ -n "$prev" ]] && result+="${prev}${count}"\n      prev="$char"\n      count=1\n    fi\n  done\n  [[ -n "$prev" ]] && result+="${prev}${count}"\n  echo "$result"\n}\nrle_encode "aaabbcccc"\nrle_encode "abcde"\nrle_encode "aaaa"`,
+    answer: `rle_encode() {\n  local str="$1"\n  local result="" prev="" count=0\n  for ((i=0; i<\${#str}; i++)); do\n    char="\${str:$i:1}"\n    if [[ "$char" == "$prev" ]]; then\n      ((count++))\n    else\n      [[ -n "$prev" ]] && result+="\${prev}\${count}"\n      prev="$char"\n      count=1\n    fi\n  done\n  [[ -n "$prev" ]] && result+="\${prev}\${count}"\n  echo "$result"\n}\nrle_encode "aaabbcccc"\nrle_encode "abcde"\nrle_encode "aaaa"`,
     expected: "a3b2c4\na1b1c1d1e1\na4",
     explanation: "${str:i:1}で文字列の特定位置の1文字を取得できます。for ((i=0; i<len; i++))はC言語スタイルの算術forループです。" },
 
@@ -27077,7 +27077,7 @@ const bashProblems = [
     title: "ディスパッチテーブル（関数の配列）",
     question: "連想配列を使って文字列操作のディスパッチテーブルを実装してください（upper/lower/reverse/length）。コマンド名と引数を受け取って対応する処理を実行。",
     hint: "declare -A dispatch / dispatch[upper]='echo ... | tr a-z A-Z'",
-    answer: `do_upper() { echo "${1^^}"; }\ndo_lower() { echo "${1,,}"; }\ndo_reverse() { echo "$1" | rev; }\ndo_length() { echo "${#1}"; }\n\ndispatch() {\n  local cmd="$1" arg="$2"\n  case "$cmd" in\n    upper)   do_upper "$arg" ;;\n    lower)   do_lower "$arg" ;;\n    reverse) do_reverse "$arg" ;;\n    length)  do_length "$arg" ;;\n    *) echo "Unknown: $cmd" ;;\n  esac\n}\n\nfor cmd in upper lower reverse length; do\n  result=$(dispatch "$cmd" "Hello")\n  echo "$cmd(Hello) = $result"\ndone`,
+    answer: `do_upper() { echo "\${1^^}"; }\ndo_lower() { echo "\${1,,}"; }\ndo_reverse() { echo "$1" | rev; }\ndo_length() { echo "\${#1}"; }\n\ndispatch() {\n  local cmd="$1" arg="$2"\n  case "$cmd" in\n    upper)   do_upper "$arg" ;;\n    lower)   do_lower "$arg" ;;\n    reverse) do_reverse "$arg" ;;\n    length)  do_length "$arg" ;;\n    *) echo "Unknown: $cmd" ;;\n  esac\n}\n\nfor cmd in upper lower reverse length; do\n  result=$(dispatch "$cmd" "Hello")\n  echo "$cmd(Hello) = $result"\ndone`,
     expected: "upper(Hello) = HELLO\nlower(Hello) = hello\nreverse(Hello) = olleH\nlength(Hello) = 5",
     explanation: "case文を使って文字列コマンドをディスパッチします。${var^^}で大文字、${var,,}で小文字変換。revコマンドで文字列反転ができます。" },
 
@@ -27085,7 +27085,7 @@ const bashProblems = [
     title: "ウォッチドッグタイマー",
     question: "timeoutコマンドを使ってコマンドの実行時間を制限し、タイムアウトした場合とした場合しない場合で異なるメッセージを表示してください。",
     hint: "timeout 2s cmd; if [[ $? -eq 124 ]]; then echo timeout; fi",
-    answer: `run_with_timeout() {\n  local timeout="$1"\n  shift\n  timeout "$timeout" bash -c "$@"\n  local exit_code=$?\n  if [[ $exit_code -eq 124 ]]; then\n    echo "TIMEOUT: ${timeout}秒超過"\n    return 1\n  elif [[ $exit_code -eq 0 ]]; then\n    echo "OK: 正常完了"\n    return 0\n  else\n    echo "ERROR: 終了コード $exit_code"\n    return $exit_code\n  fi\n}\nrun_with_timeout 2s "echo '高速処理'; sleep 0.1"\nrun_with_timeout 0.1s "sleep 1"`,
+    answer: `run_with_timeout() {\n  local timeout="$1"\n  shift\n  timeout "$timeout" bash -c "$@"\n  local exit_code=$?\n  if [[ $exit_code -eq 124 ]]; then\n    echo "TIMEOUT: \${timeout}秒超過"\n    return 1\n  elif [[ $exit_code -eq 0 ]]; then\n    echo "OK: 正常完了"\n    return 0\n  else\n    echo "ERROR: 終了コード $exit_code"\n    return $exit_code\n  fi\n}\nrun_with_timeout 2s "echo '高速処理'; sleep 0.1"\nrun_with_timeout 0.1s "sleep 1"`,
     expected: "高速処理\nOK: 正常完了\nTIMEOUT: 0.1s秒超過",
     explanation: "timeoutコマンドは指定時間でプロセスを強制終了。タイムアウト時は終了コード124を返します。本番スクリプトの安全策として重要です。" },
 
@@ -27093,7 +27093,7 @@ const bashProblems = [
     title: "セマフォによる並行数制限",
     question: "最大2並行でタスクを実行するセマフォを実装してください。5つのタスクを並行数2制限で実行し、各タスクの開始・完了を表示してください。",
     hint: "wait -n (bash 5.1+) または PID配列で並行数を管理",
-    answer: `MAX_PARALLEL=2\npids=()\nfor i in $(seq 1 5); do\n  while [[ ${#pids[@]} -ge $MAX_PARALLEL ]]; do\n    new_pids=()\n    for pid in "${pids[@]}"; do\n      if kill -0 "$pid" 2>/dev/null; then\n        new_pids+=("$pid")\n      fi\n    done\n    pids=("${new_pids[@]}")\n    [[ ${#pids[@]} -ge $MAX_PARALLEL ]] && sleep 0.05\n  done\n  (sleep 0.1 && echo "Task$i done") &\n  echo "Task$i start"\n  pids+=($!)\ndone\nfor pid in "${pids[@]}"; do wait "$pid"; done`,
+    answer: `MAX_PARALLEL=2\npids=()\nfor i in $(seq 1 5); do\n  while [[ \${#pids[@]} -ge $MAX_PARALLEL ]]; do\n    new_pids=()\n    for pid in "\${pids[@]}"; do\n      if kill -0 "$pid" 2>/dev/null; then\n        new_pids+=("$pid")\n      fi\n    done\n    pids=("\${new_pids[@]}")\n    [[ \${#pids[@]} -ge $MAX_PARALLEL ]] && sleep 0.05\n  done\n  (sleep 0.1 && echo "Task$i done") &\n  echo "Task$i start"\n  pids+=($!)\ndone\nfor pid in "\${pids[@]}"; do wait "$pid"; done`,
     expected: "Task1 start\nTask2 start\nTask1 done\nTask3 start\nTask2 done\nTask4 start\nTask3 done\nTask5 start\nTask4 done\nTask5 done",
     explanation: "アクティブPIDリストを管理して並行数を制限するパターンです。大量ファイル処理でCPUを使い切りつつシステム過負荷を防げます。" },
 
@@ -27101,7 +27101,7 @@ const bashProblems = [
     title: "動的関数生成",
     question: "evalを使って動的に関数を生成してください。「greet_en」「greet_ja」「greet_fr」の3つの関数を動的に生成し、各言語で挨拶を表示してください。",
     hint: "eval \"greet_${lang}() { echo ...; }\"",
-    answer: `declare -A greetings=([en]="Hello" [ja]="こんにちは" [fr]="Bonjour")\nfor lang in "${!greetings[@]}"; do\n  greeting="${greetings[$lang]}"\n  eval "greet_${lang}() { echo \"${greeting}, \\$1!\"; }"\ndone\nfor lang in en ja fr; do\n  "greet_${lang}" "World"\ndone`,
+    answer: `declare -A greetings=([en]="Hello" [ja]="こんにちは" [fr]="Bonjour")\nfor lang in "\${!greetings[@]}"; do\n  greeting="\${greetings[$lang]}"\n  eval "greet_\${lang}() { echo \"\${greeting}, \\$1!\"; }"\ndone\nfor lang in en ja fr; do\n  "greet_\${lang}" "World"\ndone`,
     expected: "Hello, World!\nこんにちは, World!\nBonjour, World!",
     explanation: "evalで文字列を動的に関数定義として実行できます。メタプログラミングの一種ですが、外部入力には使わないよう注意が必要です。" },
 
@@ -27109,7 +27109,7 @@ const bashProblems = [
     title: "ステートマシン実装",
     question: "交通信号（red→green→yellow→red）のステートマシンをBashで実装し、5回の状態遷移を表示してください。",
     hint: "case $state in red) next=green;; green) next=yellow;; yellow) next=red;; esac",
-    answer: `state="red"\ndeclare -A transitions=([red]="green" [green]="yellow" [yellow]="red")\ndeclare -A actions=([red]="STOP" [green]="GO" [yellow]="CAUTION")\necho "初期状態: $state - ${actions[$state]}"\nfor i in $(seq 1 5); do\n  state="${transitions[$state]}"\n  echo "遷移$i: $state - ${actions[$state]}"\ndone`,
+    answer: `state="red"\ndeclare -A transitions=([red]="green" [green]="yellow" [yellow]="red")\ndeclare -A actions=([red]="STOP" [green]="GO" [yellow]="CAUTION")\necho "初期状態: $state - \${actions[$state]}"\nfor i in $(seq 1 5); do\n  state="\${transitions[$state]}"\n  echo "遷移$i: $state - \${actions[$state]}"\ndone`,
     expected: "初期状態: red - STOP\n遷移1: green - GO\n遷移2: yellow - CAUTION\n遷移3: red - STOP\n遷移4: green - GO\n遷移5: yellow - CAUTION",
     explanation: "連想配列で状態遷移テーブルを実装するステートマシンパターン。ワークフロー・プロトコル実装などに応用できます。" },
 
@@ -27137,12 +27137,12 @@ CLEAR_LINE='\e[2K'; UP='\e[A'; HIDE='\e[?25l'; SHOW='\e[?25h'
 
 draw_menu() {
   local start_row=$1
-  for i in "${!items[@]}"; do
+  for i in "\${!items[@]}"; do
     printf '\e[%d;0H%b' "$((start_row + i))" "$CLEAR_LINE"
     if [[ $i -eq $selected ]]; then
-      printf '%b  %b %s %b\n' "$HIGHLIGHT" "$BOLD" "${items[$i]}" "$RESET"
+      printf '%b  %b %s %b\n' "$HIGHLIGHT" "$BOLD" "\${items[$i]}" "$RESET"
     else
-      printf '     %s\n' "${items[$i]}"
+      printf '     %s\n' "\${items[$i]}"
     fi
   done
 }
@@ -27150,15 +27150,15 @@ draw_menu() {
 # 非対話型テスト（キー操作なしで自動選択）
 echo "=== メニューデモ（自動選択モード） ==="
 echo ""
-for item in "${items[@]}"; do
+for item in "\${items[@]}"; do
   echo "  $item"
 done
 echo ""
 
 # 自動選択シミュレーション
 selected=2
-echo "選択位置: ${items[$selected]}"
-echo "[Enter] -> 選択: ${items[$selected]}"
+echo "選択位置: \${items[$selected]}"
+echo "[Enter] -> 選択: \${items[$selected]}"
 echo ""
 
 # 実際のキー読み取りループ（対話型端末がある場合）
@@ -27170,11 +27170,11 @@ if [[ -t 0 ]]; then
   draw_menu 3
   while true; do
     read -rsn1 key
-    [[ $key == $'\x1b' ]] && { read -rsn2 seq; key="${key}${seq}"; }
+    [[ $key == $'\x1b' ]] && { read -rsn2 seq; key="\${key}\${seq}"; }
     case "$key" in
       $'\x1b[A') [[ $selected -gt 0 ]] && ((selected--)) ;;
-      $'\x1b[B') [[ $selected -lt $((${#items[@]}-1)) ]] && ((selected++)) ;;
-      '') echo; echo "選択: ${items[$selected]}"; break ;;
+      $'\x1b[B') [[ $selected -lt $((\${#items[@]}-1)) ]] && ((selected++)) ;;
+      '') echo; echo "選択: \${items[$selected]}"; break ;;
       q|Q) break ;;
     esac
     draw_menu 3
@@ -27259,9 +27259,9 @@ start_service() {
 check_resources() {
   # シミュレーション値
   local cpu=45 mem=62
-  log "リソース確認: CPU=${cpu}% MEM=${mem}%"
-  if [[ $cpu -gt $CPU_THRESHOLD ]]; then alert "CPU使用率超過: ${cpu}% > ${CPU_THRESHOLD}%"; fi
-  if [[ $mem -gt $MEM_THRESHOLD ]]; then alert "メモリ使用率超過: ${mem}% > ${MEM_THRESHOLD}%"; fi
+  log "リソース確認: CPU=\${cpu}% MEM=\${mem}%"
+  if [[ $cpu -gt $CPU_THRESHOLD ]]; then alert "CPU使用率超過: \${cpu}% > \${CPU_THRESHOLD}%"; fi
+  if [[ $mem -gt $MEM_THRESHOLD ]]; then alert "メモリ使用率超過: \${mem}% > \${MEM_THRESHOLD}%"; fi
 }
 
 # メイン監視ループ（シミュレーション: 3回チェック）
@@ -27309,11 +27309,11 @@ parse_env() {
     [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
     # KEY=VALUE 形式を抽出
     if [[ "$line" =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
-      local key="${BASH_REMATCH[1]}"
-      local val="${BASH_REMATCH[2]}"
+      local key="\${BASH_REMATCH[1]}"
+      local val="\${BASH_REMATCH[2]}"
       # 引用符を除去
-      val="${val%\'}" ; val="${val#\'}"
-      val="${val%\"}" ; val="${val#\"}"
+      val="\${val%\'}" ; val="\${val#\'}"
+      val="\${val%\"}" ; val="\${val#\"}"
       export "$key=$val"
     fi
   done <<< "$env_content"
@@ -27322,7 +27322,7 @@ parse_env() {
 # テンプレートレンダリング
 render_template() {
   local template="$1"
-  # ${VAR_NAME} を変数値に置換
+  # \${VAR_NAME} を変数値に置換
   echo "$template" | sed 's/\${\([A-Za-z_][A-Za-z0-9_]*\)}/$(echo $\\1)/g' | \
     while IFS= read -r line; do eval "echo \"$line\""; done
 }
@@ -27340,9 +27340,9 @@ DEBUG=true
 
 parse_env "$ENV_DATA"
 
-TEMPLATE='アプリ: ${APP_NAME} v${APP_VERSION}
-データベース: ${DB_HOST}:${DB_PORT}
-デバッグモード: ${DEBUG}'
+TEMPLATE='アプリ: \${APP_NAME} v\${APP_VERSION}
+データベース: \${DB_HOST}:\${DB_PORT}
+デバッグモード: \${DEBUG}'
 
 echo "=== 設定ファイル展開 ==="
 render_template "$TEMPLATE"
@@ -27379,12 +27379,12 @@ START=$(date +%s%N)
 worker() {
   local name="$1" duration="$2"
   sleep "$duration"
-  echo "  完了: $name (${duration}s)"
+  echo "  完了: $name (\${duration}s)"
 }
 
 echo "=== ワーカープール開始 (MAX=$MAX_WORKERS) ==="
 
-for job in "${JOBS[@]}"; do
+for job in "\${JOBS[@]}"; do
   IFS=: read -r name dur <<< "$job"
   # トークン取得（空きワーカーを待機）
   read -n1 -u3 token
@@ -27398,8 +27398,8 @@ wait
 END=$(date +%s%N)
 ELAPSED=$(( (END - START) / 1000000 ))
 echo ""
-echo "全${#JOBS[@]}ジョブ完了"
-echo "経過時間: ${ELAPSED}ms (順次なら~1800ms)"`,
+echo "全\${#JOBS[@]}ジョブ完了"
+echo "経過時間: \${ELAPSED}ms (順次なら~1800ms)"`,
     expected:"=== ワーカープール開始 (MAX=4) ===\n  開始: Job_A\n  開始: Job_B\n  開始: Job_C\n  開始: Job_D\n  完了: Job_C (0.1s)\n  開始: Job_E\n  完了: Job_B (0.2s)",
     explanation:"FIFOファイルをセマフォとして使うパターンはBash並行処理の高度なテクニックです。read -u3でブロック待機し、echo >&3でシグナルを送ります。Makeのjoblimitやxargsの-Pフラグも内部で同様の仕組みを使っています。"
   },
@@ -27415,25 +27415,25 @@ declare -A VARS
 
 interpret() {
   local line="$1"
-  line="${line#"${line%%[! ]*}"}"  # leading trim
+  line="\${line#"\${line%%[! ]*}"}"  # leading trim
 
   if [[ "$line" =~ ^let[[:space:]]+([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*=[[:space:]]*(.+)$ ]]; then
-    local var="${BASH_REMATCH[1]}"
-    local expr="${BASH_REMATCH[2]}"
+    local var="\${BASH_REMATCH[1]}"
+    local expr="\${BASH_REMATCH[2]}"
     expr=$(expand_vars "$expr")
     VARS[$var]=$(echo "$expr" | bc -l 2>/dev/null | awk '{printf "%g",$1}')
 
   elif [[ "$line" =~ ^print[[:space:]]+(.+)$ ]]; then
-    local expr="${BASH_REMATCH[1]}"
+    local expr="\${BASH_REMATCH[1]}"
     expr=$(expand_vars "$expr")
     echo "$expr" | bc -l 2>/dev/null | awk '{printf "%g\n",$1}'
 
   elif [[ "$line" =~ ^if[[:space:]]+(.+)[[:space:]]+(>|<|==|>=|<=|!=)[[:space:]]+(.+)[[:space:]]+then$ ]]; then
-    local lhs=$(expand_vars "${BASH_REMATCH[1]}" | bc -l | awk '{printf "%g",$1}')
-    local op="${BASH_REMATCH[2]}"
-    local rhs=$(expand_vars "${BASH_REMATCH[3]}" | bc -l | awk '{printf "%g",$1}')
+    local lhs=$(expand_vars "\${BASH_REMATCH[1]}" | bc -l | awk '{printf "%g",$1}')
+    local op="\${BASH_REMATCH[2]}"
+    local rhs=$(expand_vars "\${BASH_REMATCH[3]}" | bc -l | awk '{printf "%g",$1}')
     CONDITION=$(echo "$lhs $op $rhs" | bc -l)
-    [[ "${CONDITION%.*}" -eq 1 ]] && COND_ACTIVE=1 || COND_ACTIVE=0
+    [[ "\${CONDITION%.*}" -eq 1 ]] && COND_ACTIVE=1 || COND_ACTIVE=0
 
   elif [[ "$line" == "fi" ]]; then
     COND_ACTIVE=-1
@@ -27442,8 +27442,8 @@ interpret() {
 
 expand_vars() {
   local expr="$1"
-  for var in "${!VARS[@]}"; do
-    expr="${expr//$var/${VARS[$var]}}"
+  for var in "\${!VARS[@]}"; do
+    expr="\${expr//$var/\${VARS[$var]}}"
   done
   echo "$expr"
 }
@@ -27495,7 +27495,7 @@ PIDFILE_DIR=$(mktemp -d)
 trap "cleanup; exit 0" TERM INT
 
 register_service() {
-  local name="$1" cmd="$2" policy="${3:-always}"
+  local name="$1" cmd="$2" policy="\${3:-always}"
   SVC_CMD[$name]="$cmd"
   SVC_PID[$name]=""
   SVC_RESTARTS[$name]=0
@@ -27504,14 +27504,14 @@ register_service() {
 
 start_service() {
   local name="$1"
-  eval "${SVC_CMD[$name]}" &
+  eval "\${SVC_CMD[$name]}" &
   SVC_PID[$name]=$!
-  echo "[$(date +%T)] START  $name (PID=${SVC_PID[$name]})"
+  echo "[$(date +%T)] START  $name (PID=\${SVC_PID[$name]})"
 }
 
 check_service() {
   local name="$1"
-  local pid="${SVC_PID[$name]}"
+  local pid="\${SVC_PID[$name]}"
   if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
     return 0  # 生存中
   fi
@@ -27520,7 +27520,7 @@ check_service() {
 
 stop_service() {
   local name="$1"
-  local pid="${SVC_PID[$name]}"
+  local pid="\${SVC_PID[$name]}"
   if [[ -n "$pid" ]]; then
     kill "$pid" 2>/dev/null && wait "$pid" 2>/dev/null || true
     echo "[$(date +%T)] STOP   $name (PID=$pid)"
@@ -27530,9 +27530,9 @@ stop_service() {
 
 status() {
   echo "=== サービス状態 ==="
-  for name in "${!SVC_CMD[@]}"; do
+  for name in "\${!SVC_CMD[@]}"; do
     if check_service "$name"; then
-      echo "  $name: RUNNING (PID=${SVC_PID[$name]}, restarts=${SVC_RESTARTS[$name]})"
+      echo "  $name: RUNNING (PID=\${SVC_PID[$name]}, restarts=\${SVC_RESTARTS[$name]})"
     else
       echo "  $name: STOPPED"
     fi
@@ -27541,7 +27541,7 @@ status() {
 
 cleanup() {
   echo "シャットダウン中..."
-  for name in "${!SVC_CMD[@]}"; do stop_service "$name"; done
+  for name in "\${!SVC_CMD[@]}"; do stop_service "$name"; done
   rm -rf "$PIDFILE_DIR"
   echo "完了"
 }
@@ -27551,7 +27551,7 @@ register_service "web"    "sleep 100"   "always"
 register_service "worker" "sleep 0.3"   "always"  # すぐ終了して再起動テスト
 
 # 全サービス起動
-for svc in "${!SVC_CMD[@]}"; do start_service "$svc"; done
+for svc in "\${!SVC_CMD[@]}"; do start_service "$svc"; done
 sleep 0.5
 
 status
@@ -27559,9 +27559,9 @@ status
 # 監視ループ（2回チェック）
 for iter in 1 2; do
   sleep 0.4
-  for name in "${!SVC_CMD[@]}"; do
-    if ! check_service "$name" && [[ "${SVC_POLICY[$name]}" == "always" ]]; then
-      echo "[$(date +%T)] RESTART $name (restarts=${SVC_RESTARTS[$name]})"
+  for name in "\${!SVC_CMD[@]}"; do
+    if ! check_service "$name" && [[ "\${SVC_POLICY[$name]}" == "always" ]]; then
+      echo "[$(date +%T)] RESTART $name (restarts=\${SVC_RESTARTS[$name]})"
       ((SVC_RESTARTS[$name]++))
       start_service "$name"
     fi
@@ -27947,7 +27947,7 @@ const regexProblems = [
     title: "matchAllで全マッチを反復",
     question: "\"2024-01-15, 2024-03-22, 2025-06-10\"から全ての日付（YYYY-MM-DD形式）をmatchAllで抽出し、年・月・日を分解して表示してください。",
     hint: "/(?<y>\\d{4})-(?<m>\\d{2})-(?<d>\\d{2})/g と matchAll()",
-    answer: `const str = "2024-01-15, 2024-03-22, 2025-06-10";\nconst re = /(?<y>\\d{4})-(?<m>\\d{2})-(?<d>\\d{2})/g;\nfor (const m of str.matchAll(re)) {\n  const { y, m: mo, d } = m.groups;\n  console.log(\`${y}年${mo}月${d}日\`);\n}`,
+    answer: `const str = "2024-01-15, 2024-03-22, 2025-06-10";\nconst re = /(?<y>\\d{4})-(?<m>\\d{2})-(?<d>\\d{2})/g;\nfor (const m of str.matchAll(re)) {\n  const { y, m: mo, d } = m.groups;\n  console.log(\`\${y}年\${mo}月\${d}日\`);\n}`,
     expected: "2024年01月15日\n2024年03月22日\n2025年06月10日",
     explanation: "matchAll()はgフラグのRegExpで全マッチのイテレータを返します。各マッチがgroups付きのmatch objectで、for...ofで反復できます。" },
 
@@ -27979,7 +27979,7 @@ const regexProblems = [
     title: "非貪欲マッチでHTMLタグ抽出",
     question: "\"<b>太字</b>と<i>斜体</i>と<b>もう一つ</b>\"から各タグペアとその内容を非貪欲マッチで正しく抽出してください。",
     hint: "/<(\\w+)>.*?<\\/\\1>/g と非貪欲の.*?",
-    answer: `const html = "<b>太字</b>と<i>斜体</i>と<b>もう一つ</b>";\n// 貪欲（間違い）\nconst greedy = html.match(/<b>.*<\\/b>/);\nconsole.log("貪欲:", greedy[0]);\n// 非貪欲（正しい）\nconst lazy = html.match(/<b>.*?<\\/b>/g);\nlazy.forEach(m => console.log("非貪欲:", m));\n// タグと内容の抽出\nfor (const m of html.matchAll(/<(\\w+)>(.*?)<\\/\\1>/g)) {\n  console.log(\`tag=${m[1]} content=${m[2]}\`);\n}`,
+    answer: `const html = "<b>太字</b>と<i>斜体</i>と<b>もう一つ</b>";\n// 貪欲（間違い）\nconst greedy = html.match(/<b>.*<\\/b>/);\nconsole.log("貪欲:", greedy[0]);\n// 非貪欲（正しい）\nconst lazy = html.match(/<b>.*?<\\/b>/g);\nlazy.forEach(m => console.log("非貪欲:", m));\n// タグと内容の抽出\nfor (const m of html.matchAll(/<(\\w+)>(.*?)<\\/\\1>/g)) {\n  console.log(\`tag=\${m[1]} content=\${m[2]}\`);\n}`,
     expected: "貪欲: <b>太字</b>と<i>斜体</i>と<b>もう一つ</b>\n非貪欲: <b>太字</b>\n非貪欲: <b>もう一つ</b>\ntag=b content=太字\ntag=i content=斜体\ntag=b content=もう一つ",
     explanation: "貪欲マッチ.*は最長マッチ、非貪欲.*?は最短マッチ。\\1の後方参照で開始・終了タグを対応させます。" },
 
@@ -28003,7 +28003,7 @@ const regexProblems = [
     title: "CSV行のパース（引用符対応）",
     question: "引用符内にカンマや改行を含む可能性があるCSV行\\'\"Alice\",\"New York, USA\",\"25\",\"Engineer\"\\'をRegexでパースしてください。",
     hint: "/(?:\"([^\"]*)\"|([^,]+))(?:,|$)/g",
-    answer: `function parseCSV(line) {\n  const fields = [];\n  const re = /\"([^\"]*)\"|([^,]*)/g;\n  let m;\n  while ((m = re.exec(line)) !== null) {\n    if (m.index === re.lastIndex) { re.lastIndex++; continue; }\n    if (m[1] !== undefined) fields.push(m[1]);\n    else if (m[2] !== '') fields.push(m[2]);\n  }\n  return fields;\n}\nconst line = '\"Alice\",\"New York, USA\",\"25\",\"Engineer\"';\nconst fields = parseCSV(line);\nfields.forEach((f, i) => console.log(\`[${i}] ${f}\`));`,
+    answer: `function parseCSV(line) {\n  const fields = [];\n  const re = /\"([^\"]*)\"|([^,]*)/g;\n  let m;\n  while ((m = re.exec(line)) !== null) {\n    if (m.index === re.lastIndex) { re.lastIndex++; continue; }\n    if (m[1] !== undefined) fields.push(m[1]);\n    else if (m[2] !== '') fields.push(m[2]);\n  }\n  return fields;\n}\nconst line = '\"Alice\",\"New York, USA\",\"25\",\"Engineer\"';\nconst fields = parseCSV(line);\nfields.forEach((f, i) => console.log(\`[\${i}] \${f}\`));`,
     expected: "[0] Alice\n[1] New York, USA\n[2] 25\n[3] Engineer",
     explanation: "CSV引用符対応は\"([^\"]*)\"でダブルクォートフィールドをキャプチャ。パイプ|でフォールバック。CSVは一見単純ですがエッジケースが多いです。" },
 
@@ -28067,7 +28067,7 @@ const regexProblems = [
     title: "独自テンプレート言語のパーサー",
     question: "\"Hello ${name}, you have ${count} messages! ${unread > 0 ? 'New!' : ''}\\'のようなテンプレート文字列の${...}プレースホルダーを正規表現で解析し、変数参照と三項式を区別して表示してください。",
     hint: "/\\$\\{([^}]+)\\}/g で全体取得 → 三項式は?を含むかで判定",
-    answer: `const template = "Hello ${name}, you have ${count} messages! ${unread > 0 ? 'New!' : ''}";\nconst re = /\\$\\{([^}]+)\\}/g;\nfor (const m of template.matchAll(re)) {\n  const expr = m[1].trim();\n  if (expr.includes('?')) {\n    console.log("ternary: " + expr);\n  } else {\n    console.log("variable: " + expr);\n  }\n}`,
+    answer: `const template = "Hello \${name}, you have \${count} messages! \${unread > 0 ? 'New!' : ''}";\nconst re = /\\$\\{([^}]+)\\}/g;\nfor (const m of template.matchAll(re)) {\n  const expr = m[1].trim();\n  if (expr.includes('?')) {\n    console.log("ternary: " + expr);\n  } else {\n    console.log("variable: " + expr);\n  }\n}`,
     expected: "variable: name\nvariable: count\nternary: unread > 0 ? 'New!' : ''",
     explanation: "[^}]+でネストしない{}内の全体をキャプチャ。抽出後の分類はRegexより単純なstring.includes()で十分な場合もあります。" },
 
