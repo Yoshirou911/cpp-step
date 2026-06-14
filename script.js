@@ -23155,6 +23155,75 @@ fn main() {
 }`,
     expected:"0 1 1 2 3 5 8 13 21 34 55\nキャッシュサイズ: 9\nRc参照カウント: 3",
     explanation:"Rc<RefCell<T>>はRustの内部可変性パターンの代表格です。Rcで複数箇所から所有でき、RefCellでランタイム借用チェックにより可変アクセスを実現します。コンパイル時の借用規則を実行時に遅らせるトレードオフです。スレッド安全が必要な場合はArc<Mutex<T>>を使います。"
+  },
+  { id: 63, unit: "UNIT 15  ◆  OVERLORD — 言語の極致", rank: "OVERLORD",
+    title: "unsafe Rust：Pin・生ポインタ・mem::transmute",
+    question: "Rustのunsafeを駆使した低レベルプログラミングを実装してください。\n①`Pin<Box<T>>`と`PhantomPinned`で自己参照構造体を安全に作成\n②生ポインタ算術（ptr.add）で配列を走査\n③`std::mem::transmute`でf32のビットパターンをu32として読む\n④`std::alloc`でカスタムメモリ確保→書き込み→解放\n⑤各ステップで「なぜunsafeが必要か」をコメントで説明",
+    hint: "Pin<Box<T>>はBox::pin()で作成。自己参照ポインタはPin::get_unchecked_mut()経由でのみ設定可能。transmute::<f32,u32>(1.0)は0x3f800000になります。",
+    answer:
+`use std::pin::Pin;
+use std::marker::PhantomPinned;
+use std::ptr;
+use std::alloc::{alloc, dealloc, Layout};
+
+struct SelfRef {
+    data: String,
+    // dataへの生ポインタ（自己参照）
+    self_ptr: *const String,
+    _pin: PhantomPinned,
+}
+
+impl SelfRef {
+    fn new(s: &str) -> Pin<Box<Self>> {
+        let mut boxed = Box::pin(SelfRef {
+            data: s.to_string(),
+            self_ptr: ptr::null(),
+            _pin: PhantomPinned,
+        });
+        // SAFETY: Pinで固定済みのため移動しない保証がある
+        unsafe {
+            let raw: *const String = &boxed.data;
+            Pin::get_unchecked_mut(Pin::as_mut(&mut boxed)).self_ptr = raw;
+        }
+        boxed
+    }
+    fn via_ptr(&self) -> &str {
+        // SAFETY: self_ptrはself.dataを指しており有効
+        unsafe { &*self.self_ptr }
+    }
+}
+
+fn main() {
+    // 1. 自己参照構造体
+    let node = SelfRef::new("Pinned!");
+    println!("data: {}", node.data);
+    println!("via ptr: {}", node.via_ptr());
+    println!("equal: {}", node.data == node.via_ptr());
+
+    // 2. 生ポインタ算術
+    let arr = [10i32, 20, 30, 40, 50];
+    let p = arr.as_ptr();
+    let sum: i32 = (0..5).map(|i| unsafe { *p.add(i) }).sum();
+    println!("sum: {}", sum);
+
+    // 3. transmute でビットパターン解析
+    let f: f32 = 1.0_f32;
+    let bits: u32 = unsafe { std::mem::transmute(f) };
+    println!("1.0f32 = {:#010x}", bits);
+
+    // 4. カスタムアロケータ
+    unsafe {
+        let layout = Layout::array::<u8>(4).unwrap();
+        let ptr = alloc(layout);
+        ptr.write(b'R'); ptr.add(1).write(b'u');
+        ptr.add(2).write(b's'); ptr.add(3).write(b't');
+        let s = std::str::from_utf8(std::slice::from_raw_parts(ptr, 4)).unwrap();
+        println!("alloc: {}", s);
+        dealloc(ptr, layout);
+    }
+}`,
+    expected:"data: Pinned!\nvia ptr: Pinned!\nequal: true\nsum: 150\n1.0f32 = 0x3f800000\nalloc: Rust",
+    explanation:"Pin<T>は値のメモリアドレスが移動しないことを保証するRustの型です。async/awaitが生成するFutureは自己参照を含むためPinが必須です。mem::transmute は型システムを迂回するゼロコスト操作で浮動小数点のビット解析や型駆動シリアライズに使います。std::allocでCと同等のmallocをRustから呼べますが、安全管理は完全にプログラマの責任です。"
   }
 ];
 
