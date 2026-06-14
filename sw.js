@@ -1,4 +1,4 @@
-var CACHE_NAME = 'code-step-v1';
+var CACHE_NAME = 'code-step-v2';
 var STATIC_ASSETS = [
   '/',
   '/index.html',
