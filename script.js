@@ -30310,6 +30310,9 @@ function renderDetail(id) {
         ? '<button id="learn-btn" class="learn-btn learned" onclick="toggleLearned(' + p.id + ')">✔ CLEARED  ／  クリックで取り消す</button>'
         : '<p class="manual-clear-hint">実行して自動判定されます ／ <button class="manual-clear-link" onclick="toggleLearned(' + p.id + ')">手動でクリア</button></p>'
       ) +
+    '</div>' +
+    '<div class="section report-section">' +
+      '<button class="report-btn" onclick="openReportModal(' + p.id + ', \'' + p.title.replace(/'/g, "\\'") + '\')">⚑ 問題の誤りを報告</button>' +
     '</div>';
 
   // 別の問題に移動した場合はリセット、同じ問題の再描画ならコードを引き継ぐ
@@ -34012,6 +34015,112 @@ function openAuthModal() {
   setTimeout(function() { document.getElementById('auth-email').focus(); }, 50);
 }
 
+// ===== プッシュ通知 =====
+async function requestPushPermission() {
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+  // すでに許可済みか拒否済みなら何もしない
+  if (Notification.permission !== 'default') return;
+  // ログインから少し遅らせて自然なタイミングで
+  setTimeout(async function() {
+    try {
+      var permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        schedulePushReminders();
+      }
+    } catch(e) {}
+  }, 3000);
+}
+
+function schedulePushReminders() {
+  // ローカルで連続ログインチェック → 2日以上あいていたら即通知
+  try {
+    var days = JSON.parse(localStorage.getItem('login_days') || '[]').sort();
+    if (days.length < 2) return;
+    var last = new Date(days[days.length - 1]);
+    var diff = Math.floor((Date.now() - last.getTime()) / 86400000);
+    if (diff >= 2) {
+      new Notification('CODE STEP — おかえり！', {
+        body: diff + '日ぶりの再開です。続きから学習しよう！',
+        icon: '/icon.svg'
+      });
+    }
+  } catch(e) {}
+}
+
+// ===== 問題報告 =====
+var _reportProblemId = null;
+
+function openReportModal(id, title) {
+  _reportProblemId = id;
+  document.getElementById('report-problem-title').textContent = '問題 #' + String(id).padStart(2,'0') + ' — ' + title;
+  document.querySelectorAll('input[name="report-type"]').forEach(function(r) { r.checked = false; });
+  document.getElementById('report-detail').value = '';
+  var msg = document.getElementById('report-msg');
+  msg.classList.add('hidden');
+  msg.textContent = '';
+  document.getElementById('report-submit-btn').disabled = false;
+  document.getElementById('report-modal').classList.remove('hidden');
+}
+
+function closeReportModal() {
+  document.getElementById('report-modal').classList.add('hidden');
+  _reportProblemId = null;
+}
+
+async function submitReport() {
+  var type = (document.querySelector('input[name="report-type"]:checked') || {}).value;
+  var detail = document.getElementById('report-detail').value.trim();
+  var msg = document.getElementById('report-msg');
+  var btn = document.getElementById('report-submit-btn');
+
+  if (!type) {
+    msg.textContent = '報告の種類を選択してください';
+    msg.className = 'report-msg-error';
+    msg.classList.remove('hidden');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '送信中...';
+
+  try {
+    if (_supabase) {
+      await _supabase.from('bug_reports').insert({
+        problem_id:  _reportProblemId,
+        language:    currentLanguage || 'cpp',
+        report_type: type,
+        detail:      detail || null,
+        user_email:  currentUser ? currentUser.email : null,
+        created_at:  new Date().toISOString()
+      });
+    }
+    msg.textContent = '報告を受け付けました。ありがとうございます！';
+    msg.className = 'report-msg-ok';
+    msg.classList.remove('hidden');
+    setTimeout(closeReportModal, 1800);
+  } catch(e) {
+    msg.textContent = '送信に失敗しました。時間をおいて再度お試しください。';
+    msg.className = 'report-msg-error';
+    msg.classList.remove('hidden');
+    btn.disabled = false;
+    btn.textContent = '報告を送信';
+  }
+}
+
+async function signInWithGoogle() {
+  if (!_supabase) return;
+  var btn = document.getElementById('google-signin-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '接続中...'; }
+  try {
+    await _supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin }
+    });
+  } catch(e) {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" style="vertical-align:middle;margin-right:8px"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.566 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/></svg>Googleでログイン'; }
+  }
+}
+
 function closeAuthModal() {
   playGoBack();
   document.getElementById('auth-modal').classList.add('hidden');
@@ -34142,6 +34251,7 @@ async function initAuth() {
     if (currentUser) {
       recordLoginDay(); // ログイン日を記録
       fetchUserProfile(); // プレミアム状態を取得
+      requestPushPermission();
     } else {
       currentUserIsPremium = false;
       updateAdDisplay();
