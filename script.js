@@ -315,6 +315,38 @@ var currentUserScoutMessages = [];
 var editorDirty = false;
 var _suppressDirty = false;
 var PREMIUM_RANKS = ['SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND', 'TITAN', 'OVERLORD'];
+
+// ===== 問題一覧フィルター =====
+var _filterQuery = '';
+var _filterRank  = '';
+
+function onFilterInput(val) {
+  _filterQuery = val.trim().toLowerCase();
+  var clearBtn = document.getElementById('list-search-clear');
+  if (clearBtn) clearBtn.classList.toggle('hidden', !_filterQuery);
+  renderList();
+}
+
+function onRankFilter(btn) {
+  _filterRank = btn.getAttribute('data-rank');
+  document.querySelectorAll('.rank-filter-btn').forEach(function(b) {
+    b.classList.toggle('active', b === btn);
+  });
+  renderList();
+}
+
+function clearFilter() {
+  _filterQuery = '';
+  _filterRank  = '';
+  var inp = document.getElementById('list-search-input');
+  if (inp) inp.value = '';
+  var clearBtn = document.getElementById('list-search-clear');
+  if (clearBtn) clearBtn.classList.add('hidden');
+  document.querySelectorAll('.rank-filter-btn').forEach(function(b) {
+    b.classList.toggle('active', b.getAttribute('data-rank') === '');
+  });
+  renderList();
+}
 var _currentAuthTab = 'login';
 // 進捗のインメモリキャッシュ（言語切替時にリセット）
 var _progressCache = null;
@@ -30072,16 +30104,36 @@ function renderList() {
     list.appendChild(tbBanner);
   }
 
+  // フィルター適用
+  var allProblems = getProblems();
+  if (_filterQuery || _filterRank) {
+    allProblems = allProblems.filter(function(p) {
+      var matchRank  = !_filterRank || p.rank === _filterRank;
+      var matchQuery = !_filterQuery ||
+        p.title.toLowerCase().indexOf(_filterQuery) !== -1 ||
+        (p.question && p.question.toLowerCase().indexOf(_filterQuery) !== -1);
+      return matchRank && matchQuery;
+    });
+  }
+
   // 単元ごとにグループ化
   var units = {};
   var unitOrder = [];
-  getProblems().forEach(function(p) {
+  allProblems.forEach(function(p) {
     if (!units[p.unit]) {
       units[p.unit] = [];
       unitOrder.push(p.unit);
     }
     units[p.unit].push(p);
   });
+
+  if (unitOrder.length === 0) {
+    var emptyEl = document.createElement('div');
+    emptyEl.id = 'list-filter-empty';
+    emptyEl.textContent = '「' + (_filterQuery || _filterRank) + '」に一致する問題が見つかりません';
+    list.appendChild(emptyEl);
+    return;
+  }
 
   unitOrder.forEach(function(unitName) {
     // 単元ヘッダー

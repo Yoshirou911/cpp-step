@@ -176,6 +176,27 @@
 
   <!-- 問題一覧ページ -->
   <div id="page-list" class="hidden">
+    <div id="list-filter-bar">
+      <div id="list-search-wrap">
+        <span class="list-search-icon">🔍</span>
+        <input id="list-search-input" type="text" placeholder="問題を検索..." oninput="onFilterInput(this.value)" autocomplete="off">
+        <button id="list-search-clear" class="hidden" onclick="clearFilter()">✕</button>
+      </div>
+      <div id="list-rank-filters">
+        <button class="rank-filter-btn active" data-rank="" onclick="onRankFilter(this)">ALL</button>
+        <button class="rank-filter-btn rank-rookie"    data-rank="ROOKIE"    onclick="onRankFilter(this)">ROOKIE</button>
+        <button class="rank-filter-btn rank-bronze"    data-rank="BRONZE"    onclick="onRankFilter(this)">BRONZE</button>
+        <button class="rank-filter-btn rank-silver"    data-rank="SILVER"    onclick="onRankFilter(this)">SILVER</button>
+        <button class="rank-filter-btn rank-gold"      data-rank="GOLD"      onclick="onRankFilter(this)">GOLD</button>
+        <button class="rank-filter-btn rank-platinum"  data-rank="PLATINUM"  onclick="onRankFilter(this)">PLATINUM</button>
+        <button class="rank-filter-btn rank-diamond"   data-rank="DIAMOND"   onclick="onRankFilter(this)">DIAMOND</button>
+        <button class="rank-filter-btn rank-master"    data-rank="MASTER"    onclick="onRankFilter(this)">MASTER</button>
+        <button class="rank-filter-btn rank-legend"    data-rank="LEGEND"    onclick="onRankFilter(this)">LEGEND</button>
+        <button class="rank-filter-btn rank-titan"     data-rank="TITAN"     onclick="onRankFilter(this)">TITAN</button>
+        <button class="rank-filter-btn rank-overlord"  data-rank="OVERLORD"  onclick="onRankFilter(this)">OVERLORD</button>
+        <button class="rank-filter-btn rank-predator"  data-rank="PREDATOR"  onclick="onRankFilter(this)">PREDATOR</button>
+      </div>
+    </div>
     <div id="problem-list"></div>
   </div>
 
