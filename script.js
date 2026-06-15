@@ -907,15 +907,34 @@ function playLevelUpSound() {
   } catch(e) {}
 }
 
+// ===== SNS シェア =====
+var _shareLv = 1;
+function shareToX(text) {
+  var url = 'https://twitter.com/intent/tweet?text=' +
+    encodeURIComponent(text) + '&url=' +
+    encodeURIComponent('https://cpp-step.vercel.app/');
+  window.open(url, '_blank', 'width=600,height=400,noopener');
+}
+function shareLevelUp() {
+  shareToX('CODE STEP で Lv.' + _shareLv + ' ' + getLevelTitle(_shareLv) + ' に到達しました！ #CODESTEP #プログラミング学習');
+}
+function shareBadge(name, desc) {
+  shareToX('CODE STEP で「' + name + '」バッジを獲得しました！（' + desc + '）#CODESTEP #プログラミング学習');
+}
+function shareClear(title, lang) {
+  shareToX('CODE STEP で「' + title + '」（' + lang + '）をクリアしました！ #CODESTEP #プログラミング学習');
+}
+
 // レベルアップオーバーレイを表示
 function showLevelUpEffect(lv) {
   var el = document.getElementById('levelup-effect');
   if (!el) return;
+  _shareLv = lv;
   el.querySelector('.levelup-num').textContent    = lv;
   el.querySelector('.levelup-title-text').textContent = getLevelTitle(lv);
   el.style.setProperty('--lv-color', getLevelColor(lv));
   el.classList.remove('hidden');
-  setTimeout(function() { el.classList.add('hidden'); }, 2800);
+  setTimeout(function() { el.classList.add('hidden'); }, 4500);
   // コンフェッティ
   if (window.confetti) {
     confetti({ particleCount: 80, spread: 70, origin: { x: 0.5, y: 0.35 },
@@ -31267,7 +31286,12 @@ function showJudgeResult(problemId, passed, byAI) {
     var ja = document.getElementById("judge-area");
     if (ja) {
       var label = byAI ? 'AI判定: 正解！' : '正解！';
-      ja.innerHTML = '<div class="judge-pass">✓ ' + label + ' クリアしました！</div>';
+      var _p = getProblems().find(function(x) { return x.id === problemId; });
+      var _pTitle = _p ? _p.title : '';
+      var _lang = currentLanguage || 'cpp';
+      ja.innerHTML = '<div class="judge-pass">✓ ' + label + ' クリアしました！</div>' +
+        '<div class="clear-share-row"><button class="share-x-btn" onclick="shareClear(\'' +
+        _pTitle.replace(/'/g, "\\'") + '\',\'' + _lang + '\')">𝕏 シェア</button></div>';
       ja.classList.remove("hidden");
     }
   } else {
@@ -33450,6 +33474,7 @@ async function renderProfile() {
         '</div>' +
         '<div class="badge-name" style="color:' + nameCol + '">' + b.name + '</div>' +
         '<div class="badge-desc" style="color:' + descCol + '">' + b.desc + '</div>' +
+        (isEarned ? '<button class="badge-share-btn" onclick="shareBadge(\'' + b.name.replace(/'/g, "\\'") + '\',\'' + b.desc.replace(/'/g, "\\'") + '\')">𝕏 シェア</button>' : '') +
       '</div>'
     );
   }

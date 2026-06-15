@@ -5696,3 +5696,48 @@ body.overlord-theme .titan-badge-header {
 }
 
 .detail-textbook-btn:hover { background: rgba(255,215,0,0.1); }
+
+/* ===== SNS シェアボタン ===== */
+.share-x-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 7px 20px;
+  background: #000;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.share-x-btn:hover { background: #1a1a1a; transform: scale(1.04); }
+.share-x-btn:active { transform: scale(0.97); }
+
+/* バッジカード内シェアボタン */
+.badge-share-btn {
+  display: none;
+  margin-top: 6px;
+  padding: 3px 10px;
+  background: #000;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.badge-earned:hover .badge-share-btn { display: inline-block; }
+.badge-share-btn:hover { background: #222; }
+
+/* 問題クリア後シェアボタン */
+.clear-share-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
