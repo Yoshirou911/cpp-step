@@ -5981,3 +5981,23 @@ body.overlord-theme .titan-badge-header {
 #report-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .report-msg-ok    { color: #00E676; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; }
 .report-msg-error { color: #FF4444; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; }
+
+/* ========== ランキング ========== */
+.ranking-wrap { max-width: 680px; margin: 0 auto; padding: 24px 16px 60px; }
+.ranking-title { font-size: 1.4rem; font-weight: 700; color: #FF6B00; letter-spacing: 0.05em; margin-bottom: 20px; text-align: center; }
+.rank-sub-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; justify-content: center; }
+.rank-sub-tab { background: #1a1a1a; border: 1px solid #333; color: #999; padding: 7px 14px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; }
+.rank-sub-tab.active { background: #FF6B00; border-color: #FF6B00; color: #fff; }
+.rank-sub-tab:hover:not(.active) { border-color: #FF6B00; color: #FF6B00; }
+.rank-lang-select-wrap { margin-bottom: 14px; text-align: center; }
+.rank-lang-select { background: #1a1a1a; border: 1px solid #444; color: #eee; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; }
+.rank-list { display: flex; flex-direction: column; gap: 8px; }
+.rank-row { display: flex; align-items: center; gap: 12px; background: #111; border: 1px solid #222; border-radius: 10px; padding: 12px 16px; }
+.rank-row-me { border-color: #FF6B00; background: rgba(255,107,0,0.07); }
+.rank-medal { font-size: 1.3rem; min-width: 28px; text-align: center; }
+.rank-num { display: inline-block; min-width: 28px; text-align: center; color: #666; font-size: 0.9rem; font-weight: 700; }
+.rank-name { flex: 1; font-size: 0.85rem; color: #ccc; font-family: 'Share Tech Mono', monospace; }
+.rank-me-badge { background: #FF6B00; color: #fff; font-size: 0.65rem; padding: 1px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+.rank-value { font-size: 0.85rem; font-weight: 700; color: #FF6B00; white-space: nowrap; }
+.ranking-loading { text-align: center; color: #666; padding: 40px; font-size: 0.9rem; }
+.ranking-empty { text-align: center; color: #666; padding: 40px 16px; font-size: 0.85rem; line-height: 1.7; }

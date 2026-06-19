@@ -1242,7 +1242,7 @@ function showNavAndProgress() {
 }
 
 function setActiveTab(tab) {
-  ['problems', 'missions', 'guide', 'textbook'].forEach(function(t) {
+  ['problems', 'missions', 'guide', 'textbook', 'ranking'].forEach(function(t) {
     document.getElementById('tab-' + t).classList.toggle('active', t === tab);
   });
 }
@@ -29978,6 +29978,9 @@ function saveProgress(id) {
       language: currentLanguage || 'cpp',
       problem_id: id
     }).then(function() {}).catch(function() {});
+    var _p = getProblems().find(function(x) { return x.id === id; });
+    var _xp = _p ? (RANK_EXP[(_p.rank || '').toLowerCase()] || 15) : 15;
+    syncUserStats(_xp, currentLanguage || 'cpp');
   }
   checkLevelUp(); // EXP・レベルアップ判定
 }
@@ -30038,7 +30041,7 @@ function showPage(name) {
   stopStudyTimer();
   // 全ページを非表示にしてから対象だけ表示
   ["page-landing", "page-lang", "page-list", "page-detail", "page-guide",
-   "page-mission-list", "page-mission-detail", "page-profile", "page-textbook"].forEach(function(id) {
+   "page-mission-list", "page-mission-detail", "page-profile", "page-textbook", "page-ranking"].forEach(function(id) {
     document.getElementById(id).classList.add("hidden");
   });
   document.getElementById("page-" + name).classList.remove("hidden");
@@ -31477,6 +31480,148 @@ async function sendChatMessage() {
 
 // ===== タブ切り替え =====
 
+// ===== ランキング =====
+
+var _rankingTab  = 'total';
+var _rankingLang = 'cpp';
+
+async function syncUserStats(addedXP, lang) {
+  if (!currentUser || !_supabase) return;
+  var now  = new Date();
+  var day  = now.getDay();
+  var mon  = new Date(now);
+  mon.setDate(now.getDate() - (day === 0 ? 6 : day - 1));
+  var weekStart = mon.toISOString().slice(0, 10);
+  try {
+    var r = await _supabase.from('user_stats').select('*').eq('user_id', currentUser.id).maybeSingle();
+    var d = r.data;
+    var isNew = !d || d.week_start < weekStart;
+    var lc = (d && d.lang_cleared) ? Object.assign({}, d.lang_cleared) : {};
+    lc[lang] = (lc[lang] || 0) + 1;
+    await _supabase.from('user_stats').upsert({
+      user_id:           currentUser.id,
+      total_cleared:     (d ? d.total_cleared : 0) + 1,
+      total_xp:          (d ? d.total_xp : 0) + addedXP,
+      weekly_xp:         isNew ? addedXP : (d ? d.weekly_xp : 0) + addedXP,
+      weekly_cleared:    isNew ? 1 : (d ? d.weekly_cleared : 0) + 1,
+      prev_week_cleared: isNew ? (d ? d.weekly_cleared : 0) : (d ? d.prev_week_cleared : 0),
+      week_start:        weekStart,
+      lang_cleared:      lc,
+      updated_at:        new Date().toISOString()
+    });
+  } catch(e) {}
+}
+
+async function renderRanking() {
+  var el = document.getElementById('ranking-content');
+  if (!el) return;
+
+  var LANGS = [
+    ['cpp','C++'],['python','Python'],['javascript','JavaScript'],['typescript','TypeScript'],
+    ['java','Java'],['csharp','C#'],['kotlin','Kotlin'],['swift','Swift'],['go','Go'],
+    ['rust','Rust'],['ruby','Ruby'],['c','C'],['html','HTML'],['sql','SQL'],
+    ['bash','Bash'],['regex','Regex'],['php','PHP']
+  ];
+
+  var langOpts = LANGS.map(function(l) {
+    return '<option value="' + l[0] + '"' + (_rankingLang === l[0] ? ' selected' : '') + '>' + l[1] + '</option>';
+  }).join('');
+
+  var tabs = [
+    ['total',     '🏅 総合クリア数'],
+    ['lang',      '🌐 言語別クリア数'],
+    ['weekly_xp', '⚡ 週間XP'],
+    ['growth',    '📈 伸び率']
+  ];
+  var tabHtml = tabs.map(function(t) {
+    return '<button class="rank-sub-tab' + (_rankingTab === t[0] ? ' active' : '') +
+      '" onclick="setRankingTab(\'' + t[0] + '\')">' + t[1] + '</button>';
+  }).join('');
+
+  el.innerHTML =
+    '<div class="ranking-wrap">' +
+      '<h2 class="ranking-title">🏆 RANKING</h2>' +
+      '<div class="rank-sub-tabs">' + tabHtml + '</div>' +
+      (_rankingTab === 'lang'
+        ? '<div class="rank-lang-select-wrap"><select class="rank-lang-select" onchange="setRankingLang(this.value)">' + langOpts + '</select></div>'
+        : '') +
+      '<div id="ranking-list"><div class="ranking-loading">読込中...</div></div>' +
+    '</div>';
+
+  if (!_supabase) {
+    document.getElementById('ranking-list').innerHTML = '<p class="ranking-empty">ログインするとランキングに参加できます</p>';
+    return;
+  }
+
+  try {
+    var rows = [];
+    if (_rankingTab === 'total') {
+      var r = await _supabase.from('user_stats').select('user_id,total_cleared,total_xp')
+        .gt('total_cleared', 0).order('total_cleared', { ascending: false }).limit(20);
+      rows = (r.data || []).map(function(u) {
+        return { uid: u.user_id, value: u.total_cleared, sub: u.total_xp.toLocaleString() + ' XP' };
+      });
+    } else if (_rankingTab === 'lang') {
+      var r = await _supabase.from('user_stats').select('user_id,lang_cleared').limit(500);
+      rows = (r.data || [])
+        .map(function(u) { return { uid: u.user_id, value: (u.lang_cleared || {})[_rankingLang] || 0 }; })
+        .filter(function(u) { return u.value > 0; })
+        .sort(function(a, b) { return b.value - a.value; })
+        .slice(0, 20)
+        .map(function(u) { return Object.assign(u, { sub: u.value + ' 問' }); });
+    } else if (_rankingTab === 'weekly_xp') {
+      var r = await _supabase.from('user_stats').select('user_id,weekly_xp')
+        .gt('weekly_xp', 0).order('weekly_xp', { ascending: false }).limit(20);
+      rows = (r.data || []).map(function(u) {
+        return { uid: u.user_id, value: u.weekly_xp, sub: u.weekly_xp.toLocaleString() + ' XP' };
+      });
+    } else if (_rankingTab === 'growth') {
+      var r = await _supabase.from('user_stats').select('user_id,weekly_cleared,prev_week_cleared')
+        .gt('weekly_cleared', 0).limit(500);
+      rows = (r.data || [])
+        .map(function(u) {
+          var g = u.weekly_cleared - (u.prev_week_cleared || 0);
+          return { uid: u.user_id, value: g, sub: '+' + g + ' 問（今週）' };
+        })
+        .filter(function(u) { return u.value > 0; })
+        .sort(function(a, b) { return b.value - a.value; })
+        .slice(0, 20);
+    }
+
+    if (rows.length === 0) {
+      document.getElementById('ranking-list').innerHTML = '<p class="ranking-empty">まだデータがありません。問題をクリアするとランキングに表示されます！</p>';
+      return;
+    }
+
+    var myId = currentUser ? currentUser.id : null;
+    var medals = ['🥇','🥈','🥉'];
+    var listHtml = rows.map(function(row, i) {
+      var isMe = myId && row.uid === myId;
+      var anonId = 'USER #' + row.uid.substring(0, 8).toUpperCase();
+      var medal = medals[i] || ('<span class="rank-num">' + (i + 1) + '</span>');
+      return '<div class="rank-row' + (isMe ? ' rank-row-me' : '') + '">' +
+        '<span class="rank-medal">' + medal + '</span>' +
+        '<span class="rank-name">' + anonId + (isMe ? ' <span class="rank-me-badge">YOU</span>' : '') + '</span>' +
+        '<span class="rank-value">' + row.sub + '</span>' +
+      '</div>';
+    }).join('');
+
+    document.getElementById('ranking-list').innerHTML = '<div class="rank-list">' + listHtml + '</div>';
+  } catch(e) {
+    document.getElementById('ranking-list').innerHTML = '<p class="ranking-empty">読込に失敗しました</p>';
+  }
+}
+
+function setRankingTab(tab) {
+  _rankingTab = tab;
+  renderRanking();
+}
+
+function setRankingLang(lang) {
+  _rankingLang = lang;
+  renderRanking();
+}
+
 function switchTab(tab) {
   playNavTab();
   setActiveTab(tab);
@@ -31492,6 +31637,10 @@ function switchTab(tab) {
     history.pushState({ page: 'textbook', lang: currentLanguage, tab: 'textbook' }, '');
     renderTextbook();
     showPage('textbook');
+  } else if (tab === 'ranking') {
+    history.pushState({ page: 'ranking', lang: currentLanguage, tab: 'ranking' }, '');
+    renderRanking();
+    showPage('ranking');
   } else {
     history.pushState({ page: 'guide', lang: currentLanguage, tab: 'guide' }, '');
     renderGuide();
