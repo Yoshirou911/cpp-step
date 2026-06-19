@@ -5983,21 +5983,114 @@ body.overlord-theme .titan-badge-header {
 .report-msg-error { color: #FF4444; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; }
 
 /* ========== ランキング ========== */
-.ranking-wrap { max-width: 680px; margin: 0 auto; padding: 24px 16px 60px; }
-.ranking-title { font-size: 1.4rem; font-weight: 700; color: #FF6B00; letter-spacing: 0.05em; margin-bottom: 20px; text-align: center; }
-.rank-sub-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; justify-content: center; }
-.rank-sub-tab { background: #1a1a1a; border: 1px solid #333; color: #999; padding: 7px 14px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; }
-.rank-sub-tab.active { background: #FF6B00; border-color: #FF6B00; color: #fff; }
-.rank-sub-tab:hover:not(.active) { border-color: #FF6B00; color: #FF6B00; }
-.rank-lang-select-wrap { margin-bottom: 14px; text-align: center; }
-.rank-lang-select { background: #1a1a1a; border: 1px solid #444; color: #eee; padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; }
-.rank-list { display: flex; flex-direction: column; gap: 8px; }
-.rank-row { display: flex; align-items: center; gap: 12px; background: #111; border: 1px solid #222; border-radius: 10px; padding: 12px 16px; }
-.rank-row-me { border-color: #FF6B00; background: rgba(255,107,0,0.07); }
-.rank-medal { font-size: 1.3rem; min-width: 28px; text-align: center; }
-.rank-num { display: inline-block; min-width: 28px; text-align: center; color: #666; font-size: 0.9rem; font-weight: 700; }
-.rank-name { flex: 1; font-size: 0.85rem; color: #ccc; font-family: 'Share Tech Mono', monospace; }
-.rank-me-badge { background: #FF6B00; color: #fff; font-size: 0.65rem; padding: 1px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
-.rank-value { font-size: 0.85rem; font-weight: 700; color: #FF6B00; white-space: nowrap; }
-.ranking-loading { text-align: center; color: #666; padding: 40px; font-size: 0.9rem; }
-.ranking-empty { text-align: center; color: #666; padding: 40px 16px; font-size: 0.85rem; line-height: 1.7; }
+.ranking-wrap { max-width: 680px; margin: 0 auto; padding: 20px 16px 80px; }
+
+.ranking-header {
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255,107,0,0.18);
+}
+.ranking-header-label {
+  font-family: 'Barlow Condensed', 'Share Tech Mono', monospace;
+  font-size: 0.7rem; letter-spacing: 0.18em; color: #FF6B00; opacity: 0.7;
+  margin-bottom: 2px;
+}
+.ranking-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 2rem; font-weight: 800; letter-spacing: 0.08em;
+  color: #eee; line-height: 1;
+}
+.ranking-title span { color: #FF6B00; }
+
+.rank-sub-tabs {
+  display: flex; gap: 0; margin-bottom: 20px;
+  border: 1px solid rgba(255,107,0,0.18);
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  overflow: hidden;
+}
+.rank-sub-tab {
+  flex: 1; background: transparent; border: none;
+  border-right: 1px solid rgba(255,107,0,0.12);
+  color: #666; padding: 9px 4px; font-size: 0.72rem; letter-spacing: 0.04em;
+  cursor: pointer; transition: all 0.15s; font-family: 'Share Tech Mono', monospace;
+  white-space: nowrap;
+}
+.rank-sub-tab:last-child { border-right: none; }
+.rank-sub-tab.active { background: rgba(255,107,0,0.12); color: #FF6B00; }
+.rank-sub-tab:hover:not(.active) { background: rgba(255,107,0,0.05); color: #ccc; }
+
+.rank-lang-select-wrap { margin-bottom: 14px; }
+.rank-lang-select {
+  background: rgba(255,107,0,0.06); border: 1px solid rgba(255,107,0,0.22);
+  color: #eee; padding: 7px 12px; font-size: 0.82rem;
+  cursor: pointer; font-family: 'Share Tech Mono', monospace; width: 100%;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+}
+
+.rank-list { display: flex; flex-direction: column; gap: 6px; }
+
+.rank-row {
+  display: flex; align-items: center; gap: 14px;
+  background: rgba(8,4,12,0.55);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-left: 2px solid rgba(255,107,0,0.2);
+  padding: 13px 18px;
+  position: relative; overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
+}
+.rank-row::after {
+  content: ''; position: absolute; top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,107,0,0.04), transparent);
+  transition: left 0.5s ease;
+}
+.rank-row:hover::after { left: 160%; }
+.rank-row:hover { border-left-color: #FF6B00; background: rgba(255,107,0,0.04); }
+
+.rank-row-1st { border-left-color: #FFD700; }
+.rank-row-1st:hover { border-left-color: #FFD700; background: rgba(255,215,0,0.05); }
+.rank-row-2nd { border-left-color: #B0BEC5; }
+.rank-row-2nd:hover { border-left-color: #B0BEC5; background: rgba(176,190,197,0.04); }
+.rank-row-3rd { border-left-color: #C47A2F; }
+.rank-row-3rd:hover { border-left-color: #C47A2F; background: rgba(196,122,47,0.04); }
+.rank-row-me { border-left-color: #FF6B00 !important; background: rgba(255,107,0,0.07) !important; }
+
+.rank-pos {
+  min-width: 32px; text-align: center;
+  font-family: 'Barlow Condensed', monospace;
+  font-size: 1.1rem; font-weight: 700; color: #444;
+}
+.rank-pos-1 { color: #FFD700; font-size: 1.3rem; }
+.rank-pos-2 { color: #B0BEC5; font-size: 1.3rem; }
+.rank-pos-3 { color: #C47A2F; font-size: 1.3rem; }
+
+.rank-name {
+  flex: 1; font-size: 0.8rem; color: #999;
+  font-family: 'Share Tech Mono', monospace; letter-spacing: 0.03em;
+}
+.rank-me-badge {
+  display: inline-block;
+  background: #FF6B00; color: #000; font-size: 0.6rem; font-weight: 900;
+  padding: 1px 5px; margin-left: 8px;
+  letter-spacing: 0.08em; vertical-align: middle;
+  font-family: 'Barlow Condensed', monospace;
+}
+.rank-value {
+  font-family: 'Barlow Condensed', monospace;
+  font-size: 1rem; font-weight: 700; color: #eee; white-space: nowrap;
+  letter-spacing: 0.04em;
+}
+
+.ranking-loading {
+  text-align: center; color: #444; padding: 60px 16px;
+  font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; letter-spacing: 0.1em;
+}
+.ranking-empty {
+  text-align: center; color: #555; padding: 60px 16px;
+  font-size: 0.82rem; line-height: 1.8;
+  font-family: 'Share Tech Mono', monospace;
+  border: 1px dashed rgba(255,107,0,0.12);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}

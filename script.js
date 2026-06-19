@@ -31540,12 +31540,15 @@ async function renderRanking() {
 
   el.innerHTML =
     '<div class="ranking-wrap">' +
-      '<h2 class="ranking-title">🏆 RANKING</h2>' +
+      '<div class="ranking-header">' +
+        '<div class="ranking-header-label">◆ LEADERBOARD</div>' +
+        '<div class="ranking-title">RANK<span>ING</span></div>' +
+      '</div>' +
       '<div class="rank-sub-tabs">' + tabHtml + '</div>' +
       (_rankingTab === 'lang'
         ? '<div class="rank-lang-select-wrap"><select class="rank-lang-select" onchange="setRankingLang(this.value)">' + langOpts + '</select></div>'
         : '') +
-      '<div id="ranking-list"><div class="ranking-loading">読込中...</div></div>' +
+      '<div id="ranking-list"><div class="ranking-loading">// LOADING...</div></div>' +
     '</div>';
 
   if (!_supabase) {
@@ -31594,14 +31597,17 @@ async function renderRanking() {
     }
 
     var myId = currentUser ? currentUser.id : null;
-    var medals = ['🥇','🥈','🥉'];
+    var posClass = ['rank-row-1st', 'rank-row-2nd', 'rank-row-3rd'];
+    var posLabel = ['1ST', '2ND', '3RD'];
     var listHtml = rows.map(function(row, i) {
       var isMe = myId && row.uid === myId;
       var anonId = 'USER #' + row.uid.substring(0, 8).toUpperCase();
-      var medal = medals[i] || ('<span class="rank-num">' + (i + 1) + '</span>');
-      return '<div class="rank-row' + (isMe ? ' rank-row-me' : '') + '">' +
-        '<span class="rank-medal">' + medal + '</span>' +
-        '<span class="rank-name">' + anonId + (isMe ? ' <span class="rank-me-badge">YOU</span>' : '') + '</span>' +
+      var rowCls = 'rank-row' + (i < 3 ? ' ' + posClass[i] : '') + (isMe ? ' rank-row-me' : '');
+      var posCls = i < 3 ? 'rank-pos rank-pos-' + (i + 1) : 'rank-pos';
+      var posStr = i < 3 ? posLabel[i] : (i + 1) + '.';
+      return '<div class="' + rowCls + '">' +
+        '<span class="' + posCls + '">' + posStr + '</span>' +
+        '<span class="rank-name">' + anonId + (isMe ? '<span class="rank-me-badge">YOU</span>' : '') + '</span>' +
         '<span class="rank-value">' + row.sub + '</span>' +
       '</div>';
     }).join('');
