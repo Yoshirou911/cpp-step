@@ -30046,9 +30046,8 @@ function showPage(name) {
   });
   document.getElementById("page-" + name).classList.remove("hidden");
 
-  // 言語選択画面ではナビとプログレスを隠す
+  // 言語選択画面ではプログレスバーを隠す（タブは表示したまま）
   if (name === 'lang') {
-    document.getElementById('nav-tabs').classList.add('hidden');
     document.getElementById('progress-text').classList.add('hidden');
     document.getElementById('progress-bar-wrap').classList.add('hidden');
   }
