@@ -315,7 +315,8 @@ var currentUserScoutMessages = [];
 var editorDirty = false;
 var _suppressDirty = false;
 var PREMIUM_RANKS = ['SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND', 'TITAN', 'OVERLORD'];
-var HIGH_RANKS    = ['PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND', 'TITAN', 'OVERLORD'];
+var HIGH_RANKS         = ['PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND', 'TITAN', 'OVERLORD'];
+var HIGH_RANKS_PREMIUM = ['MASTER', 'LEGEND', 'TITAN', 'OVERLORD'];
 
 // ===== 問題一覧フィルター =====
 var _filterQuery = '';
@@ -30215,6 +30216,7 @@ function renderDetail(id) {
   const p = getProblems().find(function(x) { return x.id === id; });
   if (!p) return;
   const learned = isLearned(p.id);
+  const effectiveHighRanks = currentUserIsPremium ? HIGH_RANKS_PREMIUM : HIGH_RANKS;
 
   // 既存エディタのコードを保存してから破棄
   var prevProblemId = currentProblemId;
@@ -30248,7 +30250,7 @@ function renderDetail(id) {
     '</div>' +
 
     '<div class="section">' +
-      (HIGH_RANKS.indexOf(p.rank) >= 0 && !learned
+      (effectiveHighRanks.indexOf(p.rank) >= 0 && !learned
         ? '<p class="high-rank-lock">🔒 正解すると模範解答が表示されます</p>'
         : '<button class="toggle-btn" onclick="toggleSection(\'answer-' + p.id + '\')">📋 正解例を見る</button>' +
           '<div id="answer-' + p.id + '" class="hidden toggle-content">' +
@@ -30281,7 +30283,7 @@ function renderDetail(id) {
         '<pre id="output-text"></pre>' +
       '</div>' +
       '<div id="judge-area" class="hidden"></div>' +
-      (HIGH_RANKS.indexOf(p.rank) < 0
+      (effectiveHighRanks.indexOf(p.rank) < 0
         ? '<button class="ai-feedback-btn" onclick="getAIFeedback(' + p.id + ')">🤖 AIにフィードバックをもらう</button>' +
           '<div id="ai-feedback-area" class="hidden">' +
             '<p class="output-label">// AI FEEDBACK</p>' +
@@ -30292,12 +30294,12 @@ function renderDetail(id) {
 
     '<div class="section explain-section">' +
       '<div class="explain-btns">' +
-        (HIGH_RANKS.indexOf(p.rank) < 0
+        (effectiveHighRanks.indexOf(p.rank) < 0
           ? '<button class="toggle-btn explain-open-btn" onclick="explainCode(' + p.id + ')">🔍 コードを一行ずつ解説する</button>'
           : '') +
         '<button class="toggle-btn syntax-menu-btn" onclick="showSyntaxMenu()">📚 書き方メニュー</button>' +
       '</div>' +
-      (HIGH_RANKS.indexOf(p.rank) < 0
+      (effectiveHighRanks.indexOf(p.rank) < 0
         ? '<div id="explain-area-' + p.id + '" class="explain-area hidden"></div>'
         : '') +
     '</div>' +
@@ -30333,7 +30335,7 @@ function renderDetail(id) {
 
   var chatToggle = document.getElementById('chat-toggle');
   if (chatToggle) {
-    if (HIGH_RANKS.indexOf(p.rank) >= 0) {
+    if (effectiveHighRanks.indexOf(p.rank) >= 0) {
       chatToggle.classList.add('hidden');
       document.getElementById('chat-panel').classList.add('hidden');
     } else {
