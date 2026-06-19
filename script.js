@@ -30046,11 +30046,18 @@ function showPage(name) {
   });
   document.getElementById("page-" + name).classList.remove("hidden");
 
-  // 言語選択画面ではプログレスバーを隠す（タブは表示する）
+  // 言語選択画面ではRANKINGタブのみ表示
   if (name === 'lang') {
     document.getElementById('nav-tabs').classList.remove('hidden');
+    ['problems','missions','guide','textbook'].forEach(function(t) {
+      document.getElementById('tab-' + t).classList.add('hidden');
+    });
     document.getElementById('progress-text').classList.add('hidden');
     document.getElementById('progress-bar-wrap').classList.add('hidden');
+  } else {
+    ['problems','missions','guide','textbook'].forEach(function(t) {
+      document.getElementById('tab-' + t).classList.remove('hidden');
+    });
   }
   // 問題・ミッション詳細では学習タイマーを開始
   if (name === 'detail' || name === 'mission-detail') {
