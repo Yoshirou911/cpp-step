@@ -1412,10 +1412,12 @@ async function adminSetPremium(isPremium) {
   msgEl.textContent = '処理中...';
 
   try {
+    var session = await _supabase.auth.getSession();
+    var token = session?.data?.session?.access_token;
     var res = await fetch('/api/admin-grant', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ adminUserId: currentUser.id, targetEmail: email, isPremium: isPremium })
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ targetEmail: email, isPremium: isPremium })
     });
     var data = await res.json();
     if (data.error) throw new Error(data.error);
@@ -30217,7 +30219,9 @@ function escapeHtml(text) {
   return text
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 // ===== 問題詳細の描画 =====
@@ -34907,7 +34911,7 @@ function _renderQuizResult(resultId) {
   var logSnapshot = _quizAnswerLog.slice();
   _generateQuizMessage(r, logSnapshot).then(function(msg) {
     var aiBox = document.getElementById('quiz-ai-msg');
-    if (aiBox) aiBox.innerHTML = '<div class="quiz-ai-text">' + msg.replace(/\n/g, '<br>') + '</div>';
+    if (aiBox) aiBox.innerHTML = '<div class="quiz-ai-text">' + escapeHtml(msg).replace(/\n/g, '<br>') + '</div>';
   }).catch(function() {
     var aiBox = document.getElementById('quiz-ai-msg');
     if (aiBox) aiBox.innerHTML = '';

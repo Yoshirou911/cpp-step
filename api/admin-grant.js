@@ -46,12 +46,9 @@ export default async function handler(req, res) {
     return res.status(429).json({ error: '短時間に送信しすぎています。1分後にお試しください。' });
   }
 
-  const { adminUserId, targetEmail, isPremium } = req.body || {};
+  const { targetEmail, isPremium } = req.body || {};
 
   // 入力バリデーション
-  if (adminUserId && !UUID_RE.test(adminUserId)) {
-    return res.status(400).json({ error: '不正な管理者IDです' });
-  }
   if (targetEmail && !EMAIL_RE.test(targetEmail)) {
     return res.status(400).json({ error: '不正なメールアドレスです' });
   }
@@ -60,13 +57,27 @@ export default async function handler(req, res) {
   const serviceKey   = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const adminUserIds = (process.env.ADMIN_USER_IDS || '').split(',').map(s => s.trim()).filter(Boolean);
 
-  // ─── 管理者確認 ───
+  if (!supabaseUrl || !serviceKey) return res.status(500).json({ error: 'サーバー設定エラー' });
+
+  // ─── JWTを検証して管理者確認 ───
+  const authHeader = req.headers['authorization'];
+  if (!authHeader?.startsWith('Bearer ')) {
+    return res.status(401).json({ error: '認証が必要です' });
+  }
+  const token = authHeader.slice(7);
+  const userRes = await fetch(`${supabaseUrl}/auth/v1/user`, {
+    headers: { 'apikey': serviceKey, 'Authorization': `Bearer ${token}` }
+  });
+  if (!userRes.ok) {
+    return res.status(401).json({ error: '無効なトークンです' });
+  }
+  const userData = await userRes.json();
+  const adminUserId = userData.id;
   if (!adminUserId || !adminUserIds.includes(adminUserId)) {
     return res.status(403).json({ error: '管理者権限がありません' });
   }
 
   if (!targetEmail) return res.status(400).json({ error: 'メールアドレスが必要です' });
-  if (!supabaseUrl || !serviceKey) return res.status(500).json({ error: 'サーバー設定エラー' });
 
   try {
     // 1. メールアドレスからユーザーIDを検索
