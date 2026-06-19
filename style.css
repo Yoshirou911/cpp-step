@@ -3602,6 +3602,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   overflow: hidden;
 }
 .ad-banner { height: 72px; }
+.ad-banner-top { margin: 0 0 8px; border-radius: 0; border-left: none; border-right: none; }
 .ad-leaderboard { height: 90px; }
 .ad-placeholder-inner {
   display: flex;
