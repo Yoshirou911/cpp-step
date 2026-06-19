@@ -315,6 +315,7 @@ var currentUserScoutMessages = [];
 var editorDirty = false;
 var _suppressDirty = false;
 var PREMIUM_RANKS = ['SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND', 'TITAN', 'OVERLORD'];
+var HIGH_RANKS    = ['PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND', 'TITAN', 'OVERLORD'];
 
 // ===== 問題一覧フィルター =====
 var _filterQuery = '';
@@ -30247,10 +30248,12 @@ function renderDetail(id) {
     '</div>' +
 
     '<div class="section">' +
-      '<button class="toggle-btn" onclick="toggleSection(\'answer-' + p.id + '\')">📋 正解例を見る</button>' +
-      '<div id="answer-' + p.id + '" class="hidden toggle-content">' +
-        '<pre><code>' + escapeHtml(p.answer) + '</code></pre>' +
-      '</div>' +
+      (HIGH_RANKS.indexOf(p.rank) >= 0 && !learned
+        ? '<p class="high-rank-lock">🔒 正解すると模範解答が表示されます</p>'
+        : '<button class="toggle-btn" onclick="toggleSection(\'answer-' + p.id + '\')">📋 正解例を見る</button>' +
+          '<div id="answer-' + p.id + '" class="hidden toggle-content">' +
+            '<pre><code>' + escapeHtml(p.answer) + '</code></pre>' +
+          '</div>') +
     '</div>' +
 
     '<div class="section">' +
@@ -30278,19 +30281,25 @@ function renderDetail(id) {
         '<pre id="output-text"></pre>' +
       '</div>' +
       '<div id="judge-area" class="hidden"></div>' +
-      '<button class="ai-feedback-btn" onclick="getAIFeedback(' + p.id + ')">🤖 AIにフィードバックをもらう</button>' +
-      '<div id="ai-feedback-area" class="hidden">' +
-        '<p class="output-label">// AI FEEDBACK</p>' +
-        '<div id="ai-feedback-text" class="ai-feedback-text"></div>' +
-      '</div>' +
+      (HIGH_RANKS.indexOf(p.rank) < 0
+        ? '<button class="ai-feedback-btn" onclick="getAIFeedback(' + p.id + ')">🤖 AIにフィードバックをもらう</button>' +
+          '<div id="ai-feedback-area" class="hidden">' +
+            '<p class="output-label">// AI FEEDBACK</p>' +
+            '<div id="ai-feedback-text" class="ai-feedback-text"></div>' +
+          '</div>'
+        : '') +
     '</div>' +
 
     '<div class="section explain-section">' +
       '<div class="explain-btns">' +
-        '<button class="toggle-btn explain-open-btn" onclick="explainCode(' + p.id + ')">🔍 コードを一行ずつ解説する</button>' +
+        (HIGH_RANKS.indexOf(p.rank) < 0
+          ? '<button class="toggle-btn explain-open-btn" onclick="explainCode(' + p.id + ')">🔍 コードを一行ずつ解説する</button>'
+          : '') +
         '<button class="toggle-btn syntax-menu-btn" onclick="showSyntaxMenu()">📚 書き方メニュー</button>' +
       '</div>' +
-      '<div id="explain-area-' + p.id + '" class="explain-area hidden"></div>' +
+      (HIGH_RANKS.indexOf(p.rank) < 0
+        ? '<div id="explain-area-' + p.id + '" class="explain-area hidden"></div>'
+        : '') +
     '</div>' +
 
     '<div class="section golf-section">' +
@@ -30321,6 +30330,16 @@ function renderDetail(id) {
     : (savedCode !== null ? savedCode : getStarterCode());
   initAceEditor(initCode);
   refreshGolfBoard(p.id);
+
+  var chatToggle = document.getElementById('chat-toggle');
+  if (chatToggle) {
+    if (HIGH_RANKS.indexOf(p.rank) >= 0) {
+      chatToggle.classList.add('hidden');
+      document.getElementById('chat-panel').classList.add('hidden');
+    } else {
+      chatToggle.classList.remove('hidden');
+    }
+  }
 }
 
 // ===== 書き方メニュー =====

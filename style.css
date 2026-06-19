@@ -1210,6 +1210,14 @@ a.landing-text-link { text-decoration: underline; }
 
 .toggle-content { margin-top: 14px; }
 
+.high-rank-lock {
+  color: #666;
+  font-size: 0.85rem;
+  margin: 0;
+  padding: 10px 0;
+  letter-spacing: 0.03em;
+}
+
 /* ========== コードブロック ========== */
 pre {
   background: #040302;
