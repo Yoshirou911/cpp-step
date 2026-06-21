@@ -31,10 +31,24 @@ export default async function handler(req, res) {
   // CORS — 自ドメインのみ許可
   res.setHeader('Access-Control-Allow-Origin', 'https://cpp-step.vercel.app');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  // JWT認証チェック
+  const token = req.headers['authorization']?.replace('Bearer ', '');
+  if (!token) {
+    return res.status(401).json({ error: '認証が必要です。ログインしてください。' });
+  }
+  const supabaseAuthRes = await fetch(
+    `${process.env.SUPABASE_URL}/auth/v1/user`,
+    { headers: { 'Authorization': `Bearer ${token}`, 'apikey': process.env.SUPABASE_ANON_KEY } }
+  );
+  if (!supabaseAuthRes.ok) {
+    return res.status(401).json({ error: '認証が無効です。再ログインしてください。' });
+  }
+  const authedUser = await supabaseAuthRes.json();
 
   // レート制限
   const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim()
@@ -44,6 +58,11 @@ export default async function handler(req, res) {
   }
 
   const { email, userId } = req.body || {};
+
+  // 認証済みユーザーと一致するか確認
+  if (userId && authedUser.id !== userId) {
+    return res.status(403).json({ error: '操作が許可されていません。' });
+  }
 
   // 入力バリデーション
   if (email && !EMAIL_RE.test(email)) {

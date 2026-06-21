@@ -112,18 +112,14 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Failed to read body' });
   }
 
-  // 署名を検証
-  if (sig) {
-    const valid = await verifyStripeSignature(rawBody, sig, secret);
-    if (!valid) {
-      console.error('Webhook: 署名検証失敗');
-      return res.status(400).json({ error: 'Invalid signature' });
-    }
-  } else {
-    // ローカルテスト用（本番では署名必須）
-    if (process.env.NODE_ENV === 'production') {
-      return res.status(400).json({ error: 'Missing signature' });
-    }
+  // 署名を検証（署名なしは環境問わず全て拒否）
+  if (!sig) {
+    return res.status(400).json({ error: 'Missing stripe-signature header' });
+  }
+  const valid = await verifyStripeSignature(rawBody, sig, secret);
+  if (!valid) {
+    console.error('Webhook: 署名検証失敗');
+    return res.status(400).json({ error: 'Invalid signature' });
   }
 
   // JSONパース

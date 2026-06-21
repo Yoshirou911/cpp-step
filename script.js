@@ -1468,9 +1468,15 @@ async function startCheckout() {
   btn.textContent = '処理中...';
   btn.disabled = true;
   try {
+    var checkoutHeaders = { 'Content-Type': 'application/json' };
+    if (_supabase) {
+      var _cs = await _supabase.auth.getSession();
+      var _ct = _cs.data && _cs.data.session && _cs.data.session.access_token;
+      if (_ct) checkoutHeaders['Authorization'] = 'Bearer ' + _ct;
+    }
     var res = await fetch('/api/create-checkout', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: checkoutHeaders,
       body: JSON.stringify({ email: currentUser.email, userId: currentUser.id })
     });
     var data = await res.json();
@@ -31400,9 +31406,15 @@ async function askAI(system, messages) {
     ? messages
     : [{ role: 'user', content: messages }];
 
+  var askHeaders = { 'Content-Type': 'application/json' };
+  if (_supabase) {
+    var _sess = await _supabase.auth.getSession();
+    var _tok  = _sess.data && _sess.data.session && _sess.data.session.access_token;
+    if (_tok) askHeaders['Authorization'] = 'Bearer ' + _tok;
+  }
   const res = await fetch('/api/ask', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: askHeaders,
     body: JSON.stringify({ system: system, messages: msgArray })
   });
   const data = await res.json();

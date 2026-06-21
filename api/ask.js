@@ -25,10 +25,23 @@ function isRateLimited(ip) {
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', 'https://cpp-step.vercel.app');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  // JWT認証チェック
+  const token = req.headers['authorization']?.replace('Bearer ', '');
+  if (!token) {
+    return res.status(401).json({ error: '認証が必要です。ログインしてください。' });
+  }
+  const supabaseAuthRes = await fetch(
+    `${process.env.SUPABASE_URL}/auth/v1/user`,
+    { headers: { 'Authorization': `Bearer ${token}`, 'apikey': process.env.SUPABASE_ANON_KEY } }
+  );
+  if (!supabaseAuthRes.ok) {
+    return res.status(401).json({ error: '認証が無効です。再ログインしてください。' });
+  }
 
   // レート制限チェック
   const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
