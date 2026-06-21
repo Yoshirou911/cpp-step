@@ -65,13 +65,11 @@ async function verifyStripeSignature(rawBody, sigHeader, secret) {
     // 定数時間比較（タイミング攻撃対策）
     const computedBuf = Buffer.from(computed, 'hex');
     const expectedBuf = Buffer.from(v1Sig,    'hex');
-    // 長さが異なる場合は即否定（ただし長さチェック自体は定数時間でない点に注意）
-    if (computedBuf.length !== expectedBuf.length) return false;
-    let mismatch = 0;
-    for (let i = 0; i < computedBuf.length; i++) {
-      mismatch |= computedBuf[i] ^ expectedBuf[i];
+    try {
+      return crypto.timingSafeEqual(computedBuf, expectedBuf);
+    } catch {
+      return false;
     }
-    return mismatch === 0;
   } catch (e) {
     console.error('Signature verification error:', e);
     return false;

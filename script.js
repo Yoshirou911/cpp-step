@@ -30249,23 +30249,23 @@ function renderDetail(id) {
   const detail = document.getElementById("detail-content");
   detail.innerHTML =
     '<div class="detail-meta">' +
-      '<span class="detail-unit">' + p.unit + '</span>' +
+      '<span class="detail-unit">' + escapeHtml(p.unit) + '</span>' +
       (langTextbooks[currentLanguage]
-        ? '<button class="detail-textbook-btn" onclick="switchTab(\'textbook\')">📖 ' + langTextbooks[currentLanguage].name + ' 入門ガイド</button>'
+        ? '<button class="detail-textbook-btn" onclick="switchTab(\'textbook\')">📖 ' + escapeHtml(langTextbooks[currentLanguage].name) + ' 入門ガイド</button>'
         : '') +
     '</div>' +
-    '<h2>' + p.title + '</h2>' +
-    '<span class="rank-badge rank-' + p.rank.toLowerCase() + ' rank-badge-lg" style="display:inline-block;margin-bottom:18px;">' + p.rank + '</span>' +
+    '<h2>' + escapeHtml(p.title) + '</h2>' +
+    '<span class="rank-badge rank-' + p.rank.toLowerCase() + ' rank-badge-lg" style="display:inline-block;margin-bottom:18px;">' + escapeHtml(p.rank) + '</span>' +
 
     '<div class="section">' +
       '<h3>問題</h3>' +
-      '<p>' + p.question + '</p>' +
+      '<p>' + escapeHtml(p.question) + '</p>' +
     '</div>' +
 
     '<div class="section">' +
       '<button class="toggle-btn" onclick="toggleSection(\'hint-' + p.id + '\')">💡 ヒントを見る</button>' +
       '<div id="hint-' + p.id + '" class="hidden toggle-content">' +
-        '<p>' + p.hint + '</p>' +
+        '<p>' + escapeHtml(p.hint) + '</p>' +
       '</div>' +
     '</div>' +
 
@@ -30281,7 +30281,7 @@ function renderDetail(id) {
     '<div class="section">' +
       '<button class="toggle-btn" onclick="toggleSection(\'explanation-' + p.id + '\')">📖 解説を見る</button>' +
       '<div id="explanation-' + p.id + '" class="hidden toggle-content">' +
-        '<p>' + p.explanation + '</p>' +
+        '<p>' + escapeHtml(p.explanation) + '</p>' +
       '</div>' +
     '</div>' +
 
@@ -30343,7 +30343,7 @@ function renderDetail(id) {
       ) +
     '</div>' +
     '<div class="section report-section">' +
-      '<button class="report-btn" onclick="openReportModal(' + p.id + ', \'' + p.title.replace(/'/g, "\\'") + '\')">⚑ 問題の誤りを報告</button>' +
+      '<button class="report-btn" data-pid="' + p.id + '" data-ptitle="' + escapeHtml(p.title) + '" onclick="openReportModal(+this.dataset.pid, this.dataset.ptitle)">⚑ 問題の誤りを報告</button>' +
     '</div>';
 
   // 別の問題に移動した場合はリセット、同じ問題の再描画ならコードを引き継ぐ
@@ -33807,7 +33807,7 @@ async function renderProfile() {
     '<div class="profile-hero" style="--rank-color:' + rank.color + '">' +
       '<div class="profile-avatar" style="--rank-color:' + rank.color + '">' + avatarLetter + '</div>' +
       '<div class="profile-hero-info">' +
-        '<div class="profile-email">' + displayName + '</div>' +
+        '<div class="profile-email">' + escapeHtml(displayName) + '</div>' +
         (_premiumStatusCache ? '<div class="plus-badge-label">◆ CODE STEP PLUS</div>' : '') +
         (currentUserIsAdmin ? '<div class="admin-badge-label">⚙ ADMIN</div>' : '') +
         '<div class="profile-rank-badge" style="color:' + rank.color + ';border-color:' + rank.color + ';box-shadow:0 0 12px ' + rank.color + '33">' +

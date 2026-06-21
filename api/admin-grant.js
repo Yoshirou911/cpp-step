@@ -102,7 +102,7 @@ export default async function handler(req, res) {
     const target = users.find(u => u.email === targetEmail);
 
     if (!target) {
-      return res.status(404).json({ error: `"${targetEmail}" は登録されていません` });
+      return res.status(404).json({ error: 'ユーザーが見つかりません' });
     }
 
     // 2. user_profiles.is_premium を更新
