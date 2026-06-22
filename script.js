@@ -858,11 +858,15 @@ function calculateEXP() {
   var loginDays = JSON.parse(localStorage.getItem('login_days') || '[]');
   var loginExp  = loginDays.length * LOGIN_EXP;
 
+  // ボーナス EXP（デイリーチャレンジなど）
+  var bonusExp = parseInt(localStorage.getItem('bonus_xp') || '0');
+
   return {
-    total:   problemExp + missionExp + loginExp,
+    total:   problemExp + missionExp + loginExp + bonusExp,
     problem: problemExp,
     mission: missionExp,
-    login:   loginExp
+    login:   loginExp,
+    bonus:   bonusExp
   };
 }
 
@@ -909,6 +913,44 @@ function getLevelColor(lv) {
   if (lv >= 6)   return '#00E676'; // PROGRAMMER (グリーン)
   if (lv >= 3)   return '#B8C8D8'; // CADET (シルバー)
   return '#9B9B9B';                // TRAINEE (グレー)
+}
+
+// ヘッダーのストリークバッジを更新
+async function updateStreakBadge() {
+  var el = document.getElementById('streak-badge');
+  if (!el || !currentUser) { if (el) el.classList.add('hidden'); return; }
+  var streak = await getLoginStreak();
+  if (streak.current >= 1) {
+    el.textContent = '🔥' + streak.current;
+    el.classList.remove('hidden');
+  } else {
+    el.classList.add('hidden');
+  }
+}
+
+// ===== デイリーチャレンジ =====
+
+function getDailyChallenge() {
+  var problems = getProblems();
+  if (!problems || !problems.length) return null;
+  var today = new Date().toISOString().slice(0, 10);
+  var seed = today.split('').reduce(function(acc, c) { return (acc * 31 + c.charCodeAt(0)) >>> 0; }, 0);
+  // まだクリアしていない問題を優先
+  var unlearned = problems.filter(function(p) { return !isLearned(p.id); });
+  var pool = unlearned.length > 0 ? unlearned : problems;
+  return pool[seed % pool.length];
+}
+
+function isDailyChallengeCleared() {
+  var today = new Date().toISOString().slice(0, 10);
+  return localStorage.getItem('daily_cleared_' + today) === '1';
+}
+
+function markDailyChallengeCleared() {
+  var today = new Date().toISOString().slice(0, 10);
+  localStorage.setItem('daily_cleared_' + today, '1');
+  var cur = parseInt(localStorage.getItem('bonus_xp') || '0');
+  localStorage.setItem('bonus_xp', String(cur + 50));
 }
 
 // ヘッダーの Lv.XX バッジを更新
@@ -29993,6 +30035,15 @@ function saveProgress(id) {
     syncUserStats(_xp, currentLanguage || 'cpp');
   }
   checkLevelUp(); // EXP・レベルアップ判定
+
+  // デイリーチャレンジ達成チェック
+  var dc = getDailyChallenge();
+  if (dc && dc.id === id && !isDailyChallengeCleared()) {
+    markDailyChallengeCleared();
+    checkLevelUp();
+    showToast('🎯 デイリーチャレンジ達成！ +50 XP ボーナス！');
+    renderList(); // バッジ更新
+  }
 }
 
 function removeProgress(id) {
@@ -30114,6 +30165,32 @@ function renderList() {
     list.appendChild(adTop);
   }
 
+  // デイリーチャレンジバナー
+  var dc = getDailyChallenge();
+  if (dc) {
+    var dcCleared = isDailyChallengeCleared() || isLearned(dc.id);
+    var dcBanner = document.createElement('div');
+    dcBanner.className = 'daily-challenge-banner' + (dcCleared ? ' dc-cleared' : '');
+    dcBanner.innerHTML =
+      '<div class="dc-header">' +
+        '<span class="dc-icon">🎯</span>' +
+        '<span class="dc-label">TODAY\'S CHALLENGE</span>' +
+        (dcCleared ? '<span class="dc-done">CLEARED ✔</span>' : '<span class="dc-bonus">+50 XP BONUS</span>') +
+      '</div>' +
+      '<div class="dc-body">' +
+        '<span class="dc-num">#' + String(dc.id).padStart(2, '0') + '</span>' +
+        '<span class="dc-title">' + escapeHtml(dc.title) + '</span>' +
+        '<span class="rank-badge rank-' + (dc.rank || 'rookie').toLowerCase() + '">' + escapeHtml(dc.rank || 'ROOKIE') + '</span>' +
+      '</div>';
+    dcBanner.addEventListener('click', function() {
+      playItemSelect();
+      history.pushState({ page: 'detail', lang: currentLanguage, id: dc.id }, '');
+      renderDetail(dc.id);
+      showPage('detail');
+    });
+    list.appendChild(dcBanner);
+  }
+
   // 教本バナー（初心者向け）
   if (langTextbooks[currentLanguage]) {
     var tb = langTextbooks[currentLanguage];
@@ -30176,18 +30253,21 @@ function renderList() {
     units[unitName].forEach(function(p) {
       var learned = isLearned(p.id);
       var isLocked = isPremiumRequired(p.rank) && !currentUserIsPremium;
+      var isDailyCard = dc && dc.id === p.id;
       var card = document.createElement("div");
       card.className = "problem-card rank-card-" + (p.rank || 'rookie').toLowerCase() +
         (learned ? " learned" : "") +
-        (isLocked ? " premium-locked-card" : "");
+        (isLocked ? " premium-locked-card" : "") +
+        (isDailyCard ? " daily-challenge-card" : "");
 
       card.innerHTML =
         '<div class="card-left">' +
           '<span class="card-num">' + String(p.id).padStart(2, '0') + '</span>' +
           '<span class="problem-title">' + p.title + '</span>' +
+          (isDailyCard ? '<span class="dc-card-badge">🎯 TODAY</span>' : '') +
         '</div>' +
         '<div class="card-right">' +
-          '<span class="rank-badge rank-' + p.rank.toLowerCase() + '">' + p.rank + '</span>' +
+          '<span class="rank-badge rank-' + (p.rank || 'rookie').toLowerCase() + '">' + (p.rank || 'ROOKIE') + '</span>' +
           (isLocked
             ? '<span class="premium-lock-icon">🔒</span>'
             : '<span class="badge ' + (learned ? "" : "not-learned") + '">' +
@@ -34460,6 +34540,7 @@ async function initAuth() {
     if (currentUser) {
       recordLoginDay();
       await fetchUserProfile(); // await してからrenderListを呼ぶ（プレミアム状態確定後に描画）
+      updateStreakBadge();
       requestPushPermission();
       // Stripe リダイレクト後にOAuthでセッションが遅延した場合のトースト表示
       if (sessionStorage.getItem('pending_premium_toast') === '1') {
@@ -34498,6 +34579,7 @@ async function initAuth() {
     currentUser = sessionResult.data.session.user;
     recordLoginDay();
     await fetchUserProfile(); // await してからrenderList（プレミアム状態確定後に描画）
+    updateStreakBadge();
     updateAuthUI();
     // セッションが即取得できた場合はここでトースト表示
     if (sessionStorage.getItem('pending_premium_toast') === '1') {

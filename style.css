@@ -2692,6 +2692,81 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   text-shadow: 0 0 10px currentColor;
 }
 
+/* ========== ストリークバッジ（ヘッダー） ========== */
+.streak-badge-header {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #FF6B00;
+  border: 1px solid rgba(255,107,0,0.35);
+  padding: 3px 10px;
+  cursor: pointer;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  transition: color 0.3s, border-color 0.3s, text-shadow 0.3s;
+  white-space: nowrap;
+  animation: streak-pulse 2s ease-in-out infinite;
+}
+.streak-badge-header:hover { opacity: 0.85; text-shadow: 0 0 10px #FF6B00; }
+@keyframes streak-pulse {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: 0 0 8px rgba(255,107,0,0.4); }
+}
+
+/* ========== デイリーチャレンジバナー ========== */
+.daily-challenge-banner {
+  background: linear-gradient(135deg, rgba(255,107,0,0.08) 0%, rgba(255,200,0,0.05) 100%);
+  border: 1px solid rgba(255,107,0,0.35);
+  border-left: 3px solid #FF6B00;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.daily-challenge-banner:hover { background: rgba(255,107,0,0.12); }
+.daily-challenge-banner.dc-cleared { border-left-color: #4caf90; border-color: rgba(76,175,144,0.35); background: rgba(76,175,144,0.05); }
+.dc-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.dc-icon { font-size: 1rem; }
+.dc-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: #FF6B00;
+  text-transform: uppercase;
+}
+.dc-bonus {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: #FFD700;
+  border: 1px solid rgba(255,215,0,0.4);
+  padding: 1px 6px;
+  margin-left: auto;
+}
+.dc-done {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: #4caf90;
+  border: 1px solid rgba(76,175,144,0.4);
+  padding: 1px 6px;
+  margin-left: auto;
+}
+.dc-body { display: flex; align-items: center; gap: 10px; }
+.dc-num { font-family: 'Share Tech Mono', monospace; font-size: 0.68rem; color: rgba(255,255,255,0.35); }
+.dc-title { font-family: 'Barlow Condensed', sans-serif; font-size: 0.95rem; font-weight: 600; color: rgba(255,255,255,0.85); flex: 1; }
+.dc-card-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  color: #FF6B00;
+  border: 1px solid rgba(255,107,0,0.4);
+  padding: 1px 5px;
+  margin-left: 6px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.problem-card.daily-challenge-card { border-left: 2px solid rgba(255,107,0,0.6); }
+
 /* ========== レベルアップオーバーレイ ========== */
 #levelup-effect {
   position: fixed;
