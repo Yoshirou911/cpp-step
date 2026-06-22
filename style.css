@@ -1923,6 +1923,10 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 
 #chat-panel.hidden { display: none !important; }
 
+@media (max-width: 480px) {
+  #chat-panel { width: calc(100vw - 16px); right: 8px; left: 8px; }
+}
+
 #chat-header {
   display: flex;
   justify-content: space-between;

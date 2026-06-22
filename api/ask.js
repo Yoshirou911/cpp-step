@@ -82,6 +82,9 @@ export default async function handler(req, res) {
       return res.status(response.status).json({ error: data.error?.message || 'API error' });
     }
 
+    if (!data.choices || !data.choices[0]) {
+      return res.status(500).json({ error: 'AI応答が空です。しばらく待ってから再試行してください。' });
+    }
     const reply = data.choices[0].message.content;
     return res.json({ reply: reply });
 

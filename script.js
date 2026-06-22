@@ -33244,6 +33244,7 @@ function renderMissionDetail(id) {
 // ===== ミッションAIレビュー =====
 
 async function getMissionAIFeedback(missionId) {
+  if (!currentUser) { openAuthModal(); return; }
   const m = getMissions().find(function(x) { return x.id === missionId; });
   const code = aceEditor ? aceEditor.getValue().trim() : '';
   if (!code) { showToast('コードを入力してください'); return; }
@@ -34536,6 +34537,7 @@ document.getElementById("site-title").addEventListener("click", function() {
 });
 
 document.getElementById('chat-toggle').addEventListener('click', function() {
+  if (!currentUser) { openAuthModal(); return; }
   document.getElementById('chat-panel').classList.toggle('hidden');
 });
 
