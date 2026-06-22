@@ -1,4 +1,4 @@
-var CACHE_NAME = 'code-step-v3';
+var CACHE_NAME = 'code-step-v4';
 var STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -63,22 +63,40 @@ self.addEventListener('notificationclick', function(event) {
   );
 });
 
-// フェッチ: 同一オリジンはキャッシュ優先、外部はネットワーク
+// フェッチ: script.js/style.css/index.html はネットワーク優先、その他はキャッシュ優先
+var NETWORK_FIRST = ['/script.js', '/style.css', '/index.html', '/'];
+
 self.addEventListener('fetch', function(event) {
   if (!event.request.url.startsWith(self.location.origin)) return;
   if (event.request.method !== 'GET') return;
 
-  event.respondWith(
-    caches.match(event.request).then(function(cached) {
-      var networkFetch = fetch(event.request).then(function(res) {
+  var path = new URL(event.request.url).pathname;
+  var isNetworkFirst = NETWORK_FIRST.indexOf(path) >= 0;
+
+  if (isNetworkFirst) {
+    event.respondWith(
+      fetch(event.request).then(function(res) {
         if (res && res.status === 200) {
           var clone = res.clone();
           caches.open(CACHE_NAME).then(function(c) { c.put(event.request, clone); });
         }
         return res;
-      });
-      // キャッシュがあれば即返しつつバックグラウンドで更新
-      return cached || networkFetch;
-    })
-  );
+      }).catch(function() {
+        return caches.match(event.request);
+      })
+    );
+  } else {
+    event.respondWith(
+      caches.match(event.request).then(function(cached) {
+        var networkFetch = fetch(event.request).then(function(res) {
+          if (res && res.status === 200) {
+            var clone = res.clone();
+            caches.open(CACHE_NAME).then(function(c) { c.put(event.request, clone); });
+          }
+          return res;
+        });
+        return cached || networkFetch;
+      })
+    );
+  }
 });

@@ -31481,6 +31481,7 @@ async function sendChatMessage() {
 
   addChatMessage('user', message);
   chatHistory.push({ role: 'user', content: message });
+  if (chatHistory.length > 30) chatHistory = chatHistory.slice(-20);
   input.value = '';
 
   var typingId = 'typing-' + Date.now();
@@ -31585,10 +31586,11 @@ async function renderRanking() {
       var r = await _supabase.from('user_stats').select('user_id,total_cleared,total_xp')
         .gt('total_cleared', 0).order('total_cleared', { ascending: false }).limit(20);
       rows = (r.data || []).map(function(u) {
-        return { uid: u.user_id, value: u.total_cleared, sub: u.total_xp.toLocaleString() + ' XP' };
+        return { uid: u.user_id, value: u.total_cleared, sub: (u.total_xp || 0).toLocaleString() + ' XP' };
       });
     } else if (_rankingTab === 'lang') {
-      var r = await _supabase.from('user_stats').select('user_id,lang_cleared').limit(500);
+      var r = await _supabase.from('user_stats').select('user_id,lang_cleared')
+        .not('lang_cleared', 'is', null).limit(200);
       rows = (r.data || [])
         .map(function(u) { return { uid: u.user_id, value: (u.lang_cleared || {})[_rankingLang] || 0 }; })
         .filter(function(u) { return u.value > 0; })
@@ -31603,7 +31605,7 @@ async function renderRanking() {
       });
     } else if (_rankingTab === 'growth') {
       var r = await _supabase.from('user_stats').select('user_id,weekly_cleared,prev_week_cleared')
-        .gt('weekly_cleared', 0).limit(500);
+        .gt('weekly_cleared', 0).order('weekly_cleared', { ascending: false }).limit(100);
       rows = (r.data || [])
         .map(function(u) {
           var g = u.weekly_cleared - (u.prev_week_cleared || 0);
