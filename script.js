@@ -616,7 +616,7 @@ function calcLangStrengthData(langKey, problemArray) {
   var prog = JSON.parse(localStorage.getItem(langKey + '_progress') || '[]');
   var maxExp = 0, earnedExp = 0;
   problemArray.forEach(function(p) {
-    var exp = RANK_EXP[p.rank.toLowerCase()] || 15;
+    var exp = RANK_EXP[(p.rank || 'rookie').toLowerCase()] || 15;
     maxExp += exp;
     if (prog.indexOf(p.id) !== -1) earnedExp += exp;
   });
@@ -1415,6 +1415,7 @@ async function adminSetPremium(isPremium) {
   try {
     var session = await _supabase.auth.getSession();
     var token = session?.data?.session?.access_token;
+    if (!token) { msgEl.textContent = '❌ セッションが切れています。再ログインしてください'; btnGive.disabled = false; btnTake.disabled = false; return; }
     var res = await fetch('/api/admin-grant', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
@@ -30176,7 +30177,7 @@ function renderList() {
       var learned = isLearned(p.id);
       var isLocked = isPremiumRequired(p.rank) && !currentUserIsPremium;
       var card = document.createElement("div");
-      card.className = "problem-card rank-card-" + p.rank.toLowerCase() +
+      card.className = "problem-card rank-card-" + (p.rank || 'rookie').toLowerCase() +
         (learned ? " learned" : "") +
         (isLocked ? " premium-locked-card" : "");
 
@@ -31427,6 +31428,7 @@ async function askAI(system, messages) {
 // ===== コードフィードバック =====
 
 async function getAIFeedback(problemId) {
+  if (!currentUser) { openAuthModal(); return; }
   const p = getProblems().find(function(x) { return x.id === problemId; });
   const code = aceEditor ? aceEditor.getValue().trim() : '';
   if (!code) { showToast('コードを入力してください'); return; }
@@ -31483,7 +31485,7 @@ async function sendChatMessage() {
 
   addChatMessage('user', message);
   chatHistory.push({ role: 'user', content: message });
-  if (chatHistory.length > 30) chatHistory = chatHistory.slice(-20);
+  if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
   input.value = '';
 
   var typingId = 'typing-' + Date.now();
@@ -31494,6 +31496,7 @@ async function sendChatMessage() {
   try {
     var reply = await askAI(system, chatHistory);
     chatHistory.push({ role: 'assistant', content: reply });
+    if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
     var typingEl = document.getElementById(typingId);
     if (typingEl) typingEl.remove();
     addChatMessage('ai', reply);
@@ -31603,7 +31606,7 @@ async function renderRanking() {
       var r = await _supabase.from('user_stats').select('user_id,weekly_xp')
         .gt('weekly_xp', 0).order('weekly_xp', { ascending: false }).limit(20);
       rows = (r.data || []).map(function(u) {
-        return { uid: u.user_id, value: u.weekly_xp, sub: u.weekly_xp.toLocaleString() + ' XP' };
+        return { uid: u.user_id, value: u.weekly_xp || 0, sub: (u.weekly_xp || 0).toLocaleString() + ' XP' };
       });
     } else if (_rankingTab === 'growth') {
       var r = await _supabase.from('user_stats').select('user_id,weekly_cleared,prev_week_cleared')
@@ -31628,7 +31631,7 @@ async function renderRanking() {
     var posLabel = ['1ST', '2ND', '3RD'];
     var listHtml = rows.map(function(row, i) {
       var isMe = myId && row.uid === myId;
-      var anonId = 'USER #' + row.uid.substring(0, 8).toUpperCase();
+      var anonId = 'USER #' + (row.uid || '????????').substring(0, 8).toUpperCase();
       var rowCls = 'rank-row' + (i < 3 ? ' ' + posClass[i] : '') + (isMe ? ' rank-row-me' : '');
       var posCls = i < 3 ? 'rank-pos rank-pos-' + (i + 1) : 'rank-pos';
       var posStr = i < 3 ? posLabel[i] : (i + 1) + '.';

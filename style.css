@@ -815,7 +815,11 @@ a.landing-text-link { text-decoration: underline; }
   top: 0;
   z-index: 50;
   box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+#nav-tabs::-webkit-scrollbar { display: none; }
 
 .nav-tab {
   background: transparent;
@@ -3656,6 +3660,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   .premium-title { font-size: 1.25rem; }
   .premium-price-num { font-size: 1.8rem; }
   .premium-success-toast { font-size: 0.78rem; padding: 10px 16px; white-space: normal; max-width: 90vw; text-align: center; }
+  .nav-tab { padding: 13px 14px; font-size: 0.68rem; }
 }
 
 /* ===== 汎用トースト ===== */

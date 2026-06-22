@@ -17,6 +17,9 @@
  *   invoice.payment_failed
  */
 
+// Vercel の bodyParser を無効化（生ボディを署名検証に使う）
+export const config = { api: { bodyParser: false } };
+
 // Vercel の生ボディを取得（署名検証に必要）
 function getRawBody(req) {
   return new Promise((resolve, reject) => {
