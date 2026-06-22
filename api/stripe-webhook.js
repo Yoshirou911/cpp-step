@@ -134,10 +134,12 @@ export default async function handler(req, res) {
   const eventType = event.type;
   const obj       = event.data?.object || {};
 
-  // user_id をメタデータから取得
+  // user_id をメタデータから取得（イベント種別によって格納場所が異なる）
+  // checkout.session: obj.metadata / subscription: obj.metadata / invoice: obj.subscription_details.metadata
   const userId =
     obj.metadata?.user_id ||
     obj.subscription_data?.metadata?.user_id ||
+    obj.subscription_details?.metadata?.user_id ||
     null;
 
   if (!userId) {

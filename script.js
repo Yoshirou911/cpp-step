@@ -34458,9 +34458,18 @@ async function initAuth() {
     _missionProgressCache = null;
     updateAuthUI();
     if (currentUser) {
-      recordLoginDay(); // ログイン日を記録
-      fetchUserProfile(); // プレミアム状態を取得
+      recordLoginDay();
+      await fetchUserProfile(); // await してからrenderListを呼ぶ（プレミアム状態確定後に描画）
       requestPushPermission();
+      // Stripe リダイレクト後にOAuthでセッションが遅延した場合のトースト表示
+      if (sessionStorage.getItem('pending_premium_toast') === '1') {
+        sessionStorage.removeItem('pending_premium_toast');
+        var msg = document.createElement('div');
+        msg.className = 'premium-success-toast';
+        msg.textContent = '🎉 CODE STEP PLUS へようこそ！全コンテンツが解放されました';
+        document.body.appendChild(msg);
+        setTimeout(function() { msg.remove(); }, 4000);
+      }
     } else {
       currentUserIsPremium = false;
       updateAdDisplay();
@@ -34476,32 +34485,34 @@ async function initAuth() {
     }
   });
 
+  // Stripe 決済完了リダイレクト処理（セッション取得前に記録、OAuthの遅延にも対応）
+  var urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('premium') === '1') {
+    window.history.replaceState({}, '', window.location.pathname);
+    sessionStorage.setItem('pending_premium_toast', '1');
+  }
+
   // ページロード時の既存セッション取得
   var sessionResult = await _supabase.auth.getSession();
   if (sessionResult.data && sessionResult.data.session) {
     currentUser = sessionResult.data.session.user;
-    recordLoginDay(); // ページロード時にも記録
-    fetchUserProfile(); // プレミアム状態を取得
+    recordLoginDay();
+    await fetchUserProfile(); // await してからrenderList（プレミアム状態確定後に描画）
     updateAuthUI();
-    if (currentLanguage) {
-      await syncProgressFromSupabase();
-      await syncMissionProgressFromSupabase();
-      updateProgressDisplay();
-      renderList();
-    }
-  }
-
-  // Stripe 決済完了リダイレクト処理
-  var urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('premium') === '1') {
-    window.history.replaceState({}, '', window.location.pathname);
-    if (currentUser) {
-      await fetchUserProfile();
+    // セッションが即取得できた場合はここでトースト表示
+    if (sessionStorage.getItem('pending_premium_toast') === '1') {
+      sessionStorage.removeItem('pending_premium_toast');
       var msg = document.createElement('div');
       msg.className = 'premium-success-toast';
       msg.textContent = '🎉 CODE STEP PLUS へようこそ！全コンテンツが解放されました';
       document.body.appendChild(msg);
       setTimeout(function() { msg.remove(); }, 4000);
+    }
+    if (currentLanguage) {
+      await syncProgressFromSupabase();
+      await syncMissionProgressFromSupabase();
+      updateProgressDisplay();
+      renderList();
     }
   }
 }
