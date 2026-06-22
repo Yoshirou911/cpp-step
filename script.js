@@ -1253,6 +1253,7 @@ function selectLanguage(langId) {
   currentLanguage = langId;
   _progressCache = null;
   _missionProgressCache = null;
+  chatHistory = [];
   history.pushState({ page: 'list', lang: langId, tab: 'problems' }, '');
   showNavAndProgress();
   setActiveTab('problems');
@@ -30159,7 +30160,8 @@ function renderList() {
     // 単元ヘッダー
     var unitProblems = units[unitName];
     var clearedCount = unitProblems.filter(function(p) { return isLearned(p.id); }).length;
-    var topRank = unitProblems[unitProblems.length - 1].rank.toLowerCase();
+    var lastRank = unitProblems[unitProblems.length - 1].rank;
+    var topRank = lastRank ? lastRank.toLowerCase() : 'rookie';
     var header = document.createElement("div");
     header.className = "unit-header";
     header.innerHTML =
@@ -34240,10 +34242,12 @@ function schedulePushReminders() {
     var last = new Date(days[days.length - 1]);
     var diff = Math.floor((Date.now() - last.getTime()) / 86400000);
     if (diff >= 2) {
-      new Notification('CODE STEP — おかえり！', {
-        body: diff + '日ぶりの再開です。続きから学習しよう！',
-        icon: '/icon.svg'
-      });
+      var notifOpts = { body: diff + '日ぶりの再開です。続きから学習しよう！', icon: '/icon.svg' };
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.ready.then(function(reg) { reg.showNotification('CODE STEP — おかえり！', notifOpts); });
+      } else {
+        new Notification('CODE STEP — おかえり！', notifOpts);
+      }
     }
   } catch(e) {}
 }
@@ -34488,14 +34492,12 @@ async function initAuth() {
   if (urlParams.get('premium') === '1') {
     window.history.replaceState({}, '', window.location.pathname);
     if (currentUser) {
-      setTimeout(function() {
-        fetchUserProfile();
-        var msg = document.createElement('div');
-        msg.className = 'premium-success-toast';
-        msg.textContent = '🎉 CODE STEP PLUS へようこそ！全コンテンツが解放されました';
-        document.body.appendChild(msg);
-        setTimeout(function() { msg.remove(); }, 4000);
-      }, 1500);
+      await fetchUserProfile();
+      var msg = document.createElement('div');
+      msg.className = 'premium-success-toast';
+      msg.textContent = '🎉 CODE STEP PLUS へようこそ！全コンテンツが解放されました';
+      document.body.appendChild(msg);
+      setTimeout(function() { msg.remove(); }, 4000);
     }
   }
 }
