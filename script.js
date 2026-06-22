@@ -33164,17 +33164,17 @@ function renderMissionDetail(id) {
   if (aceEditor) { aceEditor.destroy(); aceEditor = null; }
 
   const reqItems = m.requirements.map(function(r, i) {
-    return '<li>◆ ' + r + '</li>';
+    return '<li>◆ ' + escapeHtml(r) + '</li>';
   }).join('');
 
   detail.innerHTML =
     '<div class="mission-number-large">MISSION ' + String(m.id).padStart(2, '0') + '</div>' +
-    '<h2>' + m.title + '</h2>' +
-    '<span class="rank-badge rank-' + m.rank.toLowerCase() + ' rank-badge-lg" style="display:inline-block;margin-bottom:20px;">' + m.rank + '</span>' +
+    '<h2>' + escapeHtml(m.title) + '</h2>' +
+    '<span class="rank-badge rank-' + m.rank.toLowerCase() + ' rank-badge-lg" style="display:inline-block;margin-bottom:20px;">' + escapeHtml(m.rank) + '</span>' +
 
     '<div class="section">' +
       '<h3>ミッション概要</h3>' +
-      '<p>' + m.description + '</p>' +
+      '<p>' + escapeHtml(m.description) + '</p>' +
     '</div>' +
 
     '<div class="section">' +
@@ -33191,7 +33191,7 @@ function renderMissionDetail(id) {
     '<div class="section">' +
       '<button class="toggle-btn" onclick="toggleSection(\'mission-hint-' + m.id + '\')">💡 ヒントを見る</button>' +
       '<div id="mission-hint-' + m.id + '" class="hidden toggle-content">' +
-        '<p>' + m.hint + '</p>' +
+        '<p>' + escapeHtml(m.hint || '') + '</p>' +
       '</div>' +
     '</div>' +
 
