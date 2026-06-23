@@ -1011,12 +1011,14 @@ function getDailyChallenge() {
 
 function isDailyChallengeCleared() {
   var today = new Date().toISOString().slice(0, 10);
-  return localStorage.getItem('daily_cleared_' + today) === '1';
+  var lang = currentLanguage || 'cpp';
+  return localStorage.getItem(lang + '_daily_cleared_' + today) === '1';
 }
 
 function markDailyChallengeCleared() {
   var today = new Date().toISOString().slice(0, 10);
-  localStorage.setItem('daily_cleared_' + today, '1');
+  var lang = currentLanguage || 'cpp';
+  localStorage.setItem(lang + '_daily_cleared_' + today, '1');
   var cur = parseInt(localStorage.getItem('bonus_xp') || '0');
   localStorage.setItem('bonus_xp', String(cur + 50));
 }
@@ -1365,6 +1367,16 @@ function selectLanguage(langId) {
   _progressCache = null;
   _missionProgressCache = null;
   chatHistory = [];
+  // フィルター状態をリセット（前言語のフィルターが引き継がれないよう）
+  _filterQuery    = '';
+  _filterRank     = '';
+  _filterBookmark = false;
+  _filterWrong    = false;
+  var bBtn = document.getElementById('btn-filter-bookmark');
+  var wBtn = document.getElementById('btn-filter-wrong');
+  if (bBtn) bBtn.classList.remove('active');
+  if (wBtn) wBtn.classList.remove('active');
+  document.querySelectorAll('.rank-filter-btn').forEach(function(b) { b.classList.remove('active'); });
   history.pushState({ page: 'list', lang: langId, tab: 'problems' }, '');
   showNavAndProgress();
   setActiveTab('problems');
@@ -1684,7 +1696,7 @@ function restoreState(state) {
     updateProgressDisplay();
     showPage('list');
   } else if (state.page === 'detail') {
-    setActiveTab('problems');
+    setActiveTab(state.fromContest ? 'contest' : 'problems');
     renderDetail(state.id);
     showPage('detail');
   } else if (state.page === 'guide') {
@@ -1703,6 +1715,14 @@ function restoreState(state) {
     setActiveTab('missions');
     renderMissionDetail(state.id);
     showPage('mission-detail');
+  } else if (state.page === 'ranking') {
+    setActiveTab('ranking');
+    renderRanking();
+    showPage('ranking');
+  } else if (state.page === 'contest') {
+    setActiveTab('contest');
+    renderContest();
+    showPage('contest');
   } else if (state.page === 'profile') {
     renderProfile();
     showPage('profile');
@@ -30180,14 +30200,16 @@ function showPage(name) {
   // 言語選択画面ではRANKINGタブのみ表示
   if (name === 'lang') {
     document.getElementById('nav-tabs').classList.remove('hidden');
-    ['problems','missions','guide','textbook'].forEach(function(t) {
-      document.getElementById('tab-' + t).classList.add('hidden');
+    ['problems','missions','guide','textbook','contest'].forEach(function(t) {
+      var el = document.getElementById('tab-' + t);
+      if (el) el.classList.add('hidden');
     });
     document.getElementById('progress-text').classList.add('hidden');
     document.getElementById('progress-bar-wrap').classList.add('hidden');
   } else {
-    ['problems','missions','guide','textbook'].forEach(function(t) {
-      document.getElementById('tab-' + t).classList.remove('hidden');
+    ['problems','missions','guide','textbook','contest'].forEach(function(t) {
+      var el = document.getElementById('tab-' + t);
+      if (el) el.classList.remove('hidden');
     });
   }
   // 問題・ミッション詳細では学習タイマーを開始
@@ -30336,11 +30358,11 @@ function renderList() {
       card.innerHTML =
         '<div class="card-left">' +
           '<span class="card-num">' + String(p.id).padStart(2, '0') + '</span>' +
-          '<span class="problem-title">' + p.title + '</span>' +
+          '<span class="problem-title">' + escapeHtml(p.title) + '</span>' +
           (isDailyCard ? '<span class="dc-card-badge">🎯 TODAY</span>' : '') +
         '</div>' +
         '<div class="card-right">' +
-          '<span class="rank-badge rank-' + (p.rank || 'rookie').toLowerCase() + '">' + (p.rank || 'ROOKIE') + '</span>' +
+          '<span class="rank-badge rank-' + (p.rank || 'rookie').toLowerCase() + '">' + escapeHtml(p.rank || 'ROOKIE') + '</span>' +
           (isLocked
             ? '<span class="premium-lock-icon">🔒</span>'
             : '<span class="badge ' + (learned ? "" : "not-learned") + '">' +
@@ -30390,7 +30412,8 @@ function toggleSection(sectionId) {
 // ===== 特殊文字のエスケープ =====
 
 function escapeHtml(text) {
-  return text
+  if (text == null) return '';
+  return String(text)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -31690,8 +31713,16 @@ async function loadFollowing() {
     var r = await _supabase.from('follows')
       .select('following_id')
       .eq('follower_id', currentUser.id);
+    if (r.error) {
+      // エラー時は null のまま（次回呼び出しで再試行できるように）
+      console.warn('loadFollowing error:', r.error.message);
+      return;
+    }
     _followingSet = new Set((r.data || []).map(function(x) { return x.following_id; }));
-  } catch(e) { _followingSet = new Set(); }
+  } catch(e) {
+    console.warn('loadFollowing exception:', e);
+    // ネットワークエラー時も null のまま維持
+  }
 }
 
 function isFollowing(uid) {
@@ -31957,12 +31988,12 @@ function getWeeklyContestProblems() {
   return easy.concat(medium).concat(hard);
 }
 
-async function fetchContestLeaderboard(problemIds) {
+async function fetchContestLeaderboard(problemIds, lang) {
   if (!_supabase || problemIds.length === 0) return [];
   try {
     var r = await _supabase.from('progress')
       .select('user_id, problem_id')
-      .eq('language', currentLanguage)
+      .eq('language', lang || 'cpp')
       .in('problem_id', problemIds);
     if (r.error || !r.data) return [];
     // user_id ごとに何問クリアしたか集計
@@ -31988,7 +32019,7 @@ async function renderContest() {
   var myClears = new Set(loadProgress());
   var myCount = probs.filter(function(p) { return myClears.has(p.id); }).length;
 
-  var lb = await fetchContestLeaderboard(probs.map(function(p) { return p.id; }));
+  var lb = await fetchContestLeaderboard(probs.map(function(p) { return p.id; }), currentLanguage);
   var myId = currentUser ? currentUser.id : null;
 
   var RANK_COLOR = {
@@ -32004,7 +32035,7 @@ async function renderContest() {
       '<span class="contest-prob-num">' + (i + 1) + '</span>' +
       '<div class="contest-prob-info">' +
         '<span class="contest-prob-title">' + escapeHtml(p.title) + '</span>' +
-        '<span class="contest-prob-rank" style="color:' + col + '">' + p.rank + '</span>' +
+        '<span class="contest-prob-rank" style="color:' + col + '">' + escapeHtml(p.rank) + '</span>' +
       '</div>' +
       '<span class="contest-prob-status">' + (cleared ? '✔' : '—') + '</span>' +
     '</div>';
@@ -32042,7 +32073,7 @@ async function renderContest() {
         '<div class="contest-progress-bar-bg">' +
           '<div class="contest-progress-bar" style="width:' + Math.round(myCount / Math.max(probs.length, 1) * 100) + '%"></div>' +
         '</div>' +
-        (myCount === probs.length
+        (probs.length > 0 && myCount === probs.length
           ? '<div class="contest-complete-badge">🏆 WEEK COMPLETE！</div>'
           : '') +
       '</div>' +
@@ -32057,10 +32088,10 @@ async function renderContest() {
 
 function goToContestProblem(id) {
   playItemSelect();
-  history.pushState({ page: 'detail', lang: currentLanguage, id: id }, '');
+  // contest タブを active のまま問題詳細へ遷移（ブラウザバックでコンテストに戻れる）
+  history.pushState({ page: 'detail', lang: currentLanguage, id: id, fromContest: true }, '');
   renderDetail(id);
   showPage('detail');
-  setActiveTab('problems');
 }
 
 function switchTab(tab) {
