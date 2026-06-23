@@ -5,6 +5,35 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// ===== グローバルエラーハンドラー =====
+(function() {
+  var _errShown = false;
+  function showErrorToast(msg) {
+    if (_errShown) return;
+    _errShown = true;
+    var el = document.createElement('div');
+    el.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1a0a0a;border:1px solid rgba(255,50,50,0.5);color:#ff7777;font-family:"Share Tech Mono",monospace;font-size:0.75rem;padding:10px 18px;border-radius:10px;z-index:99999;max-width:340px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.7)';
+    el.textContent = '⚠ エラーが発生しました。ページをリロードしてください。';
+    document.body.appendChild(el);
+    setTimeout(function() { _errShown = false; el.remove(); }, 8000);
+  }
+  window.onerror = function(msg, src, line, col, err) {
+    // Ace Editor やサードパーティのエラーは無視
+    if (src && (src.includes('ace.js') || src.includes('confetti') || src.includes('adsbygoogle'))) return false;
+    console.error('[CODE STEP]', msg, src, line, col, err);
+    showErrorToast();
+    return false;
+  };
+  window.addEventListener('unhandledrejection', function(e) {
+    if (!e.reason) return;
+    var msg = e.reason && e.reason.message ? e.reason.message : String(e.reason);
+    // ネットワーク系は無視（Supabase接続エラーは各関数でハンドリング済み）
+    if (msg.includes('NetworkError') || msg.includes('Failed to fetch') || msg.includes('AbortError')) return;
+    console.error('[CODE STEP] Unhandled rejection:', e.reason);
+    showErrorToast();
+  });
+})();
+
 // ===== サウンドエンジン =====
 var _audioCtx   = null;
 var _soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
@@ -33474,10 +33503,27 @@ function renderTextbook() {
     '</div>';
   content.appendChild(header);
 
+  // 目次（TOC）
+  if (tb.sections.length >= 4) {
+    var toc = document.createElement('nav');
+    toc.className = 'textbook-toc';
+    toc.innerHTML =
+      '<div class="textbook-toc-title">📋 目次</div>' +
+      '<ol class="textbook-toc-list">' +
+        tb.sections.map(function(sec, idx) {
+          return '<li><a class="textbook-toc-link" href="#tb-body-' + idx + '" onclick="openTextbookSection(' + idx + ');return false;">' +
+            '<span class="toc-num">' + String(idx + 1).padStart(2, '0') + '</span> ' + escapeHtml(sec.title) +
+          '</a></li>';
+        }).join('') +
+      '</ol>';
+    content.appendChild(toc);
+  }
+
   // コードセクション
   tb.sections.forEach(function(sec, idx) {
     var section = document.createElement('div');
     section.className = 'textbook-section';
+    section.id = 'tb-section-' + idx;
 
     section.innerHTML =
       '<div class="textbook-section-header" onclick="toggleTextbookSection(' + idx + ')">' +
@@ -33508,6 +33554,18 @@ function renderTextbook() {
   cta.innerHTML =
     '<button class="textbook-cta-btn" onclick="switchTab(\'problems\')">◆ 問題を解いてみよう</button>';
   content.appendChild(cta);
+}
+
+// TOCリンクからセクションを開いてスクロール
+function openTextbookSection(idx) {
+  var body = document.getElementById('tb-body-' + idx);
+  var icon = document.getElementById('tb-icon-' + idx);
+  if (body && body.classList.contains('hidden')) {
+    body.classList.remove('hidden');
+    if (icon) icon.textContent = '▼';
+  }
+  var sec = document.getElementById('tb-section-' + idx);
+  if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function toggleTextbookSection(idx) {
