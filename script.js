@@ -318,9 +318,71 @@ var PREMIUM_RANKS = ['SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND'
 var HIGH_RANKS         = ['PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND', 'TITAN', 'OVERLORD'];
 var HIGH_RANKS_PREMIUM = ['MASTER', 'LEGEND', 'TITAN', 'OVERLORD'];
 
+// ===== ブックマーク =====
+
+function _bookmarkKey() { return (currentLanguage || 'cpp') + '_bookmarks'; }
+
+function getBookmarks() {
+  return JSON.parse(localStorage.getItem(_bookmarkKey()) || '[]');
+}
+function isBookmarked(id) {
+  return getBookmarks().indexOf(id) !== -1;
+}
+function toggleBookmark(id) {
+  var list = getBookmarks();
+  var idx = list.indexOf(id);
+  if (idx === -1) { list.push(id); showToast('🔖 ブックマークに追加しました'); }
+  else            { list.splice(idx, 1); showToast('ブックマークを解除しました'); }
+  localStorage.setItem(_bookmarkKey(), JSON.stringify(list));
+  renderList();
+}
+
+// ===== 復習モード =====
+
+function _wrongKey() { return (currentLanguage || 'cpp') + '_wrong'; }
+
+function getWrongAnswers() {
+  return JSON.parse(localStorage.getItem(_wrongKey()) || '[]');
+}
+function isWrongAnswer(id) {
+  return getWrongAnswers().indexOf(id) !== -1;
+}
+function trackWrongAnswer(id) {
+  var list = getWrongAnswers();
+  if (list.indexOf(id) === -1) {
+    list.push(id);
+    localStorage.setItem(_wrongKey(), JSON.stringify(list));
+  }
+}
+function clearWrongAnswer(id) {
+  var list = getWrongAnswers().filter(function(x) { return x !== id; });
+  localStorage.setItem(_wrongKey(), JSON.stringify(list));
+}
+
 // ===== 問題一覧フィルター =====
-var _filterQuery = '';
-var _filterRank  = '';
+var _filterQuery    = '';
+var _filterRank     = '';
+var _filterBookmark = false;
+var _filterWrong    = false;
+
+function toggleFilterBookmark() {
+  _filterBookmark = !_filterBookmark;
+  if (_filterBookmark) _filterWrong = false;
+  var btn = document.getElementById('btn-filter-bookmark');
+  var btn2 = document.getElementById('btn-filter-wrong');
+  if (btn) btn.classList.toggle('active', _filterBookmark);
+  if (btn2) btn2.classList.remove('active');
+  renderList();
+}
+function toggleFilterWrong() {
+  _filterWrong = !_filterWrong;
+  if (_filterWrong) _filterBookmark = false;
+  var btn = document.getElementById('btn-filter-wrong');
+  var btn2 = document.getElementById('btn-filter-bookmark');
+  if (btn) btn.classList.toggle('active', _filterWrong);
+  if (btn2) btn2.classList.remove('active');
+  renderList();
+}
 
 function onFilterInput(val) {
   _filterQuery = val.trim().toLowerCase();
@@ -338,8 +400,10 @@ function onRankFilter(btn) {
 }
 
 function clearFilter() {
-  _filterQuery = '';
-  _filterRank  = '';
+  _filterQuery    = '';
+  _filterRank     = '';
+  _filterBookmark = false;
+  _filterWrong    = false;
   var inp = document.getElementById('list-search-input');
   if (inp) inp.value = '';
   var clearBtn = document.getElementById('list-search-clear');
@@ -347,6 +411,10 @@ function clearFilter() {
   document.querySelectorAll('.rank-filter-btn').forEach(function(b) {
     b.classList.toggle('active', b.getAttribute('data-rank') === '');
   });
+  var bBtn = document.getElementById('btn-filter-bookmark');
+  var wBtn = document.getElementById('btn-filter-wrong');
+  if (bBtn) bBtn.classList.remove('active');
+  if (wBtn) wBtn.classList.remove('active');
   renderList();
 }
 var _currentAuthTab = 'login';
@@ -30024,6 +30092,7 @@ function saveProgress(id) {
   progress.push(id);
   _progressCache = progress;
   localStorage.setItem(getProgressKey(), JSON.stringify(progress));
+  clearWrongAnswer(id);
   if (currentUser && _supabase) {
     _supabase.from('progress').upsert({
       user_id: currentUser.id,
@@ -30205,13 +30274,13 @@ function renderList() {
 
   // フィルター適用
   var allProblems = getProblems();
-  if (_filterQuery || _filterRank) {
+  if (_filterQuery || _filterRank || _filterBookmark || _filterWrong) {
     allProblems = allProblems.filter(function(p) {
-      var matchRank  = !_filterRank || p.rank === _filterRank;
-      var matchQuery = !_filterQuery ||
-        p.title.toLowerCase().indexOf(_filterQuery) !== -1 ||
-        (p.question && p.question.toLowerCase().indexOf(_filterQuery) !== -1);
-      return matchRank && matchQuery;
+      var matchRank     = !_filterRank     || p.rank === _filterRank;
+      var matchQuery    = !_filterQuery    || p.title.toLowerCase().indexOf(_filterQuery) !== -1 || (p.question && p.question.toLowerCase().indexOf(_filterQuery) !== -1);
+      var matchBookmark = !_filterBookmark || isBookmarked(p.id);
+      var matchWrong    = !_filterWrong    || isWrongAnswer(p.id);
+      return matchRank && matchQuery && matchBookmark && matchWrong;
     });
   }
 
@@ -30229,7 +30298,9 @@ function renderList() {
   if (unitOrder.length === 0) {
     var emptyEl = document.createElement('div');
     emptyEl.id = 'list-filter-empty';
-    emptyEl.textContent = '「' + (_filterQuery || _filterRank) + '」に一致する問題が見つかりません';
+    emptyEl.textContent = _filterBookmark ? 'ブックマークした問題はありません' :
+      _filterWrong ? '要復習の問題はありません（全問正解済み！）' :
+      '「' + (_filterQuery || _filterRank) + '」に一致する問題が見つかりません';
     list.appendChild(emptyEl);
     return;
   }
@@ -30260,6 +30331,7 @@ function renderList() {
         (isLocked ? " premium-locked-card" : "") +
         (isDailyCard ? " daily-challenge-card" : "");
 
+      var bookmarked = isBookmarked(p.id);
       card.innerHTML =
         '<div class="card-left">' +
           '<span class="card-num">' + String(p.id).padStart(2, '0') + '</span>' +
@@ -30274,7 +30346,19 @@ function renderList() {
                 (learned ? "✔" : "—") +
               '</span>'
           ) +
+          '<button class="card-bookmark-btn' + (bookmarked ? ' bookmarked' : '') + '" title="ブックマーク" data-pid="' + p.id + '">🔖</button>' +
         '</div>';
+
+      // ブックマークボタンは伝播を止めてカード遷移と分離
+      var _bBtn = card.querySelector('.card-bookmark-btn');
+      if (_bBtn) {
+        (function(_id) {
+          _bBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleBookmark(_id);
+          });
+        })(p.id);
+      }
 
       if (isLocked) {
         card.addEventListener("click", function() { openPremiumModal(); });
@@ -31474,6 +31558,7 @@ function showJudgeResult(problemId, passed, byAI) {
       ja.classList.remove("hidden");
     }
   } else {
+    trackWrongAnswer(problemId);
     var judgeArea = document.getElementById("judge-area");
     if (judgeArea) {
       judgeArea.innerHTML = '<div class="judge-fail">✗ まだ違います。出力を確認してもう一度試してみましょう。</div>';

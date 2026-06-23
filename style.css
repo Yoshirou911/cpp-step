@@ -6011,6 +6011,44 @@ body.overlord-theme .titan-badge-header {
 .rank-filter-btn.rank-overlord.active  { border-color:#FF1744; color:#FF1744; background:rgba(255,23,68,0.12); }
 .rank-filter-btn.rank-predator.active  { border-color:#F0F; color:#F0F; background:rgba(255,0,255,0.1); }
 
+/* ブックマーク・復習フィルター */
+#list-special-filters {
+  display: flex;
+  gap: 8px;
+  padding-bottom: 10px;
+}
+.special-filter-btn {
+  flex-shrink: 0;
+  padding: 4px 13px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: none;
+  color: rgba(237,224,200,0.55);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+}
+.special-filter-btn:hover { border-color: rgba(255,214,0,0.5); color: #FFD600; }
+#btn-filter-bookmark.active { background: rgba(255,214,0,0.15); border-color: #FFD600; color: #FFD600; }
+#btn-filter-wrong.active    { background: rgba(255,69,58,0.15); border-color: #FF453A; color: #FF453A; }
+
+/* カードのブックマークボタン */
+.card-bookmark-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  opacity: 0.25;
+  padding: 2px 4px;
+  transition: opacity 0.15s, transform 0.1s;
+  line-height: 1;
+}
+.card-bookmark-btn:hover { opacity: 0.75; transform: scale(1.15); }
+.card-bookmark-btn.bookmarked { opacity: 1; filter: drop-shadow(0 0 4px #FFD600); }
+
 #list-filter-empty {
   text-align: center;
   padding: 40px 20px;

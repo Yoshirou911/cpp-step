@@ -237,6 +237,10 @@
         <button class="rank-filter-btn rank-overlord"  data-rank="OVERLORD"  onclick="onRankFilter(this)">OVERLORD</button>
         <button class="rank-filter-btn rank-predator"  data-rank="PREDATOR"  onclick="onRankFilter(this)">PREDATOR</button>
       </div>
+      <div id="list-special-filters">
+        <button id="btn-filter-bookmark" class="special-filter-btn" onclick="toggleFilterBookmark()">🔖 ブックマーク</button>
+        <button id="btn-filter-wrong"    class="special-filter-btn" onclick="toggleFilterWrong()">📚 要復習</button>
+      </div>
     </div>
     <div id="problem-list"></div>
   </div>
