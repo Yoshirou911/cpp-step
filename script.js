@@ -1352,8 +1352,9 @@ function showNavAndProgress() {
 }
 
 function setActiveTab(tab) {
-  ['problems', 'missions', 'guide', 'textbook', 'ranking'].forEach(function(t) {
-    document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+  ['problems', 'missions', 'guide', 'textbook', 'ranking', 'contest'].forEach(function(t) {
+    var el = document.getElementById('tab-' + t);
+    if (el) el.classList.toggle('active', t === tab);
   });
 }
 
@@ -30171,7 +30172,7 @@ function showPage(name) {
   stopStudyTimer();
   // 全ページを非表示にしてから対象だけ表示
   ["page-landing", "page-lang", "page-list", "page-detail", "page-guide",
-   "page-mission-list", "page-mission-detail", "page-profile", "page-textbook", "page-ranking"].forEach(function(id) {
+   "page-mission-list", "page-mission-detail", "page-profile", "page-textbook", "page-ranking", "page-contest"].forEach(function(id) {
     document.getElementById(id).classList.add("hidden");
   });
   document.getElementById("page-" + name).classList.remove("hidden");
@@ -31912,6 +31913,156 @@ function setRankingLang(lang) {
   renderRanking();
 }
 
+// ===== コンテスト =====
+
+function _contestWeekId() {
+  var d = new Date();
+  d.setHours(12, 0, 0, 0);
+  var tmp = new Date(d);
+  tmp.setDate(tmp.getDate() + 4 - (tmp.getDay() || 7));
+  var yearStart = new Date(tmp.getFullYear(), 0, 1);
+  var week = Math.ceil((((tmp - yearStart) / 86400000) + 1) / 7);
+  return tmp.getFullYear() * 100 + week;
+}
+
+function _contestWeekDates() {
+  var d = new Date();
+  var day = d.getDay();
+  var diff = day === 0 ? -6 : 1 - day;
+  var mon = new Date(d);
+  mon.setDate(d.getDate() + diff);
+  mon.setHours(0, 0, 0, 0);
+  var sun = new Date(mon);
+  sun.setDate(mon.getDate() + 6);
+  sun.setHours(23, 59, 59, 999);
+  return { start: mon, end: sun };
+}
+
+function _pad2(n) { return String(n).padStart(2, '0'); }
+function _fmtDate(d) { return d.getFullYear() + '/' + _pad2(d.getMonth() + 1) + '/' + _pad2(d.getDate()); }
+
+function getWeeklyContestProblems() {
+  var problems = getProblems();
+  if (!problems || problems.length === 0) return [];
+  var wid = _contestWeekId();
+  // 決定論的シャッフル（週IDとIDのハッシュ）
+  var shuffled = problems.slice().sort(function(a, b) {
+    var ha = ((wid * 1031 + a.id * 17) >>> 0);
+    var hb = ((wid * 1031 + b.id * 17) >>> 0);
+    return ha - hb;
+  });
+  var easy   = shuffled.filter(function(p) { return ['ROOKIE','BRONZE','SILVER'].indexOf(p.rank) >= 0; }).slice(0, 2);
+  var medium = shuffled.filter(function(p) { return ['GOLD','PLATINUM'].indexOf(p.rank) >= 0; }).slice(0, 2);
+  var hard   = shuffled.filter(function(p) { return ['DIAMOND','MASTER','LEGEND','TITAN','OVERLORD','PREDATOR'].indexOf(p.rank) >= 0; }).slice(0, 1);
+  return easy.concat(medium).concat(hard);
+}
+
+async function fetchContestLeaderboard(problemIds) {
+  if (!_supabase || problemIds.length === 0) return [];
+  try {
+    var r = await _supabase.from('progress')
+      .select('user_id, problem_id')
+      .eq('language', currentLanguage)
+      .in('problem_id', problemIds);
+    if (r.error || !r.data) return [];
+    // user_id ごとに何問クリアしたか集計
+    var counts = {};
+    r.data.forEach(function(row) {
+      counts[row.user_id] = (counts[row.user_id] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .map(function(e) { return { uid: e[0], cleared: e[1] }; })
+      .sort(function(a, b) { return b.cleared - a.cleared || a.uid.localeCompare(b.uid); })
+      .slice(0, 20);
+  } catch(e) { return []; }
+}
+
+async function renderContest() {
+  var el = document.getElementById('contest-content');
+  if (!el) return;
+  el.innerHTML = '<div class="contest-loading">// LOADING...</div>';
+
+  var probs   = getWeeklyContestProblems();
+  var dates   = _contestWeekDates();
+  var wid     = _contestWeekId();
+  var myClears = new Set(loadProgress());
+  var myCount = probs.filter(function(p) { return myClears.has(p.id); }).length;
+
+  var lb = await fetchContestLeaderboard(probs.map(function(p) { return p.id; }));
+  var myId = currentUser ? currentUser.id : null;
+
+  var RANK_COLOR = {
+    rookie:'#9B9B9B', bronze:'#C47A2F', silver:'#C0C0C0', gold:'#FFD700',
+    platinum:'#00E5FF', diamond:'#B9F2FF', master:'#C040FF',
+    legend:'#FF6B00', titan:'#00E676', overlord:'#FF1744', predator:'#F0F'
+  };
+
+  var problemsHtml = probs.map(function(p, i) {
+    var cleared = myClears.has(p.id);
+    var col = RANK_COLOR[p.rank.toLowerCase()] || '#FF6B00';
+    return '<div class="contest-prob' + (cleared ? ' contest-prob-done' : '') + '" onclick="goToContestProblem(' + p.id + ')">' +
+      '<span class="contest-prob-num">' + (i + 1) + '</span>' +
+      '<div class="contest-prob-info">' +
+        '<span class="contest-prob-title">' + escapeHtml(p.title) + '</span>' +
+        '<span class="contest-prob-rank" style="color:' + col + '">' + p.rank + '</span>' +
+      '</div>' +
+      '<span class="contest-prob-status">' + (cleared ? '✔' : '—') + '</span>' +
+    '</div>';
+  }).join('');
+
+  var posLabel = ['🥇', '🥈', '🥉'];
+  var lbHtml = lb.length === 0
+    ? '<p class="contest-lb-empty">まだ参加者がいません。最初の挑戦者になろう！</p>'
+    : '<ol class="contest-lb-list">' +
+      lb.map(function(row, i) {
+        var isMe = myId && row.uid === myId;
+        var pct  = Math.round(row.cleared / probs.length * 100);
+        return '<li class="contest-lb-row' + (isMe ? ' contest-lb-me' : '') + '">' +
+          '<span class="contest-lb-pos">' + (i < 3 ? posLabel[i] : (i + 1) + '.') + '</span>' +
+          '<span class="contest-lb-name">USER #' + row.uid.substring(0, 8).toUpperCase() +
+            (isMe ? '<span class="rank-me-badge">YOU</span>' : '') + '</span>' +
+          '<div class="contest-lb-bar-wrap"><div class="contest-lb-bar" style="width:' + pct + '%"></div></div>' +
+          '<span class="contest-lb-score">' + row.cleared + '/' + probs.length + '</span>' +
+        '</li>';
+      }).join('') +
+      '</ol>';
+
+  el.innerHTML =
+    '<div class="contest-wrap">' +
+      '<div class="contest-header">' +
+        '<div class="contest-header-label">◆ WEEKLY CHALLENGE</div>' +
+        '<div class="contest-title">WEEK<span>#' + (wid % 100) + '</span></div>' +
+        '<div class="contest-period">' + _fmtDate(dates.start) + ' — ' + _fmtDate(dates.end) + '</div>' +
+      '</div>' +
+
+      '<div class="contest-lang-badge">' + (currentLanguage || 'cpp').toUpperCase() + '</div>' +
+
+      '<div class="contest-progress-wrap">' +
+        '<div class="contest-progress-label">あなたの進捗 <strong>' + myCount + ' / ' + probs.length + '</strong></div>' +
+        '<div class="contest-progress-bar-bg">' +
+          '<div class="contest-progress-bar" style="width:' + Math.round(myCount / Math.max(probs.length, 1) * 100) + '%"></div>' +
+        '</div>' +
+        (myCount === probs.length
+          ? '<div class="contest-complete-badge">🏆 WEEK COMPLETE！</div>'
+          : '') +
+      '</div>' +
+
+      '<div class="contest-section-title">// 今週の問題</div>' +
+      '<div class="contest-problems">' + (probs.length > 0 ? problemsHtml : '<p class="contest-lb-empty">この言語にはまだ問題がありません</p>') + '</div>' +
+
+      '<div class="contest-section-title">// ランキング</div>' +
+      '<div class="contest-lb">' + lbHtml + '</div>' +
+    '</div>';
+}
+
+function goToContestProblem(id) {
+  playItemSelect();
+  history.pushState({ page: 'detail', lang: currentLanguage, id: id }, '');
+  renderDetail(id);
+  showPage('detail');
+  setActiveTab('problems');
+}
+
 function switchTab(tab) {
   playNavTab();
   setActiveTab(tab);
@@ -31931,6 +32082,10 @@ function switchTab(tab) {
     history.pushState({ page: 'ranking', lang: currentLanguage, tab: 'ranking' }, '');
     renderRanking();
     showPage('ranking');
+  } else if (tab === 'contest') {
+    history.pushState({ page: 'contest', lang: currentLanguage, tab: 'contest' }, '');
+    renderContest();
+    showPage('contest');
   } else {
     history.pushState({ page: 'guide', lang: currentLanguage, tab: 'guide' }, '');
     renderGuide();

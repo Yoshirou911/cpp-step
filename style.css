@@ -3120,6 +3120,145 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   flex-shrink: 0;
 }
 
+/* ===== コンテスト ===== */
+.contest-loading {
+  text-align: center; color: #444; padding: 80px 16px;
+  font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; letter-spacing: 0.1em;
+}
+.contest-wrap { padding: 0 0 80px; }
+
+.contest-header {
+  padding: 28px 20px 20px;
+  border-bottom: 1px solid rgba(255,107,0,0.15);
+  background: linear-gradient(180deg, rgba(255,107,0,0.06) 0%, transparent 100%);
+}
+.contest-header-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem; letter-spacing: 0.15em;
+  color: #FF6B00; margin-bottom: 6px;
+}
+.contest-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 2.6rem; font-weight: 800; letter-spacing: 0.04em;
+  color: #ede0c8; line-height: 1;
+}
+.contest-title span { color: #FF6B00; margin-left: 4px; }
+.contest-period {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem; color: rgba(237,224,200,0.45);
+  margin-top: 6px;
+}
+
+.contest-lang-badge {
+  display: inline-block;
+  margin: 14px 20px 0;
+  padding: 3px 12px;
+  border: 1px solid rgba(255,107,0,0.4);
+  border-radius: 12px;
+  font-family: 'Barlow Condensed', monospace;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+  color: #FF6B00;
+}
+
+.contest-progress-wrap { padding: 16px 20px 0; }
+.contest-progress-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem; color: rgba(237,224,200,0.6);
+  margin-bottom: 8px;
+}
+.contest-progress-label strong { color: #ede0c8; }
+.contest-progress-bar-bg {
+  height: 6px; background: rgba(255,255,255,0.07);
+  border-radius: 3px; overflow: hidden;
+}
+.contest-progress-bar {
+  height: 100%; background: linear-gradient(90deg, #FF6B00, #FFD600);
+  border-radius: 3px; transition: width 0.4s ease;
+}
+.contest-complete-badge {
+  margin-top: 10px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem; font-weight: 700; letter-spacing: 0.05em;
+  color: #FFD600;
+  text-shadow: 0 0 12px rgba(255,214,0,0.5);
+}
+
+.contest-section-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem; letter-spacing: 0.12em;
+  color: rgba(255,107,0,0.7);
+  padding: 20px 20px 10px;
+}
+
+/* 問題リスト */
+.contest-problems { display: flex; flex-direction: column; gap: 6px; padding: 0 12px; }
+.contest-prob {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.contest-prob:hover { background: rgba(255,107,0,0.07); border-color: rgba(255,107,0,0.3); }
+.contest-prob-done { border-color: rgba(0,230,118,0.25); background: rgba(0,230,118,0.05); }
+.contest-prob-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.1rem; font-weight: 700; color: #555; min-width: 20px; text-align: center;
+}
+.contest-prob-done .contest-prob-num { color: #00E676; }
+.contest-prob-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.contest-prob-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.82rem; color: #ede0c8;
+}
+.contest-prob-rank {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+}
+.contest-prob-status {
+  font-size: 1rem;
+  color: rgba(237,224,200,0.2);
+  min-width: 20px; text-align: right;
+}
+.contest-prob-done .contest-prob-status { color: #00E676; }
+
+/* ランキング */
+.contest-lb { padding: 0 12px; }
+.contest-lb-empty {
+  text-align: center; color: #555; padding: 40px 16px;
+  font-size: 0.78rem; font-family: 'Share Tech Mono', monospace;
+}
+.contest-lb-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.contest-lb-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 6px;
+}
+.contest-lb-me { border-color: rgba(255,107,0,0.4); background: rgba(255,107,0,0.07); }
+.contest-lb-pos {
+  font-size: 1rem; min-width: 26px; text-align: center;
+  font-family: 'Barlow Condensed', monospace;
+}
+.contest-lb-name {
+  flex: 1; font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem; color: #888;
+}
+.contest-lb-bar-wrap {
+  width: 60px; height: 4px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 2px; overflow: hidden; flex-shrink: 0;
+}
+.contest-lb-bar { height: 100%; background: #FF6B00; border-radius: 2px; }
+.contest-lb-score {
+  font-family: 'Barlow Condensed', monospace;
+  font-size: 0.9rem; font-weight: 700; color: #ede0c8;
+  white-space: nowrap; min-width: 36px; text-align: right;
+}
+
 /* ── LEGEND ランクバッジ ── */
 .rank-legend {
   color: #FF2244 !important;
