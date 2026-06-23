@@ -31679,6 +31679,65 @@ async function sendChatMessage() {
 var _rankingTab  = 'total';
 var _rankingLang = 'cpp';
 
+// ===== フォロー =====
+
+var _followingSet = null; // Set<uid> | null (未ロード)
+
+async function loadFollowing() {
+  if (!currentUser || !_supabase) { _followingSet = new Set(); return; }
+  try {
+    var r = await _supabase.from('follows')
+      .select('following_id')
+      .eq('follower_id', currentUser.id);
+    _followingSet = new Set((r.data || []).map(function(x) { return x.following_id; }));
+  } catch(e) { _followingSet = new Set(); }
+}
+
+function isFollowing(uid) {
+  return _followingSet ? _followingSet.has(uid) : false;
+}
+
+async function followUser(uid) {
+  if (!currentUser || !_supabase) { openAuthModal(); return; }
+  try {
+    await _supabase.from('follows').insert({ follower_id: currentUser.id, following_id: uid });
+    if (_followingSet) _followingSet.add(uid);
+    showToast('フォローしました！');
+    renderRanking();
+  } catch(e) { showToast('フォローに失敗しました'); }
+}
+
+async function unfollowUser(uid) {
+  if (!currentUser || !_supabase) return;
+  try {
+    await _supabase.from('follows')
+      .delete()
+      .eq('follower_id', currentUser.id)
+      .eq('following_id', uid);
+    if (_followingSet) _followingSet.delete(uid);
+    showToast('フォロー解除しました');
+    renderRanking();
+  } catch(e) { showToast('フォロー解除に失敗しました'); }
+}
+
+async function toggleFollow(uid) {
+  if (!currentUser) { openAuthModal(); return; }
+  if (_followingSet === null) await loadFollowing();
+  if (isFollowing(uid)) await unfollowUser(uid);
+  else                  await followUser(uid);
+}
+
+async function getFollowCounts(uid) {
+  if (!_supabase) return { following: 0, followers: 0 };
+  try {
+    var [f1, f2] = await Promise.all([
+      _supabase.from('follows').select('id', { count: 'exact', head: true }).eq('follower_id', uid),
+      _supabase.from('follows').select('id', { count: 'exact', head: true }).eq('following_id', uid)
+    ]);
+    return { following: f1.count || 0, followers: f2.count || 0 };
+  } catch(e) { return { following: 0, followers: 0 }; }
+}
+
 async function syncUserStats(addedXP, lang) {
   if (!currentUser || !_supabase) return;
   var now  = new Date();
@@ -31710,6 +31769,9 @@ async function renderRanking() {
   var el = document.getElementById('ranking-content');
   if (!el) return;
 
+  // フォローセットを事前にロード
+  if (_followingSet === null) await loadFollowing();
+
   var LANGS = [
     ['cpp','C++'],['python','Python'],['javascript','JavaScript'],['typescript','TypeScript'],
     ['java','Java'],['csharp','C#'],['kotlin','Kotlin'],['swift','Swift'],['go','Go'],
@@ -31725,7 +31787,8 @@ async function renderRanking() {
     ['total',     '🏅 総合クリア数'],
     ['lang',      '🌐 言語別クリア数'],
     ['weekly_xp', '⚡ 週間XP'],
-    ['growth',    '📈 伸び率']
+    ['growth',    '📈 伸び率'],
+    ['following', '👥 フォロー中']
   ];
   var tabHtml = tabs.map(function(t) {
     return '<button class="rank-sub-tab' + (_rankingTab === t[0] ? ' active' : '') +
@@ -31751,10 +31814,30 @@ async function renderRanking() {
   }
 
   try {
+    var myId = currentUser ? currentUser.id : null;
     var rows = [];
-    if (_rankingTab === 'total') {
+
+    if (_rankingTab === 'following') {
+      // フォロー中ランキング: フォロー中ユーザーの総合クリア数
+      if (!myId) {
+        document.getElementById('ranking-list').innerHTML = '<p class="ranking-empty">ログインすると表示されます</p>';
+        return;
+      }
+      var followingIds = _followingSet ? Array.from(_followingSet) : [];
+      if (followingIds.length === 0) {
+        document.getElementById('ranking-list').innerHTML = '<p class="ranking-empty">まだ誰もフォローしていません。ランキングでフォローしよう！</p>';
+        return;
+      }
       var r = await _supabase.from('user_stats').select('user_id,total_cleared,total_xp')
-        .gt('total_cleared', 0).order('total_cleared', { ascending: false }).limit(20);
+        .in('user_id', followingIds)
+        .gt('total_cleared', 0)
+        .order('total_cleared', { ascending: false });
+      rows = (r.data || []).map(function(u) {
+        return { uid: u.user_id, value: u.total_cleared, sub: (u.total_xp || 0).toLocaleString() + ' XP' };
+      });
+    } else if (_rankingTab === 'total') {
+      var r = await _supabase.from('user_stats').select('user_id,total_cleared,total_xp')
+        .gt('total_cleared', 0).order('total_cleared', { ascending: false }).limit(50);
       rows = (r.data || []).map(function(u) {
         return { uid: u.user_id, value: u.total_cleared, sub: (u.total_xp || 0).toLocaleString() + ' XP' };
       });
@@ -31765,11 +31848,11 @@ async function renderRanking() {
         .map(function(u) { return { uid: u.user_id, value: (u.lang_cleared || {})[_rankingLang] || 0 }; })
         .filter(function(u) { return u.value > 0; })
         .sort(function(a, b) { return b.value - a.value; })
-        .slice(0, 20)
+        .slice(0, 50)
         .map(function(u) { return Object.assign(u, { sub: u.value + ' 問' }); });
     } else if (_rankingTab === 'weekly_xp') {
       var r = await _supabase.from('user_stats').select('user_id,weekly_xp')
-        .gt('weekly_xp', 0).order('weekly_xp', { ascending: false }).limit(20);
+        .gt('weekly_xp', 0).order('weekly_xp', { ascending: false }).limit(50);
       rows = (r.data || []).map(function(u) {
         return { uid: u.user_id, value: u.weekly_xp || 0, sub: (u.weekly_xp || 0).toLocaleString() + ' XP' };
       });
@@ -31783,7 +31866,7 @@ async function renderRanking() {
         })
         .filter(function(u) { return u.value > 0; })
         .sort(function(a, b) { return b.value - a.value; })
-        .slice(0, 20);
+        .slice(0, 50);
     }
 
     if (rows.length === 0) {
@@ -31791,19 +31874,25 @@ async function renderRanking() {
       return;
     }
 
-    var myId = currentUser ? currentUser.id : null;
     var posClass = ['rank-row-1st', 'rank-row-2nd', 'rank-row-3rd'];
     var posLabel = ['1ST', '2ND', '3RD'];
     var listHtml = rows.map(function(row, i) {
       var isMe = myId && row.uid === myId;
+      var following = !isMe && isFollowing(row.uid);
       var anonId = 'USER #' + (row.uid || '????????').substring(0, 8).toUpperCase();
       var rowCls = 'rank-row' + (i < 3 ? ' ' + posClass[i] : '') + (isMe ? ' rank-row-me' : '');
       var posCls = i < 3 ? 'rank-pos rank-pos-' + (i + 1) : 'rank-pos';
       var posStr = i < 3 ? posLabel[i] : (i + 1) + '.';
+      var followBtn = (!isMe && myId)
+        ? '<button class="follow-btn' + (following ? ' following' : '') + '" onclick="event.stopPropagation();toggleFollow(\'' + row.uid + '\')">' +
+            (following ? '✓ フォロー中' : '+ フォロー') +
+          '</button>'
+        : '';
       return '<div class="' + rowCls + '">' +
         '<span class="' + posCls + '">' + posStr + '</span>' +
         '<span class="rank-name">' + anonId + (isMe ? '<span class="rank-me-badge">YOU</span>' : '') + '</span>' +
         '<span class="rank-value">' + row.sub + '</span>' +
+        followBtn +
       '</div>';
     }).join('');
 
@@ -33955,9 +34044,10 @@ async function renderProfile() {
   // まずスケルトンを表示して即座にページを見せる
   content.innerHTML = '<div class="profile-loading">// LOADING...</div>';
 
-  // ストリーク＆スカウトメッセージを並行取得
-  var results = await Promise.all([getLoginStreak(), fetchScoutMessages()]);
+  // ストリーク・スカウト・フォロー数を並行取得
+  var results = await Promise.all([getLoginStreak(), fetchScoutMessages(), currentUser ? getFollowCounts(currentUser.id) : Promise.resolve({following:0, followers:0})]);
   var streak = results[0];
+  var followCounts = results[2];
 
   var stats  = getProfileStats();
   stats.currentStreak = streak.current;
@@ -34094,6 +34184,17 @@ async function renderProfile() {
         '</div>' +
         '<div class="profile-total">' + stats.total + '<span> / 696 CLEARED</span></div>' +
         '<div class="profile-mission-total">' + stats.totalMissions + ' / 72 MISSIONS</div>' +
+        (currentUser
+          ? '<div class="profile-follow-counts">' +
+              '<span class="follow-count-item" onclick="setRankingTab(\'following\');switchTab(\'ranking\')">' +
+                '<strong>' + followCounts.following + '</strong> フォロー中' +
+              '</span>' +
+              '<span class="follow-count-sep">·</span>' +
+              '<span class="follow-count-item">' +
+                '<strong>' + followCounts.followers + '</strong> フォロワー' +
+              '</span>' +
+            '</div>'
+          : '') +
       '</div>' +
     '</div>' +
     (currentUserIsAdmin
@@ -34733,6 +34834,7 @@ async function initAuth() {
     currentUser = session ? session.user : null;
     _progressCache = null;
     _missionProgressCache = null;
+    _followingSet = null;
     updateAuthUI();
     if (currentUser) {
       recordLoginDay();
