@@ -33749,6 +33749,112 @@ function buildHeatmapHTML() {
   return html;
 }
 
+// ===== 弱点分析 =====
+
+var _WA_RANK_ORDER  = ['rookie','bronze','silver','gold','platinum','diamond','master','legend','titan'];
+var _WA_RANK_LABEL  = { rookie:'ROOKIE', bronze:'BRONZE', silver:'SILVER', gold:'GOLD', platinum:'PLATINUM', diamond:'DIAMOND', master:'MASTER', legend:'LEGEND', titan:'TITAN' };
+var _WA_RANK_COLOR  = { rookie:'#9B9B9B', bronze:'#C47A2F', silver:'#B8C8D8', gold:'#EFC050', platinum:'#00C8B4', diamond:'#5588FF', master:'#C040FF', legend:'#FF2244', titan:'#FF2020' };
+var _WA_LANG_LABEL  = { cpp:'C++', python:'Python', javascript:'JavaScript', ruby:'Ruby', typescript:'TypeScript', kotlin:'Kotlin', swift:'Swift', java:'Java', csharp:'C#', go:'Go', c:'C', rust:'Rust', html:'HTML', sql:'SQL', bash:'Bash', regex:'Regex', php:'PHP' };
+
+function calcWeaknessData() {
+  var langList = [
+    { key:'cpp',        get:function(){ return problems; } },
+    { key:'python',     get:function(){ return pythonProblems; } },
+    { key:'javascript', get:function(){ return javascriptProblems; } },
+    { key:'ruby',       get:function(){ return rubyProblems; } },
+    { key:'typescript', get:function(){ return typescriptProblems; } },
+    { key:'kotlin',     get:function(){ return kotlinProblems; } },
+    { key:'swift',      get:function(){ return swiftProblems; } },
+    { key:'java',       get:function(){ return javaProblems; } },
+    { key:'csharp',     get:function(){ return csharpProblems; } },
+    { key:'go',         get:function(){ return goProblems; } },
+    { key:'c',          get:function(){ return cProblems; } },
+    { key:'rust',       get:function(){ return rustProblems; } },
+    { key:'html',       get:function(){ return htmlProblems; } },
+    { key:'sql',        get:function(){ return sqlProblems; } },
+    { key:'bash',       get:function(){ return bashProblems; } },
+    { key:'regex',      get:function(){ return regexProblems; } },
+    { key:'php',        get:function(){ return phpProblems; } }
+  ];
+
+  // ランク別集計（全言語合計）
+  var rankTotals = {};
+  _WA_RANK_ORDER.forEach(function(r) { rankTotals[r] = { total:0, cleared:0 }; });
+
+  // 苦手スポット候補
+  var weakSpots = [];
+
+  langList.forEach(function(lang) {
+    var prog = JSON.parse(localStorage.getItem(lang.key + '_progress') || '[]');
+    if (!prog.length) return; // 未着手言語はスキップ
+
+    var byRank = {};
+    lang.get().forEach(function(p) {
+      var r = (p.rank || 'rookie').toLowerCase();
+      if (!byRank[r]) byRank[r] = { total:0, cleared:0 };
+      byRank[r].total++;
+      if (prog.indexOf(p.id) !== -1) byRank[r].cleared++;
+      if (rankTotals[r]) {
+        rankTotals[r].total++;
+        if (prog.indexOf(p.id) !== -1) rankTotals[r].cleared++;
+      }
+    });
+
+    _WA_RANK_ORDER.forEach(function(r) {
+      if (!byRank[r] || byRank[r].total === 0) return;
+      var pct = Math.round(byRank[r].cleared / byRank[r].total * 100);
+      if (pct < 100) {
+        weakSpots.push({ lang: lang.key, rank: r, cleared: byRank[r].cleared, total: byRank[r].total, pct: pct });
+      }
+    });
+  });
+
+  weakSpots.sort(function(a, b) { return a.pct - b.pct; });
+  return { rankTotals: rankTotals, weakSpots: weakSpots.slice(0, 5) };
+}
+
+function buildWeaknessHTML() {
+  var d = calcWeaknessData();
+  var hasData = _WA_RANK_ORDER.some(function(r) { return d.rankTotals[r].total > 0; });
+  if (!hasData) return '<p class="wa-empty">問題をクリアするとここに分析が表示されます</p>';
+
+  // ランク別達成率バー
+  var rankBars = _WA_RANK_ORDER.map(function(r) {
+    var rt = d.rankTotals[r];
+    if (rt.total === 0) return '';
+    var pct = Math.round(rt.cleared / rt.total * 100);
+    var color = _WA_RANK_COLOR[r];
+    return '<div class="wa-rank-row">' +
+      '<span class="wa-rank-label" style="color:' + color + '">' + _WA_RANK_LABEL[r] + '</span>' +
+      '<div class="wa-bar-track">' +
+        '<div class="wa-bar-fill" style="width:' + pct + '%;background:' + color + ';box-shadow:0 0 6px ' + color + '66"></div>' +
+      '</div>' +
+      '<span class="wa-rank-pct">' + pct + '%</span>' +
+      '<span class="wa-rank-frac">' + rt.cleared + '/' + rt.total + '</span>' +
+    '</div>';
+  }).join('');
+
+  // 苦手スポット
+  var spotHTML = d.weakSpots.length === 0
+    ? '<p class="wa-perfect">全スポット100%達成！</p>'
+    : d.weakSpots.map(function(s, i) {
+        var color = _WA_RANK_COLOR[s.rank];
+        return '<div class="wa-spot">' +
+          '<span class="wa-spot-rank" style="color:' + color + ';border-color:' + color + '44">' + _WA_RANK_LABEL[s.rank] + '</span>' +
+          '<span class="wa-spot-lang">' + (_WA_LANG_LABEL[s.lang] || s.lang) + '</span>' +
+          '<div class="wa-spot-bar-wrap">' +
+            '<div class="wa-spot-bar" style="width:' + s.pct + '%;background:' + color + '"></div>' +
+          '</div>' +
+          '<span class="wa-spot-pct">' + s.pct + '%</span>' +
+          '<span class="wa-spot-frac">(' + s.cleared + '/' + s.total + ')</span>' +
+        '</div>';
+      }).join('');
+
+  return '<div class="wa-rank-bars">' + rankBars + '</div>' +
+    '<div class="wa-spots-title">苦手スポット TOP' + Math.min(5, d.weakSpots.length) + '</div>' +
+    '<div class="wa-spots">' + spotHTML + '</div>';
+}
+
 // ===== プロフィールページ =====
 
 function openProfile() {
@@ -34096,6 +34202,12 @@ async function renderProfile() {
         _statCardHTML('C',          '#A8B9CC', stats.c,      strength.c,      stats.cM,      30, pct['c']) +
         _statCardHTML('Rust',       '#CE412B', stats.rust,   strength.rust,   stats.rustM,   58, pct['rust']) +
       '</div>' +
+    '</div>' +
+
+    // ─── 弱点分析 ───
+    '<div class="profile-section">' +
+      '<div class="profile-section-title">// WEAKNESS ANALYSIS</div>' +
+      buildWeaknessHTML() +
     '</div>' +
 
     // ─── バッジ ───

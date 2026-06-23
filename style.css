@@ -3025,6 +3025,101 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   color: rgba(255,107,0,0.55);
 }
 
+/* ========== 弱点分析 ========== */
+.wa-empty, .wa-perfect {
+  color: rgba(255,255,255,0.35);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  padding: 12px 0;
+}
+.wa-rank-bars { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
+.wa-rank-row { display: flex; align-items: center; gap: 8px; }
+.wa-rank-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  width: 76px;
+  flex-shrink: 0;
+}
+.wa-bar-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.wa-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.wa-rank-pct {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.6);
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.wa-rank-frac {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.25);
+  width: 52px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.wa-spots-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: rgba(255,107,0,0.5);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+.wa-spots { display: flex; flex-direction: column; gap: 7px; }
+.wa-spot { display: flex; align-items: center; gap: 8px; }
+.wa-spot-rank {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  border: 1px solid;
+  padding: 1px 6px;
+  width: 76px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.wa-spot-lang {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.55);
+  width: 90px;
+  flex-shrink: 0;
+}
+.wa-spot-bar-wrap {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.wa-spot-bar { height: 100%; border-radius: 2px; }
+.wa-spot-pct {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.5);
+  width: 34px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.wa-spot-frac {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  color: rgba(255,255,255,0.22);
+  width: 50px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
 /* ── LEGEND ランクバッジ ── */
 .rank-legend {
   color: #FF2244 !important;
