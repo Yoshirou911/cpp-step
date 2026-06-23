@@ -986,13 +986,28 @@ function getLevelColor(lv) {
 // ヘッダーのストリークバッジを更新
 async function updateStreakBadge() {
   var el = document.getElementById('streak-badge');
-  if (!el || !currentUser) { if (el) el.classList.add('hidden'); return; }
+  var reminderEl = document.getElementById('streak-reminder');
+  if (!el || !currentUser) {
+    if (el) el.classList.add('hidden');
+    if (reminderEl) reminderEl.classList.add('hidden');
+    return;
+  }
   var streak = await getLoginStreak();
   if (streak.current >= 1) {
     el.textContent = '🔥' + streak.current;
     el.classList.remove('hidden');
   } else {
     el.classList.add('hidden');
+  }
+
+  // 今日まだ学習していない場合（18時以降、ストリーク1日以上）にリマインダー表示
+  if (reminderEl) {
+    var today = new Date().toISOString().slice(0, 10);
+    var log = JSON.parse(localStorage.getItem('study_log') || '{}');
+    var studiedToday = (log[today] || 0) > 0;
+    var hour = new Date().getHours();
+    var showReminder = !studiedToday && streak.current >= 1 && hour >= 18;
+    reminderEl.classList.toggle('hidden', !showReminder);
   }
 }
 
@@ -1069,6 +1084,20 @@ function shareBadge(name, desc) {
 }
 function shareClear(title, lang) {
   shareToX('CODE STEP で「' + title + '」（' + lang + '）をクリアしました！ #CODESTEP #プログラミング学習');
+}
+function shareProfile() {
+  var stats    = getProfileStats();
+  var expData  = calculateEXP();
+  var level    = calcLevel(expData.total);
+  var rank     = getProfileRank(stats.total, countTitanLangs());
+  var streakEl = document.getElementById('streak-badge');
+  var streak   = streakEl && !streakEl.classList.contains('hidden')
+    ? (streakEl.textContent || '') : '';
+  var text = 'CODE STEP で ' + stats.total + ' 問クリア達成！';
+  if (rank && rank.name) text += ' ランク: ' + rank.name + ' / Lv.' + level;
+  if (streak) text += ' ' + streak + '連続学習中';
+  text += ' #CODESTEP #プログラミング学習';
+  shareToX(text);
 }
 
 // レベルアップオーバーレイを表示
@@ -30257,6 +30286,9 @@ function renderList() {
     list.appendChild(adTop);
   }
 
+  // コンテスト問題セット（カードバッジ用）
+  var _contestProbIds = new Set(getWeeklyContestProblems().map(function(p) { return p.id; }));
+
   // デイリーチャレンジバナー
   var dc = getDailyChallenge();
   if (dc) {
@@ -30347,7 +30379,8 @@ function renderList() {
     units[unitName].forEach(function(p) {
       var learned = isLearned(p.id);
       var isLocked = isPremiumRequired(p.rank) && !currentUserIsPremium;
-      var isDailyCard = dc && dc.id === p.id;
+      var isDailyCard   = dc && dc.id === p.id;
+      var isContestCard = _contestProbIds.has(p.id);
       var card = document.createElement("div");
       card.className = "problem-card rank-card-" + (p.rank || 'rookie').toLowerCase() +
         (learned ? " learned" : "") +
@@ -30359,7 +30392,8 @@ function renderList() {
         '<div class="card-left">' +
           '<span class="card-num">' + String(p.id).padStart(2, '0') + '</span>' +
           '<span class="problem-title">' + escapeHtml(p.title) + '</span>' +
-          (isDailyCard ? '<span class="dc-card-badge">🎯 TODAY</span>' : '') +
+          (isDailyCard   ? '<span class="dc-card-badge">🎯 TODAY</span>' : '') +
+          (isContestCard ? '<span class="contest-card-badge">🏆 CONTEST</span>' : '') +
         '</div>' +
         '<div class="card-right">' +
           '<span class="rank-badge rank-' + (p.rank || 'rookie').toLowerCase() + '">' + escapeHtml(p.rank || 'ROOKIE') + '</span>' +
@@ -31553,6 +31587,17 @@ async function startAutoJudge(problemId, output) {
 }
 
 // 判定結果を表示し、正解ならクリア処理
+function getNextProblem(currentId) {
+  var probs = getProblems();
+  var idx = probs.findIndex(function(p) { return p.id === currentId; });
+  if (idx === -1) return null;
+  for (var i = idx + 1; i < probs.length; i++) {
+    var p = probs[i];
+    if (!isLearned(p.id) && (!isPremiumRequired(p.rank) || currentUserIsPremium)) return p;
+  }
+  return null;
+}
+
 function showJudgeResult(problemId, passed, byAI) {
   // ページ遷移済みなら何もしない
   if (document.getElementById("judge-area") === null) return;
@@ -31576,9 +31621,15 @@ function showJudgeResult(problemId, passed, byAI) {
       var _p = getProblems().find(function(x) { return x.id === problemId; });
       var _pTitle = _p ? _p.title : '';
       var _lang = currentLanguage || 'cpp';
+      var next = getNextProblem(problemId);
       ja.innerHTML = '<div class="judge-pass">✓ ' + label + ' クリアしました！</div>' +
-        '<div class="clear-share-row"><button class="share-x-btn" onclick="shareClear(\'' +
-        _pTitle.replace(/'/g, "\\'") + '\',\'' + _lang + '\')">𝕏 シェア</button></div>';
+        '<div class="clear-share-row">' +
+          '<button class="share-x-btn" onclick="shareClear(\'' +
+            _pTitle.replace(/'/g, "\\'") + '\',\'' + _lang + '\')">𝕏 シェア</button>' +
+          (next
+            ? '<button class="next-prob-btn" onclick="goToNextProblem(' + next.id + ')">次の問題へ → <span class="next-prob-title">' + escapeHtml(next.title) + '</span></button>'
+            : '') +
+        '</div>';
       ja.classList.remove("hidden");
     }
   } else {
@@ -31972,8 +32023,11 @@ function _contestWeekDates() {
 function _pad2(n) { return String(n).padStart(2, '0'); }
 function _fmtDate(d) { return d.getFullYear() + '/' + _pad2(d.getMonth() + 1) + '/' + _pad2(d.getDate()); }
 
-function getWeeklyContestProblems() {
+function getWeeklyContestProblems(lang) {
+  var savedLang = currentLanguage;
+  if (lang && lang !== currentLanguage) currentLanguage = lang;
   var problems = getProblems();
+  currentLanguage = savedLang;
   if (!problems || problems.length === 0) return [];
   var wid = _contestWeekId();
   // 決定論的シャッフル（週IDとIDのハッシュ）
@@ -32008,18 +32062,26 @@ async function fetchContestLeaderboard(problemIds, lang) {
   } catch(e) { return []; }
 }
 
+var _contestLang = null; // null = currentLanguage に追随
+
+function setContestLang(lang) {
+  _contestLang = lang;
+  renderContest();
+}
+
 async function renderContest() {
   var el = document.getElementById('contest-content');
   if (!el) return;
   el.innerHTML = '<div class="contest-loading">// LOADING...</div>';
 
-  var probs   = getWeeklyContestProblems();
+  var lang    = _contestLang || currentLanguage || 'cpp';
+  var probs   = getWeeklyContestProblems(lang);
   var dates   = _contestWeekDates();
   var wid     = _contestWeekId();
   var myClears = new Set(loadProgress());
   var myCount = probs.filter(function(p) { return myClears.has(p.id); }).length;
 
-  var lb = await fetchContestLeaderboard(probs.map(function(p) { return p.id; }), currentLanguage);
+  var lb = await fetchContestLeaderboard(probs.map(function(p) { return p.id; }), lang);
   var myId = currentUser ? currentUser.id : null;
 
   var RANK_COLOR = {
@@ -32066,7 +32128,18 @@ async function renderContest() {
         '<div class="contest-period">' + _fmtDate(dates.start) + ' — ' + _fmtDate(dates.end) + '</div>' +
       '</div>' +
 
-      '<div class="contest-lang-badge">' + (currentLanguage || 'cpp').toUpperCase() + '</div>' +
+      '<div class="contest-lang-row">' +
+        (function() {
+          var LANGS = [['cpp','C++'],['python','Python'],['javascript','JavaScript'],['typescript','TypeScript'],
+            ['java','Java'],['csharp','C#'],['kotlin','Kotlin'],['swift','Swift'],['go','Go'],
+            ['rust','Rust'],['ruby','Ruby'],['c','C'],['html','HTML'],['sql','SQL'],['bash','Bash'],['regex','Regex'],['php','PHP']];
+          return '<select class="contest-lang-select" onchange="setContestLang(this.value)">' +
+            LANGS.map(function(l) {
+              return '<option value="' + l[0] + '"' + (lang === l[0] ? ' selected' : '') + '>' + l[1] + '</option>';
+            }).join('') +
+          '</select>';
+        })() +
+      '</div>' +
 
       '<div class="contest-progress-wrap">' +
         '<div class="contest-progress-label">あなたの進捗 <strong>' + myCount + ' / ' + probs.length + '</strong></div>' +
@@ -32084,6 +32157,13 @@ async function renderContest() {
       '<div class="contest-section-title">// ランキング</div>' +
       '<div class="contest-lb">' + lbHtml + '</div>' +
     '</div>';
+}
+
+function goToNextProblem(id) {
+  playItemSelect();
+  history.pushState({ page: 'detail', lang: currentLanguage, id: id }, '');
+  renderDetail(id);
+  showPage('detail');
 }
 
 function goToContestProblem(id) {
@@ -34381,6 +34461,7 @@ async function renderProfile() {
               '</span>' +
             '</div>'
           : '') +
+        '<button class="profile-share-btn" onclick="shareProfile()">𝕏 シェア</button>' +
       '</div>' +
     '</div>' +
     (currentUserIsAdmin
