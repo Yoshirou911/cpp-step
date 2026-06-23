@@ -3120,6 +3120,15 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   flex-shrink: 0;
 }
 
+.ranking-my-pos {
+  text-align: center;
+  padding: 10px 0 4px;
+  font-size: 0.8rem;
+  color: rgba(237,224,200,0.55);
+  font-family: 'Share Tech Mono', monospace;
+}
+.ranking-my-pos strong { color: #FF6B00; }
+
 .detail-not-found {
   text-align: center; padding: 60px 20px;
   color: rgba(237,224,200,0.45);
@@ -5018,6 +5027,12 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   .dev-status-chart {
     max-width: 100%;
   }
+}
+
+@media (max-width: 480px) {
+  .code-editor-ace { min-height: 180px; }
+  .code-editor-ace .ace_editor { font-size: 13px !important; }
+  .ranking-my-pos { font-size: 0.72rem; }
 }
 
 /* ===== SILVERアンロック演出 ===== */

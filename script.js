@@ -418,6 +418,15 @@ function clearFilter() {
   if (wBtn) wBtn.classList.remove('active');
   renderList();
 }
+// 検索テキストのみクリア（ランク・ブックマーク・復習フィルターは維持）
+function clearSearchText() {
+  _filterQuery = '';
+  var inp = document.getElementById('list-search-input');
+  if (inp) inp.value = '';
+  var clearBtn = document.getElementById('list-search-clear');
+  if (clearBtn) clearBtn.classList.add('hidden');
+  renderList();
+}
 var _currentAuthTab = 'login';
 // 進捗のインメモリキャッシュ（言語切替時にリセット）
 var _progressCache = null;
@@ -31985,7 +31994,20 @@ async function renderRanking() {
       '</div>';
     }).join('');
 
-    document.getElementById('ranking-list').innerHTML = '<div class="rank-list">' + listHtml + '</div>';
+    var myRank = myId ? rows.findIndex(function(r) { return r.uid === myId; }) : -1;
+    var myRankHtml = myRank >= 0
+      ? '<div class="ranking-my-pos">あなたの順位: <strong>' + (myRank + 1) + ' 位</strong></div>'
+      : '';
+    document.getElementById('ranking-list').innerHTML =
+      '<div class="rank-list">' + listHtml + '</div>' + myRankHtml;
+
+    // 自分の行にスクロール
+    if (myRank >= 0) {
+      requestAnimationFrame(function() {
+        var meEl = document.querySelector('.rank-row-me');
+        if (meEl) meEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    }
   } catch(e) {
     document.getElementById('ranking-list').innerHTML = '<p class="ranking-empty">読込に失敗しました</p>';
   }
@@ -34571,7 +34593,7 @@ async function renderProfile() {
         '<div class="level-right">' +
           '<div class="level-title-label" style="color:' + lvColor + '">' + lvTitle + '</div>' +
           '<div class="exp-bar-track">' +
-            '<div class="exp-bar-fill" style="width:' + expPct + '%;background:' + lvColor + '"></div>' +
+            '<div class="exp-bar-fill" id="exp-bar-fill-anim" style="width:0%;background:' + lvColor + ';transition:width 0.8s ease"></div>' +
             '<div class="exp-bar-pct" style="color:' + lvColor + '">' + expPct + '%</div>' +
           '</div>' +
           '<div class="exp-numbers">' +
@@ -34688,6 +34710,14 @@ async function renderProfile() {
         locked.map(function(b) { return badgeHTML(b, false); }).join('') +
       '</div>' +
     '</div>';
+
+  // XPバーアニメーション
+  requestAnimationFrame(function() {
+    var barEl = document.getElementById('exp-bar-fill-anim');
+    if (barEl) {
+      requestAnimationFrame(function() { barEl.style.width = expPct + '%'; });
+    }
+  });
 }
 
 function _statCardHTML(lang, color, count, strengthData, missions, maxProblems, pctInfo) {
