@@ -385,7 +385,8 @@ function toggleFilterWrong() {
 }
 
 function onFilterInput(val) {
-  _filterQuery = val.trim().toLowerCase();
+  // 全角スペース(　)も半角スペースに正規化してトリム
+  _filterQuery = val.replace(/　/g, ' ').trim().toLowerCase();
   var clearBtn = document.getElementById('list-search-clear');
   if (clearBtn) clearBtn.classList.toggle('hidden', !_filterQuery);
   renderList();
@@ -1396,11 +1397,12 @@ function selectLanguage(langId) {
   _progressCache = null;
   _missionProgressCache = null;
   chatHistory = [];
-  // フィルター状態をリセット（前言語のフィルターが引き継がれないよう）
+  // フィルター・コンテスト言語をリセット（前言語の状態が引き継がれないよう）
   _filterQuery    = '';
   _filterRank     = '';
   _filterBookmark = false;
   _filterWrong    = false;
+  _contestLang    = null;
   var bBtn = document.getElementById('btn-filter-bookmark');
   var wBtn = document.getElementById('btn-filter-wrong');
   if (bBtn) bBtn.classList.remove('active');
@@ -30459,7 +30461,11 @@ function escapeHtml(text) {
 
 function renderDetail(id) {
   const p = getProblems().find(function(x) { return x.id === id; });
-  if (!p) return;
+  if (!p) {
+    var dc = document.getElementById('detail-content');
+    if (dc) dc.innerHTML = '<div class="detail-not-found"><p>問題が見つかりません。</p><button class="toggle-btn" onclick="history.back()">← 戻る</button></div>';
+    return;
+  }
   const learned = isLearned(p.id);
   const effectiveHighRanks = currentUserIsPremium ? HIGH_RANKS_PREMIUM : HIGH_RANKS;
 
@@ -31624,8 +31630,8 @@ function showJudgeResult(problemId, passed, byAI) {
       var next = getNextProblem(problemId);
       ja.innerHTML = '<div class="judge-pass">✓ ' + label + ' クリアしました！</div>' +
         '<div class="clear-share-row">' +
-          '<button class="share-x-btn" onclick="shareClear(\'' +
-            _pTitle.replace(/'/g, "\\'") + '\',\'' + _lang + '\')">𝕏 シェア</button>' +
+          '<button class="share-x-btn" onclick="shareClear(' +
+            JSON.stringify(_pTitle) + ',' + JSON.stringify(_lang) + ')">𝕏 シェア</button>' +
           (next
             ? '<button class="next-prob-btn" onclick="goToNextProblem(' + next.id + ')">次の問題へ → <span class="next-prob-title">' + escapeHtml(next.title) + '</span></button>'
             : '') +
@@ -32062,7 +32068,8 @@ async function fetchContestLeaderboard(problemIds, lang) {
   } catch(e) { return []; }
 }
 
-var _contestLang = null; // null = currentLanguage に追随
+var _contestLang     = null; // null = currentLanguage に追随
+var _contestRenderTs = 0;   // 連打競合防止用タイムスタンプ
 
 function setContestLang(lang) {
   _contestLang = lang;
@@ -32074,6 +32081,10 @@ async function renderContest() {
   if (!el) return;
   el.innerHTML = '<div class="contest-loading">// LOADING...</div>';
 
+  // 連打時：この呼び出しが最新かどうかをタイムスタンプで確認
+  var ts = Date.now();
+  _contestRenderTs = ts;
+
   var lang    = _contestLang || currentLanguage || 'cpp';
   var probs   = getWeeklyContestProblems(lang);
   var dates   = _contestWeekDates();
@@ -32082,6 +32093,10 @@ async function renderContest() {
   var myCount = probs.filter(function(p) { return myClears.has(p.id); }).length;
 
   var lb = await fetchContestLeaderboard(probs.map(function(p) { return p.id; }), lang);
+
+  // 連打時：このレンダリングが最新でなければ中断
+  if (_contestRenderTs !== ts) return;
+
   var myId = currentUser ? currentUser.id : null;
 
   var RANK_COLOR = {
@@ -34363,7 +34378,7 @@ async function renderProfile() {
         '</div>' +
         '<div class="badge-name" style="color:' + nameCol + '">' + b.name + '</div>' +
         '<div class="badge-desc" style="color:' + descCol + '">' + b.desc + '</div>' +
-        (isEarned ? '<button class="badge-share-btn" onclick="shareBadge(\'' + b.name.replace(/'/g, "\\'") + '\',\'' + b.desc.replace(/'/g, "\\'") + '\')">𝕏 シェア</button>' : '') +
+        (isEarned ? '<button class="badge-share-btn" onclick="shareBadge(' + JSON.stringify(b.name) + ',' + JSON.stringify(b.desc) + ')">𝕏 シェア</button>' : '') +
       '</div>'
     );
   }

@@ -3120,6 +3120,13 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   flex-shrink: 0;
 }
 
+.detail-not-found {
+  text-align: center; padding: 60px 20px;
+  color: rgba(237,224,200,0.45);
+  font-family: 'Share Tech Mono', monospace;
+}
+.detail-not-found p { margin-bottom: 16px; font-size: 0.95rem; }
+
 /* ===== コンテスト ===== */
 .contest-loading {
   text-align: center; color: #444; padding: 80px 16px;
