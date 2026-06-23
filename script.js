@@ -30230,6 +30230,8 @@ async function syncProgressFromSupabase() {
 function showPage(name) {
   // 問題/ミッション詳細を離れるときに学習タイマーを保存
   stopStudyTimer();
+  // 詳細ページ以外ではタイトルをリセット
+  if (name !== 'detail') document.title = 'CODE STEP';
   // 全ページを非表示にしてから対象だけ表示
   ["page-landing", "page-lang", "page-list", "page-detail", "page-guide",
    "page-mission-list", "page-mission-detail", "page-profile", "page-textbook", "page-ranking", "page-contest"].forEach(function(id) {
@@ -30473,8 +30475,10 @@ function renderDetail(id) {
   if (!p) {
     var dc = document.getElementById('detail-content');
     if (dc) dc.innerHTML = '<div class="detail-not-found"><p>問題が見つかりません。</p><button class="toggle-btn" onclick="history.back()">← 戻る</button></div>';
+    document.title = 'CODE STEP';
     return;
   }
+  document.title = p.title + ' | CODE STEP';
   const learned = isLearned(p.id);
   const effectiveHighRanks = currentUserIsPremium ? HIGH_RANKS_PREMIUM : HIGH_RANKS;
 
@@ -31651,7 +31655,9 @@ function showJudgeResult(problemId, passed, byAI) {
     trackWrongAnswer(problemId);
     var judgeArea = document.getElementById("judge-area");
     if (judgeArea) {
-      judgeArea.innerHTML = '<div class="judge-fail">✗ まだ違います。出力を確認してもう一度試してみましょう。</div>';
+      judgeArea.innerHTML =
+        '<div class="judge-fail">✗ まだ違います。出力を確認してもう一度試してみましょう。</div>' +
+        '<button class="judge-hint-btn" onclick="toggleSection(\'hint-' + problemId + '\')">💡 ヒントを確認する</button>';
       judgeArea.classList.remove("hidden");
     }
   }
@@ -34116,14 +34122,22 @@ async function refreshGolfBoard(problemId) {
   board.innerHTML = html;
 }
 
+var _lastGolfSubmit = {}; // { [problemId]: lastLen } 二重送信防止
+
 async function submitAndRefreshGolf(problemId) {
   if (!currentUser) { alert('ログインが必要です'); return; }
   if (!aceEditor) return;
   var len = aceEditor.getValue().length;
   if (len === 0) return;
+  if (_lastGolfSubmit[problemId] === len) {
+    var btn2 = document.querySelector('.golf-submit-btn');
+    if (btn2) { btn2.textContent = '同じ文字数です'; setTimeout(function() { if (btn2) btn2.textContent = '⛳ このコードを提出する'; }, 1500); }
+    return;
+  }
   var btn = document.querySelector('.golf-submit-btn');
   if (btn) { btn.disabled = true; btn.textContent = '送信中...'; }
   await submitCodeGolfEntry(problemId, len);
+  _lastGolfSubmit[problemId] = len;
   await refreshGolfBoard(problemId);
   if (btn) { btn.disabled = false; btn.textContent = '✓ 提出しました！'; setTimeout(function() { if (btn) btn.textContent = '⛳ このコードを提出する'; }, 2000); }
 }

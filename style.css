@@ -2240,6 +2240,18 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   animation: judgeIn 0.3s ease;
 }
 
+.judge-hint-btn {
+  display: inline-block; margin-top: 8px;
+  padding: 5px 12px;
+  background: rgba(255,214,0,0.09);
+  border: 1px solid rgba(255,214,0,0.35);
+  border-radius: 8px;
+  color: #FFD600; font-size: 0.77rem; font-weight: 700;
+  cursor: pointer; font-family: 'Share Tech Mono', monospace;
+  transition: background 0.15s;
+}
+.judge-hint-btn:hover { background: rgba(255,214,0,0.18); }
+
 .judge-pending {
   background: rgba(255,107,0,0.07);
   border: 1px solid rgba(255,107,0,0.18);
