@@ -365,6 +365,17 @@ function toggleBookmark(id) {
   localStorage.setItem(_bookmarkKey(), JSON.stringify(list));
   renderList();
 }
+// 詳細ページからのブックマークトグル（リスト再描画なし・ボタン即時更新）
+function toggleDetailBookmark(id) {
+  var list = getBookmarks();
+  var idx = list.indexOf(id);
+  var bmed;
+  if (idx === -1) { list.push(id); bmed = true;  showToast('🔖 ブックマークに追加しました'); }
+  else            { list.splice(idx, 1); bmed = false; showToast('ブックマークを解除しました'); }
+  localStorage.setItem(_bookmarkKey(), JSON.stringify(list));
+  var btn = document.getElementById('detail-bm-btn');
+  if (btn) { btn.textContent = bmed ? '🔖' : '☆'; btn.classList.toggle('bookmarked', bmed); }
+}
 
 // ===== 復習モード =====
 
@@ -30261,6 +30272,8 @@ function showPage(name) {
   stopStudyTimer();
   // 詳細ページ以外ではタイトルをリセット
   if (name !== 'detail') document.title = 'CODE STEP';
+  // コンテスト以外に移動したらカウントダウンを停止
+  if (name !== 'contest' && _contestCdTimer) { clearInterval(_contestCdTimer); _contestCdTimer = null; }
   // 全ページを非表示にしてから対象だけ表示
   ["page-landing", "page-lang", "page-list", "page-detail", "page-guide",
    "page-mission-list", "page-mission-detail", "page-profile", "page-textbook", "page-ranking", "page-contest"].forEach(function(id) {
@@ -30526,6 +30539,9 @@ function renderDetail(id) {
       (langTextbooks[currentLanguage]
         ? '<button class="detail-textbook-btn" onclick="switchTab(\'textbook\')">📖 ' + escapeHtml(langTextbooks[currentLanguage].name) + ' 入門ガイド</button>'
         : '') +
+      '<button class="detail-bookmark-btn' + (isBookmarked(p.id) ? ' bookmarked' : '') + '" id="detail-bm-btn" onclick="toggleDetailBookmark(' + p.id + ')" title="ブックマーク">' +
+        (isBookmarked(p.id) ? '🔖' : '☆') +
+      '</button>' +
     '</div>' +
     '<h2>' + escapeHtml(p.title) + '</h2>' +
     '<span class="rank-badge rank-' + p.rank.toLowerCase() + ' rank-badge-lg" style="display:inline-block;margin-bottom:18px;">' + escapeHtml(p.rank) + '</span>' +
@@ -32127,10 +32143,27 @@ async function fetchContestLeaderboard(problemIds, lang) {
 
 var _contestLang     = null; // null = currentLanguage に追随
 var _contestRenderTs = 0;   // 連打競合防止用タイムスタンプ
+var _contestCdTimer  = null; // カウントダウンタイマーID
 
 function setContestLang(lang) {
   _contestLang = lang;
   renderContest();
+}
+
+function _startContestCountdown(endDate) {
+  if (_contestCdTimer) clearInterval(_contestCdTimer);
+  function _update() {
+    var el = document.getElementById('contest-countdown');
+    if (!el) { clearInterval(_contestCdTimer); return; }
+    var diff = endDate - Date.now();
+    if (diff <= 0) { el.textContent = '今週のコンテスト終了'; clearInterval(_contestCdTimer); return; }
+    var h = Math.floor(diff / 3600000);
+    var m = Math.floor((diff % 3600000) / 60000);
+    var s = Math.floor((diff % 60000) / 1000);
+    el.textContent = '終了まで ' + h + ':' + _pad2(m) + ':' + _pad2(s);
+  }
+  _update();
+  _contestCdTimer = setInterval(_update, 1000);
 }
 
 async function renderContest() {
@@ -32154,6 +32187,7 @@ async function renderContest() {
   // 連打時：このレンダリングが最新でなければ中断
   if (_contestRenderTs !== ts) return;
 
+  _startContestCountdown(dates.end);
   var myId = currentUser ? currentUser.id : null;
 
   var RANK_COLOR = {
@@ -32198,6 +32232,7 @@ async function renderContest() {
         '<div class="contest-header-label">◆ WEEKLY CHALLENGE</div>' +
         '<div class="contest-title">WEEK<span>#' + (wid % 100) + '</span></div>' +
         '<div class="contest-period">' + _fmtDate(dates.start) + ' — ' + _fmtDate(dates.end) + '</div>' +
+        '<div class="contest-countdown" id="contest-countdown"></div>' +
       '</div>' +
 
       '<div class="contest-lang-row">' +
@@ -34690,6 +34725,16 @@ async function renderProfile() {
           '<div class="act-stat-label">総学習時間</div>' +
           '<div class="act-stat-value">' + (totalStudySec >= 60 ? formatStudyTime(totalStudySec) : totalStudySec > 0 ? totalStudySec + 's' : '—') + '</div>' +
         '</div>' +
+        (function() {
+          var avgSec = stats.total > 0 ? Math.round(totalStudySec / stats.total) : 0;
+          var avgStr = avgSec >= 60
+            ? Math.floor(avgSec / 60) + 'm ' + (avgSec % 60) + 's'
+            : avgSec > 0 ? avgSec + 's' : '—';
+          return '<div class="act-stat-card">' +
+            '<div class="act-stat-label">1問あたり平均</div>' +
+            '<div class="act-stat-value">' + avgStr + '</div>' +
+          '</div>';
+        })() +
         '<div class="act-stat-card">' +
           '<div class="act-stat-label">学習開始日</div>' +
           '<div class="act-stat-value">' + _fmtDate(firstLoginDate) + '</div>' +
