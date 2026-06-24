@@ -57,19 +57,13 @@ export default async function handler(req, res) {
     return res.status(429).json({ error: '短時間に送信しすぎています。1分後にお試しください。' });
   }
 
-  const { email, userId } = req.body || {};
-
-  // 認証済みユーザーと一致するか確認
-  if (userId && authedUser.id !== userId) {
-    return res.status(403).json({ error: '操作が許可されていません。' });
-  }
+  const { email } = req.body || {};
+  // JWT から取得した認証済み user_id を使う（ボディのユーザーIDは信頼しない）
+  const userId = authedUser.id;
 
   // 入力バリデーション
   if (email && !EMAIL_RE.test(email)) {
     return res.status(400).json({ error: '不正なメールアドレスです' });
-  }
-  if (userId && !UUID_RE.test(userId)) {
-    return res.status(400).json({ error: '不正なユーザーIDです' });
   }
 
   const stripeKey = process.env.STRIPE_SECRET_KEY;
@@ -88,11 +82,10 @@ export default async function handler(req, res) {
     params.append('line_items[0][price]', priceId);
     params.append('line_items[0][quantity]', '1');
 
-    // ユーザーIDをメタデータに埋め込む（Webhook で使用）
-    if (userId) {
-      params.append('subscription_data[metadata][user_id]', userId);
-      params.append('metadata[user_id]', userId);
-    }
+    // 認証済みユーザーIDをメタデータに埋め込む（Webhook で使用）
+    params.append('subscription_data[metadata][user_id]', userId);
+    params.append('metadata[user_id]', userId);
+    params.append('client_reference_id', userId);
     if (email) {
       params.append('customer_email', email);
     }

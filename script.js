@@ -31827,10 +31827,9 @@ async function getAIFeedback(problemId) {
   try {
     const reply = await askAI(system, userMsg);
     area.classList.remove('hidden');
-    text.innerHTML = reply
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    text.innerHTML = escapeHtml(reply)
       .replace(/\n/g, '<br>')
-      .replace(/`([^`]+)`/g, '<code>$1</code>');
+      .replace(/`([^`]*)`/g, function(_, inner) { return '<code>' + inner + '</code>'; });
   } catch (e) {
     area.classList.remove('hidden');
     text.textContent = '⚠ AIに接続できませんでした。しばらく待ってから再試行してください。\n詳細: ' + e.message;
@@ -31849,10 +31848,9 @@ function addChatMessage(role, text, id) {
   var el = document.createElement('div');
   el.className = 'chat-msg chat-msg-' + role;
   if (id) el.id = id;
-  el.innerHTML = text
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  el.innerHTML = escapeHtml(text)
     .replace(/\n/g, '<br>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>');
+    .replace(/`([^`]*)`/g, function(_, inner) { return '<code>' + inner + '</code>'; });
   messages.appendChild(el);
   messages.scrollTop = messages.scrollHeight;
 }
