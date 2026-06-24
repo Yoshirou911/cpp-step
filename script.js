@@ -1209,18 +1209,23 @@ function showLevelUpEffect(lv) {
 }
 
 // レベルアップ判定（セーブのたびに呼ぶ）
+var _levelUpTimer = null;
 function checkLevelUp() {
-  try {
-    var expData  = calculateEXP();
-    var newLv    = calcLevel(expData.total);
-    var prevLv   = parseInt(localStorage.getItem('user_level') || '0');
-    lsSet('user_level', String(newLv));
-    updateLevelBadge();
-    if (prevLv > 0 && newLv > prevLv) {
-      playLevelUpSound();
-      showLevelUpEffect(newLv);
-    }
-  } catch(e) {}
+  if (_levelUpTimer) return;
+  _levelUpTimer = setTimeout(function() {
+    _levelUpTimer = null;
+    try {
+      var expData  = calculateEXP();
+      var newLv    = calcLevel(expData.total);
+      var prevLv   = parseInt(localStorage.getItem('user_level') || '0');
+      lsSet('user_level', String(newLv));
+      updateLevelBadge();
+      if (prevLv > 0 && newLv > prevLv) {
+        playLevelUpSound();
+        showLevelUpEffect(newLv);
+      }
+    } catch(e) {}
+  }, 50);
 }
 
 // ===== 言語データ =====
@@ -31908,7 +31913,8 @@ async function loadFollowing() {
   try {
     var r = await _supabase.from('follows')
       .select('following_id')
-      .eq('follower_id', currentUser.id);
+      .eq('follower_id', currentUser.id)
+      .limit(1000);
     if (r.error) {
       // エラー時は null のまま（次回呼び出しで再試行できるように）
       console.warn('loadFollowing error:', r.error.message);
