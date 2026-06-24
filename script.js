@@ -30255,7 +30255,8 @@ function _getLocalProgress() {
 
 function loadProgress() {
   if (_progressCache !== null) return _progressCache.slice();
-  return _getLocalProgress();
+  _progressCache = _getLocalProgress();
+  return _progressCache.slice();
 }
 
 function saveProgress(id) {
@@ -34347,10 +34348,12 @@ async function refreshGolfBoard(problemId) {
 }
 
 var _lastGolfSubmit = {}; // { [problemId]: lastLen } 二重送信防止
+var _golfSubmitting = {}; // { [problemId]: true } 送信中フラグ
 
 async function submitAndRefreshGolf(problemId) {
   if (!currentUser) { alert('ログインが必要です'); return; }
   if (!aceEditor) return;
+  if (_golfSubmitting[problemId]) return;
   var len = aceEditor.getValue().length;
   if (len === 0) return;
   if (_lastGolfSubmit[problemId] === len) {
@@ -34358,12 +34361,18 @@ async function submitAndRefreshGolf(problemId) {
     if (btn2) { btn2.textContent = '同じ文字数です'; setTimeout(function() { if (btn2) btn2.textContent = '⛳ このコードを提出する'; }, 1500); }
     return;
   }
+  _golfSubmitting[problemId] = true;
   var btn = document.querySelector('.golf-submit-btn');
   if (btn) { btn.disabled = true; btn.textContent = '送信中...'; }
-  await submitCodeGolfEntry(problemId, len);
-  _lastGolfSubmit[problemId] = len;
-  await refreshGolfBoard(problemId);
-  if (btn) { btn.disabled = false; btn.textContent = '✓ 提出しました！'; setTimeout(function() { if (btn) btn.textContent = '⛳ このコードを提出する'; }, 2000); }
+  try {
+    await submitCodeGolfEntry(problemId, len);
+    _lastGolfSubmit[problemId] = len;
+    await refreshGolfBoard(problemId);
+    if (btn) { btn.textContent = '✓ 提出しました！'; setTimeout(function() { if (btn) btn.textContent = '⛳ このコードを提出する'; }, 2000); }
+  } finally {
+    _golfSubmitting[problemId] = false;
+    if (btn) btn.disabled = false;
+  }
 }
 
 // ===== アクティビティヒートマップ =====

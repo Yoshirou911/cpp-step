@@ -63,6 +63,9 @@ export default async function handler(req, res) {
     ...messages
   ];
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+
   try {
     const response = await fetch(
       'https://api.groq.com/openai/v1/chat/completions',
@@ -75,9 +78,11 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           model: 'llama-3.3-70b-versatile',
           messages: groqMessages
-        })
+        }),
+        signal: controller.signal
       }
     );
+    clearTimeout(timeoutId);
 
     const data = await response.json();
 
@@ -92,6 +97,10 @@ export default async function handler(req, res) {
     return res.json({ reply: reply });
 
   } catch (e) {
+    clearTimeout(timeoutId);
+    if (e.name === 'AbortError') {
+      return res.status(504).json({ error: 'AI応答がタイムアウトしました。しばらく待ってから再試行してください。' });
+    }
     return res.status(500).json({ error: 'サーバーエラーが発生しました' });
   }
 }
