@@ -431,12 +431,15 @@ function toggleFilterWrong() {
   renderList();
 }
 
+var _filterTimer = null;
 function onFilterInput(val) {
   // 全角スペース(　)も半角スペースに正規化してトリム
   _filterQuery = val.replace(/　/g, ' ').trim().toLowerCase();
   var clearBtn = document.getElementById('list-search-clear');
   if (clearBtn) clearBtn.classList.toggle('hidden', !_filterQuery);
-  renderList();
+  // 120ms デバウンスで高速タイピング時の過剰 renderList を防ぐ
+  clearTimeout(_filterTimer);
+  _filterTimer = setTimeout(renderList, 120);
 }
 
 function onRankFilter(btn) {
@@ -33887,7 +33890,10 @@ function renderMissionList() {
 
 // ===== ミッション詳細の描画 =====
 
+var currentMissionId = null;
+
 function renderMissionDetail(id) {
+  currentMissionId = id;
   const m = getMissions().find(function(x) { return x.id === id; });
   if (!m) return;
   const cleared = isMissionCleared(m.id);
