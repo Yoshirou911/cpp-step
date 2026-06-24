@@ -1103,9 +1103,12 @@ function getDailyChallenge() {
   if (!problems || !problems.length) return null;
   var today = getTodayJST();
   var seed = today.split('').reduce(function(acc, c) { return (acc * 31 + c.charCodeAt(0)) >>> 0; }, 0);
+  // プレミアム限定問題は非プレミアムユーザーには出さない
+  var available = problems.filter(function(p) { return !isPremiumRequired(p.rank) || currentUserIsPremium; });
+  if (!available.length) available = problems;
   // まだクリアしていない問題を優先
-  var unlearned = problems.filter(function(p) { return !isLearned(p.id); });
-  var pool = unlearned.length > 0 ? unlearned : problems;
+  var unlearned = available.filter(function(p) { return !isLearned(p.id); });
+  var pool = unlearned.length > 0 ? unlearned : available;
   return pool[seed % pool.length];
 }
 
@@ -30078,6 +30081,17 @@ function getProgressKey() {
   return (currentLanguage || 'cpp') + '_progress';
 }
 
+// 別タブで進捗が更新されたときキャッシュを無効化（上書き消去防止）
+window.addEventListener('storage', function(e) {
+  if (!e.key) return;
+  if (e.key === getProgressKey()) {
+    _progressCache = null;
+  }
+  if (e.key === getMissionProgressKey()) {
+    _missionProgressCache = null;
+  }
+});
+
 function getMissionProgressKey() {
   return (currentLanguage || 'cpp') + '_mission_progress';
 }
@@ -33754,6 +33768,12 @@ function saveMissionProgress(id) {
     }).then(function() {}).catch(function() {});
   }
   checkLevelUp(); // EXP・レベルアップ判定
+  // ミッションXPをサーバー側user_statsにも反映（ランキングのtotal_xpズレ防止）
+  var mDef = getMissions().find(function(m) { return m.id === id; });
+  if (mDef) {
+    var mXp = MISSION_EXP[(mDef.rank || 'rookie').toLowerCase()] || 50;
+    syncUserStats(mXp, currentLanguage || 'cpp');
+  }
 }
 
 function removeMissionProgress(id) {
