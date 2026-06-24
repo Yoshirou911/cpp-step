@@ -129,7 +129,7 @@ function playMissionClearSound() {
 
 function toggleSound() {
   _soundEnabled = !_soundEnabled;
-  localStorage.setItem('soundEnabled', _soundEnabled);
+  lsSet('soundEnabled', _soundEnabled);
   var btn = document.getElementById('sound-btn');
   btn.textContent  = _soundEnabled ? '🔊' : '🔇';
   btn.classList.toggle('muted', !_soundEnabled);
@@ -369,7 +369,7 @@ function toggleBookmark(id) {
   var idx = list.indexOf(id);
   if (idx === -1) { list.push(id); showToast('🔖 ブックマークに追加しました'); }
   else            { list.splice(idx, 1); showToast('ブックマークを解除しました'); }
-  localStorage.setItem(_bookmarkKey(), JSON.stringify(list));
+  lsSet(_bookmarkKey(), JSON.stringify(list));
   renderList();
 }
 // 詳細ページからのブックマークトグル（リスト再描画なし・ボタン即時更新）
@@ -379,7 +379,7 @@ function toggleDetailBookmark(id) {
   var bmed;
   if (idx === -1) { list.push(id); bmed = true;  showToast('🔖 ブックマークに追加しました'); }
   else            { list.splice(idx, 1); bmed = false; showToast('ブックマークを解除しました'); }
-  localStorage.setItem(_bookmarkKey(), JSON.stringify(list));
+  lsSet(_bookmarkKey(), JSON.stringify(list));
   var btn = document.getElementById('detail-bm-btn');
   if (btn) { btn.textContent = bmed ? '🔖' : '☆'; btn.classList.toggle('bookmarked', bmed); }
 }
@@ -398,12 +398,12 @@ function trackWrongAnswer(id) {
   var list = getWrongAnswers();
   if (list.indexOf(id) === -1) {
     list.push(id);
-    localStorage.setItem(_wrongKey(), JSON.stringify(list));
+    lsSet(_wrongKey(), JSON.stringify(list));
   }
 }
 function clearWrongAnswer(id) {
   var list = getWrongAnswers().filter(function(x) { return x !== id; });
-  localStorage.setItem(_wrongKey(), JSON.stringify(list));
+  lsSet(_wrongKey(), JSON.stringify(list));
 }
 
 // ===== 問題一覧フィルター =====
@@ -667,6 +667,21 @@ function getYesterdayJST() {
   return d.toISOString().slice(0, 10);
 }
 
+// localStorage.setItem のラッパー（QuotaExceededError を握りつぶさない）
+var _lsNativeSet = localStorage.setItem.bind(localStorage);
+function lsSet(key, value) {
+  try {
+    _lsNativeSet(key, value);
+  } catch(e) {
+    if (e && e.name === 'QuotaExceededError') {
+      console.warn('[CODE STEP] localStorage 容量不足のためデータを保存できませんでした:', key);
+      showToast('⚠ ストレージ容量が不足しています。不要なデータを削除してください。');
+    } else {
+      throw e;
+    }
+  }
+}
+
 // ===== ログインストリーク =====
 
 function calcStreak(dates) {
@@ -706,7 +721,7 @@ function recordLoginDay() {
   var isNew = local.indexOf(today) === -1;
   if (isNew) {
     local.push(today);
-    localStorage.setItem('login_days', JSON.stringify(local));
+    lsSet('login_days', JSON.stringify(local));
   }
   // Supabase に記録（ログイン中のみ）
   if (currentUser && _supabase) {
@@ -1103,9 +1118,9 @@ function isDailyChallengeCleared() {
 function markDailyChallengeCleared() {
   var today = getTodayJST();
   var lang = currentLanguage || 'cpp';
-  localStorage.setItem(lang + '_daily_cleared_' + today, '1');
+  lsSet(lang + '_daily_cleared_' + today, '1');
   var cur = parseInt(localStorage.getItem('bonus_xp') || '0');
-  localStorage.setItem('bonus_xp', String(cur + 50));
+  lsSet('bonus_xp', String(cur + 50));
 }
 
 // ヘッダーの Lv.XX バッジを更新
@@ -1193,7 +1208,7 @@ function checkLevelUp() {
     var expData  = calculateEXP();
     var newLv    = calcLevel(expData.total);
     var prevLv   = parseInt(localStorage.getItem('user_level') || '0');
-    localStorage.setItem('user_level', String(newLv));
+    lsSet('user_level', String(newLv));
     updateLevelBadge();
     if (prevLv > 0 && newLv > prevLv) {
       playLevelUpSound();
@@ -1342,16 +1357,18 @@ function stopStudyTimer() {
   _studyTimerStart = null;
   // 3秒未満（誤操作）や3時間超（放置）は除外
   if (elapsed < 3 || elapsed > 10800) return;
-  var date = _studyTimerDate || getTodayJST();
-  var log  = JSON.parse(localStorage.getItem('study_log') || '{}');
+  // 日付が変わっていたら今日付で記録（前日への持ち越し防止）
+  var today = getTodayJST();
+  var date  = (_studyTimerDate && _studyTimerDate !== today) ? today : (_studyTimerDate || today);
+  var log   = JSON.parse(localStorage.getItem('study_log') || '{}');
   log[date] = (log[date] || 0) + elapsed;
-  localStorage.setItem('study_log', JSON.stringify(log));
+  lsSet('study_log', JSON.stringify(log));
 }
 
 function recordLanguageStart(langId) {
   var key = langId + '_started_at';
   if (!localStorage.getItem(key)) {
-    localStorage.setItem(key, getTodayJST());
+    lsSet(key, getTodayJST());
   }
 }
 
@@ -1721,7 +1738,7 @@ async function startCheckout() {
 
 function startApp() {
   playLangSelect();
-  localStorage.setItem('app_started', '1');
+  lsSet('app_started', '1');
   history.pushState({ page: 'lang' }, '');
   renderLangSelect();
   showPage('lang');
@@ -30212,7 +30229,7 @@ function saveProgress(id) {
   if (progress.includes(id)) return;
   progress.push(id);
   _progressCache = progress;
-  localStorage.setItem(getProgressKey(), JSON.stringify(progress));
+  lsSet(getProgressKey(), JSON.stringify(progress));
   clearWrongAnswer(id);
   if (currentUser && _supabase) {
     _supabase.from('progress').upsert({
@@ -30239,7 +30256,7 @@ function saveProgress(id) {
 function removeProgress(id) {
   var progress = loadProgress().filter(function(x) { return x !== id; });
   _progressCache = progress;
-  localStorage.setItem(getProgressKey(), JSON.stringify(progress));
+  lsSet(getProgressKey(), JSON.stringify(progress));
   if (currentUser && _supabase) {
     _supabase.from('progress')
       .delete()
@@ -30270,7 +30287,7 @@ async function syncProgressFromSupabase() {
     var merged = remoteIds.slice();
     localIds.forEach(function(id) { if (!merged.includes(id)) merged.push(id); });
     _progressCache = merged;
-    localStorage.setItem(getProgressKey(), JSON.stringify(merged));
+    lsSet(getProgressKey(), JSON.stringify(merged));
     // ローカルのみのものを Supabase に書き込む
     var toUpload = localIds.filter(function(id) { return !remoteIds.includes(id); });
     if (toUpload.length > 0) {
@@ -30294,6 +30311,11 @@ function showPage(name) {
   if (name !== 'detail') document.title = 'CODE STEP';
   // コンテスト以外に移動したらカウントダウンを停止
   if (name !== 'contest' && _contestCdTimer) { clearInterval(_contestCdTimer); _contestCdTimer = null; }
+  // ページ遷移時にクリアエフェクトを即時消去
+  var _ce = document.getElementById('clear-effect');
+  if (_ce) _ce.classList.add('hidden');
+  var _mce = document.getElementById('mission-clear-effect');
+  if (_mce) _mce.classList.add('hidden');
   // 全ページを非表示にしてから対象だけ表示
   ["page-landing", "page-lang", "page-list", "page-detail", "page-guide",
    "page-mission-list", "page-mission-detail", "page-profile", "page-textbook", "page-ranking", "page-contest"].forEach(function(id) {
@@ -33711,7 +33733,7 @@ function saveMissionProgress(id) {
   if (progress.includes(id)) return;
   progress.push(id);
   _missionProgressCache = progress;
-  localStorage.setItem(getMissionProgressKey(), JSON.stringify(progress));
+  lsSet(getMissionProgressKey(), JSON.stringify(progress));
   if (currentUser && _supabase) {
     _supabase.from('mission_progress').upsert({
       user_id: currentUser.id,
@@ -33725,7 +33747,7 @@ function saveMissionProgress(id) {
 function removeMissionProgress(id) {
   var progress = loadMissionProgress().filter(function(x) { return x !== id; });
   _missionProgressCache = progress;
-  localStorage.setItem(getMissionProgressKey(), JSON.stringify(progress));
+  lsSet(getMissionProgressKey(), JSON.stringify(progress));
   if (currentUser && _supabase) {
     _supabase.from('mission_progress')
       .delete()
@@ -33755,7 +33777,7 @@ async function syncMissionProgressFromSupabase() {
     var merged = remoteIds.slice();
     localIds.forEach(function(id) { if (!merged.includes(id)) merged.push(id); });
     _missionProgressCache = merged;
-    localStorage.setItem(getMissionProgressKey(), JSON.stringify(merged));
+    lsSet(getMissionProgressKey(), JSON.stringify(merged));
     var toUpload = localIds.filter(function(id) { return !remoteIds.includes(id); });
     if (toUpload.length > 0) {
       var rows = toUpload.map(function(id) {
@@ -34000,7 +34022,7 @@ function _checkSilverUnlock(problemId) {
   if (!p) return;
   var silverPlus = ['SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'LEGEND', 'TITAN'];
   if (silverPlus.indexOf(p.rank.toUpperCase()) === -1) return;
-  localStorage.setItem('ranking_unlocked', '1');
+  lsSet('ranking_unlocked', '1');
   setTimeout(function() { showRankingUnlockEffect(p.rank); }, 700);
 }
 
@@ -34097,7 +34119,7 @@ function checkTitanTheme() {
     document.body.classList.add('titan-theme');
     _updateTitanBadge(true);
     if (localStorage.getItem('titan_theme_unlocked') !== '1') {
-      localStorage.setItem('titan_theme_unlocked', '1');
+      lsSet('titan_theme_unlocked', '1');
       setTimeout(showTitanThemeUnlock, 600);
     }
   } else {
@@ -34108,7 +34130,7 @@ function checkTitanTheme() {
   if (isOverlord) {
     document.body.classList.add('overlord-theme');
     if (localStorage.getItem('overlord_unlocked') !== '1') {
-      localStorage.setItem('overlord_unlocked', '1');
+      lsSet('overlord_unlocked', '1');
       setTimeout(showOverlordUnlock, 1200);
     }
   } else {
