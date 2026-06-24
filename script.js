@@ -31462,7 +31462,7 @@ function initAceEditor(initialCode) {
   // change リスナーを一本化（dirtyフラグ ＋ Golfカウンター）
   function _updateGolfCounter() {
     var counter = document.getElementById('golf-counter-' + currentProblemId);
-    if (counter) counter.textContent = aceEditor.getValue().length;
+    if (counter && aceEditor) counter.textContent = aceEditor.getValue().length;
   }
   aceEditor.session.on('change', function() {
     if (!_suppressDirty) editorDirty = true;
