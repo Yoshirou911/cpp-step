@@ -1105,6 +1105,14 @@ function getDailyChallenge() {
   var problems = getProblems();
   if (!problems || !problems.length) return null;
   var today = getTodayJST();
+  var lang  = currentLanguage || 'cpp';
+  // 同じ日・同じ言語では一度決めた問題IDを固定する（進捗変化で問題が変わるのを防ぐ）
+  var cacheKey = lang + '_daily_id_' + today;
+  var cachedId = parseInt(localStorage.getItem(cacheKey) || '', 10);
+  if (!isNaN(cachedId)) {
+    var cached = problems.find(function(p) { return p.id === cachedId; });
+    if (cached) return cached;
+  }
   var seed = today.split('').reduce(function(acc, c) { return (acc * 31 + c.charCodeAt(0)) >>> 0; }, 0);
   // プレミアム限定問題は非プレミアムユーザーには出さない
   var available = problems.filter(function(p) { return !isPremiumRequired(p.rank) || currentUserIsPremium; });
@@ -1112,7 +1120,9 @@ function getDailyChallenge() {
   // まだクリアしていない問題を優先
   var unlearned = available.filter(function(p) { return !isLearned(p.id); });
   var pool = unlearned.length > 0 ? unlearned : available;
-  return pool[seed % pool.length];
+  var chosen = pool[seed % pool.length];
+  if (chosen) lsSet(cacheKey, String(chosen.id));
+  return chosen;
 }
 
 function isDailyChallengeCleared() {
@@ -30260,7 +30270,11 @@ function saveProgress(id) {
       user_id: currentUser.id,
       language: currentLanguage || 'cpp',
       problem_id: id
-    }).then(function() {}).catch(function() {});
+    }).then(function(r) {
+      if (r && r.error) showToast('⚠ クリア情報の同期に失敗しました。ネットワークを確認してください。');
+    }).catch(function() {
+      showToast('⚠ クリア情報の同期に失敗しました。ネットワークを確認してください。');
+    });
     var _p = getProblems().find(function(x) { return x.id === id; });
     var _xp = _p ? (RANK_EXP[(_p.rank || '').toLowerCase()] || 15) : 15;
     syncUserStats(_xp, currentLanguage || 'cpp');
@@ -30364,6 +30378,10 @@ function showPage(name) {
       var el = document.getElementById('tab-' + t);
       if (el) el.classList.remove('hidden');
     });
+  }
+  // 詳細ページから一覧などに戻るときスクロール位置をトップにリセット
+  if (name !== 'detail' && name !== 'mission-detail') {
+    window.scrollTo(0, 0);
   }
   // 問題・ミッション詳細では学習タイマーを開始
   if (name === 'detail' || name === 'mission-detail') {
@@ -32202,9 +32220,13 @@ function getWeeklyContestProblems(lang) {
     var hb = ((wid * 1031 + b.id * 17) >>> 0);
     return ha - hb;
   });
-  var easy   = shuffled.filter(function(p) { return ['ROOKIE','BRONZE','SILVER'].indexOf(p.rank) >= 0; }).slice(0, 2);
-  var medium = shuffled.filter(function(p) { return ['GOLD','PLATINUM'].indexOf(p.rank) >= 0; }).slice(0, 2);
-  var hard   = shuffled.filter(function(p) { return ['DIAMOND','MASTER','LEGEND','TITAN','OVERLORD','PREDATOR'].indexOf(p.rank) >= 0; }).slice(0, 1);
+  var easyAll   = shuffled.filter(function(p) { return ['ROOKIE','BRONZE','SILVER'].indexOf(p.rank) >= 0; });
+  var mediumAll = shuffled.filter(function(p) { return ['GOLD','PLATINUM'].indexOf(p.rank) >= 0; });
+  var hardAll   = shuffled.filter(function(p) { return ['DIAMOND','MASTER','LEGEND','TITAN','OVERLORD','PREDATOR'].indexOf(p.rank) >= 0; });
+  var easy   = easyAll.slice(0, 2);
+  var medium = mediumAll.slice(0, 2);
+  // hard が足りない場合は medium から補充
+  var hard   = hardAll.length > 0 ? hardAll.slice(0, 1) : mediumAll.slice(medium.length, medium.length + 1);
   return easy.concat(medium).concat(hard);
 }
 
