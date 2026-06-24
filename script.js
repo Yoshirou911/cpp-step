@@ -34838,7 +34838,7 @@ async function renderProfile() {
               '</div>' +
               '<div class="gc-scout-msgs">' +
                 unread.map(function(m) {
-                  return '<div class="gc-scout-msg" onclick="markScoutRead(\'' + m.message_id + '\')">' +
+                  return '<div class="gc-scout-msg" onclick="markScoutRead(\'' + String(m.message_id).replace(/[^a-zA-Z0-9\-]/g, '') + '\')">' +
                     '<span class="gc-scout-dot"></span>' +
                     '<span class="gc-scout-msg-title">' + escapeHtml(m.message_title) + '</span>' +
                     '<span class="gc-scout-msg-date">' + new Date(m.sent_at).toLocaleDateString('ja-JP') + '</span>' +
@@ -35870,16 +35870,16 @@ function _renderQuizResultFromAI(resultId, aiMessage) {
       '<div class="quiz-step-dots">' + _quizDots(4) + '</div>' +
     '</div>' +
     '<div class="quiz-result-announce">AIが分析しました！あなたにおすすめの言語は</div>' +
-    '<div class="quiz-result-card" style="border-color:' + r.color + '88">' +
-      '<div class="quiz-result-badge">' + r.badge + '</div>' +
-      '<div class="quiz-result-name" style="color:' + r.color + '">' + r.name + '</div>' +
-      '<div class="quiz-result-tier">◆ ' + r.tier + ' TIER</div>' +
+    '<div class="quiz-result-card" style="border-color:' + escapeHtml(r.color) + '88">' +
+      '<div class="quiz-result-badge">' + escapeHtml(r.badge) + '</div>' +
+      '<div class="quiz-result-name" style="color:' + escapeHtml(r.color) + '">' + escapeHtml(r.name) + '</div>' +
+      '<div class="quiz-result-tier">◆ ' + escapeHtml(r.tier) + ' TIER</div>' +
     '</div>' +
     '<div class="quiz-ai-msg">' +
       '<div class="quiz-ai-text">' + escapeHtml(aiMessage).replace(/\n/g, '<br>') + '</div>' +
     '</div>' +
     '<div class="quiz-result-actions">' +
-      '<button class="quiz-start-btn" onclick="startWithLanguage(\'' + r.id + '\')" style="--qcol:' + r.color + '">▶ ' + r.name + ' で始める</button>' +
+      '<button class="quiz-start-btn" onclick="startWithLanguage(\'' + escapeHtml(r.id) + '\')" style="--qcol:' + escapeHtml(r.color) + '">▶ ' + escapeHtml(r.name) + ' で始める</button>' +
       '<button class="quiz-retry-btn" onclick="openQuizModal()">↩ もう一度診断する</button>' +
     '</div>';
   document.getElementById('quiz-result-back').addEventListener('click', _quizBack);
@@ -35944,17 +35944,17 @@ function _renderQuizResult(resultId) {
       '<div class="quiz-step-dots">' + _quizDots(4) + '</div>' +
     '</div>' +
     '<div class="quiz-result-announce">診断完了！あなたにおすすめの言語は</div>' +
-    '<div class="quiz-result-card" style="border-color:' + r.color + '88">' +
-      '<div class="quiz-result-badge">' + r.badge + '</div>' +
-      '<div class="quiz-result-name" style="color:' + r.color + '">' + r.name + '</div>' +
-      '<div class="quiz-result-tier">◆ ' + r.tier + ' TIER</div>' +
+    '<div class="quiz-result-card" style="border-color:' + escapeHtml(r.color) + '88">' +
+      '<div class="quiz-result-badge">' + escapeHtml(r.badge) + '</div>' +
+      '<div class="quiz-result-name" style="color:' + escapeHtml(r.color) + '">' + escapeHtml(r.name) + '</div>' +
+      '<div class="quiz-result-tier">◆ ' + escapeHtml(r.tier) + ' TIER</div>' +
     '</div>' +
     '<div class="quiz-ai-msg" id="quiz-ai-msg">' +
       '<div class="quiz-ai-loading"><span class="quiz-spinner"></span> AIコーチがメッセージを生成中…</div>' +
     '</div>' +
     '<div class="quiz-result-actions">' +
-      '<button class="quiz-start-btn" id="quiz-start-btn" onclick="startWithLanguage(\'' + r.id + '\')" style="--qcol:' + r.color + '">' +
-        '▶ ' + r.name + ' で始める' +
+      '<button class="quiz-start-btn" id="quiz-start-btn" onclick="startWithLanguage(\'' + escapeHtml(r.id) + '\')" style="--qcol:' + escapeHtml(r.color) + '">' +
+        '▶ ' + escapeHtml(r.name) + ' で始める' +
       '</button>' +
       '<button class="quiz-retry-btn" onclick="openQuizModal()">↩ もう一度診断する</button>' +
     '</div>';
