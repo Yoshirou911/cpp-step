@@ -31705,7 +31705,8 @@ function getNextProblem(currentId) {
 }
 
 function showJudgeResult(problemId, passed, byAI) {
-  // ページ遷移済みなら何もしない
+  // 別の問題に遷移済み、またはページを離れた場合は何もしない
+  if (currentProblemId !== problemId) return;
   if (document.getElementById("judge-area") === null) return;
 
   if (passed) {
@@ -34235,7 +34236,11 @@ async function refreshGolfBoard(problemId) {
     .eq('problem_id', problemId)
     .order('code_length', { ascending: true })
     .limit(10);
-  if (res.error || !res.data || res.data.length === 0) {
+  if (res.error) {
+    board.innerHTML = '<p class="golf-empty">// 読み込みエラー。再試行してください</p>';
+    return;
+  }
+  if (!res.data || res.data.length === 0) {
     board.innerHTML = '<p class="golf-empty">まだ提出がありません。最初の挑戦者になろう！</p>';
     return;
   }
