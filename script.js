@@ -1482,7 +1482,7 @@ function setActiveTab(tab) {
   });
 }
 
-function selectLanguage(langId) {
+async function selectLanguage(langId) {
   playLangSelect();
   recordLanguageStart(langId);
   currentLanguage = langId;
@@ -1503,14 +1503,16 @@ function selectLanguage(langId) {
   history.pushState({ page: 'list', lang: langId, tab: 'problems' }, '');
   showNavAndProgress();
   setActiveTab('problems');
+  showPage('list');
+  // ログイン中なら Supabase から最新進捗を取得してから描画
+  if (currentUser && _supabase) {
+    await Promise.all([
+      syncProgressFromSupabase(),
+      syncMissionProgressFromSupabase()
+    ]);
+  }
   renderList();
   updateProgressDisplay();
-  showPage('list');
-  // ログイン中なら Supabase から進捗を同期
-  if (currentUser && _supabase) {
-    syncProgressFromSupabase();
-    syncMissionProgressFromSupabase();
-  }
 }
 
 // ===== プレミアム機能 =====
@@ -31750,6 +31752,12 @@ function showJudgeResult(problemId, passed, byAI) {
       renderDetail(problemId);
       updateProgressDisplay();
       renderList();
+      // 正解後に解説を自動展開
+      var _secId = 'explanation-' + problemId;
+      var _secBody = document.getElementById(_secId);
+      if (_secBody && _secBody.classList.contains('hidden')) {
+        toggleSection(_secId);
+      }
     }
     // judge-area はrenderDetailで再生成されるので再取得
     var ja = document.getElementById("judge-area");
@@ -35244,6 +35252,8 @@ document.addEventListener('keydown', function(e) {
   var authModal  = document.getElementById('auth-modal');
   var adminPanel = document.getElementById('admin-panel');
   var quizModal  = document.getElementById('quiz-modal');
+  var premiumModal = document.getElementById('premium-modal');
+  if (premiumModal && !premiumModal.classList.contains('hidden')) { closePremiumModal(); return; }
   if (authModal  && !authModal.classList.contains('hidden'))  { closeAuthModal(); return; }
   if (adminPanel && !adminPanel.classList.contains('hidden')) { closeAdminPanel(); return; }
   if (quizModal  && !quizModal.classList.contains('hidden'))  { closeQuizModal(); return; }
@@ -35524,6 +35534,12 @@ document.addEventListener('visibilitychange', function() {
   }
 });
 window.addEventListener('beforeunload', stopStudyTimer);
+window.addEventListener('online', function() {
+  if (currentUser && _supabase) {
+    syncProgressFromSupabase();
+    syncMissionProgressFromSupabase();
+  }
+});
 
 // サウンドボタン初期状態
 (function() {
