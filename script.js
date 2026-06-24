@@ -32169,14 +32169,20 @@ async function renderRanking() {
   }
 }
 
+var _rankingDebounceTimer = null;
+function _scheduleRenderRanking() {
+  clearTimeout(_rankingDebounceTimer);
+  _rankingDebounceTimer = setTimeout(renderRanking, 200);
+}
+
 function setRankingTab(tab) {
   _rankingTab = tab;
-  renderRanking();
+  _scheduleRenderRanking();
 }
 
 function setRankingLang(lang) {
   _rankingLang = lang;
-  renderRanking();
+  _scheduleRenderRanking();
 }
 
 // ===== コンテスト =====
@@ -34580,6 +34586,10 @@ async function renderProfile() {
   content.innerHTML = '<div class="profile-loading">// LOADING...</div>';
 
   // ストリーク・スカウト・フォロー数を並行取得
+  // プレミアム状態が未確定のまま描画しないよう先に確認
+  if (currentUser && _supabase && _premiumStatusCache === null) {
+    await fetchUserProfile();
+  }
   var results = await Promise.all([getLoginStreak(), fetchScoutMessages(), currentUser ? getFollowCounts(currentUser.id) : Promise.resolve({following:0, followers:0})]);
   var streak = results[0];
   var followCounts = results[2];
