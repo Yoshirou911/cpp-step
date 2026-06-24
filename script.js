@@ -265,7 +265,7 @@ function playLangSelect() {
 
 // ===== ビジュアルエフェクト =====
 
-function showClearEffect() {
+function showClearEffect(xp) {
   // コンフェッティ
   if (window.confetti) {
     confetti({
@@ -279,8 +279,15 @@ function showClearEffect() {
   // テキストフラッシュ
   var el = document.getElementById('clear-effect');
   el.classList.remove('hidden');
-  // アニメーション終了後に非表示
   setTimeout(function() { el.classList.add('hidden'); }, 1650);
+  // XPフローティングテキスト
+  if (xp) {
+    var xpEl = document.createElement('div');
+    xpEl.className = 'xp-float-text';
+    xpEl.textContent = '+' + xp + ' XP';
+    document.body.appendChild(xpEl);
+    setTimeout(function() { xpEl.remove(); }, 1200);
+  }
 }
 
 function showMissionClearEffect() {
@@ -647,6 +654,19 @@ function getProfileStats() {
   };
 }
 
+// ===== 日付ユーティリティ（JST補正） =====
+// toISOString() はUTC基準のため、JST(UTC+9)の0〜8時台に前日扱いになるバグを防ぐ
+function getTodayJST() {
+  var d = new Date();
+  d.setTime(d.getTime() + 9 * 60 * 60 * 1000);
+  return d.toISOString().slice(0, 10);
+}
+function getYesterdayJST() {
+  var d = new Date();
+  d.setTime(d.getTime() + 9 * 60 * 60 * 1000 - 86400000);
+  return d.toISOString().slice(0, 10);
+}
+
 // ===== ログインストリーク =====
 
 function calcStreak(dates) {
@@ -654,8 +674,8 @@ function calcStreak(dates) {
   // 降順ソート
   var sorted = dates.slice().sort(function(a, b) { return b.localeCompare(a); });
   var total  = sorted.length;
-  var todayStr     = new Date().toISOString().slice(0, 10);
-  var yesterdayStr = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  var todayStr     = getTodayJST();
+  var yesterdayStr = getYesterdayJST();
 
   // 現在のストリーク（今日か昨日ログインしていれば継続中）
   var current = 0;
@@ -680,7 +700,7 @@ function calcStreak(dates) {
 }
 
 function recordLoginDay() {
-  var today = new Date().toISOString().slice(0, 10);
+  var today = getTodayJST();
   // localStorage に記録
   var local = JSON.parse(localStorage.getItem('login_days') || '[]');
   var isNew = local.indexOf(today) === -1;
@@ -1052,7 +1072,7 @@ async function updateStreakBadge() {
 
   // 今日まだ学習していない場合（18時以降、ストリーク1日以上）にリマインダー表示
   if (reminderEl) {
-    var today = new Date().toISOString().slice(0, 10);
+    var today = getTodayJST();
     var log = JSON.parse(localStorage.getItem('study_log') || '{}');
     var studiedToday = (log[today] || 0) > 0;
     var hour = new Date().getHours();
@@ -1066,7 +1086,7 @@ async function updateStreakBadge() {
 function getDailyChallenge() {
   var problems = getProblems();
   if (!problems || !problems.length) return null;
-  var today = new Date().toISOString().slice(0, 10);
+  var today = getTodayJST();
   var seed = today.split('').reduce(function(acc, c) { return (acc * 31 + c.charCodeAt(0)) >>> 0; }, 0);
   // まだクリアしていない問題を優先
   var unlearned = problems.filter(function(p) { return !isLearned(p.id); });
@@ -1075,13 +1095,13 @@ function getDailyChallenge() {
 }
 
 function isDailyChallengeCleared() {
-  var today = new Date().toISOString().slice(0, 10);
+  var today = getTodayJST();
   var lang = currentLanguage || 'cpp';
   return localStorage.getItem(lang + '_daily_cleared_' + today) === '1';
 }
 
 function markDailyChallengeCleared() {
-  var today = new Date().toISOString().slice(0, 10);
+  var today = getTodayJST();
   var lang = currentLanguage || 'cpp';
   localStorage.setItem(lang + '_daily_cleared_' + today, '1');
   var cur = parseInt(localStorage.getItem('bonus_xp') || '0');
@@ -1313,7 +1333,7 @@ var _studyTimerDate  = null;
 
 function startStudyTimer() {
   _studyTimerStart = Date.now();
-  _studyTimerDate  = new Date().toISOString().slice(0, 10);
+  _studyTimerDate  = getTodayJST();
 }
 
 function stopStudyTimer() {
@@ -1322,7 +1342,7 @@ function stopStudyTimer() {
   _studyTimerStart = null;
   // 3秒未満（誤操作）や3時間超（放置）は除外
   if (elapsed < 3 || elapsed > 10800) return;
-  var date = _studyTimerDate || new Date().toISOString().slice(0, 10);
+  var date = _studyTimerDate || getTodayJST();
   var log  = JSON.parse(localStorage.getItem('study_log') || '{}');
   log[date] = (log[date] || 0) + elapsed;
   localStorage.setItem('study_log', JSON.stringify(log));
@@ -1331,7 +1351,7 @@ function stopStudyTimer() {
 function recordLanguageStart(langId) {
   var key = langId + '_started_at';
   if (!localStorage.getItem(key)) {
-    localStorage.setItem(key, new Date().toISOString().slice(0, 10));
+    localStorage.setItem(key, getTodayJST());
   }
 }
 
@@ -31672,7 +31692,9 @@ function showJudgeResult(problemId, passed, byAI) {
       saveProgress(problemId);
       // エフェクト・サウンド
       playClearSound();
-      showClearEffect();
+      var _prob = getProblems().find(function(x) { return x.id === problemId; });
+      var _xp   = _prob ? (RANK_EXP[_prob.rank.toLowerCase()] || 15) : 15;
+      showClearEffect(_xp);
       // renderDetail で画面を完全リフレッシュ（ボタン・ラベルを確実に更新）
       renderDetail(problemId);
       updateProgressDisplay();
@@ -31893,7 +31915,8 @@ async function syncUserStats(addedXP, lang) {
   var day  = now.getDay();
   var mon  = new Date(now);
   mon.setDate(now.getDate() - (day === 0 ? 6 : day - 1));
-  var weekStart = mon.toISOString().slice(0, 10);
+  var _monJst = new Date(mon.getTime() + 9 * 60 * 60 * 1000);
+  var weekStart = _monJst.toISOString().slice(0, 10);
   try {
     var r = await _supabase.from('user_stats').select('*').eq('user_id', currentUser.id).maybeSingle();
     var d = r.data;
@@ -31972,6 +31995,7 @@ async function renderRanking() {
         document.getElementById('ranking-list').innerHTML = '<p class="ranking-empty">ログインすると表示されます</p>';
         return;
       }
+      if (_followingSet === null) await loadFollowing();
       var followingIds = _followingSet ? Array.from(_followingSet) : [];
       if (followingIds.length === 0) {
         document.getElementById('ranking-list').innerHTML = '<p class="ranking-empty">まだ誰もフォローしていません。ランキングでフォローしよう！</p>';
@@ -34537,7 +34561,7 @@ async function renderProfile() {
   }
 
   // ストリーク状態の判定（今日ログイン済みかどうか）
-  var todayStr = new Date().toISOString().slice(0, 10);
+  var todayStr = getTodayJST();
   var localDays = JSON.parse(localStorage.getItem('login_days') || '[]');
   var loggedInToday = localDays.indexOf(todayStr) !== -1;
 
@@ -35148,6 +35172,17 @@ function closeAuthModal() {
   if (fpBtn) { fpBtn.disabled = false; fpBtn.textContent = 'パスワードを忘れた方'; }
   _pendingConfirmEmail = null;
 }
+
+// Escキーでモーダルを閉じる
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Escape') return;
+  var authModal  = document.getElementById('auth-modal');
+  var adminPanel = document.getElementById('admin-panel');
+  var quizModal  = document.getElementById('quiz-modal');
+  if (authModal  && !authModal.classList.contains('hidden'))  { closeAuthModal(); return; }
+  if (adminPanel && !adminPanel.classList.contains('hidden')) { closeAdminPanel(); return; }
+  if (quizModal  && !quizModal.classList.contains('hidden'))  { closeQuizModal(); return; }
+});
 
 function switchAuthTab(tab) {
   _currentAuthTab = tab;

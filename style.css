@@ -2240,6 +2240,23 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   animation: judgeIn 0.3s ease;
 }
 
+.xp-float-text {
+  position: fixed;
+  left: 50%; bottom: 30%;
+  transform: translateX(-50%);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 2rem; font-weight: 900;
+  color: #FFD700;
+  text-shadow: 0 0 16px #FFD70088, 0 2px 6px rgba(0,0,0,0.7);
+  pointer-events: none; z-index: 9990;
+  animation: xpFloat 1.2s ease-out forwards;
+}
+@keyframes xpFloat {
+  0%   { opacity: 1; transform: translateX(-50%) translateY(0);   }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-80px); }
+}
+
 .judge-hint-btn {
   display: inline-block; margin-top: 8px;
   padding: 5px 12px;
