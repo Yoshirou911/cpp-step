@@ -30586,7 +30586,12 @@ function renderList() {
 function toggleSection(sectionId) {
   const el = document.getElementById(sectionId);
   if (!el) return;
-  el.classList.toggle("hidden");
+  const isNowHidden = el.classList.toggle("hidden");
+  // 対応するボタンのテキストを更新（data-open / data-close 属性を使う）
+  const btn = document.querySelector('[onclick*="toggleSection(\'' + sectionId + '\')"]');
+  if (btn && btn.dataset.open && btn.dataset.close) {
+    btn.textContent = isNowHidden ? btn.dataset.open : btn.dataset.close;
+  }
 }
 
 // ===== 特殊文字のエスケープ =====
@@ -30644,7 +30649,7 @@ function renderDetail(id) {
     '</div>' +
 
     '<div class="section">' +
-      '<button class="toggle-btn" onclick="toggleSection(\'hint-' + p.id + '\')">💡 ヒントを見る</button>' +
+      '<button class="toggle-btn" onclick="toggleSection(\'hint-' + p.id + '\')" data-open="💡 ヒントを見る" data-close="💡 ヒントを閉じる">💡 ヒントを見る</button>' +
       '<div id="hint-' + p.id + '" class="hidden toggle-content">' +
         '<p>' + escapeHtml(p.hint) + '</p>' +
       '</div>' +
@@ -30653,14 +30658,14 @@ function renderDetail(id) {
     '<div class="section">' +
       (effectiveHighRanks.indexOf(p.rank) >= 0 && !learned
         ? '<p class="high-rank-lock">🔒 正解すると模範解答が表示されます</p>'
-        : '<button class="toggle-btn" onclick="toggleSection(\'answer-' + p.id + '\')">📋 正解例を見る</button>' +
+        : '<button class="toggle-btn" onclick="toggleSection(\'answer-' + p.id + '\')" data-open="📋 正解例を見る" data-close="📋 正解例を閉じる">📋 正解例を見る</button>' +
           '<div id="answer-' + p.id + '" class="hidden toggle-content">' +
             '<pre><code>' + escapeHtml(p.answer) + '</code></pre>' +
           '</div>') +
     '</div>' +
 
     '<div class="section">' +
-      '<button class="toggle-btn" onclick="toggleSection(\'explanation-' + p.id + '\')">📖 解説を見る</button>' +
+      '<button class="toggle-btn" onclick="toggleSection(\'explanation-' + p.id + '\')" data-open="📖 解説を見る" data-close="📖 解説を閉じる">📖 解説を見る</button>' +
       '<div id="explanation-' + p.id + '" class="hidden toggle-content">' +
         '<p>' + escapeHtml(p.explanation) + '</p>' +
       '</div>' +
@@ -33977,7 +33982,7 @@ function renderMissionDetail(id) {
       '</div>' : '') +
 
     '<div class="section">' +
-      '<button class="toggle-btn" onclick="toggleSection(\'mission-hint-' + m.id + '\')">💡 ヒントを見る</button>' +
+      '<button class="toggle-btn" onclick="toggleSection(\'mission-hint-' + m.id + '\')" data-open="💡 ヒントを見る" data-close="💡 ヒントを閉じる">💡 ヒントを見る</button>' +
       '<div id="mission-hint-' + m.id + '" class="hidden toggle-content">' +
         '<p>' + escapeHtml(m.hint || '') + '</p>' +
       '</div>' +
@@ -34755,6 +34760,13 @@ async function renderProfile() {
   }
 
   content.innerHTML =
+
+    // ─── 未ログイン案内 ───
+    (!currentUser
+      ? '<div class="guest-notice">' +
+          '⚠ ゲスト表示中です。<button class="guest-login-btn" onclick="openAuthModal()">ログイン / 登録</button>するとデータがクラウドに保存され、複数端末で同期されます。' +
+        '</div>'
+      : '') +
 
     // ─── ヒーローセクション ───
     '<div class="profile-hero" style="--rank-color:' + rank.color + '">' +
