@@ -33861,11 +33861,11 @@ function renderMissionList() {
     card.innerHTML =
       '<div class="mission-card-top">' +
         '<span class="mission-number">MISSION ' + String(m.id).padStart(2, '0') + '</span>' +
-        '<span class="rank-badge rank-' + m.rank.toLowerCase() + '">' + m.rank + '</span>' +
+        '<span class="rank-badge rank-' + escapeHtml(m.rank.toLowerCase()) + '">' + escapeHtml(m.rank) + '</span>' +
         (isLocked ? '<span class="premium-lock-icon">🔒</span>' : '') +
       '</div>' +
-      '<div class="mission-card-title">' + m.title + '</div>' +
-      '<div class="mission-card-desc">' + m.description.substring(0, 60) + '...</div>' +
+      '<div class="mission-card-title">' + escapeHtml(m.title) + '</div>' +
+      '<div class="mission-card-desc">' + escapeHtml(m.description.substring(0, 60)) + '...</div>' +
       '<div class="mission-card-bottom">' +
         '<span class="mission-req-count">要件 ' + m.requirements.length + ' 項目</span>' +
         (isLocked

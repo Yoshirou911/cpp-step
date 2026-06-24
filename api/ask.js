@@ -43,9 +43,12 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: '認証が無効です。再ログインしてください。' });
   }
 
-  // レート制限チェック
-  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
-  if (isRateLimited(ip)) {
+  // 認証ユーザー情報取得（レート制限のキーとして使う）
+  const authUser = await supabaseAuthRes.json();
+  const rateLimitKey = authUser?.id || req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
+
+  // レート制限チェック（ユーザーIDベース：IP偽装に耐性あり）
+  if (isRateLimited(rateLimitKey)) {
     return res.status(429).json({ error: '短時間に送信しすぎています。1分後にお試しください。' });
   }
 
