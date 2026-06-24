@@ -30263,7 +30263,10 @@ function removeProgress(id) {
       .eq('user_id', currentUser.id)
       .eq('language', currentLanguage || 'cpp')
       .eq('problem_id', id)
-      .then(function() {}).catch(function() {});
+      .then(function(r) {
+        if (r.error) showToast('⚠ サーバーとの同期に失敗しました。ネットワークを確認してください。');
+      })
+      .catch(function() { showToast('⚠ サーバーとの同期に失敗しました。ネットワークを確認してください。'); });
   }
 }
 
@@ -30573,6 +30576,7 @@ function renderDetail(id) {
   currentProblemId = id;
   currentEditorMode = 'scratch';  // モードをリセット
   editorDirty = false;  // 新しい問題ではリセット
+  _judging = false;     // 前の問題のAI判定が残っていてもリセット
 
   const detail = document.getElementById("detail-content");
   detail.innerHTML =
@@ -31665,6 +31669,8 @@ async function runCode() {
 }
 
 // 自動判定を開始する
+var _judging = false; // AI判定の多重並行実行防止フラグ
+
 async function startAutoJudge(problemId, output) {
   const p         = getProblems().find(function(x) { return x.id === problemId; });
   const judgeArea = document.getElementById("judge-area");
@@ -31677,7 +31683,10 @@ async function startAutoJudge(problemId, output) {
     return;
   }
 
-  // AI 判定
+  // AI 判定中は多重実行を防ぐ
+  if (_judging) return;
+  _judging = true;
+
   judgeArea.innerHTML = '<div class="judge-pending">🤖 判定中...</div>';
   judgeArea.classList.remove("hidden");
 
@@ -31689,6 +31698,8 @@ async function startAutoJudge(problemId, output) {
     showJudgeResult(problemId, passed, true);
   } catch(e) {
     judgeArea.innerHTML = '<div class="judge-error">判定エラー ／ <button class="manual-clear-link" onclick="toggleLearned(' + problemId + ')">手動でクリア</button></div>';
+  } finally {
+    _judging = false;
   }
 }
 
@@ -34004,7 +34015,7 @@ function toggleLearned(id) {
   if (isLearned(id)) {
     removeProgress(id);
   } else {
-    var _golfLen = aceEditor ? aceEditor.getValue().length : 0;
+    var _golfLen = (aceEditor && currentProblemId === id) ? aceEditor.getValue().length : 0;
     saveProgress(id);
     playClearSound();
     showClearEffect();
