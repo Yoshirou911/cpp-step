@@ -33604,11 +33604,11 @@ function renderTextbook() {
   var header = document.createElement('div');
   header.className = 'textbook-header';
   header.innerHTML =
-    '<div class="textbook-title">' + tb.emoji + ' ' + tb.name + ' 入門ガイド</div>' +
-    '<div class="textbook-intro">' + tb.intro + '</div>' +
+    '<div class="textbook-title">' + escapeHtml(tb.emoji) + ' ' + escapeHtml(tb.name) + ' 入門ガイド</div>' +
+    '<div class="textbook-intro">' + escapeHtml(tb.intro) + '</div>' +
     '<div class="textbook-features">' +
       tb.features.map(function(f) {
-        return '<span class="textbook-feature-tag">✓ ' + f + '</span>';
+        return '<span class="textbook-feature-tag">✓ ' + escapeHtml(f) + '</span>';
       }).join('') +
     '</div>';
   content.appendChild(header);
@@ -33638,7 +33638,7 @@ function renderTextbook() {
     section.innerHTML =
       '<div class="textbook-section-header" onclick="toggleTextbookSection(' + idx + ')">' +
         '<span class="textbook-section-num">' + String(idx + 1).padStart(2, '0') + '</span>' +
-        '<span class="textbook-section-title">' + sec.title + '</span>' +
+        '<span class="textbook-section-title">' + escapeHtml(sec.title) + '</span>' +
         '<span class="textbook-toggle-icon" id="tb-icon-' + idx + '">▶</span>' +
       '</div>' +
       '<div class="textbook-section-body hidden" id="tb-body-' + idx + '">' +
@@ -33654,7 +33654,7 @@ function renderTextbook() {
   tips.innerHTML =
     '<div class="textbook-tips-title">💡 ポイント・Tips</div>' +
     '<ul class="textbook-tips-list">' +
-      tb.tips.map(function(t) { return '<li>' + t + '</li>'; }).join('') +
+      tb.tips.map(function(t) { return '<li>' + escapeHtml(t) + '</li>'; }).join('') +
     '</ul>';
   content.appendChild(tips);
 
@@ -33704,25 +33704,26 @@ function renderGuide() {
     section.className = 'guide-unit';
     section.id = 'guide-' + unit.id;
 
+    var safeUnitId = String(unit.id).replace(/[^a-zA-Z0-9_-]/g, '');
     var pointsHtml = unit.points.map(function(p) {
-      return '<li>' + p + '</li>';
+      return '<li>' + escapeHtml(p) + '</li>';
     }).join('');
 
     var wordsHtml = unit.words.map(function(w) {
       return '<div class="vocab-card">' +
-        '<span class="vocab-term">' + w.term + '</span>' +
-        '<p class="vocab-desc">' + w.desc + '</p>' +
+        '<span class="vocab-term">' + escapeHtml(w.term) + '</span>' +
+        '<p class="vocab-desc">' + escapeHtml(w.desc) + '</p>' +
       '</div>';
     }).join('');
 
     section.innerHTML =
-      '<div class="guide-unit-header" onclick="toggleGuideUnit(\'' + unit.id + '\')">' +
-        '<span class="guide-unit-name">' + unit.name + '</span>' +
-        '<span class="guide-toggle-icon" id="icon-' + unit.id + '">▶</span>' +
+      '<div class="guide-unit-header" onclick="toggleGuideUnit(\'' + safeUnitId + '\')">' +
+        '<span class="guide-unit-name">' + escapeHtml(unit.name) + '</span>' +
+        '<span class="guide-toggle-icon" id="icon-' + safeUnitId + '">▶</span>' +
       '</div>' +
-      '<div class="guide-unit-body hidden" id="body-' + unit.id + '">' +
+      '<div class="guide-unit-body hidden" id="body-' + safeUnitId + '">' +
         '<div class="guide-summary">' +
-          '<p>' + unit.summary + '</p>' +
+          '<p>' + escapeHtml(unit.summary) + '</p>' +
         '</div>' +
         '<div class="guide-section">' +
           '<div class="guide-section-title">◆ 重要ポイント</div>' +
@@ -33739,8 +33740,10 @@ function renderGuide() {
 }
 
 function toggleGuideUnit(id) {
-  var body = document.getElementById('body-' + id);
-  var icon = document.getElementById('icon-' + id);
+  var safeId = String(id).replace(/[^a-zA-Z0-9_-]/g, '');
+  var body = document.getElementById('body-' + safeId);
+  var icon = document.getElementById('icon-' + safeId);
+  if (!body || !icon) return;
   body.classList.toggle('hidden');
   icon.textContent = body.classList.contains('hidden') ? '▶' : '▼';
 }
