@@ -35361,7 +35361,7 @@ async function initAuth() {
     if (currentUser) {
       recordLoginDay();
       await fetchUserProfile(); // await してからrenderListを呼ぶ（プレミアム状態確定後に描画）
-      updateStreakBadge();
+      await updateStreakBadge();
       requestPushPermission();
       // Stripe リダイレクト後にOAuthでセッションが遅延した場合のトースト表示
       if (sessionStorage.getItem('pending_premium_toast') === '1') {
@@ -35421,6 +35421,26 @@ async function initAuth() {
 }
 
 // ===== 初期化 =====
+
+// Stripe課金直後: ?premium=1 のとき数秒後にfetchUserProfileを再試行してプレミアム状態を確実に反映
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('premium') !== '1') return;
+  // URLからパラメータを消す（リロードしても再発火しないように）
+  var cleanUrl = window.location.pathname;
+  history.replaceState(null, '', cleanUrl);
+  sessionStorage.setItem('pending_premium_toast', '1');
+  // Webhook到達を待って2秒後・5秒後に再取得
+  [2000, 5000].forEach(function(delay) {
+    setTimeout(async function() {
+      if (_premiumStatusCache) return; // すでにプレミアム確認済みなら不要
+      if (!currentUser || !_supabase) return;
+      await fetchUserProfile();
+      updateAuthUI();
+      if (currentLanguage) renderList();
+    }, delay);
+  });
+})();
 
 document.getElementById("back-btn").addEventListener("click", function() {
   playGoBack();
