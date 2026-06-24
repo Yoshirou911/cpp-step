@@ -30512,7 +30512,7 @@ function renderList() {
     var header = document.createElement("div");
     header.className = "unit-header";
     header.innerHTML =
-      '<span class="unit-header-name">' + unitName + '</span>' +
+      '<span class="unit-header-name">' + escapeHtml(unitName) + '</span>' +
       '<span class="unit-header-meta">' +
         '<span class="unit-header-count rank-' + topRank + '">' + clearedCount + ' / ' + unitProblems.length + '</span>' +
       '</span>';
@@ -33723,6 +33723,7 @@ function openTextbookSection(idx) {
 function toggleTextbookSection(idx) {
   var body = document.getElementById('tb-body-' + idx);
   var icon = document.getElementById('tb-icon-' + idx);
+  if (!body || !icon) return;
   body.classList.toggle('hidden');
   icon.textContent = body.classList.contains('hidden') ? '▶' : '▼';
 }
@@ -34295,17 +34296,21 @@ function showOverlordUnlock() {
 
 async function submitCodeGolfEntry(problemId, codeLength) {
   if (!currentUser || !_supabase || !codeLength) return;
-  var ex = await _supabase.from('code_golf')
-    .select('code_length')
-    .eq('user_id', currentUser.id)
-    .eq('language', currentLanguage)
-    .eq('problem_id', problemId)
-    .maybeSingle();
-  if (ex.data && ex.data.code_length <= codeLength) return;
-  await _supabase.from('code_golf').upsert(
-    { user_id: currentUser.id, language: currentLanguage, problem_id: problemId, code_length: codeLength },
-    { onConflict: 'user_id,language,problem_id' }
-  );
+  try {
+    var ex = await _supabase.from('code_golf')
+      .select('code_length')
+      .eq('user_id', currentUser.id)
+      .eq('language', currentLanguage)
+      .eq('problem_id', problemId)
+      .maybeSingle();
+    if (ex.error) { console.warn('golf fetch error:', ex.error.message); return; }
+    if (ex.data && ex.data.code_length <= codeLength) return;
+    var up = await _supabase.from('code_golf').upsert(
+      { user_id: currentUser.id, language: currentLanguage, problem_id: problemId, code_length: codeLength },
+      { onConflict: 'user_id,language,problem_id' }
+    );
+    if (up.error) console.warn('golf upsert error:', up.error.message);
+  } catch(e) { console.warn('golf error:', e); }
 }
 
 var _golfBoardCache = {};
@@ -34319,12 +34324,18 @@ async function refreshGolfBoard(problemId) {
     board.innerHTML = cacheEntry.html;
     return;
   }
-  var res = await _supabase.from('code_golf')
-    .select('user_id, code_length')
-    .eq('language', currentLanguage)
-    .eq('problem_id', problemId)
-    .order('code_length', { ascending: true })
-    .limit(10);
+  var res;
+  try {
+    res = await _supabase.from('code_golf')
+      .select('user_id, code_length')
+      .eq('language', currentLanguage)
+      .eq('problem_id', problemId)
+      .order('code_length', { ascending: true })
+      .limit(10);
+  } catch(e) {
+    board.innerHTML = '<p class="golf-empty">// 読み込みエラー。再試行してください</p>';
+    return;
+  }
   if (res.error) {
     board.innerHTML = '<p class="golf-empty">// 読み込みエラー。再試行してください</p>';
     return;
@@ -34354,6 +34365,12 @@ async function refreshGolfBoard(problemId) {
   html += '</ol>';
   board.innerHTML = html;
   _golfBoardCache[problemId] = { ts: Date.now(), html: html };
+  // キャッシュが増えすぎたら古いエントリを削除（30件上限）
+  var keys = Object.keys(_golfBoardCache);
+  if (keys.length > 30) {
+    keys.sort(function(a, b) { return _golfBoardCache[a].ts - _golfBoardCache[b].ts; });
+    delete _golfBoardCache[keys[0]];
+  }
 }
 
 var _lastGolfSubmit = {}; // { [problemId]: lastLen } 二重送信防止
@@ -34610,7 +34627,7 @@ async function renderProfile() {
   }
   var results = await Promise.all([getLoginStreak(), fetchScoutMessages(), currentUser ? getFollowCounts(currentUser.id) : Promise.resolve({following:0, followers:0})]);
   var streak = results[0];
-  var followCounts = results[2];
+  var followCounts = results[2] || { following: 0, followers: 0 };
 
   var stats  = getProfileStats();
   stats.currentStreak = streak.current;
@@ -35450,8 +35467,10 @@ async function initAuth() {
       updateAdDisplay();
     }
     if (currentUser && currentLanguage) {
-      await syncProgressFromSupabase();
-      await syncMissionProgressFromSupabase();
+      try {
+        await syncProgressFromSupabase();
+        await syncMissionProgressFromSupabase();
+      } catch(e) { console.warn('sync error on auth change:', e); }
       updateProgressDisplay();
       renderList();
     } else if (!currentUser && currentLanguage) {
@@ -35668,7 +35687,7 @@ initAuth();
   }
 
   // 12秒ごとに切り替え
-  setInterval(next, 12000);
+  var _bgSlideTimer = setInterval(next, 12000);
 })();
 
 // ===== 言語診断クイズ =====
@@ -35857,7 +35876,7 @@ function _renderQuizResultFromAI(resultId, aiMessage) {
       '<div class="quiz-result-tier">◆ ' + r.tier + ' TIER</div>' +
     '</div>' +
     '<div class="quiz-ai-msg">' +
-      '<div class="quiz-ai-text">' + aiMessage.replace(/\n/g, '<br>') + '</div>' +
+      '<div class="quiz-ai-text">' + escapeHtml(aiMessage).replace(/\n/g, '<br>') + '</div>' +
     '</div>' +
     '<div class="quiz-result-actions">' +
       '<button class="quiz-start-btn" onclick="startWithLanguage(\'' + r.id + '\')" style="--qcol:' + r.color + '">▶ ' + r.name + ' で始める</button>' +
@@ -35892,8 +35911,8 @@ function _renderQuizStep(stepId) {
 
   var choicesHtml = step.choices.map(function(c, i) {
     return '<button class="quiz-choice" data-qidx="' + i + '">' +
-      '<span class="quiz-icon">' + c.icon + '</span>' +
-      '<span class="quiz-label">' + c.label + '</span>' +
+      '<span class="quiz-icon">' + escapeHtml(c.icon) + '</span>' +
+      '<span class="quiz-label">' + escapeHtml(c.label) + '</span>' +
       '<span class="quiz-arrow">›</span>' +
     '</button>';
   }).join('');
@@ -35904,8 +35923,8 @@ function _renderQuizStep(stepId) {
       '<div class="quiz-step-dots">' + _quizDots(stepNum) + '</div>' +
     '</div>' +
     '<div class="quiz-q-label">Q' + stepNum + '</div>' +
-    '<div class="quiz-question">' + step.q + '</div>' +
-    (step.sub ? '<div class="quiz-sub">' + step.sub + '</div>' : '') +
+    '<div class="quiz-question">' + escapeHtml(step.q) + '</div>' +
+    (step.sub ? '<div class="quiz-sub">' + escapeHtml(step.sub) + '</div>' : '') +
     '<div class="quiz-choices">' + choicesHtml + '</div>';
 
   document.getElementById('quiz-back-btn').addEventListener('click', _quizBack);
