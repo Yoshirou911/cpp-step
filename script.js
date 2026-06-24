@@ -743,7 +743,9 @@ async function getLoginStreak() {
     var result = await _supabase
       .from('login_days')
       .select('login_date')
-      .eq('user_id', currentUser.id);
+      .eq('user_id', currentUser.id)
+      .order('login_date', { ascending: false })
+      .limit(400);
     if (result.error) return calcStreak(localDates);
     var remoteDates = (result.data || []).map(function(r) { return r.login_date; });
     // ローカル ∪ リモート をマージ
@@ -34620,12 +34622,14 @@ async function renderProfile() {
   // まずスケルトンを表示して即座にページを見せる
   content.innerHTML = '<div class="profile-loading">// LOADING...</div>';
 
-  // ストリーク・スカウト・フォロー数を並行取得
-  // プレミアム状態が未確定のまま描画しないよう先に確認
-  if (currentUser && _supabase && _premiumStatusCache === null) {
-    await fetchUserProfile();
-  }
-  var results = await Promise.all([getLoginStreak(), fetchScoutMessages(), currentUser ? getFollowCounts(currentUser.id) : Promise.resolve({following:0, followers:0})]);
+  // 全データを並列取得（プレミアム状態も含めて同時に取得）
+  var needProfile = currentUser && _supabase && _premiumStatusCache === null;
+  var results = await Promise.all([
+    getLoginStreak(),
+    fetchScoutMessages(),
+    currentUser ? getFollowCounts(currentUser.id) : Promise.resolve({following:0, followers:0}),
+    needProfile ? fetchUserProfile() : Promise.resolve()
+  ]);
   var streak = results[0];
   var followCounts = results[2] || { following: 0, followers: 0 };
 
