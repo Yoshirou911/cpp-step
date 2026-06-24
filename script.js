@@ -30583,6 +30583,7 @@ function renderList() {
 
 function toggleSection(sectionId) {
   const el = document.getElementById(sectionId);
+  if (!el) return;
   el.classList.toggle("hidden");
 }
 
@@ -33716,7 +33717,7 @@ function openTextbookSection(idx) {
     if (icon) icon.textContent = '▼';
   }
   var sec = document.getElementById('tb-section-' + idx);
-  if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (sec) requestAnimationFrame(function() { sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
 }
 
 function toggleTextbookSection(idx) {
@@ -34307,10 +34308,17 @@ async function submitCodeGolfEntry(problemId, codeLength) {
   );
 }
 
+var _golfBoardCache = {};
 async function refreshGolfBoard(problemId) {
   var board = document.getElementById('golf-board-' + problemId);
   if (!board) return;
   if (!_supabase) { board.innerHTML = '<p class="golf-empty">// OFFLINE</p>'; return; }
+  // 5秒以内の同一問題は再フェッチをスキップ
+  var cacheEntry = _golfBoardCache[problemId];
+  if (cacheEntry && Date.now() - cacheEntry.ts < 5000) {
+    board.innerHTML = cacheEntry.html;
+    return;
+  }
   var res = await _supabase.from('code_golf')
     .select('user_id, code_length')
     .eq('language', currentLanguage)
@@ -34345,6 +34353,7 @@ async function refreshGolfBoard(problemId) {
   });
   html += '</ol>';
   board.innerHTML = html;
+  _golfBoardCache[problemId] = { ts: Date.now(), html: html };
 }
 
 var _lastGolfSubmit = {}; // { [problemId]: lastLen } 二重送信防止
