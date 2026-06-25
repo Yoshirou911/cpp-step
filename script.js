@@ -359,7 +359,7 @@ var HIGH_RANKS_PREMIUM = ['MASTER', 'LEGEND', 'TITAN', 'OVERLORD'];
 function _bookmarkKey() { return (currentLanguage || 'cpp') + '_bookmarks'; }
 
 function getBookmarks() {
-  return JSON.parse(localStorage.getItem(_bookmarkKey()) || '[]');
+  return lsGetJSON(_bookmarkKey(), []);
 }
 function isBookmarked(id) {
   return getBookmarks().indexOf(id) !== -1;
@@ -389,7 +389,7 @@ function toggleDetailBookmark(id) {
 function _wrongKey() { return (currentLanguage || 'cpp') + '_wrong'; }
 
 function getWrongAnswers() {
-  return JSON.parse(localStorage.getItem(_wrongKey()) || '[]');
+  return lsGetJSON(_wrongKey(), []);
 }
 function isWrongAnswer(id) {
   return getWrongAnswers().indexOf(id) !== -1;
@@ -672,6 +672,15 @@ function getYesterdayJST() {
 
 // localStorage.setItem のラッパー（QuotaExceededError を握りつぶさない）
 var _lsNativeSet = localStorage.setItem.bind(localStorage);
+function lsGetJSON(key, fallback) {
+  try {
+    return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+  } catch(e) {
+    console.warn('[CODE STEP] localStorage parse error:', key, e);
+    return fallback;
+  }
+}
+
 function lsSet(key, value) {
   try {
     _lsNativeSet(key, value);
@@ -720,7 +729,7 @@ function calcStreak(dates) {
 function recordLoginDay() {
   var today = getTodayJST();
   // localStorage に記録
-  var local = JSON.parse(localStorage.getItem('login_days') || '[]');
+  var local = lsGetJSON('login_days', []);
   var isNew = local.indexOf(today) === -1;
   if (isNew) {
     local.push(today);
@@ -737,7 +746,7 @@ function recordLoginDay() {
 }
 
 async function getLoginStreak() {
-  var localDates = JSON.parse(localStorage.getItem('login_days') || '[]');
+  var localDates = lsGetJSON('login_days', []);
   if (!currentUser || !_supabase) return calcStreak(localDates);
   try {
     var result = await _supabase
@@ -771,7 +780,7 @@ function getProfileRank(total, titanLangCount) {
 
 // 言語ごとの重み付き実力スコア計算
 function calcLangStrengthData(langKey, problemArray) {
-  var prog = JSON.parse(localStorage.getItem(langKey + '_progress') || '[]');
+  var prog = lsGetJSON(langKey + '_progress', []);
   var maxExp = 0, earnedExp = 0;
   problemArray.forEach(function(p) {
     var exp = RANK_EXP[(p.rank || 'rookie').toLowerCase()] || 15;
@@ -976,7 +985,7 @@ function calculateEXP() {
     { key: 'regex',      get: function() { return regexProblems; } },
     { key: 'php',        get: function() { return phpProblems; } }
   ].forEach(function(lang) {
-    var prog = JSON.parse(localStorage.getItem(lang.key + '_progress') || '[]');
+    var prog = lsGetJSON(lang.key + '_progress', []);
     lang.get().forEach(function(p) {
       if (prog.indexOf(p.id) !== -1) {
         problemExp += RANK_EXP[p.rank.toLowerCase()] || 15;
@@ -1004,7 +1013,7 @@ function calculateEXP() {
     { key: 'regex',      get: function() { return regexMissions; } },
     { key: 'php',        get: function() { return phpMissions; } }
   ].forEach(function(lang) {
-    var prog = JSON.parse(localStorage.getItem(lang.key + '_mission_progress') || '[]');
+    var prog = lsGetJSON(lang.key + '_mission_progress', []);
     lang.get().forEach(function(m) {
       if (prog.indexOf(m.id) !== -1) {
         missionExp += MISSION_EXP[m.rank.toLowerCase()] || 80;
@@ -1013,7 +1022,7 @@ function calculateEXP() {
   });
 
   // ログイン EXP
-  var loginDays = JSON.parse(localStorage.getItem('login_days') || '[]');
+  var loginDays = lsGetJSON('login_days', []);
   var loginExp  = loginDays.length * LOGIN_EXP;
 
   // ボーナス EXP（デイリーチャレンジなど）
@@ -1094,7 +1103,7 @@ async function updateStreakBadge() {
   // 今日まだ学習していない場合（18時以降、ストリーク1日以上）にリマインダー表示
   if (reminderEl) {
     var today = getTodayJST();
-    var log = JSON.parse(localStorage.getItem('study_log') || '{}');
+    var log = lsGetJSON('study_log', {});
     var studiedToday = (log[today] || 0) > 0;
     var hour = new Date().getHours();
     var showReminder = !studiedToday && streak.current >= 1 && hour >= 18;
@@ -1384,7 +1393,7 @@ function stopStudyTimer() {
   // 日付が変わっていたら今日付で記録（前日への持ち越し防止）
   var today = getTodayJST();
   var date  = (_studyTimerDate && _studyTimerDate !== today) ? today : (_studyTimerDate || today);
-  var log   = JSON.parse(localStorage.getItem('study_log') || '{}');
+  var log   = lsGetJSON('study_log', {});
   log[date] = (log[date] || 0) + elapsed;
   lsSet('study_log', JSON.stringify(log));
 }
@@ -1397,7 +1406,7 @@ function recordLanguageStart(langId) {
 }
 
 function getTotalStudyTime() {
-  var log = JSON.parse(localStorage.getItem('study_log') || '{}');
+  var log = lsGetJSON('study_log', {});
   return Object.keys(log).reduce(function(sum, k) { return sum + (log[k] || 0); }, 0);
 }
 
@@ -34419,7 +34428,7 @@ async function submitAndRefreshGolf(problemId) {
 // ===== アクティビティヒートマップ =====
 
 function buildHeatmapHTML() {
-  var log   = JSON.parse(localStorage.getItem('study_log') || '{}');
+  var log   = lsGetJSON('study_log', {});
   var today = new Date();
   today.setHours(12, 0, 0, 0);
 
@@ -34550,7 +34559,7 @@ function calcWeaknessData() {
   var weakSpots = [];
 
   langList.forEach(function(lang) {
-    var prog = JSON.parse(localStorage.getItem(lang.key + '_progress') || '[]');
+    var prog = lsGetJSON(lang.key + '_progress', []);
     if (!prog.length) return; // 未着手言語はスキップ
 
     var byRank = {};
@@ -34725,7 +34734,7 @@ async function renderProfile() {
 
   // ストリーク状態の判定（今日ログイン済みかどうか）
   var todayStr = getTodayJST();
-  var localDays = JSON.parse(localStorage.getItem('login_days') || '[]');
+  var localDays = lsGetJSON('login_days', []);
   var loggedInToday = localDays.indexOf(todayStr) !== -1;
 
   // ─── ジャーニー・アクティビティデータ ───
@@ -35242,7 +35251,7 @@ async function requestPushPermission() {
 function schedulePushReminders() {
   // ローカルで連続ログインチェック → 2日以上あいていたら即通知
   try {
-    var days = JSON.parse(localStorage.getItem('login_days') || '[]').sort();
+    var days = lsGetJSON('login_days', []).sort();
     if (days.length < 2) return;
     var last = new Date(days[days.length - 1]);
     var diff = Math.floor((Date.now() - last.getTime()) / 86400000);
