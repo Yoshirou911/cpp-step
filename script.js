@@ -1082,7 +1082,8 @@ async function updateStreakBadge() {
     if (reminderEl) reminderEl.classList.add('hidden');
     return;
   }
-  var streak = await getLoginStreak();
+  var streak;
+  try { streak = await getLoginStreak(); } catch(e) { return; }
   if (streak.current >= 1) {
     el.textContent = '🔥' + streak.current;
     el.classList.remove('hidden');
@@ -1668,10 +1669,12 @@ function adminTogglePreview() {
 
 async function adminSetPremium(isPremium) {
   if (!currentUserIsAdmin) return;
-  var email   = document.getElementById('admin-email-input').value.trim();
+  var emailEl = document.getElementById('admin-email-input');
   var msgEl   = document.getElementById('admin-msg');
   var btnGive = document.getElementById('admin-give-btn');
   var btnTake = document.getElementById('admin-take-btn');
+  if (!emailEl || !msgEl || !btnGive || !btnTake) return;
+  var email = emailEl.value.trim();
   if (!email) { msgEl.textContent = '❌ メールアドレスを入力してください'; return; }
 
   btnGive.disabled = true; btnTake.disabled = true;
@@ -31359,6 +31362,7 @@ async function explainCode(problemId) {
   const p = getProblems().find(function(x) { return x.id === problemId; });
   const area = document.getElementById('explain-area-' + problemId);
   if (!area) return;
+  if (!p) { area.innerHTML = '<p class="explain-error">問題データが見つかりません。</p>'; return; }
 
   // すでに展開済みならトグル
   if (!area.classList.contains('hidden')) {
@@ -35849,6 +35853,7 @@ async function _submitFreeInput() {
   var ta  = document.getElementById('quiz-free-input');
   var btn = document.getElementById('quiz-submit-btn');
   var err = document.getElementById('quiz-free-error');
+  if (!ta || !btn || !err) return;
   var text = ta.value.trim();
   if (!text || text.length < 5) return;
 
