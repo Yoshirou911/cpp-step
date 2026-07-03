@@ -555,14 +555,8 @@ var BADGES = [
 
 // 全言語の進捗を localStorage から集計（言語切替不要）
 function getProfileStats() {
-  function getP(lang) {
-    var d = localStorage.getItem(lang + '_progress');
-    return d ? JSON.parse(d) : [];
-  }
-  function getM(lang) {
-    var d = localStorage.getItem(lang + '_mission_progress');
-    return d ? JSON.parse(d) : [];
-  }
+  function getP(lang) { return lsGetJSON(lang + '_progress', []); }
+  function getM(lang) { return lsGetJSON(lang + '_mission_progress', []); }
   var cppArr    = getP('cpp');
   var pythonArr = getP('python');
   var jsArr     = getP('javascript');
@@ -1743,6 +1737,7 @@ async function startCheckout() {
     return;
   }
   var btn = document.getElementById('checkout-btn');
+  if (!btn) return;
   var orig = btn.textContent;
   btn.textContent = '処理中...';
   btn.disabled = true;
@@ -30429,6 +30424,7 @@ function updateProgressDisplay() {
 
 function renderList() {
   const list = document.getElementById("problem-list");
+  if (!list) return;
   list.innerHTML = "";
 
   // 無料ユーザー向け広告スロット
@@ -31628,7 +31624,9 @@ async function runCode() {
   const outputArea = document.getElementById("output-area");
   const outputText = document.getElementById("output-text");
   const judgeArea  = document.getElementById("judge-area");
-  const stdin      = document.getElementById("stdin-input").value;
+  if (!btn || !outputArea || !outputText) return;
+  const stdinEl = document.getElementById("stdin-input");
+  const stdin   = stdinEl ? stdinEl.value : '';
 
   // HTML/CSS: iframeプレビュー（Wandbox不使用）
   if (currentLanguage === 'html') {
@@ -31637,7 +31635,7 @@ async function runCode() {
       previewFrame = document.createElement('iframe');
       previewFrame.id = 'html-preview-frame';
       previewFrame.style.cssText = 'width:100%;height:400px;border:1px solid #444;border-radius:8px;background:#fff;margin-top:8px;display:block;';
-      outputArea.parentNode.insertBefore(previewFrame, outputArea.nextSibling);
+      if (outputArea.parentNode) outputArea.parentNode.insertBefore(previewFrame, outputArea.nextSibling);
     }
     previewFrame.srcdoc = aceEditor ? aceEditor.getValue() : '';
     previewFrame.style.display = 'block';
@@ -31650,7 +31648,10 @@ async function runCode() {
 
   btn.textContent = "実行中...";
   btn.disabled = true;
-  outputArea.classList.add("hidden");
+  // 実行中ローディング表示
+  outputArea.classList.remove("hidden");
+  outputText.className = "output-running";
+  outputText.textContent = "// 実行中...";
   if (judgeArea) judgeArea.classList.add("hidden");
 
   try {
@@ -31726,10 +31727,10 @@ async function runCode() {
       outputText.textContent = "⚠ 実行エラー: " + _apiName + "に接続できませんでした。\nインターネット接続を確認するか、しばらく待ってから再試行してください。" + _kotlinNote + "\n詳細: " + e.message;
     }
     outputText.className = "output-error";
+  } finally {
+    btn.textContent = "▶ 実行する";
+    btn.disabled = false;
   }
-
-  btn.textContent = "▶ 実行する";
-  btn.disabled = false;
 }
 
 // 自動判定を開始する
@@ -32337,7 +32338,7 @@ async function renderContest() {
 
   var problemsHtml = probs.map(function(p, i) {
     var cleared = myClears.has(p.id);
-    var col = RANK_COLOR[p.rank.toLowerCase()] || '#FF6B00';
+    var col = RANK_COLOR[(p.rank || '').toLowerCase()] || '#FF6B00';
     return '<div class="contest-prob' + (cleared ? ' contest-prob-done' : '') + '" onclick="goToContestProblem(' + p.id + ')">' +
       '<span class="contest-prob-num">' + (i + 1) + '</span>' +
       '<div class="contest-prob-info">' +
@@ -35375,11 +35376,14 @@ function switchAuthTab(tab) {
 }
 
 async function submitAuth() {
-  var email  = document.getElementById('auth-email').value.trim();
-  var pass   = document.getElementById('auth-password').value;
-  var errEl  = document.getElementById('auth-error');
-  var sucEl  = document.getElementById('auth-success');
-  var btn    = document.getElementById('auth-submit-btn');
+  var emailEl = document.getElementById('auth-email');
+  var passEl  = document.getElementById('auth-password');
+  var errEl   = document.getElementById('auth-error');
+  var sucEl   = document.getElementById('auth-success');
+  var btn     = document.getElementById('auth-submit-btn');
+  if (!emailEl || !passEl || !errEl || !sucEl || !btn) return;
+  var email = emailEl.value.trim();
+  var pass  = passEl.value;
 
   errEl.classList.add('hidden');
   sucEl.classList.add('hidden');

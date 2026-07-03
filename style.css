@@ -1418,6 +1418,10 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   border-left-color: var(--red);
   box-shadow: -2px 0 0 var(--red), 0 0 14px rgba(255,51,51,0.06);
 }
+#output-text.output-running {
+  color: rgba(255,107,0,0.5);
+  animation: loadingPulse 1s ease-in-out infinite;
+}
 
 /* ========== AI フィードバック ========== */
 .ai-feedback-btn {
@@ -5084,9 +5088,15 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 }
 
 @media (max-width: 480px) {
-  .code-editor-ace { min-height: 180px; }
+  .code-editor-ace { min-height: 140px; height: 140px; }
   .code-editor-ace .ace_editor { font-size: 13px !important; }
   .ranking-my-pos { font-size: 0.72rem; }
+}
+
+@media (max-width: 375px) {
+  #site-title { font-size: 1.7rem; }
+  #lv-badge, #streak-badge { font-size: 0.62rem; padding: 2px 6px; }
+  #auth-area { gap: 3px; }
 }
 
 /* ===== SILVERアンロック演出 ===== */
@@ -6304,10 +6314,18 @@ body.overlord-theme .titan-badge-header {
 
 #list-filter-empty {
   text-align: center;
-  padding: 40px 20px;
+  padding: 60px 20px;
   color: rgba(237,224,200,0.35);
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.9rem;
+  line-height: 1.9;
+}
+#list-filter-empty::before {
+  content: '🔍';
+  display: block;
+  font-size: 2.8rem;
+  margin-bottom: 14px;
+  opacity: 0.35;
 }
 
 /* ===== Googleログインボタン ===== */
