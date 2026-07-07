@@ -6708,3 +6708,177 @@ body.overlord-theme .titan-badge-header {
   transition: background 0.15s;
 }
 .profile-share-btn:hover { background: rgba(29,161,242,0.12); }
+
+/* ===================================================================
+   UI Enhancement Pass — 2025
+   =================================================================== */
+
+/* ── ナビタブ強化 ─────────────────────────────────────────────── */
+.nav-tab {
+  border-bottom-width: 3px;
+}
+.nav-tab:hover {
+  color: rgba(255,107,0,0.80);
+  background: rgba(255,107,0,0.06);
+}
+.nav-tab.active {
+  border-bottom-width: 3px;
+  box-shadow: inset 0 -1px 0 rgba(255,107,0,0.12);
+  text-shadow: 0 0 18px rgba(255,107,0,0.60);
+}
+
+/* ── 問題カードホバー強化 ─────────────────────────────────────── */
+.problem-card:hover {
+  transform: translateX(5px);
+  background: rgba(20,14,8,0.80);
+  border-color: rgba(255,255,255,0.10);
+}
+.rank-card-rookie:hover  { box-shadow: -4px 0 14px rgba(155,155,155,0.25); }
+.rank-card-bronze:hover  { box-shadow: -4px 0 14px rgba(196,122,47,0.28); }
+.rank-card-silver:hover  { box-shadow: -4px 0 14px rgba(192,192,192,0.28); }
+.rank-card-gold:hover    { box-shadow: -4px 0 16px rgba(255,215,0,0.32); }
+.rank-card-platinum:hover{ box-shadow: -4px 0 16px rgba(0,200,180,0.30); }
+.rank-card-diamond:hover { box-shadow: -4px 0 18px rgba(85,136,255,0.35); }
+.rank-card-master:hover  { box-shadow: -4px 0 18px rgba(192,64,255,0.35); }
+.rank-card-legend:hover  { box-shadow: -4px 0 22px rgba(255,34,68,0.55); }
+.rank-card-titan:hover   { box-shadow: -4px 0 22px rgba(0,230,118,0.45); }
+.rank-card-overlord:hover{ box-shadow: -4px 0 24px rgba(255,23,68,0.55); }
+.rank-card-predator:hover{ box-shadow: -4px 0 24px rgba(255,0,255,0.45); }
+
+/* ── 実行ボタン強化 ──────────────────────────────────────────── */
+.run-btn:hover:not(:disabled) {
+  box-shadow: 0 0 22px rgba(0,255,136,0.35), 0 4px 18px rgba(0,0,0,0.5);
+  transform: translateY(-2px);
+}
+
+/* ── 学習完了ボタン強化 ──────────────────────────────────────── */
+.learn-btn:hover:not(:disabled) {
+  box-shadow: 0 0 18px rgba(255,107,0,0.35);
+  transform: translateY(-1px);
+}
+
+/* ── 認証ボタン強化 ──────────────────────────────────────────── */
+.auth-btn {
+  transition: background 0.18s, box-shadow 0.18s, transform 0.15s;
+}
+.auth-btn:hover:not(:disabled) {
+  box-shadow: 0 0 20px rgba(255,107,0,0.35);
+  transform: translateY(-1px);
+}
+
+/* ── 入力フォーカスグロー ────────────────────────────────────── */
+#code-editor:focus,
+textarea:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255,107,0,0.35), 0 0 16px rgba(255,107,0,0.12);
+}
+
+/* ── 空状態スタイル ──────────────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 20px;
+  text-align: center;
+}
+.empty-state-icon {
+  font-size: 3rem;
+  opacity: 0.30;
+  margin-bottom: 16px;
+  line-height: 1;
+}
+.empty-state-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(237,224,200,0.45);
+  margin-bottom: 8px;
+}
+.empty-state-desc {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  color: rgba(237,224,200,0.28);
+  line-height: 1.7;
+}
+
+/* ── プログレスバーシマー ────────────────────────────────────── */
+@keyframes barShimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+.xp-bar-fill,
+.stat-bar-fill,
+#exp-bar-fill-anim {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.12) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: barShimmer 2.8s linear infinite;
+}
+
+/* ── セクションヘッダー下線グロー ───────────────────────────── */
+.section-title::after {
+  box-shadow: 0 0 8px rgba(255,107,0,0.45);
+}
+
+/* ── カードスタック間隔の微調整 ─────────────────────────────── */
+.problem-card { margin-bottom: 5px; }
+
+/* ── モーダルバックドロップ強化 ─────────────────────────────── */
+#auth-modal,
+.report-overlay,
+.modal-overlay {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ── トーストアニメーション改善 ─────────────────────────────── */
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px) scale(0.95); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0)     scale(1); }
+}
+#toast-msg { animation: toastIn 0.22s cubic-bezier(0.34,1.56,0.64,1); }
+
+/* ── バッジ/ストリークラベル強化 ────────────────────────────── */
+.streak-badge,
+.lv-badge {
+  box-shadow: 0 0 10px rgba(255,107,0,0.20);
+}
+
+/* ── ランキング行ホバー ───────────────────────────────────────── */
+.ranking-row { transition: background 0.15s, transform 0.15s; }
+.ranking-row:hover {
+  background: rgba(255,107,0,0.06);
+  transform: translateX(3px);
+}
+
+/* ── スクロールバー統一 ─────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+::-webkit-scrollbar-thumb {
+  background: rgba(255,107,0,0.30);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255,107,0,0.55); }
+
+/* ── モバイル 480px 微調整 ───────────────────────────────────── */
+@media (max-width: 480px) {
+  .nav-tab {
+    padding: 10px 12px;
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+  }
+  .user-email-display { display: none; }
+  .run-btn { font-size: 0.78rem; padding: 9px 16px; }
+  .problem-card { padding: 9px 14px 9px 12px; }
+  .empty-state { padding: 44px 16px; }
+}
