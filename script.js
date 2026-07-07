@@ -1527,15 +1527,16 @@ async function selectLanguage(langId) {
   showNavAndProgress();
   setActiveTab('problems');
   showPage('list');
-  // ログイン中なら Supabase から最新進捗を取得してから描画
-  if (currentUser && _supabase) {
-    await Promise.all([
-      syncProgressFromSupabase(),
-      syncMissionProgressFromSupabase()
-    ]);
-  }
+  // ローカルデータで即時描画（Supabaseを待たない）
   renderList();
   updateProgressDisplay();
+  // バックグラウンドでSupabase同期（完了後にrenderListが再呼出しされる）
+  if (currentUser && _supabase) {
+    Promise.all([
+      syncProgressFromSupabase(),
+      syncMissionProgressFromSupabase()
+    ]).catch(function() {});
+  }
 }
 
 // ===== プレミアム機能 =====
