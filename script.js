@@ -1181,7 +1181,9 @@ function shareToX(text) {
   var url = 'https://twitter.com/intent/tweet?text=' +
     encodeURIComponent(text) + '&url=' +
     encodeURIComponent('https://cpp-step.vercel.app/');
-  window.open(url, '_blank', 'width=600,height=400,noopener');
+  if (!window.open(url, '_blank', 'width=600,height=400,noopener')) {
+    showToast('ポップアップをブロック解除してください');
+  }
 }
 function shareLevelUp() {
   shareToX('CODE STEP で Lv.' + _shareLv + ' ' + getLevelTitle(_shareLv) + ' に到達しました！ #CODESTEP #プログラミング学習');
@@ -30258,8 +30260,7 @@ function getLangName() {
 // ===== 進捗管理 (Supabase 対応) =====
 
 function _getLocalProgress() {
-  var data = localStorage.getItem(getProgressKey());
-  return data ? JSON.parse(data) : [];
+  return lsGetJSON(getProgressKey(), []);
 }
 
 function loadProgress() {
@@ -31792,7 +31793,7 @@ function showJudgeResult(problemId, passed, byAI) {
       // エフェクト・サウンド
       playClearSound();
       var _prob = getProblems().find(function(x) { return x.id === problemId; });
-      var _xp   = _prob ? (RANK_EXP[_prob.rank.toLowerCase()] || 15) : 15;
+      var _xp   = (_prob && _prob.rank) ? (RANK_EXP[_prob.rank.toLowerCase()] || 15) : 15;
       showClearEffect(_xp);
       // renderDetail で画面を完全リフレッシュ（ボタン・ラベルを確実に更新）
       renderDetail(problemId);
@@ -31913,6 +31914,7 @@ function addChatMessage(role, text, id) {
 
 async function sendChatMessage() {
   var input = document.getElementById('chat-input');
+  if (!input) return;
   var message = input.value.trim();
   if (!message) return;
 
@@ -32085,9 +32087,10 @@ async function renderRanking() {
         : '') +
       '<div id="ranking-list"><div class="ranking-loading">// LOADING...</div></div>' +
     '</div>';
+  var rankingList = document.getElementById('ranking-list');
 
   if (!_supabase) {
-    document.getElementById('ranking-list').innerHTML = '<p class="ranking-empty">ログインするとランキングに参加できます</p>';
+    if (rankingList) rankingList.innerHTML = '<p class="ranking-empty">ログインするとランキングに参加できます</p>';
     return;
   }
 
@@ -32098,13 +32101,13 @@ async function renderRanking() {
     if (_rankingTab === 'following') {
       // フォロー中ランキング: フォロー中ユーザーの総合クリア数
       if (!myId) {
-        document.getElementById('ranking-list').innerHTML = '<p class="ranking-empty">ログインすると表示されます</p>';
+        if (rankingList) rankingList.innerHTML = '<p class="ranking-empty">ログインすると表示されます</p>';
         return;
       }
       if (_followingSet === null) await loadFollowing();
       var followingIds = _followingSet ? Array.from(_followingSet) : [];
       if (followingIds.length === 0) {
-        document.getElementById('ranking-list').innerHTML = '<p class="ranking-empty">まだ誰もフォローしていません。ランキングでフォローしよう！</p>';
+        if (rankingList) rankingList.innerHTML = '<p class="ranking-empty">まだ誰もフォローしていません。ランキングでフォローしよう！</p>';
         return;
       }
       var r = await _supabase.from('user_stats').select('user_id,total_cleared,total_xp')
@@ -32149,7 +32152,7 @@ async function renderRanking() {
     }
 
     if (rows.length === 0) {
-      document.getElementById('ranking-list').innerHTML = '<p class="ranking-empty">まだデータがありません。問題をクリアするとランキングに表示されます！</p>';
+      if (rankingList) rankingList.innerHTML = '<p class="ranking-empty">まだデータがありません。問題をクリアするとランキングに表示されます！</p>';
       return;
     }
 
@@ -32163,7 +32166,7 @@ async function renderRanking() {
       var posCls = i < 3 ? 'rank-pos rank-pos-' + (i + 1) : 'rank-pos';
       var posStr = i < 3 ? posLabel[i] : (i + 1) + '.';
       var followBtn = (!isMe && myId)
-        ? '<button class="follow-btn' + (following ? ' following' : '') + '" onclick="event.stopPropagation();toggleFollow(\'' + row.uid + '\')">' +
+        ? '<button class="follow-btn' + (following ? ' following' : '') + '" onclick="event.stopPropagation();toggleFollow(' + JSON.stringify(row.uid) + ')">' +
             (following ? '✓ フォロー中' : '+ フォロー') +
           '</button>'
         : '';
@@ -32179,7 +32182,7 @@ async function renderRanking() {
     var myRankHtml = myRank >= 0
       ? '<div class="ranking-my-pos">あなたの順位: <strong>' + (myRank + 1) + ' 位</strong></div>'
       : '';
-    document.getElementById('ranking-list').innerHTML =
+    if (rankingList) rankingList.innerHTML =
       '<div class="rank-list">' + listHtml + '</div>' + myRankHtml;
 
     // 自分の行にスクロール
@@ -32190,7 +32193,7 @@ async function renderRanking() {
       });
     }
   } catch(e) {
-    document.getElementById('ranking-list').innerHTML = '<p class="ranking-empty">読込に失敗しました</p>';
+    if (rankingList) rankingList.innerHTML = '<p class="ranking-empty">読込に失敗しました</p>';
   }
 }
 
@@ -33817,8 +33820,7 @@ function toggleGuideUnit(id) {
 // ===== ミッション一覧の描画 =====
 
 function _getLocalMissionProgress() {
-  var data = localStorage.getItem(getMissionProgressKey());
-  return data ? JSON.parse(data) : [];
+  return lsGetJSON(getMissionProgressKey(), []);
 }
 
 function loadMissionProgress() {
@@ -33894,6 +33896,7 @@ async function syncMissionProgressFromSupabase() {
 
 function renderMissionList() {
   const list = document.getElementById('mission-list');
+  if (!list) return;
   list.innerHTML = '';
 
   // ヘッダー
@@ -34642,19 +34645,12 @@ function openProfile() {
 async function renderProfile() {
   checkTitanTheme();
   var content = document.getElementById('profile-content');
-  // まずスケルトンを表示して即座にページを見せる
-  content.innerHTML = '<div class="profile-loading">// LOADING...</div>';
+  if (!content) return;
+  try {
 
-  // 全データを並列取得（プレミアム状態も含めて同時に取得）
-  var needProfile = currentUser && _supabase && _premiumStatusCache === null;
-  var results = await Promise.all([
-    getLoginStreak(),
-    fetchScoutMessages(),
-    currentUser ? getFollowCounts(currentUser.id) : Promise.resolve({following:0, followers:0}),
-    needProfile ? fetchUserProfile() : Promise.resolve()
-  ]);
-  var streak = results[0];
-  var followCounts = results[2] || { following: 0, followers: 0 };
+  // ─── ローカルデータで即時レンダリング（Supabaseを一切待たない）───
+  var streak = calcStreak(lsGetJSON('login_days', []));
+  var followCounts = { following: 0, followers: 0 };
 
   var stats  = getProfileStats();
   stats.currentStreak = streak.current;
@@ -34724,14 +34720,7 @@ async function renderProfile() {
     rust:   calcLangStrengthData('rust',       rustProblems),
   };
 
-  // パーセンタイルデータ取得
   var pct = {};
-  if (_supabase && currentUser) {
-    var _pctRes = await _supabase.rpc('get_all_percentiles');
-    if (!_pctRes.error && _pctRes.data) {
-      _pctRes.data.forEach(function(r) { pct[r.language] = r; });
-    }
-  }
 
   // ストリーク状態の判定（今日ログイン済みかどうか）
   var todayStr = getTodayJST();
@@ -35039,6 +35028,22 @@ async function renderProfile() {
       requestAnimationFrame(function() { barEl.style.width = expPct + '%'; });
     }
   });
+
+  // バックグラウンドでSupabase更新（レンダリングをブロックしない）
+  if (currentUser && _supabase) {
+    getFollowCounts(currentUser.id).then(function(fc) {
+      var followEl = content.querySelector('.profile-follow-counts');
+      if (!followEl || !fc) return;
+      var strongs = followEl.querySelectorAll('strong');
+      if (strongs[0]) strongs[0].textContent = fc.following;
+      if (strongs[1]) strongs[1].textContent = fc.followers;
+    }).catch(function() {});
+  }
+
+  } catch(e) {
+    console.error('[renderProfile]', e);
+    content.innerHTML = '<div class="profile-loading" style="color:#FF4444;animation:none">⚠ 読み込みに失敗しました。ページを更新してお試しください。</div>';
+  }
 }
 
 function _statCardHTML(lang, color, count, strengthData, missions, maxProblems, pctInfo) {
@@ -35229,8 +35234,13 @@ async function saveGuildCard() {
 
 function openAuthModal() {
   playUIClick();
-  document.getElementById('auth-modal').classList.remove('hidden');
-  setTimeout(function() { document.getElementById('auth-email').focus(); }, 50);
+  var modal = document.getElementById('auth-modal');
+  if (!modal) return;
+  modal.classList.remove('hidden');
+  setTimeout(function() {
+    var emailEl = document.getElementById('auth-email');
+    if (emailEl) emailEl.focus();
+  }, 50);
 }
 
 // ===== プッシュ通知 =====
@@ -35343,11 +35353,11 @@ async function signInWithGoogle() {
 
 function closeAuthModal() {
   playGoBack();
-  document.getElementById('auth-modal').classList.add('hidden');
-  document.getElementById('auth-error').classList.add('hidden');
-  document.getElementById('auth-success').classList.add('hidden');
-  document.getElementById('auth-email').value = '';
-  document.getElementById('auth-password').value = '';
+  var _m  = document.getElementById('auth-modal');    if (_m)  _m.classList.add('hidden');
+  var _e  = document.getElementById('auth-error');    if (_e)  _e.classList.add('hidden');
+  var _s  = document.getElementById('auth-success');  if (_s)  _s.classList.add('hidden');
+  var _em = document.getElementById('auth-email');    if (_em) _em.value = '';
+  var _pw = document.getElementById('auth-password'); if (_pw) _pw.value = '';
   var fpBtn = document.getElementById('forgot-pw-btn');
   if (fpBtn) { fpBtn.disabled = false; fpBtn.textContent = 'パスワードを忘れた方'; }
   _pendingConfirmEmail = null;
