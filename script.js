@@ -1426,11 +1426,14 @@ function renderLangSelect() {
       '<button class="lang-quiz-btn" onclick="openQuizModal()">🧭 どの言語を選べばいいかわからない方はこちら</button>' +
     '</div>';
 
+  var localProgress = _getLocalProgress();
+  var cardIdx = 0;
+
   LANGUAGE_GROUPS.forEach(function(group) {
     var section = document.createElement('div');
     section.className = 'lang-section';
     section.innerHTML =
-      '<div class="lang-section-header">' +
+      '<div class="lang-section-header" style="--rc:' + group.rankColor + '">' +
         '<span class="lang-section-rank" style="color:' + group.rankColor + '">' + group.rank + '</span>' +
         '<span class="lang-section-desc">' + group.desc + '</span>' +
       '</div>' +
@@ -1441,6 +1444,12 @@ function renderLangSelect() {
     group.langs.forEach(function(lang) {
       var card = document.createElement('div');
       card.className = 'lang-card' + (lang.available ? ' lang-available' : ' lang-coming');
+      card.style.setProperty('--lc', lang.color);
+      card.style.animationDelay = (cardIdx * 0.045) + 's';
+      cardIdx++;
+
+      var solved = localProgress.filter(function(p) { return p.lang === lang.id && p.solved; }).length;
+      var pct = (lang.available && lang.problems > 0) ? Math.round(solved / lang.problems * 100) : 0;
 
       var useTags = lang.uses.map(function(u) {
         return '<span class="lang-use-tag">' + u + '</span>';
@@ -1456,6 +1465,14 @@ function renderLangSelect() {
             '</div>' +
           '</div>' +
           '<div class="lang-use-tags">' + useTags + '</div>' +
+          (lang.available ?
+            '<div class="lang-card-footer">' +
+              '<div class="lang-card-progress-track">' +
+                '<div class="lang-card-progress-fill" style="width:' + pct + '%;background:' + lang.color + '"></div>' +
+              '</div>' +
+              '<div class="lang-card-pct">' + pct + '%</div>' +
+            '</div>'
+          : '') +
         '</div>';
 
       if (lang.available) {

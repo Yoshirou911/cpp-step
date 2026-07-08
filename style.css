@@ -6710,6 +6710,132 @@ body.overlord-theme .titan-badge-header {
 .profile-share-btn:hover { background: rgba(29,161,242,0.12); }
 
 /* ===================================================================
+   Main Menu UI Enhancements
+   =================================================================== */
+
+/* ── ランディング: STEP タイトル強化グロー ───────────────────── */
+@keyframes stepGlow {
+  0%, 100% { text-shadow: 0 0 32px rgba(255,107,0,0.50), 0 0 64px rgba(255,107,0,0.18); }
+  50%       { text-shadow: 0 0 52px rgba(255,107,0,0.75), 0 0 100px rgba(255,107,0,0.32); }
+}
+.landing-title-step { animation: stepGlow 3.2s ease-in-out infinite; }
+
+/* ── 統計数字グロー ───────────────────────────────────────────── */
+.ls-num { text-shadow: 0 0 22px rgba(255,107,0,0.45); }
+.landing-stats-row {
+  box-shadow: 0 0 40px rgba(255,107,0,0.06), inset 0 1px 0 rgba(255,107,0,0.14);
+}
+
+/* ── 機能カード強化 ─────────────────────────────────────────── */
+.landing-card {
+  transition: border-color 0.25s, transform 0.22s, box-shadow 0.22s;
+  position: relative;
+  overflow: hidden;
+}
+.landing-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--orange), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.landing-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255,107,0,0.32);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.55), 0 0 22px rgba(255,107,0,0.08);
+}
+.landing-card:hover::before { opacity: 1; }
+.lc-icon { display: inline-block; transition: transform 0.22s; }
+.landing-card:hover .lc-icon { transform: scale(1.2) translateY(-1px); }
+
+/* ── 言語バッジ hover ────────────────────────────────────────── */
+.landing-lang {
+  display: inline-block;
+  transition: opacity 0.2s, text-shadow 0.2s, transform 0.18s;
+  cursor: default;
+}
+.landing-lang:hover {
+  opacity: 1;
+  text-shadow: 0 0 16px currentColor;
+  transform: translateY(-3px);
+}
+
+/* ── プライマリボタン pulse ──────────────────────────────────── */
+@keyframes ctaPulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(255,107,0,0.22); }
+  50%       { box-shadow: 0 0 36px rgba(255,107,0,0.48); }
+}
+.landing-btn-primary { animation: ctaPulse 3s ease-in-out infinite; }
+.landing-btn-primary:hover {
+  animation: none;
+  box-shadow: 0 0 42px rgba(255,107,0,0.55);
+  transform: translateY(-2px);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+/* ── 言語選択: カード入場アニメーション ──────────────────────── */
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.lang-card { animation: cardIn 0.32s ease both; }
+
+/* ── 言語選択: ランクカラーホバーグロー ──────────────────────── */
+.lang-available:hover {
+  transform: translateY(-7px);
+  border-color: color-mix(in srgb, var(--lc, #FF6B00) 65%, transparent);
+  box-shadow:
+    0 16px 44px rgba(0,0,0,0.65),
+    0 0 32px color-mix(in srgb, var(--lc, #FF6B00) 22%, transparent);
+}
+
+/* ── 言語カード上バー強化 ─────────────────────────────────────── */
+.lang-card-bar { height: 4px; transition: height 0.2s; }
+.lang-available:hover .lang-card-bar { height: 7px; }
+
+/* ── 言語カード進捗フッター ──────────────────────────────────── */
+.lang-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.lang-card-progress-track {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.lang-card-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s ease;
+  box-shadow: 0 0 6px currentColor;
+}
+.lang-card-pct {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.64rem;
+  color: rgba(237,224,200,0.35);
+  white-space: nowrap;
+}
+
+/* ── セクションヘッダー: ランクカラー左ボーダー + 背景チント ── */
+.lang-section-header {
+  border-left: 3px solid color-mix(in srgb, var(--rc, #FF6B00) 60%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--rc, #FF6B00) 20%, transparent);
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--rc, #FF6B00) 7%, transparent) 0%,
+    transparent 60%
+  );
+  padding-left: 14px;
+}
+
+/* ===================================================================
    UI Enhancement Pass — 2025
    =================================================================== */
 
