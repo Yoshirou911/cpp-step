@@ -30439,6 +30439,46 @@ function updateProgressDisplay() {
   bar.style.boxShadow  = '0 0 12px ' + rank.color + '88';
 }
 
+// ===== 問題カード hover preview tooltip =====
+
+var _cardTooltipEl = null;
+
+function _getCardTooltip() {
+  if (!_cardTooltipEl) {
+    _cardTooltipEl = document.createElement('div');
+    _cardTooltipEl.id = 'card-preview-tooltip';
+    document.body.appendChild(_cardTooltipEl);
+  }
+  return _cardTooltipEl;
+}
+
+function _showCardTooltip(card, p) {
+  var tip = _getCardTooltip();
+  var raw = (p.question || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+  var preview = raw.length > 110 ? raw.substring(0, 110) + '…' : raw;
+
+  tip.innerHTML =
+    '<div class="cpt-rank rank-badge rank-' + (p.rank || 'rookie').toLowerCase() + '" style="display:inline-block;margin-bottom:7px">' + escapeHtml(p.rank || 'ROOKIE') + '</div>' +
+    '<div class="cpt-title">' + escapeHtml(p.title) + '</div>' +
+    (preview ? '<div class="cpt-text">' + escapeHtml(preview) + '</div>' : '');
+
+  var rect   = card.getBoundingClientRect();
+  var tipW   = 272;
+  var left   = rect.right + 14;
+  var top    = rect.top + rect.height / 2 - 56;
+
+  if (left + tipW > window.innerWidth - 8) left = rect.left - tipW - 14;
+  top = Math.max(8, Math.min(top, window.innerHeight - 140));
+
+  tip.style.left = left + 'px';
+  tip.style.top  = top  + 'px';
+  tip.classList.add('visible');
+}
+
+function _hideCardTooltip() {
+  if (_cardTooltipEl) _cardTooltipEl.classList.remove('visible');
+}
+
 // ===== 問題一覧の描画（単元グループ） =====
 
 function renderList() {
@@ -30600,6 +30640,12 @@ function renderList() {
         });
       }
 
+      // hover preview (タッチデバイスでは非表示はCSSで制御)
+      if (p.question) {
+        card.addEventListener('mouseenter', function() { _showCardTooltip(card, p); });
+        card.addEventListener('mouseleave', _hideCardTooltip);
+      }
+
       list.appendChild(card);
     });
 
@@ -30658,6 +30704,8 @@ function renderDetail(id) {
 
   const detail = document.getElementById("detail-content");
   detail.innerHTML =
+    '<div class="detail-split">' +
+    '<div class="detail-left">' +
     '<div class="detail-meta">' +
       '<span class="detail-unit">' + escapeHtml(p.unit) + '</span>' +
       (langTextbooks[currentLanguage]
@@ -30697,6 +30745,8 @@ function renderDetail(id) {
         '<p>' + escapeHtml(p.explanation) + '</p>' +
       '</div>' +
     '</div>' +
+    '</div>' +  // close detail-left
+    '<div class="detail-right">' +
 
     '<div class="section">' +
       '<div class="editor-mode-bar">' +
@@ -30757,7 +30807,9 @@ function renderDetail(id) {
     '</div>' +
     '<div class="section report-section">' +
       '<button class="report-btn" data-pid="' + p.id + '" data-ptitle="' + escapeHtml(p.title) + '" onclick="openReportModal(+this.dataset.pid, this.dataset.ptitle)">⚑ 問題の誤りを報告</button>' +
-    '</div>';
+    '</div>' +
+    '</div>' +  // close detail-right
+    '</div>';   // close detail-split
 
   // 別の問題に移動した場合はリセット、同じ問題の再描画ならコードを引き継ぐ
   var initCode = (prevProblemId !== null && prevProblemId !== id)
@@ -31752,6 +31804,47 @@ async function runCode() {
   }
 }
 
+// ===== テストケース可視化 =====
+
+function renderTestComparison(expected, actual) {
+  var area = document.getElementById('output-area');
+  if (!area) return;
+
+  var old = area.querySelector('.test-compare');
+  if (old) old.remove();
+
+  var expLines = (expected || '').trim().split('\n');
+  var actLines = (actual   || '').trim().split('\n');
+  var maxLen   = Math.max(expLines.length, actLines.length);
+  var okCount  = 0;
+
+  var rows = '';
+  for (var i = 0; i < maxLen; i++) {
+    var exp   = expLines[i] !== undefined ? expLines[i] : '';
+    var act   = actLines[i] !== undefined ? actLines[i] : '';
+    var match = exp === act;
+    if (match) okCount++;
+    rows +=
+      '<div class="tc-row ' + (match ? 'tc-row-ok' : 'tc-row-ng') + '">' +
+        '<div class="tc-cell tc-exp">' + escapeHtml(exp || '') + '</div>' +
+        '<div class="tc-icon">' + (match ? '✓' : '✗') + '</div>' +
+        '<div class="tc-cell tc-act">' + escapeHtml(act || '') + '</div>' +
+      '</div>';
+  }
+
+  var compare = document.createElement('div');
+  compare.className = 'test-compare';
+  compare.innerHTML =
+    '<div class="tc-header">' +
+      '<span class="tc-col-label">期待出力</span>' +
+      '<span class="tc-score">' + okCount + ' / ' + maxLen + '</span>' +
+      '<span class="tc-col-label" style="text-align:right">実際の出力</span>' +
+    '</div>' +
+    rows;
+
+  area.appendChild(compare);
+}
+
 // 自動判定を開始する
 var _judging = false; // AI判定の多重並行実行防止フラグ
 
@@ -31760,9 +31853,10 @@ async function startAutoJudge(problemId, output) {
   const judgeArea = document.getElementById("judge-area");
   if (!p || !judgeArea) return;
 
-  // expected がある場合 → 即座に文字列比較
+  // expected がある場合 → 即座に文字列比較 + テストケース可視化
   if (p.expected !== undefined) {
     var passed = output.trim() === p.expected.trim();
+    renderTestComparison(p.expected, output);
     showJudgeResult(problemId, passed, false);
     return;
   }

@@ -6835,6 +6835,130 @@ body.overlord-theme .titan-badge-header {
   padding-left: 14px;
 }
 
+/* ── テストケース可視化 ──────────────────────────────────────── */
+.test-compare {
+  margin-top: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  overflow: hidden;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.76rem;
+  animation: judgeIn 0.25s ease;
+}
+.tc-header {
+  display: grid;
+  grid-template-columns: 1fr 32px 1fr;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  padding: 5px 10px;
+  align-items: center;
+}
+.tc-col-label {
+  color: rgba(237,224,200,0.35);
+  font-size: 0.62rem;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+.tc-score {
+  text-align: center;
+  font-size: 0.68rem;
+  color: rgba(237,224,200,0.50);
+  font-weight: 700;
+}
+.tc-row {
+  display: grid;
+  grid-template-columns: 1fr 32px 1fr;
+  padding: 5px 10px;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.tc-row:last-child { border-bottom: none; }
+.tc-row-ok { background: rgba(0,230,118,0.04); }
+.tc-row-ng { background: rgba(255,69,58,0.06); }
+.tc-cell { white-space: pre; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.tc-exp { color: rgba(237,224,200,0.50); }
+.tc-act { color: rgba(237,224,200,0.90); }
+.tc-row-ng .tc-act { color: #FF6B6B; }
+.tc-icon { text-align: center; font-size: 0.82rem; }
+.tc-row-ok .tc-icon { color: #00E676; }
+.tc-row-ng .tc-icon { color: #FF453A; }
+
+/* ── 問題詳細 2カラムレイアウト ─────────────────────────────── */
+#page-detail:has(.detail-split) {
+  max-width: 1260px;
+}
+.detail-split {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+.detail-left {
+  flex: 0 0 380px;
+  min-width: 0;
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,107,0,0.25) transparent;
+}
+.detail-right {
+  flex: 1;
+  min-width: 0;
+}
+
+/* スクロールバー（detail-left） */
+.detail-left::-webkit-scrollbar { width: 4px; }
+.detail-left::-webkit-scrollbar-thumb { background: rgba(255,107,0,0.25); border-radius: 2px; }
+
+/* モバイル: 縦積みに戻す */
+@media (max-width: 900px) {
+  #page-detail:has(.detail-split) { max-width: 780px; }
+  .detail-split { flex-direction: column; }
+  .detail-left {
+    flex: none; width: 100%;
+    position: static; max-height: none; overflow-y: visible;
+  }
+}
+
+/* ── 問題カード hover preview tooltip ──────────────────────────── */
+#card-preview-tooltip {
+  position: fixed;
+  z-index: 9000;
+  pointer-events: none;
+  opacity: 0;
+  width: 272px;
+  background: rgba(8,6,3,0.97);
+  border: 1px solid rgba(255,107,0,0.28);
+  border-radius: 8px;
+  padding: 12px 15px 13px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.04);
+  transition: opacity 0.13s;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+#card-preview-tooltip.visible { opacity: 1; }
+.cpt-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  margin-bottom: 7px;
+  line-height: 1.25;
+}
+.cpt-text {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.73rem;
+  color: rgba(237,224,200,0.52);
+  line-height: 1.7;
+}
+
+/* タッチデバイスでは非表示 */
+@media (hover: none) {
+  #card-preview-tooltip { display: none !important; }
+}
+
 /* ===================================================================
    UI Enhancement Pass — 2025
    =================================================================== */
