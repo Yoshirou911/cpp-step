@@ -6727,24 +6727,48 @@ body.overlord-theme .titan-badge-header {
 
 /* 次の問題へボタン */
 .next-prob-btn {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 8px 16px;
-  background: rgba(255,107,0,0.12);
-  border: 1px solid rgba(255,107,0,0.5);
-  border-radius: 8px;
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; margin-top: 12px;
+  padding: 14px 20px;
+  background: rgba(255,107,0,0.10);
+  border: 1px solid rgba(255,107,0,0.45);
+  border-radius: 10px;
   color: #FF6B00;
   font-family: 'Share Tech Mono', monospace;
-  font-size: 0.82rem; font-weight: 700;
+  font-size: 0.88rem; font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s;
-  margin-top: 6px;
+  transition: all 0.18s ease;
+  animation: npbIn 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;
 }
-.next-prob-btn:hover { background: rgba(255,107,0,0.22); }
-.next-prob-title {
-  color: rgba(237,224,200,0.7);
-  font-weight: 400; font-size: 0.78rem;
-  max-width: 180px; overflow: hidden;
-  text-overflow: ellipsis; white-space: nowrap;
+@keyframes npbIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+.next-prob-btn:hover {
+  background: rgba(255,107,0,0.20);
+  border-color: rgba(255,107,0,0.75);
+  box-shadow: 0 0 20px rgba(255,107,0,0.18);
+  transform: translateX(4px);
+}
+.next-prob-btn:hover .npb-arrow { transform: translateX(5px); }
+.npb-arrow {
+  font-size: 1.3rem; flex-shrink: 0;
+  transition: transform 0.18s ease;
+}
+.npb-body { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; flex: 1; min-width: 0; }
+.npb-label { font-size: 0.7rem; color: rgba(255,107,0,0.65); letter-spacing: 0.1em; }
+.npb-title {
+  font-size: 0.92rem; color: rgba(237,224,200,0.9);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 240px;
+}
+.npb-rank { flex-shrink: 0; font-size: 0.62rem; }
+.all-clear-msg {
+  margin-top: 12px; padding: 14px 20px;
+  background: rgba(0,230,118,0.07);
+  border: 1px solid rgba(0,230,118,0.3);
+  border-radius: 10px;
+  color: #00E676; font-family: 'Share Tech Mono', monospace;
+  font-size: 0.88rem; font-weight: 700;
+  text-shadow: 0 0 12px rgba(0,230,118,0.5);
+  animation: npbIn 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;
 }
 
 /* コンテストバッジ（問題カード） */

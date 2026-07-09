@@ -32159,14 +32159,23 @@ function showJudgeResult(problemId, passed, byAI) {
       var _pTitle = _p ? _p.title : '';
       var _lang = currentLanguage || 'cpp';
       var next = getNextProblem(problemId);
+      var _nextRank = next ? (next.rank || 'rookie').toLowerCase() : '';
+      var _nextHtml = next
+        ? '<button class="next-prob-btn" onclick="goToNextProblem(' + next.id + ')">' +
+            '<span class="npb-arrow">→</span>' +
+            '<span class="npb-body">' +
+              '<span class="npb-label">次の問題へ</span>' +
+              '<span class="npb-title">' + escapeHtml(next.title) + '</span>' +
+            '</span>' +
+            '<span class="npb-rank rank-badge rank-' + _nextRank + '">' + (next.rank || 'ROOKIE') + '</span>' +
+          '</button>'
+        : '<div class="all-clear-msg">🎉 この言語の問題を全てクリアした！</div>';
       ja.innerHTML = '<div class="judge-pass">✓ ' + label + ' クリアしました！</div>' +
         '<div class="clear-share-row">' +
           '<button class="share-x-btn" onclick="shareClear(' +
             JSON.stringify(_pTitle) + ',' + JSON.stringify(_lang) + ')">𝕏 シェア</button>' +
-          (next
-            ? '<button class="next-prob-btn" onclick="goToNextProblem(' + next.id + ')">次の問題へ → <span class="next-prob-title">' + escapeHtml(next.title) + '</span></button>'
-            : '') +
-        '</div>';
+        '</div>' +
+        _nextHtml;
       ja.classList.remove("hidden");
     }
   } else {
