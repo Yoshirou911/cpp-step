@@ -1034,12 +1034,35 @@ a.landing-text-link { text-decoration: underline; }
 .rank-card-predator:hover{ border-left-color:#FF2020; background:rgba(255,32,32,0.13); box-shadow:0 2px 22px rgba(0,0,0,0.4), -2px 0 24px rgba(255,32,32,0.60), 0 0 18px rgba(200,0,0,0.20); transform:translateX(5px); }
 
 .problem-card.learned {
-  border-left-color: rgba(0,230,118,0.5) !important;
+  border-left-color: rgba(0,230,118,0.55) !important;
+  background: linear-gradient(90deg, rgba(0,230,118,0.055) 0%, transparent 55%) !important;
+}
+.problem-card.learned::before {
+  content: '✓';
+  position: absolute;
+  right: 72px; top: 50%; transform: translateY(-50%);
+  font-size: 4rem; font-weight: 900;
+  color: rgba(0,230,118,0.045);
+  pointer-events: none;
+  font-family: 'Barlow Condensed', sans-serif;
+  line-height: 1;
+}
+.problem-card.learned .problem-title {
+  color: rgba(220,240,230,0.55);
+}
+.problem-card.learned .card-num {
+  color: rgba(0,230,118,0.45);
+  border-right-color: rgba(0,230,118,0.12);
+}
+.problem-card.learned .badge:not(.not-learned) {
+  font-size: 0.82rem;
+  text-shadow: 0 0 14px rgba(0,230,118,0.85), 0 0 6px rgba(0,230,118,0.6);
+  color: #00E676;
 }
 .problem-card.learned:hover {
-  border-left-color: var(--green) !important;
-  background: rgba(0,230,118,0.05) !important;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(0,230,118,0.18) !important;
+  border-left-color: #00E676 !important;
+  background: linear-gradient(90deg, rgba(0,230,118,0.09) 0%, transparent 60%) !important;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.4), -2px 0 16px rgba(0,230,118,0.22) !important;
 }
 
 .card-left {
