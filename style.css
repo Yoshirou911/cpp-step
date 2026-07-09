@@ -6835,6 +6835,150 @@ body.overlord-theme .titan-badge-header {
   padding-left: 14px;
 }
 
+/* ── ダッシュボードウィジェット ─────────────────────────────── */
+.db-widget {
+  background: rgba(14,12,9,0.80);
+  border: 1px solid rgba(255,107,0,0.14);
+  border-radius: 10px;
+  padding: 18px 22px 16px;
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,107,0,0.08);
+}
+.db-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.db-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.db-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #FF6B00;
+  line-height: 1;
+}
+.db-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.60rem;
+  letter-spacing: 0.14em;
+  color: rgba(237,224,200,0.35);
+}
+.db-sep {
+  color: rgba(255,107,0,0.20);
+  font-size: 0.65rem;
+  flex-shrink: 0;
+}
+
+/* 今日の目標バー */
+.db-goal { display: flex; flex-direction: column; gap: 5px; }
+.db-goal-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.db-goal-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: rgba(237,224,200,0.42);
+  letter-spacing: 0.06em;
+}
+.db-goal-pct {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.80rem;
+  font-weight: 700;
+  color: rgba(255,107,0,0.60);
+}
+.db-goal-pct.db-goal-done { color: #00E676; }
+.db-goal-track {
+  height: 4px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.db-goal-fill {
+  height: 100%;
+  background: rgba(255,107,0,0.70);
+  border-radius: 2px;
+  transition: width 0.7s ease;
+}
+.db-goal-fill.db-goal-done { background: #00E676; box-shadow: 0 0 8px #00E676; }
+
+/* 続きからボタン + カレンダー行 */
+.db-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.db-continue-btn {
+  padding: 7px 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid color-mix(in srgb, var(--lc, #FF6B00) 60%, transparent);
+  border-radius: 6px;
+  color: var(--lc, #FF6B00);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.80rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: background 0.18s, box-shadow 0.18s;
+}
+.db-continue-btn:hover {
+  background: color-mix(in srgb, var(--lc, #FF6B00) 12%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--lc, #FF6B00) 30%, transparent);
+}
+.db-cal-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+.db-cal-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem;
+  color: rgba(237,224,200,0.28);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.db-cal {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.db-cal-cell {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.06);
+  cursor: default;
+  transition: transform 0.1s;
+}
+.db-cal-cell:hover { transform: scale(1.25); }
+.db-cal-0 { background: rgba(255,255,255,0.06); }
+.db-cal-1 { background: rgba(255,107,0,0.22); }
+.db-cal-2 { background: rgba(255,107,0,0.42); }
+.db-cal-3 { background: rgba(255,107,0,0.62); }
+.db-cal-4 { background: rgba(255,107,0,0.85); box-shadow: 0 0 6px rgba(255,107,0,0.5); }
+
+/* モバイル */
+@media (max-width: 600px) {
+  .db-widget { padding: 14px 16px 13px; gap: 12px; }
+  .db-val { font-size: 1.5rem; }
+  .db-continue-btn { font-size: 0.74rem; padding: 6px 14px; }
+}
+
 /* ── テストケース可視化 ──────────────────────────────────────── */
 .test-compare {
   margin-top: 10px;

@@ -1416,6 +1416,92 @@ function formatStudyTime(sec) {
 
 // ===== 言語選択ページの描画 =====
 
+function _buildDashboard() {
+  var stats    = getProfileStats();
+  if (stats.total === 0) return '';
+
+  var expData    = calculateEXP();
+  var lv         = calcLevel(expData.total);
+  var lvColor    = getLevelColor(lv);
+  var title      = getLevelTitle(lv);
+  var streak     = calcStreak(lsGetJSON('login_days', []));
+  var studyLog   = lsGetJSON('study_log', {});
+  var todayKey   = getTodayJST();
+  var todaySec   = studyLog[todayKey] || 0;
+  var todayMin   = Math.floor(todaySec / 60);
+  var goalMin    = 15;
+  var goalPct    = Math.min(100, Math.round(todaySec / (goalMin * 60) * 100));
+  var goalDone   = goalPct >= 100;
+
+  // 過去7日ヒートマップ
+  var days7 = [];
+  for (var d = 6; d >= 0; d--) {
+    var dt = new Date();
+    dt.setTime(dt.getTime() + 9 * 60 * 60 * 1000 - d * 86400000);
+    var k = dt.toISOString().slice(0, 10);
+    days7.push({ key: k, sec: studyLog[k] || 0 });
+  }
+  var maxSec = Math.max(1, Math.max.apply(null, days7.map(function(x) { return x.sec; })));
+  var calCells = days7.map(function(x) {
+    var lvl = x.sec > 0 ? Math.min(4, Math.ceil((x.sec / maxSec) * 4)) : 0;
+    var label = x.key.slice(5) + ' — ' + Math.floor(x.sec / 60) + '分';
+    return '<div class="db-cal-cell db-cal-' + lvl + '" title="' + label + '"></div>';
+  }).join('');
+
+  // 直前に遊んだ言語の「続きから」ボタン
+  var lastId   = localStorage.getItem('last_language');
+  var lastLang = null;
+  if (lastId) {
+    LANGUAGE_GROUPS.forEach(function(g) {
+      g.langs.forEach(function(l) { if (l.id === lastId) lastLang = l; });
+    });
+  }
+  var continueBtn = lastLang
+    ? '<button class="db-continue-btn" onclick="selectLanguage(\'' + lastLang.id + '\')" style="--lc:' + lastLang.color + '">' +
+        '▶ ' + escapeHtml(lastLang.name) + ' を続ける' +
+      '</button>'
+    : '';
+
+  return (
+    '<div class="db-widget">' +
+      '<div class="db-stats">' +
+        '<div class="db-stat">' +
+          '<span class="db-val">' + (streak.current || 0) + '</span>' +
+          '<span class="db-label">🔥 STREAK</span>' +
+        '</div>' +
+        '<div class="db-sep">◆</div>' +
+        '<div class="db-stat">' +
+          '<span class="db-val" style="color:' + lvColor + '">Lv.' + lv + '</span>' +
+          '<span class="db-label" style="color:' + lvColor + '55">⚡ ' + title + '</span>' +
+        '</div>' +
+        '<div class="db-sep">◆</div>' +
+        '<div class="db-stat">' +
+          '<span class="db-val">' + stats.total + '</span>' +
+          '<span class="db-label">📚 CLEARED</span>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="db-goal">' +
+        '<div class="db-goal-meta">' +
+          '<span class="db-goal-label">TODAY ' + (goalDone ? '✓ GOAL REACHED' : todayMin + '分 / 目標' + goalMin + '分') + '</span>' +
+          '<span class="db-goal-pct ' + (goalDone ? 'db-goal-done' : '') + '">' + goalPct + '%</span>' +
+        '</div>' +
+        '<div class="db-goal-track">' +
+          '<div class="db-goal-fill ' + (goalDone ? 'db-goal-done' : '') + '" style="width:' + goalPct + '%"></div>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="db-bottom">' +
+        continueBtn +
+        '<div class="db-cal-wrap">' +
+          '<span class="db-cal-label">過去7日</span>' +
+          '<div class="db-cal">' + calCells + '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>'
+  );
+}
+
 function renderLangSelect() {
   document.getElementById('lang-badge').classList.add('hidden');
   var content = document.getElementById('lang-content');
@@ -1424,7 +1510,8 @@ function renderLangSelect() {
       '<div class="lang-page-title">◆ SELECT LANGUAGE</div>' +
       '<div class="lang-page-sub">学習する言語を選択してください</div>' +
       '<button class="lang-quiz-btn" onclick="openQuizModal()">🧭 どの言語を選べばいいかわからない方はこちら</button>' +
-    '</div>';
+    '</div>' +
+    _buildDashboard();
 
   var localProgress = _getLocalProgress();
   var cardIdx = 0;
@@ -1524,6 +1611,7 @@ function setActiveTab(tab) {
 
 async function selectLanguage(langId) {
   playLangSelect();
+  lsSet('last_language', langId);
   recordLanguageStart(langId);
   currentLanguage = langId;
   _progressCache = null;
