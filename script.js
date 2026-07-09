@@ -1214,15 +1214,50 @@ function showLevelUpEffect(lv) {
   var el = document.getElementById('levelup-effect');
   if (!el) return;
   _shareLv = lv;
-  el.querySelector('.levelup-num').textContent    = lv;
+
+  var lvc = getLevelColor(lv);
+
+  el.querySelector('.levelup-num').textContent = lv;
   el.querySelector('.levelup-title-text').textContent = getLevelTitle(lv);
-  el.style.setProperty('--lv-color', getLevelColor(lv));
+  el.style.setProperty('--lv-color', lvc);
+
+  // 次レベルまでのEXP表示
+  var xpEl = el.querySelector('.lue-xp-next');
+  if (xpEl) xpEl.textContent = '次のレベルまで ' + expToNextLevel(lv) + ' EXP';
+
+  // リングアニメーションをリセット（再トリガー）
+  el.querySelectorAll('.lue-ring').forEach(function(r) {
+    r.style.animation = 'none';
+    r.getBoundingClientRect(); // reflow
+    r.style.animation = '';
+  });
+
   el.classList.remove('hidden');
-  setTimeout(function() { el.classList.add('hidden'); }, 4500);
-  // コンフェッティ
+
+  // クリックで即閉じ
+  var _luTimer = setTimeout(function() { el.classList.add('hidden'); }, 5200);
+  function _closeLue() {
+    clearTimeout(_luTimer);
+    el.classList.add('hidden');
+    el.removeEventListener('click', _closeLue);
+  }
+  el.addEventListener('click', _closeLue);
+
+  // コンフェッティ 3連バースト
   if (window.confetti) {
-    confetti({ particleCount: 80, spread: 70, origin: { x: 0.5, y: 0.35 },
-      colors: ['#FF6B00', '#FFD700', getLevelColor(lv), '#ffffff'] });
+    confetti({ particleCount: 110, spread: 80, origin: { x: 0.5, y: 0.38 },
+      colors: ['#FF6B00', '#FFD700', lvc, '#ffffff'] });
+    setTimeout(function() {
+      confetti({ particleCount: 65, angle: 60,  spread: 55, origin: { x: 0.15, y: 0.55 },
+        colors: [lvc, '#FFD700', '#ffffff'] });
+      confetti({ particleCount: 65, angle: 120, spread: 55, origin: { x: 0.85, y: 0.55 },
+        colors: [lvc, '#FF6B00', '#ffffff'] });
+    }, 380);
+    setTimeout(function() {
+      confetti({ particleCount: 50, spread: 110, startVelocity: 18,
+        origin: { x: 0.5, y: 0.15 },
+        colors: ['#FFD700', lvc, '#ffffff'] });
+    }, 820);
   }
 }
 

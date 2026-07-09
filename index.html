@@ -306,11 +306,15 @@
 
   <!-- レベルアップオーバーレイ -->
   <div id="levelup-effect" class="hidden">
+    <div class="lue-ring lue-ring-1"></div>
+    <div class="lue-ring lue-ring-2"></div>
     <div class="levelup-box">
       <div class="levelup-label">◆ LEVEL UP ◆</div>
       <div class="levelup-num-wrap">Lv.<span class="levelup-num">0</span></div>
       <div class="levelup-title-text"></div>
-      <button class="share-x-btn" id="levelup-share-btn" onclick="shareLevelUp()">𝕏 シェア</button>
+      <div class="lue-xp-next"></div>
+      <button class="share-x-btn lue-share-btn" id="levelup-share-btn" onclick="shareLevelUp()">𝕏 シェア</button>
+      <div class="lue-dismiss-hint">タップで閉じる</div>
     </div>
   </div>
 
