@@ -6790,6 +6790,43 @@ body.overlord-theme .titan-badge-header {
    Main Menu UI Enhancements
    =================================================================== */
 
+/* ── コンボポップアップ ──────────────────────────────────────── */
+.combo-popup {
+  position: fixed;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 3.2rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-align: center;
+  pointer-events: none;
+  z-index: 8500;
+  text-shadow: 0 0 30px currentColor, 0 0 60px currentColor;
+  animation: comboIn 1.5s cubic-bezier(0.22,1,0.36,1) forwards;
+  line-height: 1.1;
+}
+.combo-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  opacity: 0.65;
+  margin-top: 4px;
+}
+.combo-popup.combo-break {
+  font-size: 1.9rem;
+  color: #FF453A !important;
+  text-shadow: 0 0 20px rgba(255,69,58,0.7) !important;
+}
+@keyframes comboIn {
+  0%   { opacity: 0; transform: translate(-50%, -42%) scale(0.5); filter: blur(4px); }
+  18%  { opacity: 1; transform: translate(-50%, -50%) scale(1.1); filter: blur(0); }
+  35%  { transform: translate(-50%, -50%) scale(1.0); }
+  68%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -58%) scale(0.92); }
+}
+
 /* ── ランディング: STEP タイトル強化グロー ───────────────────── */
 @keyframes stepGlow {
   0%, 100% { text-shadow: 0 0 32px rgba(255,107,0,0.50), 0 0 64px rgba(255,107,0,0.18); }

@@ -263,6 +263,49 @@ function playLangSelect() {
   } catch(e) {}
 }
 
+// ===== コンボカウンター =====
+
+var _comboCount = 0;
+
+function _getComboColor(n) {
+  if (n >= 7) return '#00E676';   // 緑（TITAN級）
+  if (n >= 5) return '#C040FF';   // 紫（MASTER級）
+  if (n >= 3) return '#FFD700';   // 金
+  return '#FF6B00';               // オレンジ
+}
+
+function showComboEffect(n) {
+  var el = document.createElement('div');
+  el.className = 'combo-popup';
+  el.style.color = _getComboColor(n);
+
+  var label = n >= 7 ? '⚡ GODLIKE COMBO ×' + n :
+              n >= 5 ? '🔥 ULTRA COMBO ×' + n :
+              n >= 3 ? '✨ COMBO ×' + n :
+                       'COMBO ×' + n;
+  el.innerHTML = label + '<div class="combo-sub">連続クリア！</div>';
+  document.body.appendChild(el);
+  setTimeout(function() { el.remove(); }, 1600);
+
+  // コンボ数が多いほど豪華なコンフェッティ
+  if (window.confetti && n >= 3) {
+    confetti({
+      particleCount: Math.min(60 + n * 12, 130),
+      spread: 65,
+      origin: { x: 0.5, y: 0.45 },
+      colors: [_getComboColor(n), '#FFD700', '#ffffff']
+    });
+  }
+}
+
+function showComboBreak(n) {
+  var el = document.createElement('div');
+  el.className = 'combo-popup combo-break';
+  el.innerHTML = 'COMBO BREAK <span style="font-size:0.7em;opacity:0.7">×' + n + '</span>';
+  document.body.appendChild(el);
+  setTimeout(function() { el.remove(); }, 1200);
+}
+
 // ===== ビジュアルエフェクト =====
 
 function showClearEffect(xp) {
@@ -32023,6 +32066,9 @@ function showJudgeResult(problemId, passed, byAI) {
 
   if (passed) {
     if (!isLearned(problemId)) {
+      // コンボカウント
+      _comboCount++;
+      if (_comboCount >= 2) showComboEffect(_comboCount);
       // 進捗を保存
       saveProgress(problemId);
       // エフェクト・サウンド
@@ -32060,6 +32106,9 @@ function showJudgeResult(problemId, passed, byAI) {
       ja.classList.remove("hidden");
     }
   } else {
+    // コンボブレイク
+    if (_comboCount >= 2) showComboBreak(_comboCount);
+    _comboCount = 0;
     trackWrongAnswer(problemId);
     var judgeArea = document.getElementById("judge-area");
     if (judgeArea) {
