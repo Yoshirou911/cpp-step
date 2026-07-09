@@ -1403,6 +1403,14 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 }
 
 .run-btn:disabled { opacity: 0.30; cursor: default; }
+.run-btn-kbd {
+  float: right;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem; font-weight: 400;
+  color: rgba(255,107,0,0.5);
+  letter-spacing: 0.05em;
+  margin-top: 1px;
+}
 
 .output-label {
   font-size: 0.60rem;

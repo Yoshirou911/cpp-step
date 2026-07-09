@@ -30926,7 +30926,7 @@ function renderDetail(id) {
         '<label class="stdin-label">標準入力（cin用）：</label>' +
         '<input id="stdin-input" class="stdin-input" type="text" placeholder="例: 5">' +
       '</div>' +
-      '<button class="run-btn" onclick="runCode()">▶ 実行する</button>' +
+      '<button class="run-btn" title="Ctrl+Enter で実行" onclick="runCode()">▶ 実行する<span class="run-btn-kbd">Ctrl+↵</span></button>' +
       '<div id="output-area" class="hidden">' +
         '<p class="output-label">実行結果：<span id="exec-time-badge" class="exec-time-badge hidden"></span></p>' +
         '<pre id="output-text"></pre>' +
@@ -34384,7 +34384,7 @@ function renderMissionDetail(id) {
         '<label class="stdin-label">標準入力（cin用）：</label>' +
         '<input id="stdin-input" class="stdin-input" type="text" placeholder="スペース区切りで入力">' +
       '</div>' +
-      '<button class="run-btn" onclick="runCode()">▶ 実行する</button>' +
+      '<button class="run-btn" title="Ctrl+Enter で実行" onclick="runCode()">▶ 実行する<span class="run-btn-kbd">Ctrl+↵</span></button>' +
       '<div id="output-area" class="hidden">' +
         '<p class="output-label">実行結果：<span id="exec-time-badge" class="exec-time-badge hidden"></span></p>' +
         '<pre id="output-text"></pre>' +
@@ -35722,15 +35722,27 @@ function closeAuthModal() {
 
 // Escキーでモーダルを閉じる
 document.addEventListener('keydown', function(e) {
+  // Ctrl+Enter → コード実行（詳細ページ上）
+  if (e.ctrlKey && !e.shiftKey && !e.altKey && e.key === 'Enter') {
+    var detailPage = document.getElementById('page-detail');
+    if (detailPage && !detailPage.classList.contains('hidden')) {
+      e.preventDefault();
+      runCode();
+      return;
+    }
+  }
+
   if (e.key !== 'Escape') return;
-  var authModal  = document.getElementById('auth-modal');
-  var adminPanel = document.getElementById('admin-panel');
-  var quizModal  = document.getElementById('quiz-modal');
+  var authModal   = document.getElementById('auth-modal');
+  var adminPanel  = document.getElementById('admin-panel');
+  var quizModal   = document.getElementById('quiz-modal');
   var premiumModal = document.getElementById('premium-modal');
+  var rankModal   = document.getElementById('rank-unlock-modal');
   if (premiumModal && !premiumModal.classList.contains('hidden')) { closePremiumModal(); return; }
-  if (authModal  && !authModal.classList.contains('hidden'))  { closeAuthModal(); return; }
-  if (adminPanel && !adminPanel.classList.contains('hidden')) { closeAdminPanel(); return; }
-  if (quizModal  && !quizModal.classList.contains('hidden'))  { closeQuizModal(); return; }
+  if (rankModal   && !rankModal.classList.contains('hidden'))    { closeRankUnlockModal(); return; }
+  if (authModal   && !authModal.classList.contains('hidden'))    { closeAuthModal(); return; }
+  if (adminPanel  && !adminPanel.classList.contains('hidden'))   { closeAdminPanel(); return; }
+  if (quizModal   && !quizModal.classList.contains('hidden'))    { closeQuizModal(); return; }
 });
 
 function switchAuthTab(tab) {
