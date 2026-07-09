@@ -32059,6 +32059,67 @@ function getNextProblem(currentId) {
   return null;
 }
 
+// ===== ランクアンロックモーダル =====
+
+var RANK_UNLOCK_MESSAGES = {
+  rookie:   'プログラミングの第一歩を踏み出した！基礎をしっかりマスターしよう。',
+  bronze:   '実用的なアプリが作れるレベルに到達！スキルが確実に上がっている。',
+  silver:   '型システムとOOPを本格的に学ぶ領域へ突入。一段上のエンジニアへ！',
+  gold:     '企業現場でも通用するスキルを習得した。本物のエンジニアに近づいた！',
+  platinum: 'OSや組み込みなど低レベルの世界へ踏み込んだ。真の技術者の証。',
+  diamond:  '最高峰クラスの言語に挑む実力を身につけた。圧倒的な実力者！',
+  master:   '次世代言語をマスターした真の猛者。この領域に達する者は少ない。',
+  legend:   '伝説の域に達した。あなたの名はコードに刻まれる。',
+  titan:    '神の領域へ到達。もはや人間を超えた存在だ。',
+};
+
+function _getRankColorByName(rank) {
+  var lc = (rank || '').toLowerCase();
+  for (var i = 0; i < LANGUAGE_GROUPS.length; i++) {
+    if (LANGUAGE_GROUPS[i].rank.toLowerCase() === lc) {
+      return LANGUAGE_GROUPS[i].rankColor;
+    }
+  }
+  if (lc === 'legend') return '#FF6B00';
+  if (lc === 'titan')  return '#FF3E3E';
+  return '#FFFFFF';
+}
+
+function _checkRankUnlock(rankStr) {
+  var rank = (rankStr || '').toLowerCase();
+  var unlocked = lsGetJSON('rank_first_cleared', {});
+  if (unlocked[rank]) return;
+  unlocked[rank] = true;
+  lsSet('rank_first_cleared', JSON.stringify(unlocked));
+  var color = _getRankColorByName(rank);
+  var msg   = RANK_UNLOCK_MESSAGES[rank] || 'おめでとうございます！';
+  setTimeout(function() {
+    showRankUnlockModal(rank.toUpperCase(), color, msg);
+  }, 1800);
+}
+
+function showRankUnlockModal(rankName, rankColor, message) {
+  var el = document.getElementById('rank-unlock-modal');
+  if (!el) return;
+  var nameEl = document.getElementById('rum-rank-name');
+  var msgEl  = document.getElementById('rum-message');
+  if (nameEl) { nameEl.textContent = rankName; nameEl.style.color = rankColor; }
+  if (msgEl)  { msgEl.textContent  = message; }
+  el.style.setProperty('--rum-color', rankColor);
+  el.classList.remove('hidden');
+  if (window.confetti) {
+    confetti({ particleCount: 120, spread: 85, origin: { y: 0.5 },
+      colors: [rankColor, '#ffffff', '#FFD700'] });
+  }
+  function _close() { el.classList.add('hidden'); }
+  el.addEventListener('click', _close, { once: true });
+}
+
+function closeRankUnlockModal() {
+  var el = document.getElementById('rank-unlock-modal');
+  if (el) el.classList.add('hidden');
+}
+
 function showJudgeResult(problemId, passed, byAI) {
   // 別の問題に遷移済み、またはページを離れた場合は何もしない
   if (currentProblemId !== problemId) return;
@@ -32071,6 +32132,9 @@ function showJudgeResult(problemId, passed, byAI) {
       if (_comboCount >= 2) showComboEffect(_comboCount);
       // 進捗を保存
       saveProgress(problemId);
+      // ランクアンロックチェック
+      var _prob0 = getProblems().find(function(x) { return x.id === problemId; });
+      if (_prob0 && _prob0.rank) _checkRankUnlock(_prob0.rank);
       // エフェクト・サウンド
       playClearSound();
       var _prob = getProblems().find(function(x) { return x.id === problemId; });

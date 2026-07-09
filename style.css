@@ -7390,3 +7390,66 @@ input[type="password"]:focus {
   .problem-card { padding: 9px 14px 9px 12px; }
   .empty-state { padding: 44px 16px; }
 }
+
+/* ── ランクアンロックモーダル ────────────────────────────────── */
+#rank-unlock-modal {
+  position: fixed; inset: 0; z-index: 9400;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+#rank-unlock-modal.hidden { display: none; }
+.rum-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.78);
+  animation: rumOverlay 0.3s ease;
+}
+@keyframes rumOverlay { from{opacity:0} to{opacity:1} }
+.rum-box {
+  position: relative; z-index: 1;
+  background: rgba(8,6,3,0.97);
+  border: 2px solid var(--rum-color, #EFC050);
+  border-radius: 16px;
+  padding: 44px 60px;
+  text-align: center;
+  box-shadow: 0 0 70px color-mix(in srgb, var(--rum-color,#EFC050) 35%, transparent),
+              0 24px 60px rgba(0,0,0,0.7);
+  animation: rumBoxIn 0.52s cubic-bezier(0.34,1.56,0.64,1);
+  max-width: 90vw;
+}
+@keyframes rumBoxIn { from{scale:0.45;opacity:0} to{scale:1;opacity:1} }
+.rum-stars {
+  font-size: 1.1rem;
+  color: var(--rum-color, #EFC050);
+  letter-spacing: 0.5em;
+  margin-bottom: 10px;
+  text-shadow: 0 0 12px currentColor;
+  animation: rumStarPulse 1.4s ease-in-out infinite;
+}
+@keyframes rumStarPulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
+.rum-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem; letter-spacing: 0.22em;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 12px;
+}
+.rum-rank-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 5.2rem; font-weight: 900;
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 50px currentColor, 0 0 20px currentColor;
+  margin-bottom: 18px;
+  line-height: 1;
+  animation: rumNameIn 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.18s both;
+}
+@keyframes rumNameIn { from{scale:0.3;opacity:0} to{scale:1;opacity:1} }
+.rum-message {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.7;
+  margin-bottom: 28px;
+  max-width: 340px;
+}
+.rum-dismiss {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.3);
+}
