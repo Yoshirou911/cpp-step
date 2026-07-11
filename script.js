@@ -35400,6 +35400,9 @@ async function renderProfile() {
       '</div>' +
     '</div>' +
 
+    // ─── スキルレーダー ───
+    _buildRadarChartHTML(stats) +
+
     // ─── 弱点分析 ───
     '<div class="profile-section">' +
       '<div class="profile-section-title">// WEAKNESS ANALYSIS</div>' +
@@ -35440,6 +35443,79 @@ async function renderProfile() {
     console.error('[renderProfile]', e);
     content.innerHTML = '<div class="profile-loading" style="color:#FF4444;animation:none">⚠ 読み込みに失敗しました。ページを更新してお試しください。</div>';
   }
+}
+
+function _buildRadarChartHTML(stats) {
+  var langs = [
+    { name: 'C++',    key: 'cpp',        color: '#00599C', total: 58 },
+    { name: 'Python', key: 'python',     color: '#3776AB', total: 58 },
+    { name: 'JS',     key: 'javascript', color: '#F0C040', total: 58 },
+    { name: 'Java',   key: 'java',       color: '#ED8B00', total: 58 },
+    { name: 'Rust',   key: 'rust',       color: '#CE412B', total: 58 },
+    { name: 'Ruby',   key: 'ruby',       color: '#CC342D', total: 30 },
+    { name: 'TS',     key: 'typescript', color: '#3178C6', total: 58 },
+    { name: 'Kotlin', key: 'kotlin',     color: '#7F52FF', total: 30 },
+    { name: 'Swift',  key: 'swift',      color: '#FA7343', total: 30 },
+    { name: 'Go',     key: 'go',         color: '#00ADD8', total: 30 },
+    { name: 'C#',     key: 'csharp',     color: '#9B4F96', total: 30 },
+    { name: 'C',      key: 'c',          color: '#A8B9CC', total: 30 },
+    { name: 'HTML',   key: 'html',       color: '#E44D26', total: 30 },
+    { name: 'SQL',    key: 'sql',        color: '#336791', total: 30 },
+  ];
+  var active = langs.filter(function(l) { return (stats[l.key] || 0) > 0; });
+  if (active.length < 3) return '';
+  if (active.length > 10) active = active.slice(0, 10);
+
+  var n   = active.length;
+  var cx  = 160, cy = 160, r = 108;
+  var scores = active.map(function(l) { return Math.min(1, (stats[l.key] || 0) / l.total); });
+
+  function pt(i, radius) {
+    var a = (2 * Math.PI * i / n) - Math.PI / 2;
+    return { x: +(cx + radius * Math.cos(a)).toFixed(2), y: +(cy + radius * Math.sin(a)).toFixed(2) };
+  }
+
+  var grid = '';
+  [0.25, 0.5, 0.75, 1.0].forEach(function(f, gi) {
+    var pts = [];
+    for (var i = 0; i < n; i++) { var p = pt(i, r * f); pts.push(p.x + ',' + p.y); }
+    var op = (0.04 + gi * 0.025).toFixed(3);
+    grid += '<polygon points="' + pts.join(' ') + '" fill="none" stroke="rgba(255,255,255,' + op + ')" stroke-width="1"/>';
+  });
+
+  var axes = '';
+  for (var i = 0; i < n; i++) {
+    var p = pt(i, r);
+    axes += '<line x1="' + cx + '" y1="' + cy + '" x2="' + p.x + '" y2="' + p.y + '" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>';
+  }
+
+  var spts = [];
+  for (var i = 0; i < n; i++) { var p = pt(i, r * scores[i]); spts.push(p.x + ',' + p.y); }
+  var poly = '<polygon points="' + spts.join(' ') + '" fill="rgba(255,107,0,0.22)" stroke="#FF6B00" stroke-width="1.8" stroke-linejoin="round"/>';
+
+  var dots = '';
+  for (var i = 0; i < n; i++) {
+    var p = pt(i, r * scores[i]);
+    dots += '<circle cx="' + p.x + '" cy="' + p.y + '" r="3.5" fill="#FF6B00" stroke="rgba(0,0,0,0.5)" stroke-width="1"/>';
+  }
+
+  var labels = '';
+  for (var i = 0; i < n; i++) {
+    var lp = pt(i, r + 22);
+    var anchor = lp.x < cx - 6 ? 'end' : lp.x > cx + 6 ? 'start' : 'middle';
+    var pct = Math.round(scores[i] * 100);
+    labels += '<text x="' + lp.x + '" y="' + (lp.y - 2) + '" text-anchor="' + anchor + '" fill="' + active[i].color + '" font-size="10.5" font-family="Share Tech Mono,monospace" font-weight="700">' + active[i].name + '</text>';
+    labels += '<text x="' + lp.x + '" y="' + (lp.y + 10) + '" text-anchor="' + anchor + '" fill="rgba(237,224,200,0.4)" font-size="9" font-family="Share Tech Mono,monospace">' + pct + '%</text>';
+  }
+
+  return '<div class="profile-section">' +
+    '<div class="profile-section-title">// SKILL RADAR</div>' +
+    '<div class="radar-chart-wrap">' +
+      '<svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" class="radar-svg">' +
+        grid + axes + poly + dots + labels +
+      '</svg>' +
+    '</div>' +
+  '</div>';
 }
 
 function _statCardHTML(lang, color, count, strengthData, missions, maxProblems, pctInfo) {

@@ -7620,3 +7620,16 @@ input[type="password"]:focus {
   font-size: 0.72rem;
   color: rgba(255,255,255,0.3);
 }
+
+/* ── スキルレーダーチャート ─────────────────────────────────── */
+.radar-chart-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 4px;
+}
+.radar-svg {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  overflow: visible;
+}
