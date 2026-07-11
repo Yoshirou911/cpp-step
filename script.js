@@ -454,6 +454,7 @@ var _filterQuery    = '';
 var _filterRank     = '';
 var _filterBookmark = false;
 var _filterWrong    = false;
+var _filterUnsolved = false;
 
 function toggleFilterBookmark() {
   _filterBookmark = !_filterBookmark;
@@ -471,6 +472,13 @@ function toggleFilterWrong() {
   var btn2 = document.getElementById('btn-filter-bookmark');
   if (btn) btn.classList.toggle('active', _filterWrong);
   if (btn2) btn2.classList.remove('active');
+  renderList();
+}
+
+function toggleFilterUnsolved() {
+  _filterUnsolved = !_filterUnsolved;
+  var btn = document.getElementById('btn-filter-unsolved');
+  if (btn) btn.classList.toggle('active', _filterUnsolved);
   renderList();
 }
 
@@ -498,6 +506,7 @@ function clearFilter() {
   _filterRank     = '';
   _filterBookmark = false;
   _filterWrong    = false;
+  _filterUnsolved = false;
   var inp = document.getElementById('list-search-input');
   if (inp) inp.value = '';
   var clearBtn = document.getElementById('list-search-clear');
@@ -507,8 +516,10 @@ function clearFilter() {
   });
   var bBtn = document.getElementById('btn-filter-bookmark');
   var wBtn = document.getElementById('btn-filter-wrong');
+  var uBtn = document.getElementById('btn-filter-unsolved');
   if (bBtn) bBtn.classList.remove('active');
   if (wBtn) wBtn.classList.remove('active');
+  if (uBtn) uBtn.classList.remove('active');
   renderList();
 }
 // 検索テキストのみクリア（ランク・ブックマーク・復習フィルターは維持）
@@ -1700,11 +1711,14 @@ async function selectLanguage(langId) {
   _filterRank     = '';
   _filterBookmark = false;
   _filterWrong    = false;
+  _filterUnsolved = false;
   _contestLang    = null;
   var bBtn = document.getElementById('btn-filter-bookmark');
   var wBtn = document.getElementById('btn-filter-wrong');
+  var uBtn = document.getElementById('btn-filter-unsolved');
   if (bBtn) bBtn.classList.remove('active');
   if (wBtn) wBtn.classList.remove('active');
+  if (uBtn) uBtn.classList.remove('active');
   document.querySelectorAll('.rank-filter-btn').forEach(function(b) { b.classList.remove('active'); });
   history.pushState({ page: 'list', lang: langId, tab: 'problems' }, '');
   showNavAndProgress();
@@ -30707,13 +30721,14 @@ function renderList() {
 
   // フィルター適用
   var allProblems = getProblems();
-  if (_filterQuery || _filterRank || _filterBookmark || _filterWrong) {
+  if (_filterQuery || _filterRank || _filterBookmark || _filterWrong || _filterUnsolved) {
     allProblems = allProblems.filter(function(p) {
       var matchRank     = !_filterRank     || p.rank === _filterRank;
       var matchQuery    = !_filterQuery    || p.title.toLowerCase().indexOf(_filterQuery) !== -1 || (p.question && p.question.toLowerCase().indexOf(_filterQuery) !== -1);
       var matchBookmark = !_filterBookmark || isBookmarked(p.id);
       var matchWrong    = !_filterWrong    || isWrongAnswer(p.id);
-      return matchRank && matchQuery && matchBookmark && matchWrong;
+      var matchUnsolved = !_filterUnsolved || !isLearned(p.id);
+      return matchRank && matchQuery && matchBookmark && matchWrong && matchUnsolved;
     });
   }
 
@@ -30732,7 +30747,8 @@ function renderList() {
     var emptyEl = document.createElement('div');
     emptyEl.id = 'list-filter-empty';
     emptyEl.textContent = _filterBookmark ? 'ブックマークした問題はありません' :
-      _filterWrong ? '要復習の問題はありません（全問正解済み！）' :
+      _filterWrong    ? '要復習の問題はありません（全問正解済み！）' :
+      _filterUnsolved ? '🎉 この言語の問題を全てクリアしました！' :
       '「' + (_filterQuery || _filterRank) + '」に一致する問題が見つかりません';
     list.appendChild(emptyEl);
     return;
