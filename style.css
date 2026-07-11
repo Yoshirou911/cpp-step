@@ -7652,3 +7652,26 @@ input[type="password"]:focus {
   font-size: 0.7rem; color: rgba(237,224,200,0.35);
   font-family: 'Share Tech Mono', monospace;
 }
+
+/* ── 学習時間バーチャート ───────────────────────────────────── */
+.study-chart-wrap {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.study-chart-wrap::-webkit-scrollbar { display: none; }
+.study-chart-svg {
+  width: 100%;
+  min-width: 280px;
+  max-width: 560px;
+  height: auto;
+  display: block;
+}
+.study-chart-meta {
+  float: right;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: rgba(237,224,200,0.4);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+.study-chart-meta strong { color: #FF6B00; }

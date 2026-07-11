@@ -35400,6 +35400,9 @@ async function renderProfile() {
       '</div>' +
     '</div>' +
 
+    // ─── 学習時間グラフ ───
+    _buildStudyTimeChartHTML() +
+
     // ─── スキルレーダー ───
     _buildRadarChartHTML(stats) +
 
@@ -35462,6 +35465,67 @@ async function renderProfile() {
     console.error('[renderProfile]', e);
     content.innerHTML = '<div class="profile-loading" style="color:#FF4444;animation:none">⚠ 読み込みに失敗しました。ページを更新してお試しください。</div>';
   }
+}
+
+function _buildStudyTimeChartHTML() {
+  var log   = lsGetJSON('study_log', {});
+  var today = new Date();
+  today.setHours(12, 0, 0, 0);
+
+  // 過去28日分のデータを収集
+  var days = [];
+  for (var i = 27; i >= 0; i--) {
+    var d = new Date(today);
+    d.setDate(d.getDate() - i);
+    var key = d.toISOString().slice(0, 10);
+    days.push({ key: key, sec: log[key] || 0, label: (d.getMonth()+1) + '/' + d.getDate() });
+  }
+
+  var totalSec = days.reduce(function(a, d) { return a + d.sec; }, 0);
+  if (totalSec === 0) return '';
+
+  var maxSec = Math.max.apply(null, days.map(function(d) { return d.sec; }));
+  if (maxSec === 0) return '';
+
+  var W = 560, H = 100, pad = 28, barW = Math.floor((W - pad * 2) / 28) - 1;
+  var svg = '<svg viewBox="0 0 ' + W + ' ' + (H + 30) + '" xmlns="http://www.w3.org/2000/svg" class="study-chart-svg">';
+
+  // 目盛り線 (15分, 30分, 60分)
+  var gridMins = [15, 30, 60];
+  gridMins.forEach(function(m) {
+    var sec = m * 60;
+    if (sec > maxSec * 1.1) return;
+    var y = pad + H - Math.round(sec / maxSec * H);
+    svg += '<line x1="' + pad + '" y1="' + y + '" x2="' + (W - pad) + '" y2="' + y + '" stroke="rgba(255,255,255,0.06)" stroke-width="1" stroke-dasharray="3,3"/>';
+    svg += '<text x="' + (pad - 3) + '" y="' + (y + 4) + '" text-anchor="end" fill="rgba(237,224,200,0.25)" font-size="8.5" font-family="Share Tech Mono,monospace">' + m + 'm</text>';
+  });
+
+  // バー
+  var todayKey = today.toISOString().slice(0, 10);
+  days.forEach(function(d, i) {
+    var barH  = d.sec > 0 ? Math.max(3, Math.round(d.sec / maxSec * H)) : 0;
+    var x     = pad + i * (barW + 1);
+    var y     = pad + H - barH;
+    var isToday = d.key === todayKey;
+    var fill  = isToday ? '#FF6B00' : (d.sec > 0 ? 'rgba(255,107,0,0.55)' : 'rgba(255,255,255,0.05)');
+    svg += '<rect x="' + x + '" y="' + y + '" width="' + barW + '" height="' + barH + '" fill="' + fill + '" rx="1.5"/>';
+    // ラベル: 7日ごと
+    if (i % 7 === 0 || i === 27) {
+      svg += '<text x="' + (x + barW / 2) + '" y="' + (pad + H + 14) + '" text-anchor="middle" fill="rgba(237,224,200,0.3)" font-size="8.5" font-family="Share Tech Mono,monospace">' + d.label + '</text>';
+    }
+  });
+
+  svg += '</svg>';
+
+  var totalMin = Math.round(totalSec / 60);
+  var avgMin   = Math.round(totalMin / 28);
+
+  return '<div class="profile-section">' +
+    '<div class="profile-section-title">// STUDY TIME' +
+      '<span class="study-chart-meta">過去28日: <strong>' + totalMin + '分</strong>  平均: <strong>' + avgMin + '分/日</strong></span>' +
+    '</div>' +
+    '<div class="study-chart-wrap">' + svg + '</div>' +
+  '</div>';
 }
 
 function _buildRadarChartHTML(stats) {
