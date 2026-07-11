@@ -35409,16 +35409,35 @@ async function renderProfile() {
       buildWeaknessHTML() +
     '</div>' +
 
-    // ─── バッジ ───
-    '<div class="profile-section">' +
-      '<div class="profile-section-title">// BADGES ' +
-        '<span class="badge-count-tag">' + earned.length + ' / ' + BADGES.length + ' 解除</span>' +
-      '</div>' +
-      '<div class="badge-grid">' +
-        earned.map(function(b) { return badgeHTML(b, true);  }).join('') +
-        locked.map(function(b) { return badgeHTML(b, false); }).join('') +
-      '</div>' +
-    '</div>';
+    // ─── バッジウォール（ティア別グループ） ───
+    (function() {
+      var tierOrder = ['bronze','silver','gold','platinum','diamond','master','legend'];
+      var tierLabels = { bronze:'BRONZE', silver:'SILVER', gold:'GOLD', platinum:'PLATINUM', diamond:'DIAMOND', master:'MASTER', legend:'LEGEND' };
+      var sections = tierOrder.map(function(tier) {
+        var all    = BADGES.filter(function(b) { return b.tier === tier; });
+        var got    = all.filter(function(b)  { return b.check(stats); });
+        var missed = all.filter(function(b)  { return !b.check(stats); });
+        if (all.length === 0) return '';
+        var col = tierColors[tier] || '#FF6B00';
+        return '<div class="badge-tier-group">' +
+          '<div class="badge-tier-head">' +
+            '<span class="badge-tier-dot" style="background:' + col + '"></span>' +
+            '<span style="color:' + col + '">' + tierLabels[tier] + '</span>' +
+            '<span class="badge-tier-prog">' + got.length + ' / ' + all.length + '</span>' +
+          '</div>' +
+          '<div class="badge-grid">' +
+            got.map(function(b)    { return badgeHTML(b, true);  }).join('') +
+            missed.map(function(b) { return badgeHTML(b, false); }).join('') +
+          '</div>' +
+        '</div>';
+      });
+      return '<div class="profile-section">' +
+        '<div class="profile-section-title">// BADGES ' +
+          '<span class="badge-count-tag">' + earned.length + ' / ' + BADGES.length + ' 解除</span>' +
+        '</div>' +
+        sections.join('') +
+      '</div>';
+    })()
 
   // XPバーアニメーション
   requestAnimationFrame(function() {

@@ -7633,3 +7633,22 @@ input[type="password"]:focus {
   height: auto;
   overflow: visible;
 }
+
+/* ── バッジウォール ティア別グループ ────────────────────────── */
+.badge-tier-group { margin-bottom: 20px; }
+.badge-tier-head {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.78rem; font-weight: 800; letter-spacing: 0.18em;
+  padding: 6px 0 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 10px;
+}
+.badge-tier-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
+.badge-tier-prog {
+  margin-left: auto;
+  font-size: 0.7rem; color: rgba(237,224,200,0.35);
+  font-family: 'Share Tech Mono', monospace;
+}
