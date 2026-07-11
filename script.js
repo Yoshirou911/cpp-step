@@ -463,6 +463,7 @@ function toggleFilterBookmark() {
   var btn2 = document.getElementById('btn-filter-wrong');
   if (btn) btn.classList.toggle('active', _filterBookmark);
   if (btn2) btn2.classList.remove('active');
+  _updateFilterBadge();
   renderList();
 }
 function toggleFilterWrong() {
@@ -472,6 +473,7 @@ function toggleFilterWrong() {
   var btn2 = document.getElementById('btn-filter-bookmark');
   if (btn) btn.classList.toggle('active', _filterWrong);
   if (btn2) btn2.classList.remove('active');
+  _updateFilterBadge();
   renderList();
 }
 
@@ -479,7 +481,26 @@ function toggleFilterUnsolved() {
   _filterUnsolved = !_filterUnsolved;
   var btn = document.getElementById('btn-filter-unsolved');
   if (btn) btn.classList.toggle('active', _filterUnsolved);
+  _updateFilterBadge();
   renderList();
+}
+
+function _updateFilterBadge() {
+  var count = (_filterRank ? 1 : 0) + (_filterBookmark ? 1 : 0) + (_filterWrong ? 1 : 0) + (_filterUnsolved ? 1 : 0);
+  var badge = document.getElementById('filter-badge');
+  if (!badge) return;
+  if (count > 0) { badge.textContent = count; badge.classList.remove('hidden'); }
+  else           { badge.classList.add('hidden'); }
+}
+
+function openFilterSheet() {
+  var sheet = document.getElementById('filter-sheet');
+  if (sheet) sheet.classList.add('open');
+}
+
+function closeFilterSheet() {
+  var sheet = document.getElementById('filter-sheet');
+  if (sheet) sheet.classList.remove('open');
 }
 
 var _filterTimer = null;
@@ -498,6 +519,7 @@ function onRankFilter(btn) {
   document.querySelectorAll('.rank-filter-btn').forEach(function(b) {
     b.classList.toggle('active', b === btn);
   });
+  _updateFilterBadge();
   renderList();
 }
 
@@ -520,6 +542,7 @@ function clearFilter() {
   if (bBtn) bBtn.classList.remove('active');
   if (wBtn) wBtn.classList.remove('active');
   if (uBtn) uBtn.classList.remove('active');
+  _updateFilterBadge();
   renderList();
 }
 // 検索テキストのみクリア（ランク・ブックマーク・復習フィルターは維持）

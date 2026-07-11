@@ -6312,6 +6312,118 @@ body.overlord-theme .titan-badge-header {
   border-bottom: 1px solid rgba(255,107,0,0.15);
 }
 
+/* 検索行（検索ボックス + モバイルトリガー） */
+#list-search-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+#list-search-row #list-search-wrap { margin-bottom: 0; flex: 1; }
+
+/* モバイルトリガーボタン（デスクトップでは非表示） */
+#filter-sheet-trigger {
+  display: none;
+  flex-shrink: 0;
+  padding: 7px 12px;
+  border: 1px solid rgba(255,107,0,0.45);
+  border-radius: 8px;
+  background: rgba(255,107,0,0.09);
+  color: #FF6B00;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem; font-weight: 800;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+}
+#filter-badge {
+  position: absolute; top: -5px; right: -5px;
+  background: #FF6B00; color: #000;
+  font-size: 0.6rem; font-weight: 900;
+  border-radius: 50%; width: 16px; height: 16px;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+
+/* ── フィルターシート ─────────────────────────────────────── */
+/* デスクトップ: 普通のインラインブロック */
+#filter-sheet { position: static; }
+#filter-sheet-overlay { display: none; }
+#filter-sheet-content { background: none; padding: 0; }
+#filter-sheet-header  { display: none; }
+
+/* モバイル(640px以下): ボトムシート */
+@media (max-width: 640px) {
+  #filter-sheet-trigger { display: flex; align-items: center; gap: 6px; }
+
+  #list-rank-filters,
+  #list-special-filters { padding-bottom: 6px; }
+
+  #filter-sheet {
+    position: fixed; inset: 0; z-index: 200;
+    pointer-events: none;
+  }
+  #filter-sheet.open { pointer-events: auto; }
+
+  #filter-sheet-overlay {
+    display: block;
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.6);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  #filter-sheet.open #filter-sheet-overlay { opacity: 1; }
+
+  #filter-sheet-content {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(12,9,6,0.98);
+    border-top: 2px solid rgba(255,107,0,0.35);
+    border-radius: 16px 16px 0 0;
+    padding: 0 16px 32px;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
+    max-height: 75vh;
+    overflow-y: auto;
+  }
+  #filter-sheet.open #filter-sheet-content { transform: translateY(0); }
+
+  #filter-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.9rem; font-weight: 800;
+    color: rgba(237,224,200,0.7);
+    letter-spacing: 0.15em;
+    border-bottom: 1px solid rgba(255,107,0,0.12);
+    margin-bottom: 12px;
+    position: sticky; top: 0;
+    background: rgba(12,9,6,0.98);
+  }
+  #filter-sheet-close {
+    background: none; border: none;
+    color: rgba(237,224,200,0.5); font-size: 1rem;
+    cursor: pointer; padding: 4px 8px;
+  }
+  #filter-sheet-close:hover { color: #FF6B00; }
+
+  #list-rank-filters {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 14px;
+  }
+  #list-rank-filters .rank-filter-btn { flex-basis: auto; }
+
+  #list-special-filters {
+    flex-wrap: wrap;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+}
+
 #list-search-wrap {
   display: flex;
   align-items: center;
