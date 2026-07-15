@@ -31213,6 +31213,7 @@ function renderDetail(id) {
 
   // 既存エディタのコードを保存してから破棄
   var prevProblemId = currentProblemId;
+  var prevLang = currentProblemId !== null ? (aceEditor ? aceEditor.session.$modeId : null) : null;
   var savedCode = aceEditor ? aceEditor.getValue() : null;
   if (aceEditor) { aceEditor.destroy(); aceEditor = null; }
   currentProblemId = id;
@@ -31329,8 +31330,9 @@ function renderDetail(id) {
     '</div>' +  // close detail-right
     '</div>';   // close detail-split
 
-  // 別の問題に移動した場合はリセット、同じ問題の再描画ならコードを引き継ぐ
-  var initCode = (prevProblemId !== null && prevProblemId !== id)
+  // 別の問題に移動した場合、または言語が変わった場合はリセット
+  var langChanged = prevLang !== null && prevLang !== getAceMode();
+  var initCode = (prevProblemId !== null && (prevProblemId !== id || langChanged))
     ? getStarterCode()
     : (savedCode !== null ? savedCode : getStarterCode());
   initAceEditor(initCode);
