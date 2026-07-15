@@ -32593,6 +32593,125 @@ var CAREERS = [
       { phase: 'professional', label: '就職・転職',       color: '#00E676', desc: '電機・自動車メーカー等 → 内定' },
     ]
   },
+  {
+    id: 'competitive', icon: '🏆', color: '#FFD700',
+    title: '競技プログラマー',
+    desc: 'AtCoder・Codeforces・LeetCode等でアルゴリズム問題を解き、レーティングを競う。上位入賞は大手企業への就職直結。',
+    salary: '賞金 / 高待遇内定', demand: 4,
+    csLangs: ['cpp', 'python'],
+    steps: [
+      { phase: 'beginner',     label: '基本アルゴリズム',   color: '#FFD700', desc: 'ソート・探索・累積和・二分探索' },
+      { phase: 'beginner',     label: 'AtCoder 入茶',       color: '#C47A2F', desc: '茶色レート達成・グリーディ・全探索' },
+      { phase: 'basic',        label: 'データ構造',         color: '#808080', desc: '木・グラフ・ヒープ・Union-Find' },
+      { phase: 'basic',        label: 'AtCoder 入緑',       color: '#008000', desc: '動的計画法・BFS/DFS マスター' },
+      { phase: 'advanced',     label: '高度なDP / グラフ',  color: '#00C0C0', desc: 'セグ木・Dijkstra・最小全域木' },
+      { phase: 'advanced',     label: 'AtCoder 水〜青',     color: '#0000FF', desc: 'フロー・文字列・数論・幾何アルゴリズム' },
+      { phase: 'professional', label: 'AtCoder 黄〜赤',     color: '#FFD700', desc: '国際情報オリンピック・世界大会レベル' },
+      { phase: 'professional', label: 'GAFA直接スカウト',   color: '#00E676', desc: 'レーティングで Google・Meta から声がかかる' },
+    ]
+  },
+  {
+    id: 'blockchain', icon: '⛓️', color: '#F6851B',
+    title: 'ブロックチェーンエンジニア',
+    desc: 'Ethereum・Solana等のスマートコントラクトを開発。DeFi・NFT・Web3インフラを構築する。',
+    salary: '600〜1500万円以上', demand: 4,
+    csLangs: ['javascript', 'python', 'rust'],
+    steps: [
+      { phase: 'beginner',     label: 'ブロックチェーン基礎', color: '#F6851B', desc: '分散台帳・コンセンサス・ウォレットの仕組み' },
+      { phase: 'beginner',     label: 'Solidity 入門',        color: '#363636', desc: 'EVM・コントラクト・ABI・デプロイ' },
+      { phase: 'basic',        label: 'DeFi 開発',            color: '#2775CA', desc: 'Uniswap・Aave 等のプロトコル実装' },
+      { phase: 'basic',        label: 'テスト / セキュリティ', color: '#FF6B00', desc: 'Hardhat・Foundry・再入攻撃対策' },
+      { phase: 'advanced',     label: 'Layer2 / ZK',          color: '#8247E5', desc: 'Optimism・zkSync・ゼロ知識証明' },
+      { phase: 'advanced',     label: 'Rust / Solana',        color: '#9945FF', desc: '高速チェーン向けの低レベル開発' },
+      { phase: 'professional', label: 'プロトコル設計',       color: '#F6851B', desc: '独自チェーン・クロスチェーン bridge' },
+      { phase: 'professional', label: '就職・独立',           color: '#00E676', desc: 'Web3スタートアップ・フリーランス → 高報酬' },
+    ]
+  },
+  {
+    id: 'xr', icon: '🥽', color: '#00D4FF',
+    title: 'VR / ARエンジニア',
+    desc: 'Meta Quest・Apple Vision Pro・HoloLens 向けのXRアプリを開発。ゲーム・医療・教育・産業など応用範囲が広い。',
+    salary: '450〜900万円', demand: 3,
+    csLangs: ['csharp', 'cpp'],
+    steps: [
+      { phase: 'beginner',     label: 'C# / Unity 基礎',    color: '#00D4FF', desc: 'GameObject・Transform・物理エンジン' },
+      { phase: 'beginner',     label: '3D数学',              color: '#00AACC', desc: 'ベクトル・クォータニオン・行列変換' },
+      { phase: 'basic',        label: 'XR SDK 入門',         color: '#0088AA', desc: 'OpenXR・ARFoundation・XR Interaction Toolkit' },
+      { phase: 'basic',        label: 'UI/UX for XR',        color: '#006688', desc: '空間UI設計・視線入力・ジェスチャー操作' },
+      { phase: 'advanced',     label: 'シェーダー / グラフィクス', color: '#00D4FF', desc: 'HLSL・URP・パフォーマンス最適化' },
+      { phase: 'advanced',     label: 'MR / 空間認識',       color: '#00FFFF', desc: 'ARKit・ARCore・SLAM・平面検出' },
+      { phase: 'professional', label: 'Vision Pro / Quest3', color: '#555555', desc: 'Apple・Meta の最新デバイス対応開発' },
+      { phase: 'professional', label: '就職・転職',          color: '#00E676', desc: 'メタバース企業・医療・製造 → 内定' },
+    ]
+  },
+  {
+    id: 'robotics', icon: '🤖', color: '#FF6B35',
+    title: 'ロボティクスエンジニア',
+    desc: '産業ロボット・自律ドローン・自動運転に組み込まれるシステムを開発。ハードとソフトの両方の知識が必要。',
+    salary: '450〜850万円', demand: 4,
+    csLangs: ['cpp', 'python', 'c'],
+    steps: [
+      { phase: 'beginner',     label: 'C++ / Python 基礎',   color: '#FF6B35', desc: 'プログラミングとLinux操作の基礎' },
+      { phase: 'beginner',     label: '制御理論基礎',        color: '#FF5522', desc: 'PID制御・フィードバックループ' },
+      { phase: 'basic',        label: 'ROS 2 入門',          color: '#22314E', desc: 'ノード・トピック・サービス・tf変換' },
+      { phase: 'basic',        label: 'センサ統合',          color: '#FF8844', desc: 'LiDAR・カメラ・IMU でデータ取得' },
+      { phase: 'advanced',     label: '自律ナビゲーション',  color: '#FF4400', desc: 'SLAM・パス計画・Nav2 スタック' },
+      { phase: 'advanced',     label: 'コンピュータビジョン', color: '#FFAA22', desc: 'YOLO・点群処理・物体認識' },
+      { phase: 'professional', label: '自動運転 / ドローン', color: '#FF6B35', desc: 'Autoware・PX4・ROS2 Control' },
+      { phase: 'professional', label: '就職・転職',          color: '#00E676', desc: '自動車メーカー・宇宙・製造ロボ企業 → 内定' },
+    ]
+  },
+  {
+    id: 'dataeng', icon: '📊', color: '#1BA3C8',
+    title: 'データエンジニア',
+    desc: 'データパイプライン・ETL・データ基盤を設計・構築する。データサイエンティストが使いやすい環境を整えるインフラ担当。',
+    salary: '500〜950万円', demand: 5,
+    csLangs: ['python', 'sql', 'go'],
+    steps: [
+      { phase: 'beginner',     label: 'Python / SQL 基礎',   color: '#1BA3C8', desc: 'データ操作・集計・結合の基本' },
+      { phase: 'beginner',     label: 'Linux / クラウド基礎', color: '#158AAA', desc: 'AWS S3・GCS・コマンドライン操作' },
+      { phase: 'basic',        label: 'ETL パイプライン',    color: '#1270A0', desc: 'Airflow・dbt・データ変換フロー設計' },
+      { phase: 'basic',        label: 'データウェアハウス',  color: '#0F5888', desc: 'BigQuery・Snowflake・Redshift' },
+      { phase: 'advanced',     label: 'ストリーミング処理',  color: '#1BA3C8', desc: 'Kafka・Spark Streaming・Flink' },
+      { phase: 'advanced',     label: 'データ品質 / ガバナンス', color: '#2BC5EE', desc: 'Great Expectations・データカタログ' },
+      { phase: 'professional', label: 'データメッシュ設計',  color: '#1BA3C8', desc: '大規模分散データ基盤のアーキテクト' },
+      { phase: 'professional', label: '就職・転職',          color: '#00E676', desc: 'テック企業・データ活用企業 → 内定' },
+    ]
+  },
+  {
+    id: 'oss', icon: '🌐', color: '#F05032',
+    title: 'OSS開発者 / カーネルコントリビューター',
+    desc: 'Linux カーネル・GCC・LLVM・主要OSSに貢献するエンジニア。企業スポンサー付きで開発専業も可能。',
+    salary: '企業スポンサー付き600〜1200万円', demand: 3,
+    csLangs: ['c', 'cpp', 'rust'],
+    steps: [
+      { phase: 'beginner',     label: 'C / C++ 深堀り',      color: '#F05032', desc: 'ポインタ・カーネルABI・低レベル設計' },
+      { phase: 'beginner',     label: 'Git 完全理解',         color: '#F05032', desc: 'パッチ送付・rebase・コミット粒度' },
+      { phase: 'basic',        label: 'OSS への Issue / PR',  color: '#DD4422', desc: 'バグ報告・ドキュメント・小さな修正から' },
+      { phase: 'basic',        label: 'コードレビュー文化',   color: '#CC3311', desc: 'メンテナとのコミュニケーション・英語' },
+      { phase: 'advanced',     label: 'Linuxカーネル開発',   color: '#AA2200', desc: 'LKML へのパッチ・デバイスドライバ' },
+      { phase: 'advanced',     label: 'Rust in Linux',        color: '#DEA584', desc: 'カーネルへの Rust 統合・メモリ安全' },
+      { phase: 'professional', label: 'メンテナー就任',       color: '#F05032', desc: '特定サブシステムのオーナーになる' },
+      { phase: 'professional', label: '企業スポンサー獲得',   color: '#00E676', desc: 'Red Hat・Google・Meta がフルタイムで雇用' },
+    ]
+  },
+  {
+    id: 'quantum', icon: '⚛️', color: '#9B59B6',
+    title: '量子コンピュータエンジニア',
+    desc: '量子回路・量子アルゴリズムを実装し、量子化学・最適化・暗号分野の問題を解く。最先端中の最先端。',
+    salary: '600〜1500万円（研究職含む）', demand: 2,
+    csLangs: ['python', 'c', 'rust'],
+    steps: [
+      { phase: 'beginner',     label: '数学・物理基礎',      color: '#9B59B6', desc: '線形代数・複素数・量子力学の概念' },
+      { phase: 'beginner',     label: 'Python / Qiskit',     color: '#8844AA', desc: 'IBM Quantum・量子回路の基本操作' },
+      { phase: 'basic',        label: '量子ゲート / 回路',   color: '#7733AA', desc: 'Hadamard・CNOT・量子もつれ・測定' },
+      { phase: 'basic',        label: '量子アルゴリズム',    color: '#6622AA', desc: 'Grover・Shor・QAOA・VQE' },
+      { phase: 'advanced',     label: 'ノイズ対策 / NISQ',   color: '#9B59B6', desc: 'エラー訂正・ノイズのある中規模量子デバイス' },
+      { phase: 'advanced',     label: '量子ML / 化学計算',   color: '#BB77DD', desc: '量子機械学習・分子シミュレーション' },
+      { phase: 'professional', label: '量子ハードウェア連携', color: '#9B59B6', desc: 'IBM・Google・IonQ の実機で実験' },
+      { phase: 'professional', label: '研究機関 / 企業就職', color: '#00E676', desc: '大学院・国研・量子スタートアップ → 超高待遇' },
+    ]
+  },
 ];
 
 var _careerSelected = null;
@@ -32962,6 +33081,96 @@ var DARK_CAREERS = [
       { phase: 'advanced',     label: '販売・営業',              color: '#5500AA', desc: '政府機関・DV加害者・企業スパイへの販売' },
       { phase: 'professional', label: '国際人権団体に告発',      color: '#AA00FF', desc: 'Amnesty・CitizenLabに発見・公開調査される' },
       { phase: 'professional', label: '訴追・制裁',              color: '#440088', desc: '米国財務省制裁・刑事訴追・会社倒産（NSO事例）' },
+    ]
+  },
+  {
+    id: 'darkweb', icon: '🕸️', color: '#333333',
+    title: 'ダークウェブ管理者',
+    desc: 'Tor上に違法マーケットプレイスを構築・運営する。麻薬・偽造書類・盗難データ・武器等の取引場を提供。Silk Road創設者は終身刑。',
+    warning: '麻薬特例法・武器等製造法・共謀罪・組織犯罪処罰法',
+    salary: '数億円（短期）※全額没収・終身刑も', riskLevel: 5,
+    csLangs: ['python', 'javascript', 'bash'],
+    steps: [
+      { phase: 'beginner',     label: 'Tor / 匿名ネットワーク', color: '#555555', desc: 'Onion ルーティング・Hidden Service の仕組み' },
+      { phase: 'beginner',     label: 'Linux / サーバー構築',   color: '#444444', desc: '匿名サーバー・bulletproof hosting の活用' },
+      { phase: 'basic',        label: 'マーケット開発',          color: '#666666', desc: 'Webアプリ・エスクロー機能・評価システム' },
+      { phase: 'basic',        label: '仮想通貨決済実装',        color: '#777777', desc: 'Monero・ミキサーで資金追跡を困難に' },
+      { phase: 'advanced',     label: '違法出品者・顧客管理',    color: '#888888', desc: 'PGP暗号通信・オペレーションセキュリティ' },
+      { phase: 'advanced',     label: '法執行機関の撹乱',        color: '#999999', desc: 'おとり捜査員の検出・インフラの移転' },
+      { phase: 'professional', label: 'FBIによるテイクダウン',   color: '#FF2222', desc: 'Hansa・AlphaBay 等すべて摘発・運営者逮捕' },
+      { phase: 'professional', label: '終身刑・全財産没収',      color: '#110011', desc: 'Silk Road創設者ロス・ウルブリヒト：仮釈放なし終身刑' },
+    ]
+  },
+  {
+    id: 'cryptojack', icon: '⛏️', color: '#FF8C00',
+    title: 'クリプトジャッカー',
+    desc: '他人のPC・サーバー・IoT機器に気づかれずマイニングマルウェアを仕込み、仮想通貨を不正に採掘する。',
+    warning: '不正指令電磁的記録作成罪・電子計算機損壊等業務妨害罪',
+    salary: '継続収入（電力は被害者負担）※すぐ検知', riskLevel: 3,
+    csLangs: ['python', 'c', 'javascript'],
+    steps: [
+      { phase: 'beginner',     label: 'マイニングの仕組み',     color: '#FF8C00', desc: 'PoW・ハッシュ計算・マイニングプールの基礎' },
+      { phase: 'beginner',     label: 'マルウェア基礎',         color: '#FF7700', desc: 'バックグラウンド常駐・プロセス偽装' },
+      { phase: 'basic',        label: 'ブラウザマイニング',     color: '#FF6600', desc: 'WebAssembly + Coinhive系で訪問者のCPUを奪取' },
+      { phase: 'basic',        label: 'サーバー侵入・配置',     color: '#FF5500', desc: '脆弱なサーバーに侵入してマイナーを仕掛ける' },
+      { phase: 'advanced',     label: 'ボットネット展開',       color: '#FF4400', desc: '感染端末を大量に確保してマイニングを分散' },
+      { phase: 'advanced',     label: 'クラウド悪用',           color: '#FF3300', desc: 'AWS・GCP の認証情報を盗んで無料でマイニング' },
+      { phase: 'professional', label: 'セキュリティ製品に検知', color: '#FF8C00', desc: 'CPU使用率の異常でユーザー・企業に即発覚' },
+      { phase: 'professional', label: '逮捕・損害賠償',         color: '#882200', desc: '不正指令罪・電気代・損害の全額賠償請求' },
+    ]
+  },
+  {
+    id: 'apt', icon: '🕵️', color: '#003366',
+    title: '国家スパイ / APT工作員',
+    desc: '国家の指示を受け、外国政府・軍・企業へのサイバー攻撃・諜報活動を行う。Lazarus（北朝鮮）・APT28（ロシア）等が有名。',
+    warning: '国際法・サイバー犯罪条約違反・発覚すれば国際指名手配',
+    salary: '国家から給与（国外では犯罪者）', riskLevel: 5,
+    csLangs: ['c', 'cpp', 'python', 'bash'],
+    steps: [
+      { phase: 'beginner',     label: 'エリート教育機関',       color: '#003366', desc: '国家が選抜したプログラマーとして軍や情報機関に入隊' },
+      { phase: 'beginner',     label: '高度なハッキング訓練',   color: '#004488', desc: 'ゼロデイ開発・標的型攻撃・マルウェア作成の国家訓練' },
+      { phase: 'basic',        label: 'スピアフィッシング',     color: '#0055AA', desc: '特定個人に合わせた超精巧な標的型メール攻撃' },
+      { phase: 'basic',        label: 'サプライチェーン攻撃',   color: '#0066CC', desc: 'SolarWinds型・ソフトウェア配布経路の汚染' },
+      { phase: 'advanced',     label: '長期潜伏（APT）',        color: '#0077EE', desc: 'ネットワーク内に数ヶ月〜数年潜伏して情報収集' },
+      { phase: 'advanced',     label: 'インフラ破壊',           color: '#0088FF', desc: 'Stuxnet型・発電所・病院・軍事システムへの破壊攻撃' },
+      { phase: 'professional', label: '国際指名手配',           color: '#FF2222', desc: 'FBIが顔写真付き公開手配・出国できない生活' },
+      { phase: 'professional', label: '亡命 or 国内に閉じ込め', color: '#001133', desc: '母国では英雄だが、国外では永遠の逃亡者' },
+    ]
+  },
+  {
+    id: 'fakeapp', icon: '📱', color: '#FF4081',
+    title: '偽アプリ開発者',
+    desc: '正規アプリに見せかけた偽物をApp Store・Google Playや野良サイトで配布し、個人情報・金融情報・認証情報を窃取する。',
+    warning: '不正競争防止法・詐欺罪・ウイルス作成罪',
+    salary: '短期高収入 ※ストア審査強化で即BAN', riskLevel: 4,
+    csLangs: ['swift', 'kotlin', 'javascript'],
+    steps: [
+      { phase: 'beginner',     label: 'iOS / Android 開発基礎', color: '#FF4081', desc: 'Swift / Kotlin でアプリの基本構造を習得' },
+      { phase: 'beginner',     label: '正規アプリの模倣',       color: '#FF2060', desc: 'UIを完全コピーして本物そっくりに偽装' },
+      { phase: 'basic',        label: '悪意ある機能の埋め込み', color: '#EE1050', desc: 'SMS送信・連絡先収集・バックグラウンド通信' },
+      { phase: 'basic',        label: 'ストア審査の回避',       color: '#DD0040', desc: '初回起動時は無害・アップデートで悪意機能を有効化' },
+      { phase: 'advanced',     label: 'フィッシングオーバーレイ', color: '#CC0030', desc: '正規アプリの上に偽ログイン画面を重ねて表示' },
+      { phase: 'advanced',     label: '大規模配布',             color: '#BB0020', desc: '野良APK・SMS誘導・広告ネットワーク経由で拡散' },
+      { phase: 'professional', label: 'Google / Apple に摘発',  color: '#FF4081', desc: 'Play Protect・App Review の強化で大量削除' },
+      { phase: 'professional', label: '逮捕・損害賠償',         color: '#770010', desc: '詐欺罪・被害者への全額賠償請求' },
+    ]
+  },
+  {
+    id: 'simswap', icon: '📶', color: '#FF1744',
+    title: 'SIMスワッパー',
+    desc: '携帯キャリアの本人確認を突破して被害者の電話番号を乗っ取り、SMS二段階認証を無効化して口座・仮想通貨を盗む。',
+    warning: '詐欺罪・不正アクセス禁止法・電気通信事業法違反',
+    salary: '1件数百万〜数億円 ※10代でも逮捕多数', riskLevel: 4,
+    csLangs: ['python', 'javascript'],
+    steps: [
+      { phase: 'beginner',     label: 'ソーシャルエンジニアリング', color: '#FF1744', desc: 'キャリアのサポートを騙す話術・なりすまし手法' },
+      { phase: 'beginner',     label: '個人情報収集',             color: '#EE1133', desc: 'SNS・データ漏洩・フィッシングで個人情報を事前収集' },
+      { phase: 'basic',        label: 'キャリアへのなりすまし電話', color: '#DD0022', desc: '偽造書類・回答誘導でSIM移行を承認させる' },
+      { phase: 'basic',        label: 'SMS認証の乗っ取り',        color: '#CC0011', desc: '電話番号を支配し2FAコードを受信' },
+      { phase: 'advanced',     label: '仮想通貨取引所への侵入',   color: '#BB0000', desc: '取引所・ウォレットのSMS認証を突破して全額奪取' },
+      { phase: 'advanced',     label: '高速資金移動',             color: '#AA0000', desc: '発覚前にミキサーや多段送金で痕跡を消す' },
+      { phase: 'professional', label: 'キャリアのログで特定',     color: '#FF1744', desc: '通話記録・基地局データ・共犯者の証言で身元判明' },
+      { phase: 'professional', label: '逮捕（10代も多数）',       color: '#660000', desc: '米国では15歳での有罪事例も。懲役数年〜十数年' },
     ]
   },
 ];
