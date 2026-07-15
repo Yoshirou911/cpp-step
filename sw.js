@@ -1,10 +1,12 @@
-var CACHE_NAME = 'code-step-v4';
+var CACHE_NAME = 'code-step-v5';
 var STATIC_ASSETS = [
   '/',
   '/index.html',
   '/style.css',
   '/script.js',
   '/icon.svg',
+  '/icon-192.png',
+  '/icon-512.png',
   '/manifest.json'
 ];
 

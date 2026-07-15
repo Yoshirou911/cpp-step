@@ -1,18 +1,68 @@
 {
   "name": "CODE STEP",
   "short_name": "CODE STEP",
-  "description": "マルチ言語プログラミング学習アプリ",
+  "description": "17言語・900問以上の無料プログラミング練習アプリ。ゲーム感覚でレベルアップ。",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#070604",
   "theme_color": "#FF6B00",
   "orientation": "portrait-primary",
+  "lang": "ja",
   "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     {
       "src": "/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "540x1170",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "問題一覧 — ランク別に900問以上を収録"
+    },
+    {
+      "src": "/screenshot-desktop.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "コードエディタ — 書いてすぐ自動判定"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "shortcuts": [
+    {
+      "name": "C++ 問題を解く",
+      "short_name": "C++",
+      "url": "/?lang=cpp",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Python 問題を解く",
+      "short_name": "Python",
+      "url": "/?lang=python",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
