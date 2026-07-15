@@ -2095,6 +2095,10 @@ function restoreState(state) {
     setActiveTab('contest');
     renderContest();
     showPage('contest');
+  } else if (state.page === 'career') {
+    setActiveTab('career');
+    renderCareer();
+    showPage('career');
   } else if (state.page === 'profile') {
     renderProfile();
     showPage('profile');
@@ -30591,7 +30595,7 @@ function showPage(name) {
   if (_mce) _mce.classList.add('hidden');
   // 全ページを非表示にしてから対象だけ表示
   ["page-landing", "page-lang", "page-list", "page-detail", "page-guide",
-   "page-mission-list", "page-mission-detail", "page-profile", "page-textbook", "page-ranking", "page-contest"].forEach(function(id) {
+   "page-mission-list", "page-mission-detail", "page-profile", "page-textbook", "page-ranking", "page-contest", "page-career"].forEach(function(id) {
     document.getElementById(id).classList.add("hidden");
   });
   document.getElementById("page-" + name).classList.remove("hidden");
@@ -32441,6 +32445,223 @@ async function syncUserStats(addedXP, lang) {
   } catch(e) {}
 }
 
+// ===== キャリアページ =====
+
+var CAREERS = [
+  {
+    id: 'frontend', icon: '🌐', color: '#F0C040',
+    title: 'Webフロントエンドエンジニア',
+    desc: 'WebサイトやWebアプリのUI・画面を作るエンジニア。目に見える部分を担当。',
+    salary: '400〜750万円', demand: 5,
+    csLangs: ['html', 'javascript', 'typescript'],
+    steps: [
+      { label: 'HTML/CSS',     color: '#E44D26', desc: '構造とデザインの基礎' },
+      { label: 'JavaScript',   color: '#F0C040', desc: '動きをつける・DOM操作' },
+      { label: 'TypeScript',   color: '#3178C6', desc: '型安全な開発' },
+      { label: 'React / Vue',  color: '#61DAFB', desc: 'モダンFWを習得' },
+      { label: 'ポートフォリオ', color: '#FF6B00', desc: 'GitHub に公開' },
+      { label: '就職・転職',   color: '#00E676', desc: 'フロントエンジニアへ' },
+    ]
+  },
+  {
+    id: 'backend', icon: '⚙️', color: '#00ADD8',
+    title: 'バックエンドエンジニア',
+    desc: 'サーバー・DB・APIなどシステムの裏側を設計・構築するエンジニア。',
+    salary: '450〜850万円', demand: 5,
+    csLangs: ['python', 'java', 'go', 'sql'],
+    steps: [
+      { label: 'Python / Java', color: '#3776AB', desc: 'サーバー言語の基礎' },
+      { label: 'SQL',           color: '#336791', desc: 'DBの設計と操作' },
+      { label: 'REST API',      color: '#FF6B00', desc: 'APIの設計と実装' },
+      { label: 'Docker',        color: '#2496ED', desc: 'コンテナで環境構築' },
+      { label: 'クラウド(AWS)', color: '#FF9900', desc: 'インフラ知識を習得' },
+      { label: '就職・転職',   color: '#00E676', desc: 'バックエンジニアへ' },
+    ]
+  },
+  {
+    id: 'ai', icon: '🤖', color: '#C040FF',
+    title: 'AIエンジニア\n/ データサイエンティスト',
+    desc: '機械学習・深層学習モデルを開発しビジネス課題を解くエンジニア。',
+    salary: '500〜1000万円', demand: 5,
+    csLangs: ['python', 'sql'],
+    steps: [
+      { label: '数学基礎',        color: '#9B9B9B', desc: '統計・線形代数・微積分' },
+      { label: 'Python',          color: '#3776AB', desc: 'NumPy / Pandas で分析' },
+      { label: '機械学習',        color: '#C040FF', desc: 'scikit-learn でモデル作成' },
+      { label: '深層学習',        color: '#EE4C2C', desc: 'PyTorch / TensorFlow' },
+      { label: 'Kaggle / 論文',   color: '#20BEFF', desc: '実践と最新知識のキャッチアップ' },
+      { label: '就職・転職',      color: '#00E676', desc: 'AIエンジニアへ' },
+    ]
+  },
+  {
+    id: 'game', icon: '🎮', color: '#EFC050',
+    title: 'ゲームエンジニア',
+    desc: 'ゲームのシステム・物理演算・グラフィックを実装するエンジニア。',
+    salary: '350〜700万円', demand: 3,
+    csLangs: ['cpp', 'csharp'],
+    steps: [
+      { label: 'C++ / C#',      color: '#00599C', desc: 'ゲーム言語の基礎' },
+      { label: 'Unity / Unreal', color: '#EFC050', desc: 'ゲームエンジンを習得' },
+      { label: '2Dゲーム制作',   color: '#FF6B00', desc: '小さいゲームを完成させる' },
+      { label: '3D・物理演算',   color: '#C040FF', desc: 'グラフィック・衝突判定' },
+      { label: '自作ゲーム公開', color: '#5588FF', desc: 'Steam / App Store に申請' },
+      { label: '就職・転職',     color: '#00E676', desc: 'ゲームエンジニアへ' },
+    ]
+  },
+  {
+    id: 'mobile', icon: '📱', color: '#FA7343',
+    title: 'モバイルアプリ\nエンジニア',
+    desc: 'iOSやAndroidのスマホアプリを開発するエンジニア。',
+    salary: '400〜800万円', demand: 4,
+    csLangs: ['swift', 'kotlin'],
+    steps: [
+      { label: 'Swift / Kotlin', color: '#FA7343', desc: 'iOS/Android ネイティブ言語' },
+      { label: 'UIの実装',       color: '#7F52FF', desc: 'SwiftUI / Jetpack Compose' },
+      { label: 'API連携',        color: '#FF6B00', desc: 'REST API とデータ取得' },
+      { label: 'テスト・配布',   color: '#00C8B4', desc: 'デバッグと端末テスト' },
+      { label: 'ストア申請',     color: '#EFC050', desc: 'App Store / Google Play' },
+      { label: '就職・転職',     color: '#00E676', desc: 'モバイルエンジニアへ' },
+    ]
+  },
+  {
+    id: 'infra', icon: '☁️', color: '#00C8B4',
+    title: 'インフラ / SREエンジニア',
+    desc: 'サーバー・ネットワーク・クラウドを管理し、サービスを安定稼働させる。',
+    salary: '450〜900万円', demand: 4,
+    csLangs: ['bash', 'python', 'go'],
+    steps: [
+      { label: 'Linux / Bash',  color: '#4EAA25', desc: 'OS・シェルの基礎' },
+      { label: 'ネットワーク',  color: '#9B9B9B', desc: 'TCP/IP・DNS・HTTP' },
+      { label: 'Docker',        color: '#2496ED', desc: 'コンテナ技術を習得' },
+      { label: 'Kubernetes',    color: '#326CE5', desc: 'オーケストレーション' },
+      { label: 'AWS / GCP',     color: '#FF9900', desc: 'クラウドインフラ設計' },
+      { label: '就職・転職',    color: '#00E676', desc: 'インフラエンジニアへ' },
+    ]
+  },
+  {
+    id: 'security', icon: '🔐', color: '#FF453A',
+    title: 'セキュリティエンジニア',
+    desc: 'サイバー攻撃から企業・システムを守る。脆弱性診断・ペネトレーションテストを行う。',
+    salary: '500〜1000万円', demand: 4,
+    csLangs: ['python', 'c', 'bash', 'regex'],
+    steps: [
+      { label: 'ネットワーク基礎', color: '#9B9B9B', desc: 'TCP/IP・プロトコルの理解' },
+      { label: 'Linux / C',        color: '#A8B9CC', desc: 'OS・低レイヤ知識' },
+      { label: 'Python',           color: '#3776AB', desc: 'スクリプトでツール自作' },
+      { label: 'CTF 参加',         color: '#FF453A', desc: 'ハッキング競技で実力を試す' },
+      { label: '資格取得',         color: '#EFC050', desc: '情報処理安全確保支援士 etc.' },
+      { label: '就職・転職',       color: '#00E676', desc: 'セキュリティエンジニアへ' },
+    ]
+  },
+  {
+    id: 'embedded', icon: '🔧', color: '#A8B9CC',
+    title: '組み込み / ファームウェアエンジニア',
+    desc: '家電・自動車・IoT機器などのハードウェアを動かすプログラムを書く。',
+    salary: '400〜750万円', demand: 3,
+    csLangs: ['c', 'cpp'],
+    steps: [
+      { label: 'C言語',         color: '#A8B9CC', desc: 'ポインタ・メモリ管理' },
+      { label: 'C++',           color: '#00599C', desc: 'クラスと効率的な設計' },
+      { label: 'マイコン入門',  color: '#FF6B00', desc: 'Arduino / Raspberry Pi' },
+      { label: 'RTOS',          color: '#EFC050', desc: 'リアルタイムOS の基礎' },
+      { label: '回路設計基礎',  color: '#9B9B9B', desc: '電子回路・センサ制御' },
+      { label: '就職・転職',    color: '#00E676', desc: '組み込みエンジニアへ' },
+    ]
+  },
+];
+
+var _careerSelected = null;
+
+function renderCareer() {
+  var el = document.getElementById('career-content');
+  if (!el) return;
+  var stats = getProfileStats();
+
+  var cardsHTML = CAREERS.map(function(c) {
+    var isOpen = _careerSelected === c.id;
+    var relevantPct = c.csLangs.map(function(lid) {
+      var langData = LANGUAGE_GROUPS.reduce(function(found, g) {
+        return found || g.langs.find(function(l) { return l.id === lid; });
+      }, null);
+      var total   = langData ? langData.problems : 30;
+      var cleared = stats[lid] || 0;
+      return { lid: lid, pct: Math.round(cleared / total * 100), cleared: cleared, total: total };
+    });
+    var avgPct = relevantPct.length
+      ? Math.round(relevantPct.reduce(function(s, x) { return s + x.pct; }, 0) / relevantPct.length)
+      : 0;
+
+    var roadmapHTML = c.steps.map(function(step, i) {
+      var isLast = i === c.steps.length - 1;
+      return '<div class="cr-step">' +
+        '<div class="cr-step-dot" style="border-color:' + step.color + ';box-shadow:0 0 8px ' + step.color + '44"></div>' +
+        '<div class="cr-step-body">' +
+          '<div class="cr-step-label" style="color:' + step.color + '">' + step.label + '</div>' +
+          '<div class="cr-step-desc">' + step.desc + '</div>' +
+        '</div>' +
+        (isLast ? '' : '<div class="cr-step-arrow">→</div>') +
+      '</div>';
+    }).join('');
+
+    var langTagsHTML = relevantPct.map(function(lp) {
+      var langData = LANGUAGE_GROUPS.reduce(function(found, g) {
+        return found || g.langs.find(function(l) { return l.id === lp.lid; });
+      }, null);
+      var lcolor = langData ? langData.color : '#FF6B00';
+      var lname  = langData ? langData.name  : lp.lid;
+      return '<div class="cr-lang-tag" style="border-color:' + lcolor + '66;color:' + lcolor + '">' +
+        lname + '<span class="cr-lang-pct">' + lp.pct + '%</span>' +
+      '</div>';
+    }).join('');
+
+    var demandDots = '';
+    for (var d = 0; d < 5; d++) {
+      demandDots += '<span class="cr-demand-dot' + (d < c.demand ? ' cr-demand-on' : '') + '"></span>';
+    }
+
+    return '<div class="career-card' + (isOpen ? ' career-card-open' : '') + '" onclick="toggleCareer(' + JSON.stringify(c.id) + ')" style="--cc:' + c.color + '">' +
+      '<div class="career-card-head">' +
+        '<div class="career-card-icon">' + c.icon + '</div>' +
+        '<div class="career-card-info">' +
+          '<div class="career-card-title">' + c.title + '</div>' +
+          '<div class="career-card-sub">' +
+            '<span class="cr-salary">💴 ' + c.salary + '</span>' +
+            '<span class="cr-demand">' + demandDots + ' 需要</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="career-card-avg' + (avgPct > 0 ? ' cr-avg-active' : '') + '">' +
+          '<div class="cr-avg-num">' + avgPct + '%</div>' +
+          '<div class="cr-avg-label">習得度</div>' +
+        '</div>' +
+        '<div class="career-card-arrow">' + (isOpen ? '▲' : '▼') + '</div>' +
+      '</div>' +
+      (isOpen
+        ? '<div class="career-card-body" onclick="event.stopPropagation()">' +
+            '<div class="career-desc">' + c.desc + '</div>' +
+            '<div class="cr-section-label">▸ 学習ロードマップ</div>' +
+            '<div class="cr-roadmap">' + roadmapHTML + '</div>' +
+            '<div class="cr-section-label">▸ CODE STEP 関連言語</div>' +
+            '<div class="cr-lang-tags">' + langTagsHTML + '</div>' +
+          '</div>'
+        : '') +
+    '</div>';
+  }).join('');
+
+  el.innerHTML =
+    '<div class="career-page">' +
+      '<div class="career-header">' +
+        '<div class="career-header-title">◆ CAREER ROADMAP</div>' +
+        '<div class="career-header-sub">なりたい職業を選んで、必要なスキルと道筋を確認しよう</div>' +
+      '</div>' +
+      '<div class="career-cards">' + cardsHTML + '</div>' +
+    '</div>';
+}
+
+function toggleCareer(id) {
+  _careerSelected = (_careerSelected === id) ? null : id;
+  renderCareer();
+}
+
 async function renderRanking() {
   var el = document.getElementById('ranking-content');
   if (!el) return;
@@ -32843,6 +33064,10 @@ function switchTab(tab) {
     history.pushState({ page: 'contest', lang: currentLanguage, tab: 'contest' }, '');
     renderContest();
     showPage('contest');
+  } else if (tab === 'career') {
+    history.pushState({ page: 'career', lang: currentLanguage, tab: 'career' }, '');
+    renderCareer();
+    showPage('career');
   } else {
     history.pushState({ page: 'guide', lang: currentLanguage, tab: 'guide' }, '');
     renderGuide();

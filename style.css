@@ -7675,3 +7675,151 @@ input[type="password"]:focus {
   letter-spacing: 0.02em;
 }
 .study-chart-meta strong { color: #FF6B00; }
+
+/* ══════════════════════════════════════════════
+   キャリアページ
+══════════════════════════════════════════════ */
+.career-page { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }
+
+.career-header { margin-bottom: 24px; }
+.career-header-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.5rem; font-weight: 900;
+  color: #FF6B00; letter-spacing: 0.18em;
+  margin-bottom: 6px;
+}
+.career-header-sub { font-size: 0.82rem; color: rgba(237,224,200,0.45); }
+
+/* ── カード ── */
+.career-cards { display: flex; flex-direction: column; gap: 10px; }
+.career-card {
+  background: rgba(14,10,6,0.75);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-left: 3px solid var(--cc, #FF6B00);
+  border-radius: 10px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+.career-card:hover {
+  border-color: color-mix(in srgb, var(--cc,#FF6B00) 60%, transparent);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4), -2px 0 16px color-mix(in srgb, var(--cc,#FF6B00) 20%, transparent);
+}
+.career-card-open {
+  border-color: var(--cc, #FF6B00) !important;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.5), -2px 0 20px color-mix(in srgb, var(--cc,#FF6B00) 28%, transparent) !important;
+}
+
+/* ── カードヘッダー ── */
+.career-card-head {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 18px;
+}
+.career-card-icon { font-size: 1.8rem; flex-shrink: 0; line-height: 1; }
+.career-card-info { flex: 1; min-width: 0; }
+.career-card-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.05rem; font-weight: 800;
+  color: rgba(237,224,200,0.92);
+  letter-spacing: 0.04em; white-space: pre-line;
+  line-height: 1.25;
+}
+.career-card-sub {
+  display: flex; align-items: center; gap: 14px;
+  margin-top: 5px;
+}
+.cr-salary { font-size: 0.72rem; color: rgba(237,224,200,0.45); }
+.cr-demand { display: flex; align-items: center; gap: 3px; font-size: 0.68rem; color: rgba(237,224,200,0.35); }
+.cr-demand-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.1); }
+.cr-demand-dot.cr-demand-on { background: var(--cc, #FF6B00); box-shadow: 0 0 5px var(--cc,#FF6B00); }
+
+.career-card-avg {
+  text-align: center; flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.2);
+}
+.career-card-avg.cr-avg-active { border-color: color-mix(in srgb, var(--cc,#FF6B00) 50%, transparent); }
+.cr-avg-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.2rem; font-weight: 900;
+  color: rgba(237,224,200,0.3);
+  line-height: 1;
+}
+.cr-avg-active .cr-avg-num { color: var(--cc, #FF6B00); }
+.cr-avg-label { font-size: 0.6rem; color: rgba(237,224,200,0.3); margin-top: 1px; }
+
+.career-card-arrow {
+  font-size: 0.7rem; color: rgba(237,224,200,0.3); flex-shrink: 0;
+}
+
+/* ── カード展開ボディ ── */
+.career-card-body {
+  padding: 0 18px 18px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  animation: crBodyIn 0.22s ease;
+}
+@keyframes crBodyIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
+
+.career-desc {
+  font-size: 0.84rem; color: rgba(237,224,200,0.6);
+  line-height: 1.7; padding: 14px 0 10px;
+}
+
+.cr-section-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.78rem; font-weight: 800;
+  color: var(--cc, #FF6B00); letter-spacing: 0.14em;
+  margin: 14px 0 10px;
+}
+
+/* ── ロードマップ ── */
+.cr-roadmap {
+  display: flex; flex-wrap: wrap; align-items: flex-start;
+  gap: 4px;
+}
+.cr-step {
+  display: flex; align-items: flex-start; gap: 6px;
+}
+.cr-step-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 2px solid; flex-shrink: 0; margin-top: 4px;
+}
+.cr-step-body { max-width: 110px; }
+.cr-step-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.82rem; font-weight: 800;
+  letter-spacing: 0.04em; line-height: 1.2;
+}
+.cr-step-desc {
+  font-size: 0.67rem; color: rgba(237,224,200,0.4);
+  line-height: 1.4; margin-top: 2px;
+}
+.cr-step-arrow {
+  color: rgba(255,255,255,0.2); font-size: 1rem;
+  padding: 0 2px; margin-top: 2px; flex-shrink: 0;
+  align-self: flex-start;
+}
+
+/* ── 関連言語タグ ── */
+.cr-lang-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.cr-lang-tag {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid; border-radius: 20px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem; font-weight: 700;
+}
+.cr-lang-pct {
+  font-size: 0.65rem; opacity: 0.65;
+  background: rgba(0,0,0,0.3); padding: 0 5px;
+  border-radius: 8px;
+}
+
+@media (max-width: 600px) {
+  .career-card-head { gap: 10px; padding: 12px 14px; }
+  .career-card-icon { font-size: 1.4rem; }
+  .cr-roadmap { gap: 3px; }
+  .cr-step-body { max-width: 90px; }
+}
