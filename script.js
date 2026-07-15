@@ -32694,7 +32694,7 @@ function renderCareer() {
       demandDots += '<span class="cr-demand-dot' + (d < c.demand ? ' cr-demand-on' : '') + '" style="' + (d < c.demand ? 'background:' + c.color + ';box-shadow:0 0 5px ' + c.color : '') + '"></span>';
     }
 
-    return '<div class="career-card' + (isOpen ? ' career-card-open' : '') + '" onclick="toggleCareer(' + JSON.stringify(c.id) + ')" style="--cc:' + c.color + '">' +
+    return '<div class="career-card' + (isOpen ? ' career-card-open' : '') + '" onclick="toggleCareer(\'' + c.id + '\')" style="--cc:' + c.color + '">' +
       '<div class="career-card-head">' +
         '<div class="career-card-icon">' + c.icon + '</div>' +
         '<div class="career-card-info">' +
