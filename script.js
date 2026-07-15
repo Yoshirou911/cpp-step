@@ -30271,6 +30271,305 @@ const phpUnitGuides = [
   }
 ];
 
+// ===== DARK OPS 専用問題 =====
+
+var darkProblems = [
+  { id: 1, unit: "UNIT 01  ◆  暗号・エンコード", rank: "ROOKIE",
+    title: "ROT-13 暗号化",
+    question: "文字列 'Hello, World!' をROT-13変換した結果を出力してください。\nROT-13はアルファベットを13文字ずらす換字式暗号です。",
+    hint: "chr()とord()で文字コードを操作します。大文字・小文字それぞれの範囲内でずらしましょう。",
+    answer:
+`s = 'Hello, World!'
+result = ''
+for c in s:
+    if 'a' <= c <= 'z':
+        result += chr((ord(c) - ord('a') + 13) % 26 + ord('a'))
+    elif 'A' <= c <= 'Z':
+        result += chr((ord(c) - ord('A') + 13) % 26 + ord('A'))
+    else:
+        result += c
+print(result)`,
+    expected: "Uryyb, Jbeyq!",
+    explanation: "ROT-13はアルファベットを13文字ずらす換字式暗号。同じ操作を2回行うと元に戻る（自己逆変換）。Linuxの/usr/bin/rot13コマンドでも使われる古典的な暗号化手法。" },
+
+  { id: 2, unit: "UNIT 01  ◆  暗号・エンコード", rank: "ROOKIE",
+    title: "シーザー暗号解読",
+    question: "暗号文 'Khoor Zruog' をシフト数3で解読して元の平文を出力してください。\nシーザー暗号はアルファベットを一定数ずらす暗号です。",
+    hint: "各文字を逆方向（- shift）にずらして復号します。アルファベット以外はそのまま出力。",
+    answer:
+`ciphertext = 'Khoor Zruog'
+shift = 3
+result = ''
+for c in ciphertext:
+    if 'a' <= c <= 'z':
+        result += chr((ord(c) - ord('a') - shift) % 26 + ord('a'))
+    elif 'A' <= c <= 'Z':
+        result += chr((ord(c) - ord('A') - shift) % 26 + ord('A'))
+    else:
+        result += c
+print(result)`,
+    expected: "Hello World",
+    explanation: "シーザー暗号はJulius Caesarが実際に使った暗号。今日では頻度分析で簡単に解読できる。CTFの初歩として必ず登場する古典暗号。" },
+
+  { id: 3, unit: "UNIT 01  ◆  暗号・エンコード", rank: "BRONZE",
+    title: "16進数ダンプ",
+    question: "文字列 'HACK' の各文字のASCIIコードを16進数で出力してください。\n形式: スペース区切り（例: 48 41 43 4b）",
+    hint: "ord(c)で文字コード取得、format(n, '02x')で2桁16進数に変換します。",
+    answer:
+`text = 'HACK'
+print(' '.join(format(ord(c), '02x') for c in text))`,
+    expected: "48 41 43 4b",
+    explanation: "16進ダンプはバイナリ解析・デバッガ・メモリ調査の基本ツール。xxd、hexdump等のコマンドが同様の処理を行う。H=0x48, A=0x41, C=0x43, K=0x4b。" },
+
+  { id: 4, unit: "UNIT 01  ◆  暗号・エンコード", rank: "BRONZE",
+    title: "XOR暗号化",
+    question: "文字列 'SECRET' の各文字をキー42でXOR演算し、結果を16進数で出力してください。\n形式: スペース区切り（hex()関数使用）",
+    hint: "ord(c) ^ key でXOR演算。hex(n)で0x付き16進数に変換できます。",
+    answer:
+`text = 'SECRET'
+key = 42
+result = [ord(c) ^ key for c in text]
+print(' '.join(hex(b) for b in result))`,
+    expected: "0x79 0x6f 0x69 0x78 0x6f 0x7e",
+    explanation: "XOR暗号はビット演算による対称暗号。同じキーで2回XORすると元に戻る性質がある。現代のAES暗号でもXORが基本演算として使われる。" },
+
+  { id: 5, unit: "UNIT 02  ◆  認証・パスワード解析", rank: "ROOKIE",
+    title: "パスワード強度判定",
+    question: "パスワード 'P@ssw0rd!' の強度を判定して各条件を出力してください。\n条件: 大文字あり/小文字あり/数字あり/記号あり/8文字以上/総合評価（STRONG/MEDIUM/WEAK）",
+    hint: "str.isupper(), islower(), isdigit(), isalnum()メソッドが使えます。any()で全体チェック。",
+    answer:
+`pw = 'P@ssw0rd!'
+has_upper = any(c.isupper() for c in pw)
+has_lower = any(c.islower() for c in pw)
+has_digit = any(c.isdigit() for c in pw)
+has_special = any(not c.isalnum() for c in pw)
+long_enough = len(pw) >= 8
+score = sum([has_upper, has_lower, has_digit, has_special, long_enough])
+strength = 'STRONG' if score == 5 else 'MEDIUM' if score >= 3 else 'WEAK'
+print(f'has_upper: {has_upper}')
+print(f'has_lower: {has_lower}')
+print(f'has_digit: {has_digit}')
+print(f'has_special: {has_special}')
+print(f'length >= 8: {long_enough}')
+print(f'strength: {strength}')`,
+    expected: "has_upper: True\nhas_lower: True\nhas_digit: True\nhas_special: True\nlength >= 8: True\nstrength: STRONG",
+    explanation: "パスワード強度チェッカーはWebアプリのセキュリティ基本機能。NIST SP 800-63ではランダム性と長さが重視される。記号混在より長いパスフレーズの方が解読困難。" },
+
+  { id: 6, unit: "UNIT 02  ◆  認証・パスワード解析", rank: "BRONZE",
+    title: "ブルートフォースPIN解析",
+    question: "4桁PINコードのうち、全桁が偶数（0,2,4,6,8）のみで構成されるPINが何通りあるか求めてください。\n出力形式: 'Total combinations: N'",
+    hint: "range(10000)でループし、f'{i:04d}'で4桁文字列に変換。all()で全桁チェック。",
+    answer:
+`count = 0
+for i in range(10000):
+    pin = f'{i:04d}'
+    if all(int(d) % 2 == 0 for d in pin):
+        count += 1
+print(f'Total combinations: {count}')`,
+    expected: "Total combinations: 625",
+    explanation: "ブルートフォース（総当たり）の基礎。偶数桁5種類×4桁=5^4=625通り。GPUを使えばオフラインで秒間数十億回試行できるため、長く複雑なパスワードが必要な理由がわかる。" },
+
+  { id: 7, unit: "UNIT 02  ◆  認証・パスワード解析", rank: "BRONZE",
+    title: "ハッシュ照合（辞書攻撃）",
+    question: "簡易ハッシュ関数を使って 'admin' のハッシュ値を求め、辞書から一致するパスワードを探してください。\nhash_pw(s) = sum(ord(c)*(i+1) for i,c in enumerate(s)) % 1000",
+    hint: "ターゲットのハッシュを先に計算し、辞書の各パスワードのハッシュと比較します。",
+    answer:
+`def hash_pw(s):
+    return sum(ord(c) * (i + 1) for i, c in enumerate(s)) % 1000
+
+common_pws = ['password', 'letmein', 'admin', '123456']
+target_hash = hash_pw('admin')
+print(f'Target hash: {target_hash}')
+for pw in common_pws:
+    if hash_pw(pw) == target_hash:
+        print(f'Match found: {pw}')
+        break`,
+    expected: "Target hash: 594\nMatch found: admin",
+    explanation: "辞書攻撃は事前計算されたハッシュ一覧でパスワードを特定する。対策はソルト（ランダム文字列を追加してからハッシュ化）。bcrypt/scryptが現代の推奨アルゴリズム。" },
+
+  { id: 8, unit: "UNIT 03  ◆  ネットワーク解析", rank: "BRONZE",
+    title: "IPアドレス検証",
+    question: "リスト内の各IPアドレスが有効か判定して出力してください。\nチェック: ドット区切り4セクション＆各セクション0〜255の数値",
+    hint: "split('.')で分割し、isdigit()と範囲チェックを組み合わせます。",
+    answer:
+`def is_valid_ip(ip):
+    parts = ip.split('.')
+    if len(parts) != 4:
+        return False
+    for part in parts:
+        if not part.isdigit():
+            return False
+        if not (0 <= int(part) <= 255):
+            return False
+    return True
+
+ips = ['192.168.1.1', '256.0.0.1', '10.0.0', '172.16.254.1', '999.999.999.999']
+for ip in ips:
+    print(f'{ip}: {"VALID" if is_valid_ip(ip) else "INVALID"}')`,
+    expected: "192.168.1.1: VALID\n256.0.0.1: INVALID\n10.0.0: INVALID\n172.16.254.1: VALID\n999.999.999.999: INVALID",
+    explanation: "IPアドレス検証はネットワークツールの基本。RFC 791でIPv4は各オクテット0〜255と規定。Pythonのipaddressモジュールを使うとより厳密に検証できる。" },
+
+  { id: 9, unit: "UNIT 03  ◆  ネットワーク解析", rank: "SILVER",
+    title: "ポートスキャン結果解析",
+    question: "ポートスキャンデータを解析し、OPENポートの数とリスク評価を出力してください。\nSSH・RDPはHIGH、それ以外はMEDIUMとする。",
+    hint: "リスト内包表記でOPENのみ抽出し、サービス名でリスク分類します。",
+    answer:
+`scan_data = [
+    ('22', 'OPEN', 'SSH'),
+    ('80', 'OPEN', 'HTTP'),
+    ('443', 'OPEN', 'HTTPS'),
+    ('8080', 'CLOSED', 'HTTP-ALT'),
+    ('3306', 'FILTERED', 'MySQL'),
+    ('3389', 'OPEN', 'RDP'),
+]
+open_ports = [(port, svc) for port, status, svc in scan_data if status == 'OPEN']
+print(f'Open ports: {len(open_ports)}')
+for port, svc in open_ports:
+    risk = 'HIGH' if svc in ['SSH', 'RDP'] else 'MEDIUM'
+    print(f'  :{port} ({svc}) - Risk: {risk}')`,
+    expected: "Open ports: 4\n  :22 (SSH) - Risk: HIGH\n  :80 (HTTP) - Risk: MEDIUM\n  :443 (HTTPS) - Risk: MEDIUM\n  :3389 (RDP) - Risk: HIGH",
+    explanation: "ポートスキャンはNmapが代表的ツール。22(SSH)/3389(RDP)はブルートフォース攻撃の主要ターゲット。不要なポートは閉じ、VPN経由のみアクセス可にするのがベストプラクティス。" },
+
+  { id: 10, unit: "UNIT 03  ◆  ネットワーク解析", rank: "SILVER",
+    title: "アクセスログ解析",
+    question: "アクセスログを解析してIPアドレス別リクエスト数を集計し、5回超のIPに[SUSPICIOUS]フラグを付けて出力してください。リクエスト数の多い順に表示。",
+    hint: "辞書でIP別カウント、sorted()のkeyでソート、count > 5でフラグ追加。",
+    answer:
+`log = [
+    '192.168.1.100 GET /login',
+    '192.168.1.100 GET /login',
+    '192.168.1.100 POST /login',
+    '192.168.1.100 POST /login',
+    '192.168.1.100 POST /login',
+    '192.168.1.100 POST /login',
+    '10.0.0.5 GET /index',
+    '10.0.0.5 GET /about',
+    '172.16.0.1 GET /admin',
+    '172.16.0.1 GET /admin',
+]
+ip_counts = {}
+for line in log:
+    ip = line.split()[0]
+    ip_counts[ip] = ip_counts.get(ip, 0) + 1
+
+print('IP Analysis:')
+for ip, count in sorted(ip_counts.items(), key=lambda x: -x[1]):
+    flag = ' [SUSPICIOUS]' if count > 5 else ''
+    print(f'  {ip}: {count} requests{flag}')`,
+    expected: "IP Analysis:\n  192.168.1.100: 6 requests [SUSPICIOUS]\n  10.0.0.5: 2 requests\n  172.16.0.1: 2 requests",
+    explanation: "ログ解析はSOC（セキュリティオペレーションセンター）の日常業務。SIEMツール（Splunk/ELKスタック）が自動化するが、Pythonでも同様の分析が可能。短時間の大量アクセスはブルートフォースやDDoSの兆候。" },
+
+  { id: 11, unit: "UNIT 04  ◆  バイナリ・リバース", rank: "BRONZE",
+    title: "バイナリ→テキスト変換",
+    question: "バイナリ文字列 '01001000 01000001 01000011 01001011' をASCIIテキストに変換して出力してください。",
+    hint: "split()でスペース区切り、int(byte, 2)で2進数→整数、chr()で文字に変換します。",
+    answer:
+`binary_str = '01001000 01000001 01000011 01001011'
+result = ''.join(chr(int(byte, 2)) for byte in binary_str.split())
+print(result)`,
+    expected: "HACK",
+    explanation: "バイナリ解析はリバースエンジニアリングの基礎。01001000=72=H、01000001=65=A。バイナリエディタ（HxD/010 Editor）でEXEファイルの構造を直接読む技術の土台となる。" },
+
+  { id: 12, unit: "UNIT 04  ◆  バイナリ・リバース", rank: "SILVER",
+    title: "多段暗号解読（逆順＋ROT-13）",
+    question: "暗号文 '!dlroW ,olleH' を以下の手順で復号してください。\nStep 1: 文字列を逆順にする\nStep 2: ROT-13を適用する\n各ステップの結果を出力。",
+    hint: "文字列の逆順は[::-1]スライス。ROT-13はアルファベットのみ13文字ずらします。",
+    answer:
+`ciphertext = '!dlroW ,olleH'
+step1 = ciphertext[::-1]
+result = ''
+for c in step1:
+    if 'a' <= c <= 'z':
+        result += chr((ord(c) - ord('a') + 13) % 26 + ord('a'))
+    elif 'A' <= c <= 'Z':
+        result += chr((ord(c) - ord('A') + 13) % 26 + ord('A'))
+    else:
+        result += c
+print(f'Step 1 (reversed): {step1}')
+print(f'Step 2 (ROT-13): {result}')`,
+    expected: "Step 1 (reversed): Hello, World!\nStep 2 (ROT-13): Uryyb, Jbeyq!",
+    explanation: "多段暗号は各層を逆順に解読することで復号する。CTF（Capture The Flag）競技でよく出題される形式。暗号化と復号の順序が逆になることを忘れずに。" },
+
+  { id: 13, unit: "UNIT 04  ◆  バイナリ・リバース", rank: "SILVER",
+    title: "文字列難読化",
+    question: "obfuscate(s)関数を実装してください。\nアルゴリズム: 文字列を逆順にしてから各文字コードを+1する。\n復号するdeobfuscate(s)も実装し、'ATTACK'を難読化→復元。",
+    hint: "s[::-1]で逆順、chr(ord(c)+1)で文字コードを+1。復号は逆順にして-1。",
+    answer:
+`def obfuscate(s):
+    return ''.join(chr(ord(c) + 1) for c in s[::-1])
+
+def deobfuscate(s):
+    return ''.join(chr(ord(c) - 1) for c in s[::-1])
+
+message = 'ATTACK'
+obfuscated = obfuscate(message)
+recovered = deobfuscate(obfuscated)
+print(f'Original:    {message}')
+print(f'Obfuscated:  {obfuscated}')
+print(f'Recovered:   {recovered}')`,
+    expected: "Original:    ATTACK\nObfuscated:  LDBUUB\nRecovered:   ATTACK",
+    explanation: "文字列難読化はマルウェアがシグネチャ検知を回避するためによく使う技術。IDAやGhidraで静的解析する際に現れるパターン。逆順+シフトの組み合わせは単純だが、自動解析ツールを一時的に欺ける。" },
+
+  { id: 14, unit: "UNIT 05  ◆  応用暗号技術", rank: "GOLD",
+    title: "IPv4パケットヘッダー解析",
+    question: "16進数のIPv4パケットヘッダーを解析してバージョン・ヘッダ長・TTL・プロトコル・送受信IPを出力してください。\nパケット: '45000028000040004006000ac0a801010a0a0a01'",
+    hint: "bytes.fromhex()でバイト列に変換。data[0]>>4でバージョン、data[12:16]でsrc IP。プロトコル6=TCP。",
+    answer:
+`packet = '45000028000040004006000ac0a801010a0a0a01'
+
+def parse_ipv4_header(hex_str):
+    data = bytes.fromhex(hex_str)
+    version = data[0] >> 4
+    ihl = (data[0] & 0x0F) * 4
+    ttl = data[8]
+    protocol = data[9]
+    src_ip = '.'.join(str(b) for b in data[12:16])
+    dst_ip = '.'.join(str(b) for b in data[16:20])
+    proto_name = {6: 'TCP', 17: 'UDP', 1: 'ICMP'}.get(protocol, 'UNKNOWN')
+    print(f'Version: IPv{version}')
+    print(f'Header Length: {ihl} bytes')
+    print(f'TTL: {ttl}')
+    print(f'Protocol: {proto_name} ({protocol})')
+    print(f'Source IP: {src_ip}')
+    print(f'Destination IP: {dst_ip}')
+
+parse_ipv4_header(packet)`,
+    expected: "Version: IPv4\nHeader Length: 20 bytes\nTTL: 64\nProtocol: TCP (6)\nSource IP: 192.168.1.1\nDestination IP: 10.10.10.1",
+    explanation: "パケット解析はWiresharkやtcpdumpが行う処理の核心。RFC 791でIPv4ヘッダー構造が定義されている。バイト0のbit7-4がバージョン、bit3-0がヘッダ長（32bit単位）。TTLはルーターを通るたびに1減り0になるとパケットが破棄される。" },
+
+  { id: 15, unit: "UNIT 05  ◆  応用暗号技術", rank: "GOLD",
+    title: "ヴィジュネル暗号",
+    question: "ヴィジュネル暗号の暗号化・復号関数を実装してください。\n平文 'HELLO WORLD'、鍵 'KEY' で暗号化し、復号して元に戻ることを確認。",
+    hint: "鍵文字のシフト量 = ord(key[ki%len(key)]) - ord('A')。アルファベット以外はそのまま。kiはアルファベット文字のみカウント。",
+    answer:
+`def vigenere(text, key, encrypt=True):
+    result = ''
+    key = key.upper()
+    ki = 0
+    for c in text:
+        if c.isalpha():
+            shift = ord(key[ki % len(key)]) - ord('A')
+            if not encrypt:
+                shift = -shift
+            base = ord('A') if c.isupper() else ord('a')
+            result += chr((ord(c) - base + shift) % 26 + base)
+            ki += 1
+        else:
+            result += c
+    return result
+
+plaintext = 'HELLO WORLD'
+key = 'KEY'
+encrypted = vigenere(plaintext, key)
+decrypted = vigenere(encrypted, key, encrypt=False)
+print(f'Plaintext:  {plaintext}')
+print(f'Key:        {key}')
+print(f'Encrypted:  {encrypted}')
+print(f'Decrypted:  {decrypted}')`,
+    expected: "Plaintext:  HELLO WORLD\nKey:        KEY\nEncrypted:  RIJVS UYVJN\nDecrypted:  HELLO WORLD",
+    explanation: "ヴィジュネル暗号は16世紀に発明された多表式換字暗号。単一シフトのシーザー暗号より解読困難だが、鍵の長さが分かれば頻度分析で解読できる（カシスキー検定）。現代ではAES-GCMが標準的。" },
+];
+
 // ===== 言語別データ取得ヘルパー =====
 
 function getProblems() {
@@ -30290,6 +30589,7 @@ function getProblems() {
   if (currentLanguage === 'bash') return bashProblems;
   if (currentLanguage === 'regex') return regexProblems;
   if (currentLanguage === 'php') return phpProblems;
+  if (currentLanguage === 'dark') return darkProblems;
   return problems;
 }
 
@@ -30310,6 +30610,7 @@ function getMissions() {
   if (currentLanguage === 'bash') return bashMissions;
   if (currentLanguage === 'regex') return regexMissions;
   if (currentLanguage === 'php') return phpMissions;
+  if (currentLanguage === 'dark') return [];
   return missions;
 }
 
@@ -30330,6 +30631,7 @@ function getUnitGuides() {
   if (currentLanguage === 'bash') return bashUnitGuides;
   if (currentLanguage === 'regex') return regexUnitGuides;
   if (currentLanguage === 'php') return phpUnitGuides;
+  if (currentLanguage === 'dark') return [];
   return unitGuides;
 }
 
@@ -30369,6 +30671,7 @@ function getCompiler() {
   if (currentLanguage === 'bash') return 'bash';
   if (currentLanguage === 'regex') return 'nodejs-head';
   if (currentLanguage === 'php') return 'php-8.2.0';
+  if (currentLanguage === 'dark') return 'cpython-3.12.7';
   return 'gcc-head';
 }
 
@@ -30389,6 +30692,7 @@ function getAceMode() {
   if (currentLanguage === 'bash') return 'ace/mode/sh';
   if (currentLanguage === 'regex') return 'ace/mode/javascript';
   if (currentLanguage === 'php') return 'ace/mode/php';
+  if (currentLanguage === 'dark') return 'ace/mode/python';
   return 'ace/mode/c_cpp';
 }
 
@@ -30458,6 +30762,10 @@ function getStarterCode() {
     if (p) return '<?php\n// [問題] ' + p.question + '\n\n// ここにPHPコードを書く\n';
     return '<?php\n// ここにPHPコードを書く\n';
   }
+  if (currentLanguage === 'dark') {
+    if (p) return '# [DARK OPS] ' + p.question.split('\n')[0] + '\n\n# ここにコードを書く\n';
+    return '# ここにコードを書く\n';
+  }
   if (p) return '// [問題] ' + p.question + '\n' + ACE_STARTER;
   return ACE_STARTER;
 }
@@ -30479,6 +30787,7 @@ function getLangName() {
   if (currentLanguage === 'bash') return 'Bash';
   if (currentLanguage === 'regex') return 'Regex';
   if (currentLanguage === 'php') return 'PHP';
+  if (currentLanguage === 'dark') return '☠ DARK OPS';
   return 'C++';
 }
 
@@ -32882,7 +33191,12 @@ function renderCareer() {
       '</button>' +
       (_showDarkSide
         ? '<div class="dark-side-warning">⚠ これらは犯罪行為です。参考・教育目的のみ。実行した場合は逮捕・起訴されます。</div>' +
-          '<div class="career-cards dark-career-cards">' + darkCardsHTML + '</div>'
+          '<div class="career-cards dark-career-cards">' + darkCardsHTML + '</div>' +
+          '<button class="dark-training-btn" onclick="openDarkTraining()">' +
+            '<span class="dtb-icon">⚡</span>' +
+            '<span class="dtb-label">DARK OPS TRAINING  //  専用問題を解く（15問）</span>' +
+            '<span class="dtb-arrow">▶</span>' +
+          '</button>'
         : '') +
     '</div>';
 
@@ -33186,6 +33500,10 @@ function toggleDarkSide() {
 function toggleDarkCareer(id) {
   _darkCareerSelected = (_darkCareerSelected === id) ? null : id;
   renderCareer();
+}
+
+function openDarkTraining() {
+  selectLanguage('dark');
 }
 
 async function renderRanking() {
