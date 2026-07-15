@@ -32872,6 +32872,96 @@ var DARK_CAREERS = [
       { phase: 'professional', label: '逮捕・有罪',            color: '#330066', desc: '詐欺罪：懲役10年以下（日本）' },
     ]
   },
+  {
+    id: 'zeroday', icon: '🕳️', color: '#FF8C00',
+    title: 'ゼロデイブローカー',
+    desc: '未公開の脆弱性（ゼロデイ）を発見または買い取り、国家機関・犯罪組織・スパイ会社に高額で売却する。グレーゾーンから違法まで幅広い。',
+    warning: '不正競争防止法・外為法（国家への輸出規制）・共犯罪',
+    salary: '1件数百万〜数億円 ※摘発リスク大', riskLevel: 4,
+    csLangs: ['c', 'cpp', 'python'],
+    steps: [
+      { phase: 'beginner',     label: 'セキュリティ基礎',      color: '#FF8C00', desc: 'バイナリ解析・脆弱性の仕組みを深く理解' },
+      { phase: 'beginner',     label: 'ファジング入門',         color: '#FF9900', desc: 'AFL・libFuzzerでクラッシュを大量生成' },
+      { phase: 'basic',        label: 'エクスプロイト開発',     color: '#FFAA00', desc: 'バッファオーバーフロー・UAF を実際に悪用' },
+      { phase: 'basic',        label: '買取市場の開拓',         color: '#FF8800', desc: 'Zerodium・各国諜報機関へのコンタクト' },
+      { phase: 'advanced',     label: 'チェーン構築',           color: '#FF6600', desc: '複数の脆弱性を組み合わせてRCE達成' },
+      { phase: 'advanced',     label: '匿名での取引',           color: '#FF4400', desc: '暗号通貨・匿名通信で身元を隠して売却' },
+      { phase: 'professional', label: '国際輸出規制違反',       color: '#FF2200', desc: '特定国への売却が外為法違反に問われる' },
+      { phase: 'professional', label: '共犯・諜報事件に巻き込まれる', color: '#CC4400', desc: 'サイバー兵器売買として国際問題化するケースも' },
+    ]
+  },
+  {
+    id: 'ddos', icon: '💥', color: '#FF4500',
+    title: 'DDoS請負人 / Booter運営者',
+    desc: 'DDoS攻撃を代行するサービス（Booter / Stresser）を運営し、依頼者から報酬を得る。ゲームサーバー・競合企業・個人への攻撃が多い。',
+    warning: '電子計算機損壊等業務妨害罪・不正アクセス禁止法',
+    salary: '月数十万（すぐ摘発）', riskLevel: 4,
+    csLangs: ['python', 'c', 'bash'],
+    steps: [
+      { phase: 'beginner',     label: 'ネットワーク基礎',       color: '#FF6633', desc: 'UDP/TCP・増幅攻撃・SYN Flood の仕組み' },
+      { phase: 'beginner',     label: 'ボットネット入手',        color: '#FF5522', desc: '感染済みデバイスを購入または自作マルウェアで構築' },
+      { phase: 'basic',        label: '増幅リフレクション攻撃',  color: '#FF4400', desc: 'DNS/NTP/Memcached を使い帯域を数百倍に増幅' },
+      { phase: 'basic',        label: 'Booterサイト構築',        color: '#FF3300', desc: '注文フォーム・決済（仮想通貨）・管理画面を実装' },
+      { phase: 'advanced',     label: 'レイヤー7攻撃',           color: '#DD2200', desc: 'HTTP/S アプリ層への低速・巧妙な攻撃' },
+      { phase: 'advanced',     label: 'アンチDDoS回避',          color: '#CC2200', desc: 'Cloudflare 等の防御をすり抜ける手法' },
+      { phase: 'professional', label: 'FBIによるテイクダウン',   color: '#FF4500', desc: 'Operation PowerOFF 等の国際捜査で摘発' },
+      { phase: 'professional', label: '逮捕・服役',              color: '#881100', desc: '懲役数年・多額の損害賠償請求を受ける' },
+    ]
+  },
+  {
+    id: 'cryptoscam', icon: '🪙', color: '#FFD700',
+    title: '仮想通貨詐欺師 / ラグプル犯',
+    desc: '偽のDeFiプロジェクト・NFT・仮想通貨を作成し投資家を集めた後、資金ごと逃走（ラグプル）する。スマートコントラクトの知識が必要。',
+    warning: '詐欺罪・金融商品取引法・組織犯罪処罰法',
+    salary: '数億円（短期） ※凍結・没収', riskLevel: 5,
+    csLangs: ['javascript', 'python'],
+    steps: [
+      { phase: 'beginner',     label: 'ブロックチェーン基礎',   color: '#FFD700', desc: 'Ethereum・Solidity・ウォレットの仕組み' },
+      { phase: 'beginner',     label: 'トークン発行',            color: '#FFCC00', desc: 'ERC-20トークンをコピーして独自コインを作成' },
+      { phase: 'basic',        label: '偽プロジェクト演出',      color: '#FFBB00', desc: '豪華なホワイトペーパー・偽チーム・SNS炎上マーケ' },
+      { phase: 'basic',        label: 'DEXへの流動性提供',       color: '#FFAA00', desc: 'Uniswap等に上場し取引可能に見せる' },
+      { phase: 'advanced',     label: '価格操作・ポンプ',        color: '#FF9900', desc: 'インフルエンサー買収・自作自演の価格吊り上げ' },
+      { phase: 'advanced',     label: 'ラグプル実行',            color: '#FF8800', desc: '流動性を一瞬で引き抜き・投資家の資産を奪取' },
+      { phase: 'professional', label: 'オンチェーン追跡',        color: '#FFD700', desc: 'Chainalysis・ブロックチェーン解析で資金移動を追跡' },
+      { phase: 'professional', label: '逮捕・資産凍結',          color: '#996600', desc: '詐欺罪・暗号資産全額没収・国際引き渡し' },
+    ]
+  },
+  {
+    id: 'botshop', icon: '🤖', color: '#00BFFF',
+    title: 'BOT屋 / 自動化詐欺師',
+    desc: 'チケット転売BOT・フォロワー水増し・ゲームRMTボット・レビュー操作など、自動化で不正利益を得る。一部は法的グレーゾーン。',
+    warning: '不正競争防止法・電子計算機不正使用・各種利用規約違反',
+    salary: '月数十万〜数百万 ※BAN・逮捕リスク', riskLevel: 3,
+    csLangs: ['python', 'javascript'],
+    steps: [
+      { phase: 'beginner',     label: 'Python / JS 基礎',       color: '#00BFFF', desc: 'スクリプト・HTTPリクエスト・DOM操作' },
+      { phase: 'beginner',     label: 'Webスクレイピング',       color: '#00AAEE', desc: 'requests・Playwright・Puppeteer でサイト操作' },
+      { phase: 'basic',        label: 'Bot検知の回避',           color: '#0099DD', desc: 'User-Agent偽装・IPローテーション・reCAPTCHA回避' },
+      { phase: 'basic',        label: '大量アカウント管理',      color: '#0088CC', desc: '複数アカウントの自動作成・セッション管理' },
+      { phase: 'advanced',     label: 'ニッチ市場の開拓',        color: '#0077BB', desc: 'チケット・スニーカー・限定品の転売自動化' },
+      { phase: 'advanced',     label: '収益の最大化',            color: '#0066AA', desc: 'フォロワー売買・レビュー農場・RMTの自動化' },
+      { phase: 'professional', label: '利用規約違反でBAN',       color: '#00BFFF', desc: 'プラットフォームに検知され全アカウント凍結' },
+      { phase: 'professional', label: '法的措置・逮捕',          color: '#004488', desc: 'チケット不正転売禁止法・不正競争防止法で摘発' },
+    ]
+  },
+  {
+    id: 'spyware', icon: '👁️', color: '#AA00FF',
+    title: 'スパイウェア開発者 / 監視ツール販売者',
+    desc: 'ストーカーウェア・企業スパイツール・国家監視ソフトを開発・販売する。NSO GroupのPegasusが有名。開発者も共犯として訴追される。',
+    warning: 'ウイルス作成罪・プライバシー侵害・ストーカー規制法違反',
+    salary: '法人向けは数億円 ※共犯として訴追', riskLevel: 5,
+    csLangs: ['c', 'cpp', 'swift', 'kotlin'],
+    steps: [
+      { phase: 'beginner',     label: 'モバイル開発基礎',       color: '#AA00FF', desc: 'iOS（Swift）/ Android（Kotlin）の仕組み' },
+      { phase: 'beginner',     label: 'OS内部構造の理解',        color: '#9900EE', desc: 'カーネル・プロセス・パーミッション管理' },
+      { phase: 'basic',        label: 'バックグラウンド常駐',   color: '#8800DD', desc: 'ユーザーに気づかれず動作し続ける実装' },
+      { phase: 'basic',        label: 'データ収集実装',          color: '#7700CC', desc: 'GPS・カメラ・マイク・メッセージを秘密裏に送信' },
+      { phase: 'advanced',     label: '検知回避・難読化',        color: '#6600BB', desc: 'セキュリティソフト・App Store審査を回避' },
+      { phase: 'advanced',     label: '販売・営業',              color: '#5500AA', desc: '政府機関・DV加害者・企業スパイへの販売' },
+      { phase: 'professional', label: '国際人権団体に告発',      color: '#AA00FF', desc: 'Amnesty・CitizenLabに発見・公開調査される' },
+      { phase: 'professional', label: '訴追・制裁',              color: '#440088', desc: '米国財務省制裁・刑事訴追・会社倒産（NSO事例）' },
+    ]
+  },
 ];
 
 var _showDarkSide = false;
