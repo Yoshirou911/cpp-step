@@ -33184,23 +33184,24 @@ function renderCareer() {
     '</div>';
   }).join('');
 
-  var darkSectionHTML =
-    '<div class="dark-side-section">' +
-      '<button class="dark-side-toggle" onclick="toggleDarkSide()">' +
-        '<span class="dst-icon">' + (_showDarkSide ? '💀' : '☠') + '</span>' +
-        '<span class="dst-label">' + (_showDarkSide ? '— DARK OPS CLASSIFIED —' : '▸ DARK OPS  //  CLASSIFIED') + '</span>' +
-        '<span class="dst-arrow">' + (_showDarkSide ? '▲' : '▼') + '</span>' +
-      '</button>' +
-      (_showDarkSide
-        ? '<div class="dark-side-warning">⚠ これらは犯罪行為です。参考・教育目的のみ。実行した場合は逮捕・起訴されます。</div>' +
-          '<div class="career-cards dark-career-cards">' + darkCardsHTML + '</div>' +
-          '<button class="dark-training-btn" onclick="openDarkTraining()">' +
-            '<span class="dtb-icon">⚡</span>' +
-            '<span class="dtb-label">DARK OPS TRAINING  //  専用問題を解く（15問）</span>' +
-            '<span class="dtb-arrow">▶</span>' +
-          '</button>'
-        : '') +
-    '</div>';
+  var darkSectionHTML = currentUserIsAdmin
+    ? '<div class="dark-side-section">' +
+        '<button class="dark-side-toggle" onclick="toggleDarkSide()">' +
+          '<span class="dst-icon">' + (_showDarkSide ? '💀' : '☠') + '</span>' +
+          '<span class="dst-label">' + (_showDarkSide ? '— DARK OPS CLASSIFIED —' : '▸ DARK OPS  //  CLASSIFIED') + '</span>' +
+          '<span class="dst-arrow">' + (_showDarkSide ? '▲' : '▼') + '</span>' +
+        '</button>' +
+        (_showDarkSide
+          ? '<div class="dark-side-warning">⚠ これらは犯罪行為です。参考・教育目的のみ。実行した場合は逮捕・起訴されます。</div>' +
+            '<div class="career-cards dark-career-cards">' + darkCardsHTML + '</div>' +
+            '<button class="dark-training-btn" onclick="openDarkTraining()">' +
+              '<span class="dtb-icon">⚡</span>' +
+              '<span class="dtb-label">DARK OPS TRAINING  //  専用問題を解く（15問）</span>' +
+              '<span class="dtb-arrow">▶</span>' +
+            '</button>'
+          : '') +
+      '</div>'
+    : '';
 
   el.innerHTML =
     '<div class="career-page">' +
@@ -33505,6 +33506,7 @@ function toggleDarkCareer(id) {
 }
 
 function openDarkTraining() {
+  if (!currentUserIsAdmin) return;
   selectLanguage('dark');
 }
 
