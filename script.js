@@ -32722,6 +32722,85 @@ function renderCareer() {
     '</div>';
   }).join('');
 
+  // 闇の仕事カード
+  var darkCardsHTML = DARK_CAREERS.map(function(c) {
+    var isOpen = _darkCareerSelected === c.id;
+
+    var roadmapHTML = CAREER_PHASES.map(function(phase) {
+      var phaseSteps = c.steps.filter(function(s) { return s.phase === phase.key; });
+      if (!phaseSteps.length) return '';
+      var stepsHTML = phaseSteps.map(function(step) {
+        return '<div class="cr-step">' +
+          '<div class="cr-step-dot" style="background:' + step.color + ';box-shadow:0 0 6px ' + step.color + '88"></div>' +
+          '<div class="cr-step-body">' +
+            '<div class="cr-step-label" style="color:' + step.color + '">' + step.label + '</div>' +
+            '<div class="cr-step-desc">' + step.desc + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+      return '<div class="cr-phase">' +
+        '<div class="cr-phase-head">' +
+          '<div class="cr-phase-badge" style="background:' + phase.color + '22;border-color:' + phase.color + '55;color:' + phase.color + '">' + phase.label + '</div>' +
+          '<div class="cr-phase-line" style="background:linear-gradient(90deg,' + phase.color + '40,transparent)"></div>' +
+        '</div>' +
+        '<div class="cr-phase-steps">' + stepsHTML + '</div>' +
+      '</div>';
+    }).join('');
+
+    var riskDots = '';
+    for (var d = 0; d < 5; d++) {
+      riskDots += '<span class="cr-demand-dot' + (d < c.riskLevel ? ' cr-demand-on' : '') + '" style="' + (d < c.riskLevel ? 'background:#FF2222;box-shadow:0 0 5px #FF2222' : '') + '"></span>';
+    }
+
+    var langTagsHTML = c.csLangs.map(function(lid) {
+      var ld = _getLangData(lid);
+      var lcolor = ld ? ld.color : '#FF6B00';
+      var lname  = ld ? ld.name  : lid;
+      return '<div class="cr-lang-tag" style="border-color:' + lcolor + '55">' +
+        '<span class="cr-lang-name" style="color:' + lcolor + '">' + lname + '</span>' +
+        '<div class="cr-lang-bar-wrap"><div class="cr-lang-bar-fill" style="width:0%;background:' + lcolor + '"></div></div>' +
+        '<span class="cr-lang-pct" style="color:' + lcolor + '">--</span>' +
+      '</div>';
+    }).join('');
+
+    return '<div class="career-card dark-career-card' + (isOpen ? ' career-card-open' : '') + '" onclick="toggleDarkCareer(\'' + c.id + '\')" style="--cc:' + c.color + '">' +
+      '<div class="career-card-head">' +
+        '<div class="career-card-icon">' + c.icon + '</div>' +
+        '<div class="career-card-info">' +
+          '<div class="career-card-title">' + c.title + '</div>' +
+          '<div class="career-card-sub">' +
+            '<span class="cr-salary" style="color:#FF4444">⚠ ' + c.salary + '</span>' +
+            '<span class="cr-demand" style="margin-left:6px">' + riskDots + ' リスク</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="career-card-arrow">' + (isOpen ? '▲' : '▼') + '</div>' +
+      '</div>' +
+      (isOpen
+        ? '<div class="career-card-body" onclick="event.stopPropagation()">' +
+            '<div class="dark-warning-badge">⚠ 違法 — ' + c.warning + '</div>' +
+            '<div class="career-desc">' + c.desc + '</div>' +
+            '<div class="cr-section-label">▸ 末路ロードマップ（難易度別）</div>' +
+            '<div class="cr-roadmap-phases">' + roadmapHTML + '</div>' +
+            '<div class="cr-section-label">▸ 悪用されるスキル</div>' +
+            '<div class="cr-lang-tags">' + langTagsHTML + '</div>' +
+          '</div>'
+        : '') +
+    '</div>';
+  }).join('');
+
+  var darkSectionHTML =
+    '<div class="dark-side-section">' +
+      '<button class="dark-side-toggle" onclick="toggleDarkSide()">' +
+        '<span class="dst-icon">' + (_showDarkSide ? '💀' : '⚠') + '</span>' +
+        '<span class="dst-label">' + (_showDarkSide ? '闇の仕事を隠す' : '闇の仕事を見る（閲覧注意）') + '</span>' +
+        '<span class="dst-arrow">' + (_showDarkSide ? '▲' : '▼') + '</span>' +
+      '</button>' +
+      (_showDarkSide
+        ? '<div class="dark-side-warning">⚠ これらは犯罪行為です。参考・教育目的のみ。実行した場合は逮捕・起訴されます。</div>' +
+          '<div class="career-cards dark-career-cards">' + darkCardsHTML + '</div>'
+        : '') +
+    '</div>';
+
   el.innerHTML =
     '<div class="career-page">' +
       '<div class="career-header">' +
@@ -32729,11 +32808,82 @@ function renderCareer() {
         '<div class="career-header-sub">なりたい職業を選んで、必要なスキルと道筋を確認しよう</div>' +
       '</div>' +
       '<div class="career-cards">' + cardsHTML + '</div>' +
+      darkSectionHTML +
     '</div>';
 }
 
 function toggleCareer(id) {
   _careerSelected = (_careerSelected === id) ? null : id;
+  renderCareer();
+}
+
+var DARK_CAREERS = [
+  {
+    id: 'cracker', icon: '💀', color: '#FF2222',
+    title: 'クラッカー / ブラックハットハッカー',
+    desc: '他者のシステムに無断侵入し、情報を盗んだり破壊したりする。完全に違法。摘発されれば懲役刑。',
+    warning: '不正アクセス禁止法・電子計算機損壊等業務妨害罪',
+    salary: '不定期 ※高リスク', riskLevel: 5,
+    csLangs: ['python', 'c', 'bash'],
+    steps: [
+      { phase: 'beginner',     label: 'Linux / ネットワーク',  color: '#FF4444', desc: 'ハッカーと同じ合法的スキルから始まる' },
+      { phase: 'beginner',     label: 'CVE 調査',              color: '#FF2222', desc: '公開済み脆弱性データベースを悪用目的で収集' },
+      { phase: 'basic',        label: 'エクスプロイト転用',    color: '#CC0000', desc: 'MetaSploit 等のツールを攻撃に悪用' },
+      { phase: 'basic',        label: '標的の選定',            color: '#DD0000', desc: 'セキュリティの甘い組織・個人を探す' },
+      { phase: 'advanced',     label: '侵入・権限昇格',        color: '#AA0000', desc: '認証突破→管理者権限取得→データ窃取' },
+      { phase: 'advanced',     label: '痕跡隠滅',              color: '#990000', desc: 'ログ削除・VPN/Tor で追跡を妨害' },
+      { phase: 'professional', label: 'サイバー犯罪捜査の追跡', color: '#FF0000', desc: 'FBI・Interpol・警察庁に特定される' },
+      { phase: 'professional', label: '逮捕・懲役',            color: '#660000', desc: '懲役最大5年・罰金最大500万円（日本）' },
+    ]
+  },
+  {
+    id: 'malware', icon: '🦠', color: '#8B0000',
+    title: 'マルウェア作者 / ランサムウェア犯',
+    desc: 'ウイルスやランサムウェアを作成・配布し金銭を脅迫する。国際的な犯罪組織と繋がるケースも多い。',
+    warning: 'ウイルス作成罪（不正指令電磁的記録作成・供用罪）・恐喝罪',
+    salary: '一時的に高額 ※全額没収', riskLevel: 5,
+    csLangs: ['c', 'cpp', 'python'],
+    steps: [
+      { phase: 'beginner',     label: 'C / C++ プログラミング', color: '#AA2222', desc: 'メモリ操作・システムコール（合法的スキル）' },
+      { phase: 'beginner',     label: 'リバースエンジニアリング', color: '#BB1111', desc: '既存マルウェアを分析して構造を理解' },
+      { phase: 'basic',        label: 'ファイル暗号化実装',    color: '#CC0000', desc: 'AES でファイルをロックする処理を実装' },
+      { phase: 'basic',        label: 'アンチ検出技術',        color: '#DD0000', desc: 'セキュリティソフトによる検知を回避する難読化' },
+      { phase: 'advanced',     label: '配布インフラ構築',      color: '#EE0000', desc: 'フィッシングメール・不正広告で大量配布' },
+      { phase: 'advanced',     label: '身代金要求',            color: '#FF0000', desc: 'Monero/Bitcoin で追跡困難な形で要求' },
+      { phase: 'professional', label: 'FBI / Interpol に追跡', color: '#FF2222', desc: '国際的なサイバー犯罪捜査の最優先ターゲットになる' },
+      { phase: 'professional', label: '逮捕・服役・全財産没収', color: '#550000', desc: '懲役10年超・押収・強制送還のケースも' },
+    ]
+  },
+  {
+    id: 'phisher', icon: '🎣', color: '#7700BB',
+    title: '詐欺師 / フィッシャー',
+    desc: '偽サイト・詐欺メールで認証情報や金銭を騙し取る。技術的ハードルが低い分、検挙率も高い。',
+    warning: '詐欺罪・不正競争防止法・電子計算機詐欺罪',
+    salary: '短期的に高額 ※すぐ摘発', riskLevel: 4,
+    csLangs: ['html', 'javascript', 'php'],
+    steps: [
+      { phase: 'beginner',     label: 'HTML / CSS / JS 基礎',  color: '#9933CC', desc: '本物そっくりの偽サイトを再現するスキル' },
+      { phase: 'beginner',     label: '偽ドメイン取得',        color: '#8822BB', desc: '本物に似たドメインを取得・ホスティング' },
+      { phase: 'basic',        label: '認証情報収集フォーム',  color: '#7711AA', desc: 'ID・パスワードを送信させるフォームを実装' },
+      { phase: 'basic',        label: 'ソーシャルエンジニアリング', color: '#660099', desc: '緊急性を煽る文面・SMS・なりすましメール' },
+      { phase: 'advanced',     label: '大量送信の自動化',      color: '#550088', desc: 'スパム送信インフラ・ボットネット活用' },
+      { phase: 'advanced',     label: '不正収益化',            color: '#440077', desc: '盗んだクレカ情報・アカウントを売買' },
+      { phase: 'professional', label: 'デジタル捜査で特定',    color: '#9933CC', desc: 'IPログ・金融追跡・通信解析で身元判明' },
+      { phase: 'professional', label: '逮捕・有罪',            color: '#330066', desc: '詐欺罪：懲役10年以下（日本）' },
+    ]
+  },
+];
+
+var _showDarkSide = false;
+var _darkCareerSelected = null;
+
+function toggleDarkSide() {
+  _showDarkSide = !_showDarkSide;
+  renderCareer();
+}
+
+function toggleDarkCareer(id) {
+  _darkCareerSelected = (_darkCareerSelected === id) ? null : id;
   renderCareer();
 }
 

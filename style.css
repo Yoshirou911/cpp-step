@@ -7849,3 +7849,56 @@ input[type="password"]:focus {
   .cr-step { min-width: 100px; max-width: 150px; }
   .cr-lang-tag { min-width: 110px; }
 }
+
+/* ── 闇の仕事セクション ── */
+.dark-side-section { margin-top: 24px; }
+
+.dark-side-toggle {
+  width: 100%; display: flex; align-items: center; gap: 10px;
+  padding: 12px 18px;
+  background: rgba(80,0,0,0.3);
+  border: 1px solid rgba(255,30,30,0.25);
+  border-radius: 8px; cursor: pointer;
+  color: #FF4444; font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.95rem; font-weight: 700; letter-spacing: 0.06em;
+  transition: background 0.2s, border-color 0.2s;
+}
+.dark-side-toggle:hover {
+  background: rgba(120,0,0,0.4);
+  border-color: rgba(255,30,30,0.5);
+}
+.dst-icon { font-size: 1.1rem; flex-shrink: 0; }
+.dst-label { flex: 1; text-align: left; }
+.dst-arrow { font-size: 0.7rem; flex-shrink: 0; opacity: 0.6; }
+
+.dark-side-warning {
+  margin: 10px 0 8px;
+  padding: 8px 14px;
+  background: rgba(150,0,0,0.25);
+  border: 1px solid rgba(255,30,30,0.3);
+  border-radius: 6px;
+  font-size: 0.72rem; color: #FF6666; line-height: 1.5;
+}
+
+.dark-career-cards { margin-top: 4px; }
+
+.dark-career-card {
+  background: rgba(30,0,0,0.7) !important;
+  border-color: rgba(200,0,0,0.3) !important;
+}
+.dark-career-card:hover {
+  border-color: rgba(255,30,30,0.5) !important;
+}
+.dark-career-card.career-card-open {
+  border-color: var(--cc, #FF2222) !important;
+}
+
+.dark-warning-badge {
+  margin-bottom: 10px;
+  padding: 6px 12px;
+  background: rgba(200,0,0,0.2);
+  border: 1px solid rgba(255,0,0,0.4);
+  border-radius: 6px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem; color: #FF4444; line-height: 1.5;
+}
