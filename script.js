@@ -32593,40 +32593,6 @@ var CAREERS = [
       { phase: 'professional', label: '就職・転職',       color: '#00E676', desc: '電機・自動車メーカー等 → 内定' },
     ]
   },
-  {
-    id: 'hacker', icon: '🎩', color: '#00FF41',
-    title: 'ハッカー / バグバウンティハンター',
-    desc: 'システムの脆弱性を合法的に発見して報酬を得る。企業から依頼されペネトレーションテストを行うフリーランスも多い。',
-    salary: '成果報酬〜1500万円以上', demand: 4,
-    csLangs: ['python', 'c', 'bash'],
-    steps: [
-      { phase: 'beginner',     label: 'Linux / ネットワーク',  color: '#4EAA25', desc: 'OS構造・TCP/IP・パケット解析' },
-      { phase: 'beginner',     label: 'C言語',                 color: '#A8B9CC', desc: 'メモリ管理・スタック・バッファ' },
-      { phase: 'basic',        label: 'Python',                color: '#3776AB', desc: 'スクリプト・スキャンツール自作' },
-      { phase: 'basic',        label: 'Web脆弱性',             color: '#FF453A', desc: 'XSS・SQLi・CSRF・SSRF の仕組み' },
-      { phase: 'advanced',     label: 'CTF 参加',              color: '#00FF41', desc: 'HackTheBox・picoCTF で実戦練習' },
-      { phase: 'advanced',     label: 'バイナリ解析',          color: '#EFC050', desc: 'GDB・radare2・逆アセンブル' },
-      { phase: 'professional', label: 'バグバウンティ',        color: '#00FF41', desc: 'HackerOne・Bugcrowd で報告 → 報酬' },
-      { phase: 'professional', label: '独立・高報酬',          color: '#00E676', desc: 'OSCP取得・フリーランスペンテスターへ' },
-    ]
-  },
-  {
-    id: 'cheater', icon: '⚡', color: '#FF0055',
-    title: 'チーター / リバースエンジニア',
-    desc: 'ゲームのメモリ構造や実行バイナリを解析し、チートツール・MOD・ボットを開発する。アンチチート開発者への転向も多い。',
-    salary: '副業〜フリーランス / セキュリティ職600〜1000万円', demand: 2,
-    csLangs: ['c', 'cpp'],
-    steps: [
-      { phase: 'beginner',     label: 'C / C++ 基礎',         color: '#00599C', desc: 'ポインタ・構造体・メモリモデル' },
-      { phase: 'beginner',     label: 'デバッガ入門',         color: '#FF0055', desc: 'x64dbg / OllyDbg でプロセス観察' },
-      { phase: 'basic',        label: 'Win32 API',            color: '#0078D4', desc: 'ReadProcessMemory / WriteProcessMemory' },
-      { phase: 'basic',        label: 'メモリスキャン',       color: '#FF0055', desc: 'Cheat Engine でアドレス特定・ポインタ追跡' },
-      { phase: 'advanced',     label: 'DLL インジェクション', color: '#FF6B00', desc: 'DLL作成・プロセスへの注入手法' },
-      { phase: 'advanced',     label: 'リバースエンジニアリング', color: '#C040FF', desc: 'IDA Pro / Ghidra で逆アセンブル・解析' },
-      { phase: 'professional', label: 'カーネルドライバ',     color: '#FF0055', desc: 'DKOM・カーネル空間チート・署名回避' },
-      { phase: 'professional', label: 'アンチチート開発へ転向', color: '#00E676', desc: 'EAC・BE等の知識を活かして防衛側へ' },
-    ]
-  },
 ];
 
 var _careerSelected = null;
@@ -32818,6 +32784,42 @@ function toggleCareer(id) {
 }
 
 var DARK_CAREERS = [
+  {
+    id: 'hacker', icon: '🎩', color: '#00FF41',
+    title: 'ハッカー / バグバウンティハンター',
+    desc: 'システムの脆弱性を発見して報酬を得る。合法的なペネトレーションテストから、一線を越えて不正アクセスに踏み込むケースも多い。',
+    warning: '一線を越えれば不正アクセス禁止法・グレーゾーン多数',
+    salary: '成果報酬〜1500万円以上', riskLevel: 3,
+    csLangs: ['python', 'c', 'bash'],
+    steps: [
+      { phase: 'beginner',     label: 'Linux / ネットワーク',  color: '#4EAA25', desc: 'OS構造・TCP/IP・パケット解析' },
+      { phase: 'beginner',     label: 'C言語',                 color: '#A8B9CC', desc: 'メモリ管理・スタック・バッファ' },
+      { phase: 'basic',        label: 'Python',                color: '#3776AB', desc: 'スクリプト・スキャンツール自作' },
+      { phase: 'basic',        label: 'Web脆弱性',             color: '#FF453A', desc: 'XSS・SQLi・CSRF・SSRF の仕組み' },
+      { phase: 'advanced',     label: 'CTF 参加',              color: '#00FF41', desc: 'HackTheBox・picoCTF で実戦練習' },
+      { phase: 'advanced',     label: 'バイナリ解析',          color: '#EFC050', desc: 'GDB・radare2・逆アセンブル' },
+      { phase: 'professional', label: 'バグバウンティ or 犯罪', color: '#FF2222', desc: '合法報告で稼ぐか、不正侵入に踏み込むかの分岐点' },
+      { phase: 'professional', label: '独立 or 逮捕',          color: '#00FF41', desc: '正しく使えばOSCP・高報酬。悪用すれば懲役' },
+    ]
+  },
+  {
+    id: 'cheater', icon: '⚡', color: '#FF0055',
+    title: 'チーター / リバースエンジニア',
+    desc: 'ゲームのメモリ構造や実行バイナリを解析し、チートツール・MOD・ボットを開発する。利用規約違反・法的グレーゾーン。',
+    warning: '不正競争防止法・ゲーム会社からの訴訟・アカウント永久BAN',
+    salary: '副業〜フリーランス ※訴訟リスク', riskLevel: 2,
+    csLangs: ['c', 'cpp'],
+    steps: [
+      { phase: 'beginner',     label: 'C / C++ 基礎',            color: '#00599C', desc: 'ポインタ・構造体・メモリモデル' },
+      { phase: 'beginner',     label: 'デバッガ入門',            color: '#FF0055', desc: 'x64dbg / OllyDbg でプロセス観察' },
+      { phase: 'basic',        label: 'Win32 API',               color: '#0078D4', desc: 'ReadProcessMemory / WriteProcessMemory' },
+      { phase: 'basic',        label: 'メモリスキャン',          color: '#FF0055', desc: 'Cheat Engine でアドレス特定・ポインタ追跡' },
+      { phase: 'advanced',     label: 'DLL インジェクション',    color: '#FF6B00', desc: 'DLL作成・プロセスへの注入手法' },
+      { phase: 'advanced',     label: 'リバースエンジニアリング', color: '#C040FF', desc: 'IDA Pro / Ghidra で逆アセンブル・解析' },
+      { phase: 'professional', label: 'カーネルドライバ',        color: '#FF0055', desc: 'DKOM・カーネル空間チート・署名回避' },
+      { phase: 'professional', label: '訴訟 or アンチチートへ転向', color: '#00E676', desc: 'ゲーム会社に訴えられるか、防衛側に転職するか' },
+    ]
+  },
   {
     id: 'cracker', icon: '💀', color: '#FF2222',
     title: 'クラッカー / ブラックハットハッカー',
