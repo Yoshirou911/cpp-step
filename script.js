@@ -32791,8 +32791,8 @@ function renderCareer() {
   var darkSectionHTML =
     '<div class="dark-side-section">' +
       '<button class="dark-side-toggle" onclick="toggleDarkSide()">' +
-        '<span class="dst-icon">' + (_showDarkSide ? '💀' : '⚠') + '</span>' +
-        '<span class="dst-label">' + (_showDarkSide ? '闇の仕事を隠す' : '闇の仕事を見る（閲覧注意）') + '</span>' +
+        '<span class="dst-icon">' + (_showDarkSide ? '💀' : '☠') + '</span>' +
+        '<span class="dst-label">' + (_showDarkSide ? '— DARK OPS CLASSIFIED —' : '▸ DARK OPS  //  CLASSIFIED') + '</span>' +
         '<span class="dst-arrow">' + (_showDarkSide ? '▲' : '▼') + '</span>' +
       '</button>' +
       (_showDarkSide
