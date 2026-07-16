@@ -65,13 +65,16 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: '認証が必要です' });
   }
   const token = authHeader.slice(7);
-  const userRes = await fetch(`${supabaseUrl}/auth/v1/user`, {
-    headers: { 'apikey': serviceKey, 'Authorization': `Bearer ${token}` }
-  });
-  if (!userRes.ok) {
-    return res.status(401).json({ error: '無効なトークンです' });
+  let userData;
+  try {
+    const userRes = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      headers: { 'apikey': serviceKey, 'Authorization': `Bearer ${token}` }
+    });
+    if (!userRes.ok) return res.status(401).json({ error: '無効なトークンです' });
+    userData = await userRes.json();
+  } catch (e) {
+    return res.status(503).json({ error: '認証サービスに接続できません。時間をおいて再試行してください。' });
   }
-  const userData = await userRes.json();
   const adminUserId = userData.id;
   if (!adminUserId || !adminUserIds.includes(adminUserId)) {
     return res.status(403).json({ error: '管理者権限がありません' });

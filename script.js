@@ -3043,7 +3043,7 @@ function renderList() {
 
   // アクティブフィルターピル
   var _activePills = [];
-  if (_filterQuery)    _activePills.push({ label: '🔍 ' + (_filterQuery.length > 15 ? _filterQuery.substring(0,15)+'…' : _filterQuery), type: 'query' });
+  if (_filterQuery)    _activePills.push({ label: '🔍 ' + escapeHtml(_filterQuery.length > 15 ? _filterQuery.substring(0,15)+'…' : _filterQuery), type: 'query' });
   if (_filterRank)     _activePills.push({ label: '🏅 ' + _filterRank, type: 'rank' });
   if (_filterBookmark) _activePills.push({ label: '🔖 ブックマーク', type: 'bookmark' });
   if (_filterWrong)    _activePills.push({ label: '❌ 要復習', type: 'wrong' });

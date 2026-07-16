@@ -41,14 +41,17 @@ export default async function handler(req, res) {
   if (!token) {
     return res.status(401).json({ error: '認証が必要です。ログインしてください。' });
   }
-  const supabaseAuthRes = await fetch(
-    `${process.env.SUPABASE_URL}/auth/v1/user`,
-    { headers: { 'Authorization': `Bearer ${token}`, 'apikey': process.env.SUPABASE_ANON_KEY } }
-  );
-  if (!supabaseAuthRes.ok) {
-    return res.status(401).json({ error: '認証が無効です。再ログインしてください。' });
+  let authedUser;
+  try {
+    const supabaseAuthRes = await fetch(
+      `${process.env.SUPABASE_URL}/auth/v1/user`,
+      { headers: { 'Authorization': `Bearer ${token}`, 'apikey': process.env.SUPABASE_ANON_KEY } }
+    );
+    if (!supabaseAuthRes.ok) return res.status(401).json({ error: '認証が無効です。再ログインしてください。' });
+    authedUser = await supabaseAuthRes.json();
+  } catch (e) {
+    return res.status(503).json({ error: '認証サービスに接続できません。時間をおいて再試行してください。' });
   }
-  const authedUser = await supabaseAuthRes.json();
 
   // レート制限
   const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim()
