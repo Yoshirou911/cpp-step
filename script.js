@@ -33673,6 +33673,7 @@ function renderCareer() {
       '<div class="career-header">' +
         '<div class="career-header-title">◆ CAREER ROADMAP</div>' +
         '<div class="career-header-sub">なりたい職業を選んで、必要なスキルと道筋を確認しよう</div>' +
+        '<button class="lang-quiz-btn career-quiz-btn" onclick="openCareerQuizModal()">🧭 どの職業が合うかわからない方はこちら</button>' +
       '</div>' +
       '<div class="career-cards">' + cardsHTML + '</div>' +
       darkSectionHTML +
@@ -37988,6 +37989,160 @@ function openQuizModal() {
 
 function closeQuizModal() {
   document.getElementById('quiz-modal').classList.add('hidden');
+}
+
+// ══════════════════════════════════════════════
+// 職業診断クイズ
+// ══════════════════════════════════════════════
+
+var CAREER_QUIZ_STEPS = {
+  q1: {
+    step: 1, total: 2,
+    q: '一番やりたいことは何ですか？',
+    sub: '直感で選んでOK！後から変えられます',
+    choices: [
+      { icon: '🌐', label: 'Webサイト・アプリを作りたい',    next: 'q2_web'    },
+      { icon: '🎮', label: 'ゲームを作りたい',              result: 'game'     },
+      { icon: '🤖', label: 'AIやデータを扱いたい',          next: 'q2_ai'     },
+      { icon: '📱', label: 'スマホアプリを作りたい',         next: 'q2_mobile' },
+      { icon: '🔒', label: 'セキュリティ・ハッキング系',     result: 'security' },
+      { icon: '🖥',  label: 'サーバー・インフラ管理',        result: 'infra'    },
+      { icon: '⚙',  label: 'OS・組み込み・低レベル開発',    next: 'q2_system' },
+      { icon: '📊', label: 'データ分析・ビジネス系',         result: 'dataeng'  },
+    ]
+  },
+  q2_web: {
+    step: 2, total: 2,
+    q: 'Webのどの部分に興味がある？',
+    sub: 'イメージで選んでみよう',
+    choices: [
+      { icon: '🎨', label: 'デザイン・見た目・操作感',      result: 'uiux'     },
+      { icon: '⚙',  label: 'サーバー・データベース・API',   result: 'backend'  },
+      { icon: '↔',  label: '両方やりたい（フルスタック）',  result: 'frontend' },
+      { icon: '🚀', label: 'スタートアップで全部やりたい',   result: 'cto'      },
+    ]
+  },
+  q2_ai: {
+    step: 2, total: 2,
+    q: 'AIのどの部分に関わりたい？',
+    sub: '',
+    choices: [
+      { icon: '🧠', label: 'モデルを作る・研究する',         result: 'ai'              },
+      { icon: '📦', label: '本番環境で動かす・運用する',     result: 'mlops'           },
+      { icon: '🧬', label: '医療・生命科学データを扱う',     result: 'bioinformatics'  },
+      { icon: '📈', label: 'データ分析・可視化',             result: 'dataeng'         },
+    ]
+  },
+  q2_mobile: {
+    step: 2, total: 2,
+    q: 'どのプラットフォームのアプリを作りたい？',
+    sub: '',
+    choices: [
+      { icon: '🍎', label: 'iPhoneアプリ（iOS）',            result: 'mobile'   },
+      { icon: '🤖', label: 'Androidアプリ',                  result: 'mobile'   },
+      { icon: '🎮', label: 'ゲームアプリ',                   result: 'game'     },
+      { icon: '🌐', label: 'WebとアプリどちらもOK',           result: 'frontend' },
+    ]
+  },
+  q2_system: {
+    step: 2, total: 2,
+    q: '低レベル系のどの分野が気になる？',
+    sub: '',
+    choices: [
+      { icon: '🤖', label: 'ロボット・自律システム',          result: 'robotics' },
+      { icon: '🚀', label: '宇宙・衛星ソフトウェア',          result: 'space'    },
+      { icon: '🔬', label: 'OS・コンパイラ開発',              result: 'compiler' },
+      { icon: '🎵', label: '音声処理・DSP',                   result: 'audio'    },
+    ]
+  }
+};
+
+var _cqHistory = [];
+var _cqStep    = 'q1';
+
+function openCareerQuizModal() {
+  _cqHistory = [];
+  _cqStep = 'q1';
+  document.getElementById('career-quiz-modal').classList.remove('hidden');
+  _renderCQStep('q1');
+}
+
+function closeCareerQuizModal() {
+  document.getElementById('career-quiz-modal').classList.add('hidden');
+}
+
+function _renderCQStep(stepId) {
+  var step = CAREER_QUIZ_STEPS[stepId];
+  if (!step) return;
+  var dots = '';
+  for (var i = 1; i <= step.total; i++) {
+    dots += '<span class="quiz-dot' + (i === step.step ? ' active' : (i < step.step ? ' done' : '')) + '"></span>';
+  }
+  var choicesHTML = step.choices.map(function(c) {
+    var attr = c.result
+      ? 'onclick="_cqChoose(null,\'' + c.result + '\')"'
+      : 'onclick="_cqChoose(\'' + c.next + '\',null)"';
+    return '<button class="cq-choice-btn" ' + attr + '>' +
+      '<span class="cq-choice-icon">' + c.icon + '</span>' +
+      '<span class="cq-choice-label">' + c.label + '</span>' +
+    '</button>';
+  }).join('');
+  document.getElementById('career-quiz-box').innerHTML =
+    '<div class="quiz-topbar">' +
+      '<button class="quiz-back-btn" onclick="_cqBack()">←</button>' +
+      '<div class="quiz-step-dots">' + dots + '</div>' +
+    '</div>' +
+    '<div class="quiz-q-label">STEP ' + step.step + ' / ' + step.total + '</div>' +
+    '<div class="quiz-question">' + step.q + '</div>' +
+    (step.sub ? '<div class="quiz-sub">' + step.sub + '</div>' : '') +
+    '<div class="cq-choices">' + choicesHTML + '</div>';
+}
+
+function _cqChoose(nextStep, resultId) {
+  _cqHistory.push(_cqStep);
+  if (resultId) {
+    _renderCQResult(resultId);
+  } else {
+    _cqStep = nextStep;
+    _renderCQStep(nextStep);
+  }
+}
+
+function _cqBack() {
+  if (_cqHistory.length === 0) { closeCareerQuizModal(); return; }
+  _cqStep = _cqHistory.pop();
+  _renderCQStep(_cqStep);
+}
+
+function _renderCQResult(careerId) {
+  var career = CAREERS.find(function(c) { return c.id === careerId; });
+  if (!career) { closeCareerQuizModal(); return; }
+  document.getElementById('career-quiz-box').innerHTML =
+    '<div class="quiz-topbar">' +
+      '<button class="quiz-back-btn" onclick="_cqBack()">←</button>' +
+      '<div class="quiz-step-dots"><span class="quiz-dot done"></span><span class="quiz-dot active"></span></div>' +
+    '</div>' +
+    '<div class="quiz-result-announce">あなたにおすすめの職業は</div>' +
+    '<div class="cq-result-card" style="border-color:' + career.color + '88;box-shadow:0 0 24px ' + career.color + '22">' +
+      '<div class="cq-result-icon">' + career.icon + '</div>' +
+      '<div class="cq-result-name" style="color:' + career.color + '">' + career.title + '</div>' +
+      '<div class="cq-result-desc">' + career.desc + '</div>' +
+    '</div>' +
+    '<div class="quiz-result-actions">' +
+      '<button class="quiz-start-btn" onclick="closeCareerQuizModal();_scrollToCareer(\'' + careerId + '\')" style="--qcol:' + career.color + '">▶ この職業を詳しく見る</button>' +
+      '<button class="quiz-retry-btn" onclick="openCareerQuizModal()">↩ もう一度診断する</button>' +
+    '</div>';
+}
+
+function _scrollToCareer(careerId) {
+  _careerSelected = careerId;
+  renderCareer();
+  var cards = document.querySelectorAll('.career-card');
+  cards.forEach(function(card) {
+    if (card.querySelector('.career-card-title') && card.querySelector('.career-card-title').textContent === (CAREERS.find(function(c){return c.id===careerId;})||{}).title) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
 }
 
 function _quizChoose(choice) {

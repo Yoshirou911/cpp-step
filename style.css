@@ -8314,3 +8314,191 @@ html {
 #page-mission-list {
   scroll-behavior: smooth;
 }
+
+/* ══════════════════════════════════════════════════════
+   タブ・ランクフィルター ツールチップ
+══════════════════════════════════════════════════════ */
+
+/* 共通 data-tip ツールチップ */
+[data-tip] {
+  position: relative;
+}
+[data-tip]::before {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: rgba(14,12,9,0.97);
+  border: 1px solid rgba(255,107,0,0.35);
+  color: rgba(237,224,200,0.88);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  padding: 5px 10px;
+  border-radius: 4px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s, transform 0.18s;
+  z-index: 200;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+}
+[data-tip]::after {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(255,107,0,0.35);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s;
+  z-index: 200;
+}
+[data-tip]:hover::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+[data-tip]:hover::after {
+  opacity: 1;
+}
+
+/* ナビタブのツールチップ: 下に重ならないよう下端からさらに上に */
+.nav-tab[data-tip]::before {
+  bottom: calc(100% + 12px);
+}
+.nav-tab[data-tip]::after {
+  bottom: calc(100% + 6px);
+}
+
+/* ランクフィルターボタン: ツールチップが左右に寄ると画面外に出るため調整 */
+.rank-filter-btn[data-tip]::before {
+  font-size: 0.65rem;
+  max-width: 180px;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* ══════════════════════════════════════════════════════
+   職業診断クイズモーダル
+══════════════════════════════════════════════════════ */
+
+#career-quiz-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#career-quiz-modal.hidden { display: none !important; }
+
+#career-quiz-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.80);
+  cursor: pointer;
+}
+
+#career-quiz-box {
+  position: relative;
+  background: #0e0c09;
+  border: 1px solid rgba(255,107,0,0.30);
+  box-shadow: 0 0 0 1px rgba(255,107,0,0.06), 0 24px 64px rgba(0,0,0,0.88);
+  padding: 28px 28px 32px;
+  width: 480px;
+  max-width: 94vw;
+  max-height: 88vh;
+  overflow-y: auto;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  animation: modalEnter 0.22s cubic-bezier(0.22,1,0.36,1) both;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,107,0,0.2) transparent;
+}
+
+/* 職業選択肢ボタン */
+.cq-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.cq-choice-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(237,224,200,0.80);
+  padding: 12px 16px;
+  text-align: left;
+  cursor: pointer;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: background 0.15s, border-color 0.15s, transform 0.12s, color 0.15s;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+}
+.cq-choice-btn:hover {
+  background: rgba(255,107,0,0.10);
+  border-color: rgba(255,107,0,0.40);
+  color: #fff;
+  transform: translateX(4px);
+}
+.cq-choice-btn:active {
+  transform: translateX(2px) scale(0.99);
+}
+
+.cq-choice-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+.cq-choice-label {
+  flex: 1;
+}
+
+/* 診断結果カード */
+.cq-result-card {
+  background: rgba(14,12,9,0.85);
+  border: 1px solid rgba(255,107,0,0.35);
+  padding: 24px 20px;
+  margin: 16px 0 20px;
+  text-align: center;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+.cq-result-icon {
+  font-size: 2.8rem;
+  margin-bottom: 10px;
+}
+.cq-result-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+.cq-result-desc {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.74rem;
+  color: rgba(160,144,112,0.65);
+  line-height: 1.6;
+}
+
+/* キャリアページのクイズボタン */
+.career-quiz-btn {
+  margin-top: 12px;
+  display: block;
+  width: 100%;
+}
+
+@media (max-width: 540px) {
+  #career-quiz-box { padding: 20px 16px 24px; }
+  .cq-choice-btn  { font-size: 0.85rem; padding: 11px 12px; }
+}
