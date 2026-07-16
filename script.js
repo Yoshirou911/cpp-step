@@ -386,6 +386,7 @@ var currentUserIsPremium = false;
 var currentUserIsAdmin = false;
 var _premiumStatusCache = false;  // 実際のSupabase値（管理者プレビュー用に保持）
 var _adminPreviewFree = false;    // 管理者が「無料ユーザーとして表示」テスト中
+var _realUserIsAdmin = false;     // 実際のSupabase is_admin値（管理者プレビュー用に保持）
 var currentUserAgeGroup   = null;
 var currentUserJobClass   = null;
 var currentUserExperience = null;
@@ -1779,6 +1780,7 @@ async function fetchUserProfile() {
     if (result.data) {
       _premiumStatusCache      = !!result.data.is_premium;
       currentUserIsAdmin       = !!result.data.is_admin;
+      _realUserIsAdmin         = !!result.data.is_admin;
       currentUserAgeGroup      = result.data.age_group   || null;
       currentUserJobClass      = result.data.job_class   || null;
       currentUserExperience    = result.data.experience  || null;
@@ -1792,6 +1794,7 @@ async function fetchUserProfile() {
       });
       _premiumStatusCache = false;
       currentUserIsAdmin  = false;
+      _realUserIsAdmin    = false;
     }
     // 管理者プレビュー中でなければ実際の値を適用
     currentUserIsPremium = _adminPreviewFree ? false : _premiumStatusCache;
@@ -1860,16 +1863,21 @@ function updateAdDisplay() {
 
 function updateAdminBtnVisibility() {
   var btn = document.getElementById('admin-panel-btn');
-  if (btn) btn.style.display = currentUserIsAdmin ? 'inline-flex' : 'none';
+  if (btn) btn.style.display = _realUserIsAdmin ? 'inline-flex' : 'none';
 }
 
 function openAdminPanel() {
-  if (!currentUserIsAdmin) return;
+  if (!_realUserIsAdmin) return;
   // プレビュー状態をボタンに反映
   var toggle = document.getElementById('admin-preview-toggle');
   if (toggle) {
     toggle.textContent = _adminPreviewFree ? '● 無料ユーザー表示中' : '○ 実際の表示（PLUS）';
     toggle.classList.toggle('active-preview', _adminPreviewFree);
+  }
+  var adminToggle = document.getElementById('admin-admin-toggle');
+  if (adminToggle) {
+    adminToggle.textContent = currentUserIsAdmin ? '● 管理者モード中' : '○ 非管理者として表示中';
+    adminToggle.classList.toggle('active-preview', !currentUserIsAdmin);
   }
   document.getElementById('admin-panel').classList.remove('hidden');
 }
@@ -1881,7 +1889,7 @@ function closeAdminPanel() {
 }
 
 function adminTogglePreview() {
-  if (!currentUserIsAdmin) return;
+  if (!_realUserIsAdmin) return;
   _adminPreviewFree = !_adminPreviewFree;
   currentUserIsPremium = _adminPreviewFree ? false : _premiumStatusCache;
   var toggle = document.getElementById('admin-preview-toggle');
@@ -1891,6 +1899,17 @@ function adminTogglePreview() {
   }
   updateAdDisplay();
   if (currentLanguage) { renderList(); renderMissionList(); }
+}
+
+function adminToggleAdminMode() {
+  if (!_realUserIsAdmin) return;
+  currentUserIsAdmin = !currentUserIsAdmin;
+  var btn = document.getElementById('admin-admin-toggle');
+  if (btn) {
+    btn.textContent = currentUserIsAdmin ? '● 管理者モード中' : '○ 非管理者として表示中';
+    btn.classList.toggle('active-preview', !currentUserIsAdmin);
+  }
+  if (currentLanguage) { renderCareer(); renderList(); }
 }
 
 async function adminSetPremium(isPremium) {
