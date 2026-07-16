@@ -104,12 +104,12 @@
   </div>
 
   <!-- タブナビゲーション -->
-  <div id="nav-tabs" class="hidden">
+  <nav id="nav-tabs" class="hidden" aria-label="メインナビゲーション">
     <div id="nav-history-btns">
-      <button id="nav-back-btn" onclick="history.back()" title="前のページへ">&#8592;</button>
-      <button id="nav-fwd-btn" onclick="history.forward()" title="次のページへ">&#8594;</button>
+      <button id="nav-back-btn" onclick="history.back()" title="前のページへ" aria-label="前のページへ戻る">&#8592;</button>
+      <button id="nav-fwd-btn" onclick="history.forward()" title="次のページへ" aria-label="次のページへ進む">&#8594;</button>
     </div>
-    <button class="nav-tab active" id="tab-problems" onclick="switchTab('problems')" data-tip="コードを書いて問題を解く">◆ PROBLEMS</button>
+    <button class="nav-tab active" id="tab-problems" onclick="switchTab('problems')" data-tip="コードを書いて問題を解く" aria-current="page">◆ PROBLEMS</button>
     <button class="nav-tab" id="tab-missions" onclick="switchTab('missions')" data-tip="複数問題クリアでバッジ獲得">◆ MISSIONS</button>
     <button class="nav-tab" id="tab-guide" onclick="switchTab('guide')" data-tip="文法・パターン解説">◆ GUIDE</button>
     <button class="nav-tab" id="tab-textbook" onclick="switchTab('textbook')" data-tip="言語の入門ガイド">📖 TEXTBOOK</button>
@@ -117,7 +117,7 @@
     <button class="nav-tab" id="tab-career" onclick="switchTab('career')" data-tip="職業別おすすめ学習ルート">🎯 CAREER</button>
     <button class="nav-tab" id="tab-intro" onclick="switchTab('intro')" data-tip="言語別入門ガイド">🌱 INTRO</button>
     <button class="nav-tab" id="tab-contest" onclick="switchTab('contest')" data-tip="コンテスト参加">🎯 CONTEST</button>
-  </div>
+  </nav>
 
   <!-- ランディングページ（初回訪問者向け） -->
   <div id="page-landing" class="hidden">
@@ -230,7 +230,7 @@
         <div id="list-search-wrap" style="position:relative">
           <span class="list-search-icon">🔍</span>
           <input id="list-search-input" type="text" placeholder="問題を検索..." oninput="onFilterInput(this.value)" onblur="_hideSearchSuggestions()" autocomplete="off">
-          <button id="list-search-clear" class="hidden" onclick="clearSearchText()">✕</button>
+          <button id="list-search-clear" class="hidden" onclick="clearSearchText()" aria-label="検索をクリア">✕</button>
           <div id="search-suggest-wrap" class="hidden"></div>
         </div>
         <button id="filter-sheet-trigger" onclick="openFilterSheet()">⊕ 絞り込む<span id="filter-badge" class="hidden"></span></button>
@@ -241,7 +241,7 @@
         <div id="filter-sheet-content">
           <div id="filter-sheet-header">
             <span>絞り込み</span>
-            <button id="filter-sheet-close" onclick="closeFilterSheet()">✕</button>
+            <button id="filter-sheet-close" onclick="closeFilterSheet()" aria-label="絞り込みを閉じる">✕</button>
           </div>
           <div id="list-rank-filters">
             <button class="rank-filter-btn active" data-rank="" onclick="onRankFilter(this)" data-tip="すべての難易度を表示">ALL</button>
@@ -331,7 +331,7 @@
   <div id="chat-panel" class="hidden">
     <div id="chat-header">
       <span>// AI に質問する</span>
-      <button id="chat-close">✕</button>
+      <button id="chat-close" aria-label="チャットを閉じる">✕</button>
     </div>
     <div id="chat-messages"></div>
     <div id="chat-footer">
@@ -339,7 +339,7 @@
       <button id="chat-send">送信</button>
     </div>
   </div>
-  <button id="chat-toggle">AI</button>
+  <button id="chat-toggle" aria-label="AIアシスタントを開く" aria-expanded="false">AI</button>
 
   <!-- レベルアップオーバーレイ -->
   <div id="levelup-effect" class="hidden">
@@ -385,7 +385,7 @@
   </div>
 
   <!-- スクロールトップボタン -->
-  <button id="scroll-top-btn" onclick="scrollToTop()" title="上に戻る">▲</button>
+  <button id="scroll-top-btn" onclick="scrollToTop()" title="上に戻る" aria-label="ページ上部へ戻る">▲</button>
 
   <!-- 認証モーダル -->
   <div id="auth-modal" class="hidden">
@@ -394,7 +394,7 @@
       <div id="auth-modal-header">
         <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">LOGIN</button>
         <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">SIGN UP</button>
-        <button id="auth-modal-close" onclick="closeAuthModal()">✕</button>
+        <button id="auth-modal-close" onclick="closeAuthModal()" aria-label="閉じる">✕</button>
       </div>
       <div id="auth-modal-body">
         <div id="auth-error" class="hidden"></div>
@@ -422,7 +422,7 @@
     <div class="legal-box">
       <div class="legal-header">
         <span>// プライバシーポリシー</span>
-        <button onclick="closePrivacyPolicy()">✕</button>
+        <button onclick="closePrivacyPolicy()" aria-label="閉じる">✕</button>
       </div>
       <div class="legal-body">
         <p class="legal-date">最終更新: 2026年6月13日</p>
@@ -490,7 +490,7 @@
     <div class="legal-box">
       <div class="legal-header">
         <span>// 利用規約</span>
-        <button onclick="closeTermsModal()">✕</button>
+        <button onclick="closeTermsModal()" aria-label="閉じる">✕</button>
       </div>
       <div class="legal-body">
         <p class="legal-date">最終更新: 2026年6月13日</p>
@@ -551,7 +551,7 @@
     <div class="admin-box">
       <div class="admin-header">
         <span class="admin-header-title">⚙ 管理者パネル</span>
-        <button class="admin-close-btn" onclick="closeAdminPanel()">✕</button>
+        <button class="admin-close-btn" onclick="closeAdminPanel()" aria-label="閉じる">✕</button>
       </div>
 
       <!-- プレミアム付与 -->
@@ -586,7 +586,7 @@
   <div id="premium-modal" class="hidden">
     <div class="premium-overlay" onclick="closePremiumModal()"></div>
     <div class="premium-box">
-      <button class="premium-close-btn" onclick="closePremiumModal()">✕</button>
+      <button class="premium-close-btn" onclick="closePremiumModal()" aria-label="閉じる">✕</button>
 
       <div class="premium-icon-wrap">
         <span class="premium-icon">◆</span>
@@ -627,7 +627,7 @@
     <div class="report-box">
       <div class="report-header">
         <span>⚑ 問題の誤りを報告</span>
-        <button onclick="closeReportModal()">✕</button>
+        <button onclick="closeReportModal()" aria-label="閉じる">✕</button>
       </div>
       <div class="report-body">
         <p id="report-problem-title" class="report-problem-name"></p>
@@ -650,7 +650,7 @@
     <div id="basicform-box">
       <div id="basicform-header">
         <span id="basicform-title">基本形</span>
-        <button id="basicform-close" onclick="closeBasicFormModal()">✕</button>
+        <button id="basicform-close" onclick="closeBasicFormModal()" aria-label="閉じる">✕</button>
       </div>
       <div id="basicform-tabs"></div>
       <pre id="basicform-code"></pre>
@@ -672,6 +672,8 @@
 
   <!-- コンフェッティ -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-  <script src="script.js"></script>
+  <script defer src="data/problems.js"></script>
+  <script defer src="data/guide-data.js"></script>
+  <script defer src="script.js"></script>
 </body>
 </html>
