@@ -4597,8 +4597,7 @@ function showJudgeResult(problemId, passed, byAI) {
         : '<div class="all-clear-msg">🎉 この言語の問題を全てクリアした！</div>';
       ja.innerHTML = '<div class="judge-pass">✓ ' + label + ' クリアしました！</div>' +
         '<div class="clear-share-row">' +
-          '<button class="share-x-btn" onclick="shareClear(' +
-            JSON.stringify(_pTitle) + ',' + JSON.stringify(_lang) + ')">𝕏 シェア</button>' +
+          '<button class="share-x-btn" data-title="' + escapeHtml(_pTitle) + '" data-lang="' + escapeHtml(_lang) + '" onclick="shareClear(this.dataset.title,this.dataset.lang)">𝕏 シェア</button>' +
         '</div>' +
         _nextHtml;
       ja.classList.remove("hidden");
