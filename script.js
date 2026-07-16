@@ -36360,6 +36360,134 @@ echo $d->speak();` }
   }
 };
 
+// ===== 各セクションの初心者向け説明文 =====
+
+var langSectionDescs = {
+  cpp: [
+    'C++プログラムは <code>#include</code> でライブラリを取り込み、<code>main()</code> 関数から実行が始まります。<code>cout &lt;&lt; "文字列" &lt;&lt; endl;</code> で画面に表示し、<code>return 0;</code> で正常終了をOSに伝えます。<br><strong>すべての文末にセミコロン <code>;</code> を忘れずに！</strong>',
+    '変数は「データを入れる名前付きの箱」です。<code>int</code>（整数）・<code>double</code>（小数）・<code>string</code>（文字列）・<code>bool</code>（真偽）など、箱の種類（型）を宣言してから使います。型が違うデータを入れようとするとコンパイルエラーになります。',
+    '条件分岐（<code>if/else</code>）でプログラムの流れを変え、ループ（<code>for/while</code>）で同じ処理を繰り返せます。<code>for (int i = 0; i &lt; 5; i++)</code> は「i を 0 から始めて、5 未満の間、1 ずつ増やしながら繰り返す」という意味です。',
+    '関数は処理をひとまとめにして名前をつけたものです。<code>int add(int a, int b)</code> は「int 型の引数を 2 つ受け取り、int 型の値を返す」という意味です。<strong>参照渡し（<code>&amp;</code>）</strong>を使うと関数の中から元の変数の値を変更できます。',
+    '<code>vector</code> は C++ の可変長配列で、サイズを動的に変えられます。<code>push_back()</code> で末尾追加、<code>pop_back()</code> で末尾削除ができます。<strong>範囲 for ループ</strong> <code>for (int x : v)</code> で全要素を順番に処理できます。',
+    'クラスはデータ（メンバ変数）と処理（メンバ関数）をひとまとめにした設計図です。<code>public:</code> で外部からアクセスできるメンバを宣言します。クラス名と同名の関数がコンストラクタで、オブジェクト生成時に自動で呼ばれます。',
+    'C++ でよく起きるバグと対策です。<code>vector::at()</code> は範囲外アクセスを例外で検出します。ポインタは使う前に <code>nullptr</code> チェックが必須です。<code>new</code> でメモリを確保したら必ず <code>delete</code> で解放しましょう（メモリリーク防止）。',
+  ],
+  python: [
+    'Python は <code>print()</code> で画面に表示します。<code>#</code> の後ろがコメントです。波括弧 <code>{}</code> の代わりに<strong>インデント（字下げ）</strong>でブロックを表現するのが Python の最大の特徴です。インデントを間違えると構文エラーになります。',
+    'Python では型宣言が不要です。<code>age = 20</code> と書くだけで Python が自動的に int 型と判断します（動的型付け）。<code>type(変数)</code> で型を確認できます。<code>None</code> は「何もない」を表す特別な値で、他言語の null に相当します。',
+    '<code>if/elif/else</code> で条件分岐を書きます（<code>elif</code> は "else if" の短縮）。Python では <code>{}</code> の代わりに <code>:</code> とインデントでブロックを作ります。<code>range(5)</code> は 0 〜 4 の整数を生成し、<code>for i in range(5):</code> で 5 回ループできます。',
+    '<code>def</code> で関数を定義します。<code>greeting="こんにちは"</code> のようにデフォルト引数を設定すると、省略可能な引数が作れます。<strong>f 文字列</strong> <code>f"{変数}"</code> は文字列の中に変数を直接埋め込める便利な記法です（Python 3.6 以降）。',
+    'リストは <code>[]</code> で作る順序付きコレクションです。<code>append()</code> で末尾追加、<code>pop()</code> で末尾削除ができます。<strong>内包表記</strong> <code>[x**2 for x in range(5)]</code> でリストを 1 行で生成できます。辞書は <code>{キー: 値}</code> のペアで、<code>.items()</code> でキーと値を同時に取り出せます。',
+    '<code>class クラス名:</code> でクラスを定義します。<code>__init__(self, ...)</code> はコンストラクタで、オブジェクト生成時に自動で呼ばれます。<code>self</code> は自分自身のインスタンスを指し、メンバ変数へのアクセスには <code>self.変数名</code> と書きます。',
+    '<code>try:</code> ブロック内でエラーが起きると <code>except:</code> に処理が飛びます。エラーの種類ごとに複数の <code>except</code> を書けます。<code>finally:</code> はエラーの有無にかかわらず必ず実行されるので、ファイルを閉じるなど後処理を書きます。',
+  ],
+  javascript: [
+    '<code>const</code> は変更不可の変数（定数）、<code>let</code> は変更可能な変数です。<code>var</code> は古い書き方で現在は非推奨です。JavaScript は動的型付けなので型宣言は不要ですが、<code>typeof</code> で型を確認できます。<strong><code>===</code> を使って比較する</strong>のが重要です（<code>==</code> は型変換が起きて予想外の結果になることがあります）。',
+    '<code>if/else</code> で条件分岐を書きます。配列のループには <code>for...of</code> が便利です。<strong>三項演算子</strong> <code>条件 ? 真の値 : 偽の値</code> で 1 行で条件分岐を書けます。',
+    'JavaScript では関数の書き方が複数あります。<strong>アロー関数</strong> <code>(a, b) =&gt; a + b</code> はシンプルで現代的な書き方として多用されます。デフォルト引数で省略時の値を設定できます。<strong>テンプレートリテラル</strong>（バッククォート <code>`...$\{変数}...`</code>）で文字列に変数を埋め込めます。',
+    '配列には <code>map()</code>・<code>filter()</code>・<code>reduce()</code> などの高階関数が使えます。<code>map()</code> は全要素を変換、<code>filter()</code> は条件を満たす要素だけ抽出します。<strong>分割代入</strong> <code>const { name, age } = person</code> でオブジェクトのプロパティを一度に取り出せます。',
+    '非同期処理はサーバーからデータを取得するときによく使います。<code>async function</code> と <code>await</code> を組み合わせると非同期処理を同期的に書けて読みやすくなります。エラーは <code>try/catch</code> で捕捉します。',
+    '<code>class</code> でクラスを定義し、<code>constructor()</code> でコンストラクタを書きます。<code>extends</code> で別クラスを継承でき、<code>super()</code> で親クラスのコンストラクタを呼べます。テンプレートリテラルの <code>`\${this.name}`</code> でメンバ変数を文字列に埋め込めます。',
+  ],
+  typescript: [
+    '変数の後に <code>: 型名</code> と書いて型を明示します（型アノテーション）。これにより、コンパイル時に型の不一致を検出できます。<code>string | null</code> のようにユニオン型で「文字列またはnull」を表現でき、null安全なコードを書けます。',
+    '<code>interface</code> でオブジェクトの形（型の仕様書）を定義します。<code>?</code> をつけるとオプショナル（省略可能）プロパティになります。<code>interface</code> と違う形でオブジェクトを作るとコンパイルエラーになります。',
+    '<code>type エイリアス名 = ...</code> で型に名前をつけられます。<strong>ユニオン型</strong> <code>"active" | "inactive"</code> で取りうる値を制限でき、間違った値の代入をコンパイル時に検出できます。<code>Result&lt;T&gt;</code> のようにジェネリクスも型エイリアスで使えます。',
+    '<strong>ジェネリクス</strong> <code>&lt;T&gt;</code> を使うと「どんな型でも使える汎用的な関数やクラス」を書けます。<code>T</code> は Type（型）の略で、呼び出し時に具体的な型に置き換わります。型安全なまま再利用性の高いコードが書けます。',
+    '<code>enum</code> は関連する定数をまとめる仕組みです。文字列 enum を使うと値が読みやすくなります。<code>Direction.Up</code> のように使い、間違った値を渡すとコンパイルエラーになります。',
+  ],
+  java: [
+    'Java ではすべてのコードをクラスの中に書きます。<code>public static void main(String[] args)</code> がプログラムの入り口です。<code>System.out.println()</code> で画面に表示します。クラス名とファイル名（<code>.java</code>）を一致させる必要があります。',
+    'Java は強い静的型付けで、すべての変数に型の宣言が必要です。<code>String</code>（大文字 S に注意）は Java の文字列型で、<code>char</code>（1 文字）とは別物です。型キャストで型を変換できますが、小数 → 整数のキャストでは小数点以下が切り捨てられます。',
+    '<code>class</code> でクラスを定義し、<code>private</code> で外部からの直接アクセスを防ぎます（カプセル化）。コンストラクタ（クラス名と同名のメソッド）でオブジェクト生成時の初期化を行います。<code>this.name</code> は自分自身のフィールドを指します。',
+    'Java の標準コレクションです。<code>ArrayList</code> は可変長リスト、<code>HashMap</code> はキーと値のペアです。<code>import java.util.*;</code> で使えるようになります。ジェネリクス（<code>&lt;Integer&gt;</code> など）で型安全に使えます。',
+    'ラムダ式 <code>n -&gt; n % 2 == 0</code> で無名関数を書けます。<strong>Stream API</strong> を使うと、コレクションに対して <code>filter</code>・<code>map</code>・<code>reduce</code> などを連鎖させて宣言的に処理できます。',
+  ],
+  ruby: [
+    'Ruby は <code>puts</code> で改行付き出力、<code>print</code> で改行なし出力をします。<code>#</code> でコメントを書きます。<code>{}</code> の代わりに <code>end</code> でブロックを閉じるのが Ruby の特徴です。',
+    'Ruby では型宣言は不要です。文字列の中に <code>#{変数}</code> を書くと変数の値を埋め込めます（<strong>文字列展開</strong>）。<strong>シンボル</strong> <code>:active</code> は文字列よりメモリ効率の良い識別子で、ハッシュのキーによく使われます。',
+    'Ruby の配列は <code>&lt;&lt;</code> で末尾追加できます。<strong>ハッシュ</strong> <code>{key: value}</code> は Python の辞書・JavaScript のオブジェクトに相当します。<code>map</code>・<code>select</code>・<code>reduce</code> などのメソッドにブロックを渡してコレクションを処理するのが Ruby らしい書き方です。',
+    '<code>if</code> の代わりに <code>unless（〜でなければ）</code> も使えます。<code>5.times { |i| ... }</code> でシンプルにループでき、<code>(1..5).each</code> で範囲を繰り返せます。Ruby ではループも「数値オブジェクトのメソッド」として実装されています。',
+    '<code>def</code> でメソッドを定義します。<code>greeting: "こんにちは"</code> はキーワード引数のデフォルト値です。<strong>ブロック</strong> <code>do |n| ... end</code> は関数に渡せる無名処理のかたまりで、Ruby プログラミングの中心的な概念です。',
+  ],
+  kotlin: [
+    '<code>val</code> は変更不可（推奨）、<code>var</code> は変更可能な変数です。<strong>null 安全</strong>が Kotlin の最大の特徴で、<code>?</code> をつけた型だけが null を持てます。<code>?.</code>（セーフコール）でnull でも安全にアクセスでき、<code>?:</code>（エルビス演算子）で null 時のデフォルト値を指定できます。',
+    '<code>fun</code> で関数を定義します。<code>= a + b</code> のように式関数で 1 行で書けます。<strong>拡張関数</strong> <code>fun 型.関数名()</code> で既存の型に新しいメソッドを追加できます。',
+    '<code>listOf()</code> はイミュータブル（変更不可）なリスト、<code>mutableListOf()</code> は変更可能なリストです。<code>to</code> でペアを作れるため <code>mapOf("a" to 1)</code> と読みやすく書けます。<code>map { }・filter { }・reduce { }</code> などの高階関数が使えます。',
+    '<strong>データクラス</strong>は <code>equals()</code>・<code>hashCode()</code>・<code>toString()</code>・<code>copy()</code> が自動生成されます。<code>copy(name = "Bob")</code> で一部だけ変えたコピーを簡単に作れます。<strong>シールドクラス</strong>で継承できるクラスを限定できます。',
+    '<strong>コルーチン</strong>は Kotlin の非同期処理の仕組みです。<code>suspend</code> 関数は途中で中断・再開できる特別な関数で、<code>delay()</code> はスレッドをブロックせずに待機します。<code>async { }</code> で並列実行し、<code>await()</code> で結果を待ちます。',
+  ],
+  swift: [
+    '<code>let</code> は定数（変更不可・推奨）、<code>var</code> は変数（変更可）です。<strong>Optional 型</strong> <code>String?</code> は「nil が入る可能性がある型」で、Swift の型安全の核心です。<code>if let</code> でアンラップ（中身を取り出す）し、<code>??</code> で nil 時のデフォルト値を指定できます。',
+    'Swift の <code>switch</code> はパターンマッチが強力で、<code>case 1...5:</code> のように範囲でマッチできます。<code>default:</code> は必須です（全ケースを網羅しない場合）。<code>for i in 1...5</code> で閉区間（1〜5）、<code>1..&lt;5</code> で半開区間（1〜4）のループができます。',
+    'Swift の関数は<strong>ラベル付き引数</strong>が特徴で、<code>greet(name: "Bob")</code> のように呼び出し側にも引数名が見えます。<strong>クロージャ</strong> では <code>$0</code> が 1 番目の引数の略記です。<code>map { $0 * 2 }</code> のように配列の各要素を変換できます。',
+    '<strong>構造体（struct）</strong>はコピーで渡され、<strong>クラス（class）</strong>は参照で渡されます。Swift では値型の構造体の方が推奨されることが多いです。メソッドはどちらでも同じように書けます。プロトコルはJavaのinterfaceに相当します。',
+  ],
+  csharp: [
+    'C# は <code>using System;</code> で名前空間を宣言し、<code>Console.WriteLine()</code> で画面に出力します。すべてのコードはクラス内に書き、<code>static void Main()</code> がプログラムの入り口です。',
+    'C# では <code>var</code> で型推論を使えます。<code>string?</code> や <code>int?</code> のように <code>?</code> をつけると null 許容型になります。<code>string</code>（小文字）は <code>String</code>（大文字）の別名です。<code>$"{変数}"</code> の文字列補間で変数を埋め込めます。',
+    '<strong>プロパティ</strong> <code>{ get; set; }</code> はフィールドへのアクセスをカプセル化します。<code>init</code>（C# 9）はオブジェクト生成時のみ設定できる初期化専用のセッターです。<code>override string ToString()</code> でオブジェクトを文字列で表現する方法を定義できます。',
+    '<strong>LINQ</strong>（Language Integrated Query）はコレクションを宣言的に操作できる強力な機能です。<code>Where()</code> でフィルタリング、<code>Select()</code> で変換、<code>Sum()/Max()</code> で集計ができます。SQL 風のクエリ構文でも同等の処理を書けます。',
+    '<code>async</code> と <code>await</code> で非同期処理を同期的な書き方で表現できます。<code>Task.WhenAll()</code> で複数の非同期処理を並列実行できます。<code>using var</code> でリソースを使い終わったら自動的に解放されます（<code>IDisposable</code> の自動 Dispose）。',
+  ],
+  go: [
+    'Go は必ずパッケージを宣言し（<code>package main</code>）、<code>import "fmt"</code> でライブラリを取り込みます。<code>fmt.Println()</code> で画面に表示します。使っていない import があるとコンパイルエラーになります。',
+    '<code>var</code> で変数宣言、<code>:=</code>（短縮宣言）で型推論付きの変数を作れます（関数内のみ）。複数変数への同時代入 <code>x, y = y, x</code> でスワップが 1 行で書けます。Go に例外はなく、エラーは戻り値として返すのが慣習です。',
+    'Go では<strong>エラーは戻り値として返す</strong>のが基本です。関数が <code>(値, error)</code> を返し、呼び出し側でエラーをチェックします。<code>fmt.Errorf()</code> でエラーメッセージを作れます。エラーを無視してはいけません。',
+    'Go に継承はなく、<strong>構造体</strong>にメソッドを定義します。<strong>ポインタレシーバ</strong> <code>(d *Dog)</code> を使うと構造体のフィールドを変更できます。値レシーバ <code>(d Dog)</code> ではコピーが渡されるので元のデータは変わりません。',
+    '<code>go</code> キーワードで<strong>goroutine</strong>（軽量スレッド）を起動できます。<strong>channel</strong> <code>chan</code> で goroutine 間の値の受け渡しが安全にできます。<code>&lt;-ch</code> でチャネルから値を受け取り、<code>ch &lt;-</code> で値を送信します。',
+  ],
+  c: [
+    'C 言語は <code>#include &lt;stdio.h&gt;</code> で標準入出力ライブラリを取り込み、<code>printf()</code> で画面に表示します。<code>\\n</code> が改行記号です。C はすべてのプログラミング言語の祖先とも言える重要な言語です。',
+    '<code>%d</code>（整数）・<code>%f</code>（小数）・<code>%c</code>（文字）・<code>%s</code>（文字列）は <code>printf</code> の<strong>フォーマット指定子</strong>です。型を間違えると意図しない表示になります。<code>float</code> は単精度（約7桁）、<code>double</code> は倍精度（約15桁）の小数です。',
+    '<strong>ポインタ</strong>はメモリアドレスを格納する変数です。<code>&amp;x</code> で x のアドレス、<code>*p</code> でポインタが指す値にアクセスします。<code>malloc()</code> でメモリを動的確保し、必ず <code>free()</code> で解放します（メモリリーク防止）。ポインタは C 言語の最も重要な概念です。',
+    'C 言語では関数を使う前に<strong>プロトタイプ宣言</strong>（前方宣言）が必要な場合があります。値を関数内で変更するにはポインタ渡しが必要で、<code>void swap(int *a, int *b)</code> のように書きます。引数はデフォルトで値渡し（コピー）です。',
+    '<strong>構造体（struct）</strong>で複数のデータをひとまとめにできます。<code>typedef</code> で構造体に型エイリアスをつけると、毎回 <code>struct</code> と書かずに済みます。C にはクラスはありませんが、構造体で近いことができます。',
+  ],
+  rust: [
+    'Rust では <code>println!()</code>（マクロ）で画面に表示します。<code>{}</code> が変数の埋め込みプレースホルダーです。感嘆符 <code>!</code> がつくのはマクロ（関数ではない特別な仕組み）を示します。',
+    'Rust の変数はデフォルトで<strong>不変</strong>です。変更するには <code>mut</code> キーワードが必要です。<code>&amp;str</code> は文字列スライス（不変の参照）、<code>String</code> はヒープ上に確保された可変文字列です。<code>let pi: f64 = 3.14</code> のように型を明示することもできます。',
+    'Rust の最大の特徴は<strong>所有権システム</strong>です。各値には必ず 1 つの所有者があり、所有権が移ると元の変数は使えなくなります（ムーブセマンティクス）。<strong>借用</strong>（<code>&amp;</code>）を使うと所有権を移さずに参照できます。この仕組みで GC なしにメモリ安全を実現しています。',
+    '<code>enum</code> と <code>match</code> の組み合わせは Rust の強力な機能です。<code>match</code> はすべての場合を網羅する必要があり、漏れがあるとコンパイルエラーになります。標準の <code>Result&lt;T, E&gt;</code> でエラー処理を型安全に書けます。',
+    '<code>struct</code> でデータを定義し、<code>impl</code> でメソッドを実装します。<code>&amp;self</code>（不変参照）・<code>&amp;mut self</code>（可変参照）・<code>self</code>（所有権移動）の使い分けが重要です。<code>Rectangle::new()</code> のような関連関数（static メソッド）も <code>impl</code> 内に書きます。',
+  ],
+  html: [
+    'すべての HTML ファイルはこの基本構造から始まります。<code>&lt;head&gt;</code> にはページの設定情報（タイトル・文字コード・CSS の読み込みなど）、<code>&lt;body&gt;</code> に実際に表示するコンテンツを書きます。<code>lang="ja"</code> で言語を日本語に設定し、<code>charset="UTF-8"</code> で文字化けを防ぎます。',
+    'よく使う HTML タグの一覧です。<code>&lt;h1&gt;〜&lt;h6&gt;</code> は見出しで、数字が小さいほど大きな（重要な）見出しです。<code>&lt;a href="URL"&gt;</code> でリンクを作り、<code>&lt;img src="パス" alt="説明文"&gt;</code> で画像を表示します。<code>alt</code> は画像が表示できない場合や音声読み上げ時に使われます。',
+    'CSS セレクタでスタイルを適用する対象を選択します。<strong>クラス</strong>（<code>.クラス名</code>）は複数の要素に使い回せ、<strong>ID</strong>（<code>#ID名</code>）はページ内で 1 つだけの要素に使います。擬似クラス <code>:hover</code> でマウスオーバー時のスタイルを設定できます。',
+    '<strong>Flexbox</strong> は 1 次元（横方向または縦方向）のレイアウトを制御する CSS の仕組みです。<code>justify-content</code> で主軸（デフォルトは横）方向、<code>align-items</code> で交差軸（デフォルトは縦）方向の配置を指定します。<code>gap</code> で要素間の間隔を設定できます。',
+    '<strong>Grid</strong> は縦横の 2 次元レイアウトを同時に制御します。<code>grid-template-columns: repeat(3, 1fr)</code> で「3 等分した 3 列」を作れます。<code>@media</code> クエリでスクリーンサイズに応じてレイアウトを変えられます（レスポンシブデザイン）。',
+    '<strong>トランジション</strong>でプロパティの変化をなめらかにします。<strong>アニメーション</strong> <code>@keyframes</code> でより複雑な動きを定義できます。<code>transform</code> でスケール・回転・移動などの変形効果をつけられます。',
+  ],
+  sql: [
+    'テーブルの作成（<code>CREATE TABLE</code>）とデータの操作（<code>INSERT/UPDATE/DELETE</code>）の基本です。<code>PRIMARY KEY</code> は各行を一意に識別するキーです。<code>NOT NULL</code> で null 値の挿入を禁止できます。SQL のキーワードは大文字で書くのが慣習です。',
+    '<code>SELECT</code> でデータを取得します。<code>WHERE</code> で条件を絞り込み、<code>ORDER BY</code> でソート（<code>DESC</code> は降順）、<code>LIMIT</code> で取得件数を制限します。<code>LIKE \'A%\'</code> で「A で始まる」を表現します（<code>%</code> はワイルドカード）。',
+    '<strong>集計関数</strong>（<code>COUNT/AVG/MAX/MIN/SUM</code>）でデータを集計します。<code>GROUP BY</code> でグループ化し、グループごとに集計できます。<code>HAVING</code> はグループ化後の絞り込みに使います（<code>WHERE</code> はグループ化前）。',
+    '<strong>JOIN</strong> で複数テーブルを結合します。<code>INNER JOIN</code> は両テーブルに一致する行だけ、<code>LEFT JOIN</code> は左テーブルの全行を残し右テーブルに対応がない場合は NULL になります。サブクエリで <code>SELECT</code> の中に別の <code>SELECT</code> を入れ子にできます。',
+    '<strong>ウィンドウ関数</strong>はグループ化せずに行ごとの集計・ランキングができる高度な機能です。<code>OVER(ORDER BY 列)</code> で順位付け、<code>PARTITION BY</code> でグループ内ランキング、<code>LAG()</code> で前の行の値にアクセスできます。',
+  ],
+  bash: [
+    'Bash スクリプトは <code>#!/bin/bash</code>（シバン）から始めます。変数は <code>name="値"</code> で設定し（<strong>=の前後にスペースを入れない</strong>のが重要）、使うときは <code>$name</code> または <code>${name}</code> と書きます。<code>$(コマンド)</code> でコマンドの実行結果を変数に代入できます。',
+    '<code>[ 条件 ]</code> で条件テストをします（<code>[</code> の後と <code>]</code> の前にスペースが必要）。数値比較には <code>-ge</code>（以上）・<code>-lt</code>（未満）・<code>-eq</code>（等しい）などを使います。<code>-f ファイル</code> でファイルの存在確認ができます。',
+    '<code>for i in {1..10}</code> で範囲ループ、<code>for i in 値1 値2 ...</code> で値を列挙したループができます。<code>while [ 条件 ]; do ... done</code> で条件ループを書きます。<code>((count++))</code> で数値の加算ができます。',
+    '<code>local 変数名</code> で関数内のローカル変数を宣言できます（関数外の同名変数と区別するため重要）。Bash の関数は値を返すのではなく、<code>echo</code> で出力し、呼び出し側で <code>$(関数名)</code> で受け取ります。<code>$1, $2</code> で引数を参照できます。',
+    '<code>|</code>（パイプ）で一方のコマンドの出力を次のコマンドの入力にできます。<code>&gt;</code> でファイルへ書き込み（上書き）、<code>&gt;&gt;</code> で追記します。<code>grep</code>（パターン検索）・<code>awk</code>（フィールド処理）・<code>sed</code>（文字列置換）はテキスト処理の定番コマンドです。',
+  ],
+  regex: [
+    'メタ文字は正規表現の特殊な記号です。<code>.</code> は任意の 1 文字、<code>\\d</code> は数字（0-9）、<code>\\w</code> は英数字とアンダースコア、<code>\\s</code> は空白文字です。大文字（<code>\\D</code>・<code>\\W</code>・<code>\\S</code>）はその否定になります。',
+    '量指定子は直前のパターンの繰り返し回数を指定します。<code>*</code>（0 回以上）・<code>+</code>（1 回以上）・<code>?</code>（0 か 1 回）・<code>{3}</code>（ちょうど 3 回）がよく使われます。デフォルトは<strong>貪欲マッチ</strong>（できるだけ長く）で、<code>?</code> を追加すると非貪欲になります。',
+    '<code>^</code> は行の先頭、<code>$</code> は行の末尾を表します。<strong>フラグ</strong>でマッチの挙動を変えられます。<code>i</code> で大文字小文字無視、<code>g</code> で全マッチ検索（グローバル）、<code>m</code> で複数行モード（各行の先頭・末尾にマッチ）になります。',
+    '<code>()</code> でグループを作ると、マッチした部分を取り出せます（キャプチャグループ）。<code>m[1]</code>・<code>m[2]</code> で各グループの値を参照できます。<code>(?&lt;year&gt;...)</code> で名前付きキャプチャにすると <code>groups.year</code> でアクセスできます。',
+    'よく使う正規表現パターンの実例です。メールアドレス・電話番号・URL など頻出パターンは既存のものを参考にしましょう。<code>regexr.com</code> や <code>regex101.com</code> でリアルタイムにパターンをテストできます。',
+  ],
+  php: [
+    'PHP は <code>&lt;?php</code> タグで始まります。変数は必ず <code>$</code> から始まります。<code>echo</code> や <code>print</code> で出力し、文字列の結合は <code>.</code>（ドット）演算子を使います。文字列の中に <code>"$変数"</code> または <code>"{$変数}"</code> で変数を展開できます。',
+    'PHP の変数は型宣言不要で、<code>var_dump()</code> で型と値を確認できます。<code>===</code> は型も含めた厳密な比較（推奨）、<code>==</code> は型変換ありの比較です。PHP は Webサーバー上で動くため、デバッグには <code>var_dump()</code> や <code>error_log()</code> をよく使います。',
+    '<code>if/elseif/else</code> で条件分岐（<code>elseif</code> は 1 語）、<code>foreach ($arr as $v)</code> で配列ループを書きます。<code>match</code>（PHP 8）は <code>switch</code> より厳密で、型も一致する必要があります。<code>$_POST</code>・<code>$_GET</code> で HTML フォームの値を受け取れます。',
+    'PHP のクラスは Java に似ています。<strong>コンストラクタプロモーション</strong>（PHP 8）で <code>__construct(private string $name)</code> と書くと、プロパティ宣言と代入を同時に行えます。<code>extends</code> で継承し、<code>parent::</code> で親クラスのメソッドを呼べます。',
+  ],
+};
+
 // ===== 教本ページの描画 =====
 
 function renderTextbook() {
@@ -36398,11 +36526,13 @@ function renderTextbook() {
   }
 
   // コードセクション
+  var _descs = (langSectionDescs[currentLanguage] || []);
   tb.sections.forEach(function(sec, idx) {
     var section = document.createElement('div');
     section.className = 'textbook-section';
     section.id = 'tb-section-' + idx;
 
+    var _desc = _descs[idx] || '';
     section.innerHTML =
       '<div class="textbook-section-header" onclick="toggleTextbookSection(' + idx + ')">' +
         '<span class="textbook-section-num">' + String(idx + 1).padStart(2, '0') + '</span>' +
@@ -36410,6 +36540,7 @@ function renderTextbook() {
         '<span class="textbook-toggle-icon" id="tb-icon-' + idx + '">▶</span>' +
       '</div>' +
       '<div class="textbook-section-body hidden" id="tb-body-' + idx + '">' +
+        (_desc ? '<div class="textbook-section-desc">' + _desc + '</div>' : '') +
         '<pre class="textbook-code"><code>' + escapeHtml(sec.code) + '</code></pre>' +
       '</div>';
 
