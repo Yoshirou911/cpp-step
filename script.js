@@ -31215,7 +31215,11 @@ function showPage(name) {
    "page-mission-list", "page-mission-detail", "page-profile", "page-textbook", "page-ranking", "page-contest", "page-career"].forEach(function(id) {
     document.getElementById(id).classList.add("hidden");
   });
-  document.getElementById("page-" + name).classList.remove("hidden");
+  var _pageEl = document.getElementById("page-" + name);
+  _pageEl.classList.remove("hidden");
+  _pageEl.classList.remove("page-enter");
+  void _pageEl.offsetWidth;
+  _pageEl.classList.add("page-enter");
 
   // 言語選択画面ではRANKINGタブのみ表示
   if (name === 'lang') {
@@ -31411,6 +31415,7 @@ function renderList() {
     return;
   }
 
+  var _cardIdx = 0;
   unitOrder.forEach(function(unitName) {
     // 単元ヘッダー
     var unitProblems = units[unitName];
@@ -31437,6 +31442,8 @@ function renderList() {
         (learned ? " learned" : "") +
         (isLocked ? " premium-locked-card" : "") +
         (isDailyCard ? " daily-challenge-card" : "");
+      card.style.animationDelay = Math.min(_cardIdx * 0.03, 0.24) + 's';
+      _cardIdx++;
 
       var bookmarked = isBookmarked(p.id);
       card.innerHTML =
