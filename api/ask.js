@@ -35,16 +35,20 @@ export default async function handler(req, res) {
   if (!token) {
     return res.status(401).json({ error: '認証が必要です。ログインしてください。' });
   }
-  const supabaseAuthRes = await fetch(
-    `${process.env.SUPABASE_URL}/auth/v1/user`,
-    { headers: { 'Authorization': `Bearer ${token}`, 'apikey': process.env.SUPABASE_ANON_KEY } }
-  );
-  if (!supabaseAuthRes.ok) {
-    return res.status(401).json({ error: '認証が無効です。再ログインしてください。' });
+  let authUser;
+  try {
+    const supabaseAuthRes = await fetch(
+      `${process.env.SUPABASE_URL}/auth/v1/user`,
+      { headers: { 'Authorization': `Bearer ${token}`, 'apikey': process.env.SUPABASE_ANON_KEY } }
+    );
+    if (!supabaseAuthRes.ok) {
+      return res.status(401).json({ error: '認証が無効です。再ログインしてください。' });
+    }
+    authUser = await supabaseAuthRes.json();
+  } catch (e) {
+    return res.status(503).json({ error: '認証サービスに接続できません。時間をおいて再試行してください。' });
   }
 
-  // 認証ユーザー情報取得（レート制限のキーとして使う）
-  const authUser = await supabaseAuthRes.json();
   const rateLimitKey = authUser?.id || req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
 
   // レート制限チェック（ユーザーIDベース：IP偽装に耐性あり）

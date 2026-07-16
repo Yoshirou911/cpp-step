@@ -32,13 +32,18 @@ export default async function handler(req, res) {
   if (!token) {
     return res.status(401).json({ error: 'ログインが必要です' });
   }
-  const authRes = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
-    headers: { 'Authorization': `Bearer ${token}`, 'apikey': process.env.SUPABASE_ANON_KEY }
-  });
-  if (!authRes.ok) {
-    return res.status(401).json({ error: '認証が無効です。再ログインしてください。' });
+  let authUser;
+  try {
+    const authRes = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
+      headers: { 'Authorization': `Bearer ${token}`, 'apikey': process.env.SUPABASE_ANON_KEY }
+    });
+    if (!authRes.ok) {
+      return res.status(401).json({ error: '認証が無効です。再ログインしてください。' });
+    }
+    authUser = await authRes.json();
+  } catch (e) {
+    return res.status(503).json({ error: '認証サービスに接続できません。時間をおいて再試行してください。' });
   }
-  const authUser = await authRes.json();
 
   const rateLimitKey = authUser?.id || req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
   if (isRateLimited(rateLimitKey)) {
