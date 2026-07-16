@@ -62,6 +62,7 @@ export default async function handler(req, res) {
   if (!apiKey) return res.status(500).json({ error: 'APIキーが設定されていません' });
   if (!messages || !Array.isArray(messages)) return res.status(400).json({ error: '不正なリクエストです' });
   if (messages.length > 30) return res.status(400).json({ error: 'メッセージが多すぎます（最大30件）' });
+  if (system && typeof system === 'string' && system.length > 4000) return res.status(400).json({ error: 'システムプロンプトが長すぎます' });
   if (JSON.stringify(messages).length > 80000) return res.status(400).json({ error: 'メッセージが大きすぎます' });
 
   const groqMessages = [
@@ -93,7 +94,7 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (!response.ok) {
-      return res.status(response.status).json({ error: data.error?.message || 'API error' });
+      return res.status(502).json({ error: 'AIサービスに接続できませんでした。時間をおいて再試行してください。' });
     }
 
     if (!data.choices || !data.choices[0]) {
