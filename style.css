@@ -1227,7 +1227,7 @@ a.landing-text-link { text-decoration: underline; }
   gap: 8px;
 }
 
-.section h3::before { content: '笳・; font-size: 0.48rem; }
+.section h3::before { content: '◆'; font-size: 0.48rem; }
 
 .section p {
   line-height: 1.90;
