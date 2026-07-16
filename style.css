@@ -7955,3 +7955,24 @@ input[type="password"]:focus {
   border-color: rgba(255, 140, 0, 0.5) !important;
   color: #FF8C00 !important;
 }
+
+.cr-lang-clickable {
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.cr-lang-clickable:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--cc, #FF6B00) !important;
+  transform: translateX(2px);
+}
+.cr-lang-go {
+  font-size: 0.65rem;
+  opacity: 0.6;
+  margin-left: 4px;
+  flex-shrink: 0;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.cr-lang-clickable:hover .cr-lang-go {
+  opacity: 1;
+  transform: translateX(3px);
+}

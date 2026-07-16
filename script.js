@@ -33517,13 +33517,14 @@ function renderCareer() {
       '</div>';
     }).join('');
 
-    // 関連言語タグ
+    // 関連言語タグ（クリックで問題へジャンプ）
     var langTagsHTML = relevantPct.map(function(lp) {
       var fillW = lp.pct + '%';
-      return '<div class="cr-lang-tag" style="border-color:' + lp.color + '55">' +
+      return '<div class="cr-lang-tag cr-lang-clickable" style="border-color:' + lp.color + '55" onclick="event.stopPropagation();goToLangProblems(\'' + lp.lid + '\')" title="' + lp.name + 'の問題へ">' +
         '<span class="cr-lang-name" style="color:' + lp.color + '">' + lp.name + '</span>' +
         '<div class="cr-lang-bar-wrap"><div class="cr-lang-bar-fill" style="width:' + fillW + ';background:' + lp.color + '"></div></div>' +
         '<span class="cr-lang-pct" style="color:' + lp.color + '">' + lp.pct + '%</span>' +
+        '<span class="cr-lang-go" style="color:' + lp.color + '">▶</span>' +
       '</div>';
     }).join('');
 
@@ -33554,7 +33555,7 @@ function renderCareer() {
             '<div class="career-desc">' + c.desc + '</div>' +
             '<div class="cr-section-label">▸ 学習ロードマップ（難易度別）</div>' +
             '<div class="cr-roadmap-phases">' + roadmapHTML + '</div>' +
-            '<div class="cr-section-label">▸ CODE STEP 関連言語</div>' +
+            '<div class="cr-section-label">▸ この職業の問題を解く</div>' +
             '<div class="cr-lang-tags">' + langTagsHTML + '</div>' +
           '</div>'
         : '') +
@@ -33660,6 +33661,11 @@ function renderCareer() {
 function toggleCareer(id) {
   _careerSelected = (_careerSelected === id) ? null : id;
   renderCareer();
+}
+
+async function goToLangProblems(lid) {
+  await selectLanguage(lid);
+  switchTab('problems');
 }
 
 var DARK_CAREERS = [
