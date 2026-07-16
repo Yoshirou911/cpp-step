@@ -94,7 +94,7 @@ export default async function handler(req, res) {
     if (!listRes.ok) {
       const err = await listRes.text();
       console.error('User lookup failed:', err);
-      return res.status(502).json({ error: 'ユーザー検索に失敗しました: ' + err });
+      return res.status(502).json({ error: 'ユーザー検索に失敗しました。' });
     }
 
     const listData = await listRes.json();
@@ -124,7 +124,8 @@ export default async function handler(req, res) {
 
     if (!upsertRes.ok) {
       const err = await upsertRes.text();
-      return res.status(500).json({ error: 'DB更新に失敗しました: ' + err });
+      console.error('Upsert failed:', err);
+      return res.status(500).json({ error: 'ユーザー情報の更新に失敗しました。' });
     }
 
     console.log(`[admin-grant] admin=${adminUserId} → ${targetEmail} is_premium=${isPremium}`);
