@@ -4316,9 +4316,16 @@ async function runCode() {
       ? JSON.stringify({ code: code })
       : JSON.stringify(_wandboxBody);
 
+    var _runHeaders = { "Content-Type": "application/json" };
+    if (_supabase) {
+      var _runSess = await _supabase.auth.getSession();
+      var _runTok  = _runSess.data && _runSess.data.session && _runSess.data.session.access_token;
+      if (_runTok) _runHeaders['Authorization'] = 'Bearer ' + _runTok;
+    }
+
     const res = await fetch(_fetchUrl, {
       method:  "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: _runHeaders,
       body:    _fetchBody,
       signal:  controller.signal
     });

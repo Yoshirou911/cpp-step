@@ -23,14 +23,25 @@ function isRateLimited(ip) {
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', 'https://cpp-step.vercel.app');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim()
-    || req.socket?.remoteAddress || 'unknown';
-  if (isRateLimited(ip)) {
+  const token = req.headers['authorization']?.replace('Bearer ', '');
+  if (!token) {
+    return res.status(401).json({ error: 'ログインが必要です' });
+  }
+  const authRes = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
+    headers: { 'Authorization': `Bearer ${token}`, 'apikey': process.env.SUPABASE_ANON_KEY }
+  });
+  if (!authRes.ok) {
+    return res.status(401).json({ error: '認証が無効です。再ログインしてください。' });
+  }
+  const authUser = await authRes.json();
+
+  const rateLimitKey = authUser?.id || req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
+  if (isRateLimited(rateLimitKey)) {
     return res.status(429).json({ error: '短時間に送信しすぎています。1分後にお試しください。' });
   }
 
