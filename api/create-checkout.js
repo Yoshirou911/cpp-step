@@ -106,7 +106,7 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       console.error('Stripe error:', session);
-      return res.status(502).json({ error: session?.error?.message || 'Stripe APIエラー' });
+      return res.status(502).json({ error: '決済サービスに接続できませんでした。時間をおいて再試行してください。' });
     }
 
     return res.status(200).json({ url: session.url });
