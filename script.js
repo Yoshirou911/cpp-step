@@ -2033,8 +2033,9 @@ function updateLangBadge() {
 
 function showNavAndProgress() {
   document.getElementById('nav-tabs').classList.remove('hidden');
-  document.getElementById('progress-text').classList.remove('hidden');
-  document.getElementById('progress-bar-wrap').classList.remove('hidden');
+  var hasLang = !!currentLanguage;
+  document.getElementById('progress-text').classList.toggle('hidden', !hasLang);
+  document.getElementById('progress-bar-wrap').classList.toggle('hidden', !hasLang);
   updateLangBadge();
 }
 
@@ -34928,241 +34929,6 @@ function switchTab(tab) {
 
 // ===== 教本データ =====
 
-// ===== 入門ガイド（INTRO タブ） =====
-
-function _introChapter(num, icon, title, bodyHtml, codeStr, tipStr) {
-  var h = '<div class="intro-chapter" id="ic' + num + '">';
-  h += '<div class="intro-ch-head">';
-  h += '<span class="intro-ch-num">' + num + '</span>';
-  h += '<span class="intro-ch-icon">' + icon + '</span>';
-  h += '<span class="intro-ch-title">' + title + '</span>';
-  h += '</div>';
-  if (bodyHtml) h += '<div class="intro-ch-body">' + bodyHtml + '</div>';
-  if (codeStr)  h += '<pre class="intro-code"><code>' + codeStr + '</code></pre>';
-  if (tipStr)   h += '<div class="intro-tip"><span class="intro-tip-icon">💡</span><span>' + tipStr + '</span></div>';
-  h += '</div>';
-  return h;
-}
-
-function renderIntro() {
-  var c = document.getElementById('intro-content');
-  if (!c) return;
-
-  var tocItems = [
-    'プログラミングってなに？',
-    'C++プログラムの全体を見てみよう',
-    '<code>#include</code> って何？',
-    '<code>using namespace std;</code> って何？',
-    '<code>main()</code> 関数って何？',
-    '<code>cout</code> で画面に表示する',
-    'セミコロン <code>;</code> と波括弧 <code>{}</code>',
-    'コメント <code>//</code>',
-    '変数ってなに？',
-    'コンパイルってなに？',
-    'よくあるエラーを読もう！',
-  ];
-
-  var h = '';
-
-  // ヘッダー
-  h += '<div class="intro-page-header">';
-  h += '<span class="intro-page-badge">🌱 BEGINNER GUIDE</span>';
-  h += '<h1 class="intro-page-title">プログラミング入門ガイド</h1>';
-  h += '<p class="intro-page-sub">「プログラミングってなに？」から始めよう。<br>すべてのキーワードをやさしく・ていねいに解説します。</p>';
-  h += '</div>';
-
-  // 目次
-  h += '<div class="intro-toc-card">';
-  h += '<div class="intro-toc-heading">📋 目次</div>';
-  h += '<div class="intro-toc-grid">';
-  tocItems.forEach(function(item, i) {
-    h += '<a class="intro-toc-item" href="#ic' + (i+1) + '" onclick="document.getElementById(\'ic' + (i+1) + '\').scrollIntoView({behavior:\'smooth\'});return false;">';
-    h += '<span class="intro-toc-num">' + (i+1) + '</span>';
-    h += '<span class="intro-toc-text">' + item + '</span>';
-    h += '</a>';
-  });
-  h += '</div></div>';
-
-  // Chapter 1: プログラミングってなに？
-  h += _introChapter(1, '💡', 'プログラミングってなに？',
-    '<p>プログラミングとは、<strong>コンピュータへの「指示書」を書くこと</strong>です。</p>' +
-    '<p>コンピュータはとても速く正確に計算できますが、自分では何も考えられません。<br>「次に何をすればいいか」を細かく教えてあげる必要があります。</p>' +
-    '<div class="intro-analogy"><span class="intro-analogy-icon">🍳</span><div>' +
-    '<strong>料理のレシピに例えると…</strong><br>' +
-    '「卵を2個割る → フライパンで炒める → 塩を振る」<br>' +
-    'このように<em>順番に・具体的に</em>指示するのがプログラミングです。</div></div>' +
-    '<p>その指示を書く「言葉」が<strong>プログラミング言語</strong>です。C++、Python、JavaScriptなど、目的に合わせて使い分けます。</p>',
-    null,
-    '人間同士は「なんとなく」でも通じますが、コンピュータには一字一句正確な指示が必要です。曖昧な表現は一切通じません！'
-  );
-
-  // Chapter 2: C++プログラムの全体
-  h += _introChapter(2, '👀', 'C++プログラムの全体を見てみよう',
-    '<p>まず、一番シンプルな C++ プログラムを見てみましょう。</p>' +
-    '<p>次のコードを実行すると「Hello, World!」と画面に表示されます。<br>たった6行でもこれだけの意味が詰まっています。次の章でひとつひとつ解説します！</p>',
-    '#include &lt;iostream&gt;\nusing namespace std;\n\nint main() {\n    cout &lt;&lt; "Hello, World!" &lt;&lt; endl;\n    return 0;\n}',
-    '「Hello, World!」を表示することは、どの言語でも最初に習う「お作法」です。まずここからスタート！'
-  );
-
-  // Chapter 3: #include
-  h += _introChapter(3, '📦', '#include って何？',
-    '<p><code>#include</code> は、<strong>プログラムに必要な「道具箱」を開けるキーワード</strong>です。</p>' +
-    '<p>C++にはたくさんの便利な機能（道具）が用意されていますが、最初から全部読み込むと重くなります。<br>' +
-    'だから「今回はこの道具を使います」と宣言するのが <code>#include</code> です。</p>' +
-    '<div class="intro-analogy"><span class="intro-analogy-icon">🧰</span><div>' +
-    '<strong>工具箱に例えると…</strong><br>' +
-    '「画面表示するから <code>&lt;iostream&gt;</code> を出す」<br>' +
-    '「数学計算するから <code>&lt;cmath&gt;</code> を出す」<br>' +
-    '必要な道具だけ取り出す感じです。</div></div>' +
-    '<p><code>&lt;iostream&gt;</code> は <strong>io（入出力）+ stream（流れ）</strong> の略で、<br>' +
-    '画面への表示（cout）やキーボード入力（cin）の機能が入っています。</p>',
-    '#include &lt;iostream&gt;   // 入出力（cout, cin など）\n#include &lt;string&gt;      // 文字列（string型）\n#include &lt;vector&gt;      // 可変長配列（vector）\n#include &lt;cmath&gt;       // 数学関数（sqrt, pow など）',
-    '<code>#include</code> は必ずファイルの先頭に書きます。プログラムが始まる前の「準備」です。'
-  );
-
-  // Chapter 4: using namespace std
-  h += _introChapter(4, '📝', 'using namespace std; って何？',
-    '<p><code>using namespace std;</code> は、<strong>「std というグループ名を省略して書きます」という宣言</strong>です。</p>' +
-    '<p>C++の標準機能（cout, cin, string など）はすべて <code>std</code> という「名前空間（グループ）」に入っています。<br>' +
-    '本来は <code>std::cout</code> や <code>std::string</code> と書く必要がありますが、<br>' +
-    'この宣言を書くと <code>::</code> を省略できます。</p>' +
-    '<div class="intro-analogy"><span class="intro-analogy-icon">🏠</span><div>' +
-    '<strong>住所に例えると…</strong><br>' +
-    '毎回「東京都渋谷区〇〇の山田さん」と言う代わりに、<br>' +
-    '「近所では山田さんと呼ぶ」と決めてしまう感じです。</div></div>',
-    '// using namespace std; なし（フルネームで書く）\nstd::cout &lt;&lt; "Hello" &lt;&lt; std::endl;\n\n// using namespace std; あり（省略形）\ncout &lt;&lt; "Hello" &lt;&lt; endl;   // ← こっちが一般的！',
-    '入門段階では <code>using namespace std;</code> を書くのが標準スタイルです。慣れたら「名前空間」の意味も学んでみよう。'
-  );
-
-  // Chapter 5: main()
-  h += _introChapter(5, '🚪', 'main() 関数って何？',
-    '<p><code>int main() { }</code> は、<strong>プログラムのスタート地点</strong>です。</p>' +
-    '<p>C++のプログラムは必ず <code>main()</code> 関数から実行が始まります。<br>' +
-    '「どこから始めるか」をコンピュータに教えるのが <code>main()</code> の役割です。</p>' +
-    '<div class="intro-parts-table">' +
-    '<div class="intro-parts-row"><code class="intro-parts-kw">int</code><span>戻り値の型。main は終了コード（整数）を返す</span></div>' +
-    '<div class="intro-parts-row"><code class="intro-parts-kw">main</code><span>プログラムの入口となる特別な名前</span></div>' +
-    '<div class="intro-parts-row"><code class="intro-parts-kw">( )</code><span>引数リスト（今は空でOK）</span></div>' +
-    '<div class="intro-parts-row"><code class="intro-parts-kw">{ }</code><span>関数の中身（処理）を書く範囲</span></div>' +
-    '<div class="intro-parts-row"><code class="intro-parts-kw">return 0;</code><span>「正常に終了しました」という合図</span></div>' +
-    '</div>',
-    'int main() {\n    // ここにプログラムの処理を書く\n    cout &lt;&lt; "スタート！" &lt;&lt; endl;\n    return 0;  // 0 = 正常終了\n}',
-    'main() は必ず1つだけ存在します。C++のプログラムはここから始まり、ここで終わります。'
-  );
-
-  // Chapter 6: cout
-  h += _introChapter(6, '🖥️', 'cout で画面に文字を表示する',
-    '<p><code>cout</code> は <strong>C Out（Character Output）</strong> の略で、<strong>画面に文字を表示する命令</strong>です。</p>' +
-    '<p><code>&lt;&lt;</code> は「流し込む」演算子で、右側の内容を <code>cout</code>（画面）に流し込みます。</p>' +
-    '<div class="intro-parts-table">' +
-    '<div class="intro-parts-row"><code class="intro-parts-kw">cout</code><span>出力先（= 画面）</span></div>' +
-    '<div class="intro-parts-row"><code class="intro-parts-kw">&lt;&lt;</code><span>「流し込む」演算子</span></div>' +
-    '<div class="intro-parts-row"><code class="intro-parts-kw">"Hello"</code><span>表示する文字列（ダブルクォートで囲む）</span></div>' +
-    '<div class="intro-parts-row"><code class="intro-parts-kw">endl</code><span>end line = 改行（次の行に移る）</span></div>' +
-    '</div>' +
-    '<p><code>&lt;&lt;</code> を繋げて複数のものを表示できます。</p>',
-    'cout &lt;&lt; "Hello, World!" &lt;&lt; endl;       // Hello, World!\ncout &lt;&lt; "名前：" &lt;&lt; "太郎" &lt;&lt; endl;    // 名前：太郎\ncout &lt;&lt; 1 + 2 &lt;&lt; endl;                  // 3（計算結果も表示できる）\n\nint age = 20;\ncout &lt;&lt; "年齢：" &lt;&lt; age &lt;&lt; "歳" &lt;&lt; endl; // 年齢：20歳',
-    '<code>endl</code> を忘れると次に表示する文字がつながってしまいます。<code>"\\n"</code> でも改行できます（こちらの方が高速）。'
-  );
-
-  // Chapter 7: ; and {}
-  h += _introChapter(7, '✏️', 'セミコロン ; と波括弧 { }',
-    '<p><code>;</code>（セミコロン）は<strong>「文の終わり」を示す記号</strong>です。日本語でいう「句点（。）」に相当します。</p>' +
-    '<p>C++では、ほぼすべての文の末尾に <code>;</code> が必要です。<strong>最もよくある初心者ミスのひとつ</strong>です！</p>' +
-    '<p><code>{ }</code>（波括弧）は<strong>「ひとまとまりの処理（ブロック）」の範囲</strong>を示します。<br>' +
-    'main関数やif文・forループなど、あらゆる「かたまり」を波括弧で囲みます。</p>',
-    'int main() {           // { でブロック開始\n    cout &lt;&lt; "A";    // ; が必要！\n    cout &lt;&lt; "B";    // ; が必要！\n    return 0;       // ; が必要！\n}                   // } でブロック終了',
-    '; を忘れるとコンパイルエラーになります。エラーメッセージに「expected \';\'」と出たら ; の書き忘れを疑ってください。'
-  );
-
-  // Chapter 8: Comments
-  h += _introChapter(8, '💬', 'コメント // と /* */',
-    '<p>コメントとは、<strong>プログラムの中に書けるメモ</strong>です。コンピュータには完全に無視されます。</p>' +
-    '<p><code>//</code> を書くとその行のそれ以降がコメントになります。<br>' +
-    '複数行にまたがるコメントは <code>/* */</code> で囲みます。</p>' +
-    '<p>コメントを使うと「なぜこう書いたか」を残せるので、後で読み返したときに理解しやすくなります。</p>',
-    '// これはコメント（プログラムに影響しない）\n\ncout &lt;&lt; "Hello"; // 行の途中からもコメントにできる\n\n/*\n   これは複数行コメント。\n   何行でも書ける。\n*/\n\nint age = 20; // 年齢を保存',
-    'コードの「なぜ」を書くのがコメントです。「何をしているか」はコードを見ればわかるので、「なぜそうしているか」を書きましょう。'
-  );
-
-  // Chapter 9: Variables
-  h += _introChapter(9, '📦', '変数ってなに？',
-    '<p>変数とは、<strong>データを入れるための「名前付きの箱」</strong>です。</p>' +
-    '<p>プログラムで計算や処理をするとき、途中の結果や入力値を保存しておくために使います。</p>' +
-    '<div class="intro-analogy"><span class="intro-analogy-icon">📦</span><div>' +
-    '<strong>「ラベル付きの箱」に例えると…</strong><br>' +
-    '「age」という箱に「20」を入れる<br>' +
-    '「name」という箱に「太郎」を入れる<br>' +
-    '後でいつでもその箱の中身を取り出して使える</div></div>' +
-    '<div class="intro-parts-table">' +
-    '<div class="intro-parts-row"><code class="intro-parts-kw">int</code><span>整数（-2, 0, 100 など）</span></div>' +
-    '<div class="intro-parts-row"><code class="intro-parts-kw">double</code><span>小数（3.14, -0.5 など）</span></div>' +
-    '<div class="intro-parts-row"><code class="intro-parts-kw">string</code><span>文字列（"Hello", "太郎" など）</span></div>' +
-    '<div class="intro-parts-row"><code class="intro-parts-kw">bool</code><span>真偽値（true か false のどちらか）</span></div>' +
-    '<div class="intro-parts-row"><code class="intro-parts-kw">char</code><span>1文字（\'A\', \'3\' など）</span></div>' +
-    '</div>',
-    'int age = 20;           // 整数型の変数 age に 20 を代入\ndouble pi = 3.14;       // 小数型の変数 pi に 3.14 を代入\nstring name = "Taro";   // 文字列型の変数 name に代入\nbool isOk = true;       // 真偽型の変数 isOk に true を代入\n\ncout &lt;&lt; name &lt;&lt; "は" &lt;&lt; age &lt;&lt; "歳" &lt;&lt; endl;\n// → Taroは20歳',
-    '変数名は「中身を表す英単語」にするのがベストです。<code>x</code> より <code>age</code>、<code>n</code> より <code>count</code> の方が読みやすいです。'
-  );
-
-  // Chapter 10: Compilation
-  h += _introChapter(10, '⚙️', 'コンパイルってなに？',
-    '<p>コンパイルとは、<strong>人間が書いたコード（ソースコード）をコンピュータが実行できる形（機械語）に変換すること</strong>です。</p>' +
-    '<p>コンピュータは 0 と 1 しか理解できません。だから、私たちが書いた C++ コードを「機械語」に翻訳する必要があります。<br>' +
-    'この翻訳をするプログラムを <strong>コンパイラ</strong>（g++ など）と呼びます。</p>' +
-    '<div class="intro-flow">' +
-    '<div class="intro-flow-step"><span class="intro-flow-icon">📝</span><span>ソースコード<br><small>(.cpp ファイル)</small></span></div>' +
-    '<div class="intro-flow-arrow">→</div>' +
-    '<div class="intro-flow-step"><span class="intro-flow-icon">⚙️</span><span>コンパイラ<br><small>(g++)</small></span></div>' +
-    '<div class="intro-flow-arrow">→</div>' +
-    '<div class="intro-flow-step"><span class="intro-flow-icon">💻</span><span>実行ファイル<br><small>(a.out)</small></span></div>' +
-    '<div class="intro-flow-arrow">→</div>' +
-    '<div class="intro-flow-step"><span class="intro-flow-icon">▶</span><span>実行！</span></div>' +
-    '</div>' +
-    '<p>このサイト（CODE STEP）では、「▶ 実行する」ボタンを押すだけで自動でコンパイル＆実行されます。<br>裏側ではこの工程が走っています。</p>',
-    null,
-    'コンパイルエラー（文法ミス）と実行時エラー（ロジックミス）は別物です。コンパイルエラーはプログラムが動く前に検出されるので、文法を直せば解決します。'
-  );
-
-  // Chapter 11: Common errors
-  h += _introChapter(11, '🔍', 'よくあるエラーを読もう！',
-    '<p>エラーは怖くありません。<strong>コンパイラからの「ここが間違ってるよ」というメッセージ</strong>です。<br>' +
-    'よくあるエラーを覚えておけば、すぐに直せるようになります。</p>' +
-    '<div class="intro-errors">' +
-    '<div class="intro-error-item">' +
-    '<div class="intro-error-msg">error: expected \';\' before \'return\'</div>' +
-    '<div class="intro-error-meaning">→ セミコロン ; の書き忘れ</div>' +
-    '</div>' +
-    '<div class="intro-error-item">' +
-    '<div class="intro-error-msg">error: \'cout\' was not declared in this scope</div>' +
-    '<div class="intro-error-meaning">→ <code>#include &lt;iostream&gt;</code> か <code>using namespace std;</code> が抜けている</div>' +
-    '</div>' +
-    '<div class="intro-error-item">' +
-    '<div class="intro-error-msg">error: \'x\' was not declared in this scope</div>' +
-    '<div class="intro-error-meaning">→ 変数 x を使っているが、宣言（<code>int x;</code>）をしていない</div>' +
-    '</div>' +
-    '<div class="intro-error-item">' +
-    '<div class="intro-error-msg">error: expected \'}\' at end of input</div>' +
-    '<div class="intro-error-meaning">→ 波括弧 { に対応する } が閉じられていない</div>' +
-    '</div>' +
-    '</div>' +
-    '<p>エラーメッセージには <strong>「ファイル名 : 行番号 : error: 内容」</strong> の形式で場所も書かれています。まずそこを確認しましょう。</p>',
-    null,
-    'エラーが出るのは当たり前！プロのプログラマーも毎日エラーと戦っています。エラーを正確に読む力が上達の近道です。'
-  );
-
-  // フッター
-  h += '<div class="intro-footer-section">';
-  h += '<div class="intro-footer-title">🎉 基礎知識はバッチリ！</div>';
-  h += '<div class="intro-footer-body">実際にコードを書いてみることが一番の近道です。<br>まずは ROOKIE ランクの問題から始めてみましょう！</div>';
-  h += '<div class="intro-footer-btns">';
-  h += '<button class="intro-go-problems" onclick="switchTab(\'problems\')">◆ 問題を解く</button>';
-  h += '<button class="intro-go-textbook" onclick="switchTab(\'textbook\')">📖 文法リファレンス</button>';
-  h += '</div>';
-  h += '</div>';
-
-  c.innerHTML = h;
-}
 
 // ===== 言語別初心者ガイド =====
 
@@ -35517,44 +35283,13 @@ function goToCareerDirect() {
   showPage('career');
 }
 
-function renderBeginner() {
-  var c = document.getElementById('beginner-content');
-  if (!c) return;
-
-  var langs = Object.keys(langBeginnerData);
-  var h = '';
-
-  h += '<div class="beginner-page-header">';
-  h += '<h1 class="beginner-page-title">🔰 初心者ガイド</h1>';
-  h += '<p class="beginner-page-sub">気になる言語を選んで、入門ガイドを読んでみよう。</p>';
-  h += '</div>';
-
-  h += '<div class="beginner-lang-grid">';
-  langs.forEach(function(lid) {
-    var d = langBeginnerData[lid];
-    var stars = '';
-    for (var i = 1; i <= 5; i++) stars += (i <= d.difficulty ? '★' : '☆');
-    var diffColor = ['', '#22c55e', '#22c55e', '#f59e0b', '#f97316', '#ef4444'][d.difficulty] || '#64748b';
-    h += '<div class="beginner-lang-card" onclick="openBeginnerLang(\'' + lid + '\')">';
-    h += '<div class="blc-emoji">' + d.emoji + '</div>';
-    h += '<div class="blc-name">' + d.name + '</div>';
-    h += '<div class="blc-tagline">' + d.tagline + '</div>';
-    h += '<div class="blc-diff" style="color:' + diffColor + '">' + stars + '</div>';
-    h += '<div class="blc-arrow">→ ガイドを読む</div>';
-    h += '</div>';
-  });
-  h += '</div>';
-
-  c.innerHTML = h;
-}
-
 function openBeginnerLang(langId) {
   var c = document.getElementById('beginner-lang-content');
   if (!c) return;
   var d = langBeginnerData[langId];
   var h = '';
   h += '<div class="bgl-lang-header-wrap">';
-  h += '<span class="bgl-page-badge">🔰 初心者ガイド</span>';
+  h += '<span class="bgl-page-badge">🌱 INTRO</span>';
   h += '</div>';
   h += _renderLangBeginnerGuide(langId);
   c.innerHTML = h;

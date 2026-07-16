@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Share+Tech+Mono&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Share+Tech+Mono&display=swap');
 
 :root {
   --orange:   #FF6B00;
@@ -25,7 +25,7 @@ body {
   min-height: 100vh;
 }
 
-/* 2層クロスフェード用の背景レイヤー */
+/* 2螻､繧ｯ繝ｭ繧ｹ繝輔ぉ繝ｼ繝臥畑縺ｮ閭梧勹繝ｬ繧､繝､繝ｼ */
 .bg-layer {
   position: fixed;
   inset: 0;
@@ -38,7 +38,7 @@ body {
 
 #bg-b { z-index: -3; }
 
-/* 暗いオーバーレイ＋オレンジ大気光＋ビネット */
+/* 證励＞繧ｪ繝ｼ繝舌・繝ｬ繧､・九が繝ｬ繝ｳ繧ｸ螟ｧ豌怜・・九ン繝阪ャ繝・*/
 body::before {
   content: '';
   position: fixed;
@@ -52,7 +52,7 @@ body::before {
   z-index: -1;
 }
 
-/* スキャンライン */
+/* 繧ｹ繧ｭ繝｣繝ｳ繝ｩ繧､繝ｳ */
 body::after {
   content: '';
   position: fixed;
@@ -89,7 +89,7 @@ header {
   z-index: 10;
 }
 
-/* 左端の縦ライン */
+/* 蟾ｦ遶ｯ縺ｮ邵ｦ繝ｩ繧､繝ｳ */
 header::before {
   content: '';
   position: absolute;
@@ -104,9 +104,9 @@ header::before {
   opacity: 0.7;
 }
 
-/* 右下の装飾テキスト */
+/* 蜿ｳ荳九・陬・｣ｾ繝・く繧ｹ繝・*/
 header::after {
-  content: 'SEASON 01  ◆  TRAINING MODULE  ◆  C++';
+  content: 'SEASON 01  笳・ TRAINING MODULE  笳・ C++';
   position: absolute;
   bottom: 8px;
   right: 18px;
@@ -147,7 +147,7 @@ header::after {
 }
 #site-title:hover::after { width: 100%; }
 
-/* ヘッダー最上行 (タイトル行 + 認証エリア) */
+/* 繝倥ャ繝繝ｼ譛荳願｡・(繧ｿ繧､繝医Ν陦・+ 隱崎ｨｼ繧ｨ繝ｪ繧｢) */
 .header-top-row {
   display: flex;
   align-items: center;
@@ -156,7 +156,7 @@ header::after {
   gap: 12px;
 }
 
-/* ヘッダータイトル行 (タイトル + 言語バッジ) */
+/* 繝倥ャ繝繝ｼ繧ｿ繧､繝医Ν陦・(繧ｿ繧､繝医Ν + 險隱槭ヰ繝・ず) */
 .header-title-row {
   display: flex;
   align-items: center;
@@ -164,7 +164,7 @@ header::after {
   flex-wrap: wrap;
 }
 
-/* 認証エリア */
+/* 隱崎ｨｼ繧ｨ繝ｪ繧｢ */
 #auth-area {
   display: flex;
   align-items: center;
@@ -223,7 +223,7 @@ header::after {
   color: rgba(255,107,0,0.75);
 }
 
-/* ===== 認証モーダル ===== */
+/* ===== 隱崎ｨｼ繝｢繝ｼ繝繝ｫ ===== */
 #auth-modal {
   position: fixed;
   inset: 0;
@@ -357,7 +357,7 @@ header::after {
   line-height: 1.4;
 }
 
-/* 認証モーダル追加要素 */
+/* 隱崎ｨｼ繝｢繝ｼ繝繝ｫ霑ｽ蜉隕∫ｴ */
 .auth-extra-links {
   display: flex;
   align-items: center;
@@ -385,9 +385,9 @@ header::after {
   font-size: 0.60rem;
 }
 
-/* ──────────────────────────────────────────
+/* 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
    LANDING PAGE
-────────────────────────────────────────── */
+笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 
 #page-landing {
   min-height: calc(100vh - 80px);
@@ -404,7 +404,7 @@ header::after {
   gap: 56px;
 }
 
-/* ヒーロー */
+/* 繝偵・繝ｭ繝ｼ */
 .landing-hero {
   text-align: center;
   display: flex;
@@ -506,7 +506,7 @@ header::after {
   margin-top: 4px;
 }
 
-/* 統計行 */
+/* 邨ｱ險郁｡・*/
 .landing-stats-row {
   display: flex;
   align-items: center;
@@ -542,7 +542,7 @@ header::after {
   font-size: 0.7rem;
 }
 
-/* フィーチャーカード */
+/* 繝輔ぅ繝ｼ繝√Ε繝ｼ繧ｫ繝ｼ繝・*/
 .landing-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -576,7 +576,7 @@ header::after {
   line-height: 1.65;
 }
 
-/* 言語行 */
+/* 險隱櫁｡・*/
 .landing-langs-row {
   display: flex;
   gap: 28px;
@@ -591,7 +591,7 @@ header::after {
   opacity: 0.80;
 }
 
-/* ボトムCTA */
+/* 繝懊ヨ繝CTA */
 .landing-bottom-cta {
   display: flex;
   flex-direction: column;
@@ -625,9 +625,9 @@ a.landing-text-link { text-decoration: underline; }
   font-size: 0.60rem;
 }
 
-/* ──────────────────────────────────────────
-   法的モーダル（プライバシー / 利用規約）
-────────────────────────────────────────── */
+/* 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+   豕慕噪繝｢繝ｼ繝繝ｫ・医・繝ｩ繧､繝舌す繝ｼ / 蛻ｩ逕ｨ隕冗ｴ・ｼ・
+笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 
 #privacy-modal,
 #terms-modal {
@@ -716,7 +716,7 @@ a.landing-text-link { text-decoration: underline; }
   margin-bottom: 16px;
 }
 
-/* ランディングページ レスポンシブ */
+/* 繝ｩ繝ｳ繝・ぅ繝ｳ繧ｰ繝壹・繧ｸ 繝ｬ繧ｹ繝昴Φ繧ｷ繝・*/
 @media (max-width: 600px) {
   .landing-wrap { padding: 32px 16px 48px; gap: 40px; }
   .landing-stats-row { gap: 12px; padding: 20px 18px; }
@@ -727,7 +727,7 @@ a.landing-text-link { text-decoration: underline; }
   .landing-btn-secondary { text-align: center; }
 }
 
-/* 現在の言語バッジ */
+/* 迴ｾ蝨ｨ縺ｮ險隱槭ヰ繝・ず */
 #lang-badge {
   display: inline-flex;
   align-items: center;
@@ -777,7 +777,7 @@ a.landing-text-link { text-decoration: underline; }
   margin: 13px 0 8px;
   text-transform: uppercase;
 }
-#progress-text::before { content: '▶  '; color: var(--orange); }
+#progress-text::before { content: '笆ｶ  '; color: var(--orange); }
 
 #progress-bar-wrap {
   background: rgba(255,107,0,0.07);
@@ -803,7 +803,7 @@ a.landing-text-link { text-decoration: underline; }
   100% { background-position: -200% 0; }
 }
 
-/* ========== タブナビゲーション ========== */
+/* ========== 繧ｿ繝悶リ繝薙ご繝ｼ繧ｷ繝ｧ繝ｳ ========== */
 #nav-history-btns {
   display: flex;
   align-items: center;
@@ -882,7 +882,7 @@ a.landing-text-link { text-decoration: underline; }
   background: rgba(255,107,0,0.04);
 }
 
-/* ========== ページレイアウト共通 ========== */
+/* ========== 繝壹・繧ｸ繝ｬ繧､繧｢繧ｦ繝亥・騾・========== */
 #page-list,
 #page-detail,
 #page-guide,
@@ -895,7 +895,7 @@ a.landing-text-link { text-decoration: underline; }
   z-index: 1;
 }
 
-/* ========== ランクバッジ ========== */
+/* ========== 繝ｩ繝ｳ繧ｯ繝舌ャ繧ｸ ========== */
 .rank-badge {
   font-size: 0.60rem;
   font-weight: 800;
@@ -944,7 +944,7 @@ a.landing-text-link { text-decoration: underline; }
   66%       { color:#FF4444; text-shadow:0 0 18px rgba(255,80,80,0.90),0 0 36px rgba(255,32,32,0.55); }
 }
 
-/* ========== 単元ヘッダー（APEX ロールタブ風） ========== */
+/* ========== 蜊伜・繝倥ャ繝繝ｼ・・PEX 繝ｭ繝ｼ繝ｫ繧ｿ繝夜｢ｨ・・========== */
 .unit-header {
   display: flex;
   align-items: center;
@@ -989,7 +989,7 @@ a.landing-text-link { text-decoration: underline; }
   text-shadow: 0 0 8px currentColor;
 }
 
-/* ========== 問題カード（APEX キャラカード風） ========== */
+/* ========== 蝠城｡後き繝ｼ繝会ｼ・PEX 繧ｭ繝｣繝ｩ繧ｫ繝ｼ繝蛾｢ｨ・・========== */
 .problem-card {
   background: rgba(10,7,4,0.60);
   backdrop-filter: blur(12px);
@@ -1008,7 +1008,7 @@ a.landing-text-link { text-decoration: underline; }
   clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
 }
 
-/* 走査ライン */
+/* 襍ｰ譟ｻ繝ｩ繧､繝ｳ */
 .problem-card::after {
   content: '';
   position: absolute;
@@ -1020,7 +1020,7 @@ a.landing-text-link { text-decoration: underline; }
 }
 .problem-card:hover::after { left: 160%; }
 
-/* ランク別左ボーダー色 */
+/* 繝ｩ繝ｳ繧ｯ蛻･蟾ｦ繝懊・繝繝ｼ濶ｲ */
 .rank-card-rookie  { border-left-color: rgba(155,155,155,0.5); }
 .rank-card-bronze  { border-left-color: rgba(196,122,47,0.5); }
 .rank-card-silver  { border-left-color: rgba(184,200,216,0.5); }
@@ -1048,7 +1048,7 @@ a.landing-text-link { text-decoration: underline; }
   50%       { box-shadow: -3px 0 28px rgba(255,32,32,0.60), 0 0 20px rgba(200,0,0,0.18); }
 }
 
-/* ホバー：ランク色でグロー */
+/* 繝帙ヰ繝ｼ・壹Λ繝ｳ繧ｯ濶ｲ縺ｧ繧ｰ繝ｭ繝ｼ */
 .rank-card-rookie:hover  { border-left-color:#9B9B9B; background:rgba(155,155,155,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(155,155,155,0.15); transform:translateX(5px); }
 .rank-card-bronze:hover  { border-left-color:#C47A2F; background:rgba(196,122,47,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(196,122,47,0.18); transform:translateX(5px); }
 .rank-card-silver:hover  { border-left-color:#B8C8D8; background:rgba(184,200,216,0.06); box-shadow:0 2px 20px rgba(0,0,0,0.4), -2px 0 12px rgba(184,200,216,0.18); transform:translateX(5px); }
@@ -1065,7 +1065,7 @@ a.landing-text-link { text-decoration: underline; }
   background: linear-gradient(90deg, rgba(0,230,118,0.055) 0%, transparent 55%) !important;
 }
 .problem-card.learned::before {
-  content: '✓';
+  content: '笨・;
   position: absolute;
   right: 72px; top: 50%; transform: translateY(-50%);
   font-size: 4rem; font-weight: 900;
@@ -1139,7 +1139,7 @@ a.landing-text-link { text-decoration: underline; }
 
 .badge.not-learned { color: rgba(168,152,120,0.2); text-shadow: none; }
 
-/* ========== 問題詳細 ========== */
+/* ========== 蝠城｡瑚ｩｳ邏ｰ ========== */
 #back-btn {
   background: transparent;
   border: 1px solid rgba(255,107,0,0.25);
@@ -1189,7 +1189,7 @@ a.landing-text-link { text-decoration: underline; }
   letter-spacing: 0.1em;
 }
 
-/* ========== セクションパネル ========== */
+/* ========== 繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ繝代ロ繝ｫ ========== */
 .section {
   background: rgba(8,5,3,0.58);
   backdrop-filter: blur(14px);
@@ -1205,7 +1205,7 @@ a.landing-text-link { text-decoration: underline; }
   box-shadow: 0 4px 24px rgba(0,0,0,0.25);
 }
 
-/* 右上コーナー装飾 */
+/* 蜿ｳ荳翫さ繝ｼ繝翫・陬・｣ｾ */
 .section::before {
   content: '';
   position: absolute;
@@ -1227,7 +1227,7 @@ a.landing-text-link { text-decoration: underline; }
   gap: 8px;
 }
 
-.section h3::before { content: '◆'; font-size: 0.48rem; }
+.section h3::before { content: '笳・; font-size: 0.48rem; }
 
 .section p {
   line-height: 1.90;
@@ -1236,7 +1236,7 @@ a.landing-text-link { text-decoration: underline; }
   color: var(--text);
 }
 
-/* ========== トグルボタン ========== */
+/* ========== 繝医げ繝ｫ繝懊ち繝ｳ ========== */
 .toggle-btn {
   background: transparent;
   border: 1px solid rgba(255,107,0,0.16);
@@ -1272,7 +1272,7 @@ a.landing-text-link { text-decoration: underline; }
   letter-spacing: 0.03em;
 }
 
-/* ========== コードブロック ========== */
+/* ========== 繧ｳ繝ｼ繝峨ヶ繝ｭ繝・け ========== */
 pre {
   background: #040302;
   color: #c0a888;
@@ -1299,7 +1299,7 @@ pre::before {
 
 code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 
-/* ========== エディタモード切り替えバー ========== */
+/* ========== 繧ｨ繝・ぅ繧ｿ繝｢繝ｼ繝牙・繧頑崛縺医ヰ繝ｼ ========== */
 .editor-mode-bar {
   display: flex;
   gap: 5px;
@@ -1336,7 +1336,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   text-shadow: 0 0 10px rgba(255,107,0,0.4);
 }
 
-/* ========== Ace コードエディタ ========== */
+/* ========== Ace 繧ｳ繝ｼ繝峨お繝・ぅ繧ｿ ========== */
 .code-editor-ace {
   width: 100%;
   height: 240px;
@@ -1354,7 +1354,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   box-shadow: -3px 0 0 var(--orange), 0 0 28px rgba(255,107,0,0.12);
 }
 
-/* Ace 内部のフォントを上書き */
+/* Ace 蜀・Κ縺ｮ繝輔か繝ｳ繝医ｒ荳頑嶌縺・*/
 .code-editor-ace .ace_editor {
   font-family: 'Share Tech Mono', 'Consolas', monospace !important;
 }
@@ -1390,7 +1390,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 
 .stdin-input:focus { border-left-color: var(--orange); }
 
-/* ========== 実行ボタン ========== */
+/* ========== 螳溯｡後・繧ｿ繝ｳ ========== */
 .run-btn {
   background: rgba(255,107,0,0.09);
   color: var(--orange);
@@ -1481,7 +1481,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   animation: loadingPulse 1s ease-in-out infinite;
 }
 
-/* ========== AI フィードバック ========== */
+/* ========== AI 繝輔ぅ繝ｼ繝峨ヰ繝・け ========== */
 .ai-feedback-btn {
   background: rgba(200,160,48,0.07);
   color: var(--gold);
@@ -1526,7 +1526,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   font-family: 'Share Tech Mono', monospace;
 }
 
-/* ========== 学習済みボタン ========== */
+/* ========== 蟄ｦ鄙呈ｸ医∩繝懊ち繝ｳ ========== */
 .learn-btn {
   background: rgba(255,107,0,0.08);
   color: var(--orange);
@@ -1561,7 +1561,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   font-size: 0.80rem;
 }
 
-/* 取り消しホバー：赤みがかった警告スタイル */
+/* 蜿悶ｊ豸医＠繝帙ヰ繝ｼ・夊ｵ､縺ｿ縺後°縺｣縺溯ｭｦ蜻翫せ繧ｿ繧､繝ｫ */
 .learn-btn.learned:hover {
   background: rgba(255,51,51,0.10);
   color: var(--red);
@@ -1570,7 +1570,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   text-shadow: 0 0 10px rgba(255,51,51,0.4);
 }
 
-/* ========== ガイドページ ========== */
+/* ========== 繧ｬ繧､繝峨・繝ｼ繧ｸ ========== */
 .guide-header {
   margin-bottom: 26px;
   padding-bottom: 16px;
@@ -1592,7 +1592,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   color: var(--text);
 }
 
-/* 単元アコーディオン */
+/* 蜊伜・繧｢繧ｳ繝ｼ繝・ぅ繧ｪ繝ｳ */
 .guide-unit {
   margin-bottom: 8px;
   border: 1px solid rgba(255,107,0,0.10);
@@ -1659,7 +1659,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   opacity: 0.65;
 }
 
-/* 重要ポイントリスト */
+/* 驥崎ｦ√・繧､繝ｳ繝医Μ繧ｹ繝・*/
 .guide-points {
   list-style: none;
   padding: 0;
@@ -1684,12 +1684,12 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 }
 
 .guide-points li::before {
-  content: '▶  ';
+  content: '笆ｶ  ';
   color: rgba(255,107,0,0.45);
   font-size: 0.62rem;
 }
 
-/* 用語集グリッド */
+/* 逕ｨ隱樣寔繧ｰ繝ｪ繝・ラ */
 .vocab-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -1726,7 +1726,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   line-height: 1.72;
 }
 
-/* ========== ミッション一覧 ========== */
+/* ========== 繝溘ャ繧ｷ繝ｧ繝ｳ荳隕ｧ ========== */
 #mission-back-btn {
   background: transparent;
   border: 1px solid rgba(192,64,255,0.30);
@@ -1875,7 +1875,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 
 .mission-badge.not-cleared { color: rgba(168,152,120,0.2); text-shadow: none; }
 
-/* ミッション詳細 */
+/* 繝溘ャ繧ｷ繝ｧ繝ｳ隧ｳ邏ｰ */
 .mission-number-large {
   font-size: 0.66rem;
   font-weight: 800;
@@ -1934,7 +1934,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   box-shadow: 0 0 22px rgba(255,51,51,0.18) !important;
 }
 
-/* ========== チャットパネル ========== */
+/* ========== 繝√Ε繝・ヨ繝代ロ繝ｫ ========== */
 #chat-toggle {
   position: fixed;
   bottom: 28px;
@@ -2104,7 +2104,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   box-shadow: 0 0 14px rgba(255,107,0,0.28);
 }
 
-/* ========== スクロールバー（全体） ========== */
+/* ========== 繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ繝舌・・亥・菴難ｼ・========== */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: rgba(255,107,0,0.03); }
 ::-webkit-scrollbar-thumb {
@@ -2113,13 +2113,13 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,107,0,0.40); }
 
-/* ========== テキスト選択 ========== */
+/* ========== 繝・く繧ｹ繝磯∈謚・========== */
 ::selection {
   background: rgba(255,107,0,0.28);
   color: #fff;
 }
 
-/* ========== 言語選択ページ ========== */
+/* ========== 險隱樣∈謚槭・繝ｼ繧ｸ ========== */
 #page-lang {
   max-width: 960px;
   margin: 0 auto;
@@ -2208,7 +2208,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   color: var(--orange);
 }
 
-/* ========== 言語セクション ========== */
+/* ========== 險隱槭そ繧ｯ繧ｷ繝ｧ繝ｳ ========== */
 .lang-section {
   margin-bottom: 36px;
 }
@@ -2236,7 +2236,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   letter-spacing: 0.04em;
 }
 
-/* ========== ランク表示・用途タグ ========== */
+/* ========== 繝ｩ繝ｳ繧ｯ陦ｨ遉ｺ繝ｻ逕ｨ騾斐ち繧ｰ ========== */
 .lang-section-rank {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 1.3rem;
@@ -2276,7 +2276,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   background: rgba(255,107,0,0.08);
 }
 
-/* ========== 自動判定エリア ========== */
+/* ========== 閾ｪ蜍募愛螳壹お繝ｪ繧｢ ========== */
 #judge-area {
   margin-top: 10px;
 }
@@ -2357,7 +2357,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   to   { opacity: 1; }
 }
 
-/* 手動クリアヒント */
+/* 謇句虚繧ｯ繝ｪ繧｢繝偵Φ繝・*/
 .manual-clear-hint {
   font-size: 0.78rem;
   color: rgba(255,255,255,0.22);
@@ -2377,7 +2377,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 }
 .manual-clear-link:hover { color: rgba(255,107,0,0.8); }
 
-/* ========== サウンドボタン ========== */
+/* ========== 繧ｵ繧ｦ繝ｳ繝峨・繧ｿ繝ｳ ========== */
 #sound-btn {
   background: none;
   border: 1px solid rgba(255,255,255,0.10);
@@ -2397,7 +2397,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   opacity: 0.4;
 }
 
-/* ========== クリアエフェクト ========== */
+/* ========== 繧ｯ繝ｪ繧｢繧ｨ繝輔ぉ繧ｯ繝・========== */
 #clear-effect,
 #mission-clear-effect {
   position: fixed;
@@ -2442,7 +2442,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   100% { opacity: 0;   transform: scale(1.04) translateY(-24px); }
 }
 
-/* ========== PROFILEボタン（ヘッダー） ========== */
+/* ========== PROFILE繝懊ち繝ｳ・医・繝・ム繝ｼ・・========== */
 #profile-btn {
   background: rgba(255,107,0,0.07);
   border: 1px solid rgba(255,107,0,0.28);
@@ -2462,7 +2462,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   color: #FF6B00;
 }
 
-/* ========== プロフィールページ ========== */
+/* ========== 繝励Ο繝輔ぅ繝ｼ繝ｫ繝壹・繧ｸ ========== */
 #page-profile {
   max-width: 720px;
   margin: 0 auto;
@@ -2488,7 +2488,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   color: #FF6B00;
 }
 
-/* ── ヒーローセクション ── */
+/* 笏笏 繝偵・繝ｭ繝ｼ繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ 笏笏 */
 .profile-hero {
   display: flex;
   align-items: center;
@@ -2567,7 +2567,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   letter-spacing: 0.10em;
 }
 
-/* ── セクション共通 ── */
+/* 笏笏 繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ蜈ｱ騾・笏笏 */
 .profile-section { margin-bottom: 30px; }
 
 .profile-section-title {
@@ -2588,7 +2588,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   letter-spacing: 0.10em;
 }
 
-/* ── 言語スタッツカード ── */
+/* 笏笏 險隱槭せ繧ｿ繝・ヤ繧ｫ繝ｼ繝・笏笏 */
 .profile-stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -2700,7 +2700,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   letter-spacing: 0.08em;
 }
 
-/* ── バッジグリッド ── */
+/* 笏笏 繝舌ャ繧ｸ繧ｰ繝ｪ繝・ラ 笏笏 */
 .badge-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -2728,7 +2728,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   filter: grayscale(0.6);
 }
 
-/* ヘックス形バッジアイコン */
+/* 繝倥ャ繧ｯ繧ｹ蠖｢繝舌ャ繧ｸ繧｢繧､繧ｳ繝ｳ */
 .badge-hex {
   width: 54px;
   height: 54px;
@@ -2764,7 +2764,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   font-family: 'Barlow Condensed', sans-serif;
 }
 
-/* ========== ヘッダー Lv バッジ ========== */
+/* ========== 繝倥ャ繝繝ｼ Lv 繝舌ャ繧ｸ ========== */
 .lv-badge-header {
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.72rem;
@@ -2783,7 +2783,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   text-shadow: 0 0 10px currentColor;
 }
 
-/* ========== ストリークバッジ（ヘッダー） ========== */
+/* ========== 繧ｹ繝医Μ繝ｼ繧ｯ繝舌ャ繧ｸ・医・繝・ム繝ｼ・・========== */
 .streak-badge-header {
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.72rem;
@@ -2804,7 +2804,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   50% { box-shadow: 0 0 8px rgba(255,107,0,0.4); }
 }
 
-/* ========== デイリーチャレンジバナー ========== */
+/* ========== 繝・う繝ｪ繝ｼ繝√Ε繝ｬ繝ｳ繧ｸ繝舌リ繝ｼ ========== */
 .daily-challenge-banner {
   background: linear-gradient(135deg, rgba(255,107,0,0.08) 0%, rgba(255,200,0,0.05) 100%);
   border: 1px solid rgba(255,107,0,0.35);
@@ -2858,7 +2858,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 }
 .problem-card.daily-challenge-card { border-left: 2px solid rgba(255,107,0,0.6); }
 
-/* ========== レベルアップオーバーレイ ========== */
+/* ========== 繝ｬ繝吶Ν繧｢繝・・繧ｪ繝ｼ繝舌・繝ｬ繧､ ========== */
 #levelup-effect {
   position: fixed;
   inset: 0;
@@ -2883,7 +2883,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 }
 #levelup-effect.hidden { display: none !important; }
 
-/* 展開リング */
+/* 螻暮幕繝ｪ繝ｳ繧ｰ */
 .lue-ring {
   position: absolute;
   top: 50%; left: 50%;
@@ -2906,7 +2906,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   100% { transform: translate(-50%,-50%) scale(2.2); opacity: 0; }
 }
 
-/* 中央ボックス */
+/* 荳ｭ螟ｮ繝懊ャ繧ｯ繧ｹ */
 .levelup-box {
   position: relative;
   text-align: center;
@@ -2991,7 +2991,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   animation: lueSlideUp 0.4s ease 1.2s both;
 }
 
-/* ========== EXP・レベルセクション（プロフィール） ========== */
+/* ========== EXP繝ｻ繝ｬ繝吶Ν繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ・医・繝ｭ繝輔ぅ繝ｼ繝ｫ・・========== */
 .exp-section { }
 
 .level-display {
@@ -3006,7 +3006,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   box-shadow: 0 0 24px rgba(0,0,0,0.4), inset 0 0 30px rgba(0,0,0,0.3);
 }
 
-/* ヘキサゴン型レベル表示 */
+/* 繝倥く繧ｵ繧ｴ繝ｳ蝙九Ξ繝吶Ν陦ｨ遉ｺ */
 .level-hex {
   flex-shrink: 0;
   width: 88px;
@@ -3040,7 +3040,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   letter-spacing: -0.02em;
 }
 
-/* レベル右側情報 */
+/* 繝ｬ繝吶Ν蜿ｳ蛛ｴ諠・ｱ */
 .level-right {
   flex: 1;
   min-width: 0;
@@ -3055,7 +3055,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   text-shadow: 0 0 12px currentColor;
 }
 
-/* EXP バー */
+/* EXP 繝舌・ */
 .exp-bar-track {
   height: 8px;
   background: rgba(255,255,255,0.06);
@@ -3105,7 +3105,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   font-weight: 700;
 }
 
-/* EXP 内訳 */
+/* EXP 蜀・ｨｳ */
 .exp-breakdown {
   display: flex;
   gap: 12px;
@@ -3119,7 +3119,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   white-space: nowrap;
 }
 
-/* ── ローディング ── */
+/* 笏笏 繝ｭ繝ｼ繝・ぅ繝ｳ繧ｰ 笏笏 */
 .profile-loading {
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.75rem;
@@ -3134,7 +3134,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   50%       { opacity: 1;   }
 }
 
-/* ── ストリークグリッド ── */
+/* 笏笏 繧ｹ繝医Μ繝ｼ繧ｯ繧ｰ繝ｪ繝・ラ 笏笏 */
 .streak-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -3193,7 +3193,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   color: rgba(255,107,0,0.55);
 }
 
-/* ========== 弱点分析 ========== */
+/* ========== 蠑ｱ轤ｹ蛻・梵 ========== */
 .wa-empty, .wa-perfect {
   color: rgba(255,255,255,0.35);
   font-family: 'Share Tech Mono', monospace;
@@ -3314,7 +3314,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 }
 .detail-not-found p { margin-bottom: 16px; font-size: 0.95rem; }
 
-/* ===== コンテスト ===== */
+/* ===== 繧ｳ繝ｳ繝・せ繝・===== */
 .contest-loading {
   text-align: center; color: #444; padding: 80px 16px;
   font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; letter-spacing: 0.1em;
@@ -3390,7 +3390,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   padding: 20px 20px 10px;
 }
 
-/* 問題リスト */
+/* 蝠城｡後Μ繧ｹ繝・*/
 .contest-problems { display: flex; flex-direction: column; gap: 6px; padding: 0 12px; }
 .contest-prob {
   display: flex; align-items: center; gap: 12px;
@@ -3424,7 +3424,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 }
 .contest-prob-done .contest-prob-status { color: #00E676; }
 
-/* ランキング */
+/* 繝ｩ繝ｳ繧ｭ繝ｳ繧ｰ */
 .contest-lb { padding: 0 12px; }
 .contest-lb-empty {
   text-align: center; color: #555; padding: 40px 16px;
@@ -3459,7 +3459,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   white-space: nowrap; min-width: 36px; text-align: right;
 }
 
-/* ── LEGEND ランクバッジ ── */
+/* 笏笏 LEGEND 繝ｩ繝ｳ繧ｯ繝舌ャ繧ｸ 笏笏 */
 .rank-legend {
   color: #FF2244 !important;
   border-color: rgba(255,34,68,0.55) !important;
@@ -3473,7 +3473,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   background: linear-gradient(90deg, rgba(255,34,68,0.14) 0%, transparent 100%) !important;
 }
 
-/* ── TITAN（旧PREDATOR）ランクバッジ ── */
+/* 笏笏 TITAN・域立PREDATOR・峨Λ繝ｳ繧ｯ繝舌ャ繧ｸ 笏笏 */
 .rank-titan,
 .rank-predator {
   color: #FF2020 !important;
@@ -3492,7 +3492,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   background: linear-gradient(90deg, rgba(255,32,32,0.18) 0%, transparent 100%) !important;
 }
 
-/* ── TITAN バッジアニメーション ── */
+/* 笏笏 TITAN 繝舌ャ繧ｸ繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ 笏笏 */
 .badge-titan,
 .badge-predator {
   animation: predatorPulse 1.6s ease-in-out infinite;
@@ -3510,7 +3510,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   50%       { filter: brightness(1.5) drop-shadow(0 0 10px rgba(255,32,32,0.9)); }
 }
 
-/* ── LEGEND バッジ（鼓動アニメーション） ── */
+/* 笏笏 LEGEND 繝舌ャ繧ｸ・磯ｼ灘虚繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ・・笏笏 */
 .badge-legend {
   animation: legendPulse 2.4s ease-in-out infinite;
 }
@@ -3526,7 +3526,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   50%       { filter: brightness(1.35) drop-shadow(0 0 8px rgba(255,34,68,0.8)); }
 }
 
-/* ── レスポンシブ ── */
+/* 笏笏 繝ｬ繧ｹ繝昴Φ繧ｷ繝・笏笏 */
 @media (max-width: 520px) {
   .profile-hero {
     flex-direction: column;
@@ -3550,9 +3550,9 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   .activity-top-row { flex-direction: column; }
 }
 
-/* ──────────────────────────────────────────
-   ACTIVITY セクション
-────────────────────────────────────────── */
+/* 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+   ACTIVITY 繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ
+笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 
 .activity-top-row {
   display: flex;
@@ -3595,7 +3595,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   margin-top: 4px;
 }
 
-/* ── 言語開始日リスト ── */
+/* 笏笏 險隱樣幕蟋区律繝ｪ繧ｹ繝・笏笏 */
 .lang-start-list {
   display: flex;
   flex-direction: column;
@@ -3632,15 +3632,15 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   font-size: 0.63rem;
 }
 
-/* ──────────────────────────────────────────
-   ACTIVITY ヒートマップ カレンダー
-────────────────────────────────────────── */
+/* 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+   ACTIVITY 繝偵・繝医・繝・・ 繧ｫ繝ｬ繝ｳ繝繝ｼ
+笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 
 .heatmap-outer {
   overflow-x: auto;
   padding-bottom: 4px;
   margin-bottom: 4px;
-  /* スクロールバーを細く */
+  /* 繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ繝舌・繧堤ｴｰ縺・*/
   scrollbar-width: thin;
   scrollbar-color: rgba(255,107,0,0.20) transparent;
 }
@@ -3652,7 +3652,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   position: relative;
   height: 16px;
   margin-bottom: 4px;
-  /* day-label幅と同じ分だけ左にスペース */
+  /* day-label蟷・→蜷後§蛻・□縺大ｷｦ縺ｫ繧ｹ繝壹・繧ｹ */
 }
 
 .heatmap-month-lbl {
@@ -3701,7 +3701,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   gap: 2px;
 }
 
-/* 各セル */
+/* 蜷・そ繝ｫ */
 .heatmap-cell {
   width: 11px;
   height: 11px;
@@ -3718,7 +3718,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 .hm-lv3   { background: rgba(255,107,0,0.78); }
 .hm-lv4   { background: #FF6B00; box-shadow: 0 0 5px rgba(255,107,0,0.55); }
 
-/* 凡例 */
+/* 蜃｡萓・*/
 .heatmap-legend {
   display: flex;
   align-items: center;
@@ -3734,9 +3734,9 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   margin: 0 3px;
 }
 
-/* ─────────────────────────────────────────────────────────
-   管理者パネル
-   ────────────────────────────────────────────────────── */
+/* 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+   邂｡逅・・ヱ繝阪Ν
+   笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .admin-overlay {
   position: fixed;
   inset: 0;
@@ -3857,7 +3857,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   color: rgba(80,200,120,0.8);
 }
 
-/* PLUSバッジ */
+/* PLUS繝舌ャ繧ｸ */
 .plus-badge-label {
   display: inline-block;
   font-family: 'Share Tech Mono', monospace;
@@ -3875,7 +3875,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   box-shadow: 0 0 10px rgba(255,215,0,0.1);
 }
 
-/* プロフィール内の管理者バッジ・ボタン */
+/* 繝励Ο繝輔ぅ繝ｼ繝ｫ蜀・・邂｡逅・・ヰ繝・ず繝ｻ繝懊ち繝ｳ */
 .admin-badge-label {
   display: inline-block;
   font-family: 'Share Tech Mono', monospace;
@@ -3910,9 +3910,9 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   color: rgba(80,200,120,1);
 }
 
-/* ─────────────────────────────────────────────────────────
-   プレミアムロック（問題カード・ミッションカード）
-   ────────────────────────────────────────────────────── */
+/* 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+   繝励Ξ繝溘い繝繝ｭ繝・け・亥撫鬘後き繝ｼ繝峨・繝溘ャ繧ｷ繝ｧ繝ｳ繧ｫ繝ｼ繝会ｼ・
+   笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .premium-locked-card {
   opacity: 0.55;
   filter: saturate(0.3);
@@ -3952,9 +3952,9 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   letter-spacing: 0.04em;
 }
 
-/* ─────────────────────────────────────────────────────────
-   プレミアムモーダル
-   ────────────────────────────────────────────────────── */
+/* 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+   繝励Ξ繝溘い繝繝｢繝ｼ繝繝ｫ
+   笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .premium-overlay {
   position: fixed;
   inset: 0;
@@ -4108,9 +4108,9 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   margin: 0;
 }
 
-/* ─────────────────────────────────────────────────────────
-   広告スロット（無料ユーザー）
-   ────────────────────────────────────────────────────── */
+/* 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+   蠎・相繧ｹ繝ｭ繝・ヨ・育┌譁吶Θ繝ｼ繧ｶ繝ｼ・・
+   笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .ad-slot {
   border: 1px dashed rgba(255,107,0,0.12);
   border-radius: 8px;
@@ -4143,9 +4143,9 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   color: rgba(120,100,70,0.35);
 }
 
-/* ─────────────────────────────────────────────────────────
-   決済完了トースト
-   ────────────────────────────────────────────────────── */
+/* 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+   豎ｺ貂亥ｮ御ｺ・ヨ繝ｼ繧ｹ繝・
+   笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .premium-success-toast {
   position: fixed;
   bottom: 28px;
@@ -4167,7 +4167,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-/* モバイル対応 */
+/* 繝｢繝舌う繝ｫ蟇ｾ蠢・*/
 @media (max-width: 480px) {
   .premium-box { padding: 28px 20px 22px; }
   .premium-title { font-size: 1.25rem; }
@@ -4176,7 +4176,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   .nav-tab { padding: 13px 14px; font-size: 0.68rem; }
 }
 
-/* ===== ヘッダー モバイル対応 ===== */
+/* ===== 繝倥ャ繝繝ｼ 繝｢繝舌う繝ｫ蟇ｾ蠢・===== */
 @media (max-width: 600px) {
   header { padding: 12px 12px 10px; }
   #header-inner { flex-wrap: wrap; gap: 6px; }
@@ -4185,7 +4185,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   #sound-btn { display: none; }
 }
 
-/* ===== 汎用トースト ===== */
+/* ===== 豎守畑繝医・繧ｹ繝・===== */
 .app-toast {
   position: fixed;
   top: 24px;
@@ -4217,7 +4217,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   .app-toast { font-size: 0.75rem; padding: 9px 16px; white-space: normal; max-width: 88vw; text-align: center; }
 }
 
-/* ===== 基本形モーダル ===== */
+/* ===== 蝓ｺ譛ｬ蠖｢繝｢繝ｼ繝繝ｫ ===== */
 #basicform-modal {
   position: fixed;
   inset: 0;
@@ -4339,7 +4339,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   margin-left: auto;
 }
 
-/* ===== 言語診断クイズモーダル ===== */
+/* ===== 險隱櫁ｨｺ譁ｭ繧ｯ繧､繧ｺ繝｢繝ｼ繝繝ｫ ===== */
 
 #quiz-modal {
   position: fixed;
@@ -4478,7 +4478,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 .quiz-arrow { color: rgba(255,255,255,0.28); font-size: 1.1rem; flex-shrink: 0; transition: color 0.15s; }
 .quiz-choice:hover .quiz-arrow { color: #FF6B00; }
 
-/* 結果画面 */
+/* 邨先棡逕ｻ髱｢ */
 
 .quiz-result-announce {
   font-size: 0.83rem;
@@ -4570,7 +4570,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 }
 .quiz-retry-btn:hover { color: rgba(255,255,255,0.68); border-color: rgba(255,255,255,0.28); }
 
-/* ランディングページの診断ボタン */
+/* 繝ｩ繝ｳ繝・ぅ繝ｳ繧ｰ繝壹・繧ｸ縺ｮ險ｺ譁ｭ繝懊ち繝ｳ */
 .landing-btn-quiz {
   display: block;
   width: 100%;
@@ -4592,8 +4592,8 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   background: rgba(255,107,0,0.05);
 }
 
-/* 言語選択画面の診断ボタン */
-/* 自由入力フォーム */
+/* 險隱樣∈謚樒判髱｢縺ｮ險ｺ譁ｭ繝懊ち繝ｳ */
+/* 閾ｪ逕ｱ蜈･蜉帙ヵ繧ｩ繝ｼ繝 */
 .quiz-textarea {
   width: 100%;
   min-height: 100px;
@@ -4711,7 +4711,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   background: rgba(255,107,0,0.05);
 }
 
-/* ===== コード一行解説パネル ===== */
+/* ===== 繧ｳ繝ｼ繝我ｸ陦瑚ｧ｣隱ｬ繝代ロ繝ｫ ===== */
 
 .explain-open-btn {
   background: linear-gradient(135deg, #1a2a3a 0%, #0d1f2d 100%);
@@ -4834,7 +4834,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   color: #a8e8a8;
 }
 
-/* ===== 書き方メニューモーダル ===== */
+/* ===== 譖ｸ縺肴婿繝｡繝九Η繝ｼ繝｢繝ｼ繝繝ｫ ===== */
 
 .syntax-modal {
   position: fixed;
@@ -5015,9 +5015,9 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   }
 }
 
-/* ===== ギルドカード ===== */
+/* ===== 繧ｮ繝ｫ繝峨き繝ｼ繝・===== */
 
-/* プロフィールページ内表示 */
+/* 繝励Ο繝輔ぅ繝ｼ繝ｫ繝壹・繧ｸ蜀・｡ｨ遉ｺ */
 .gc-section-empty {
   text-align: center;
 }
@@ -5098,7 +5098,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   color: #7ec8e3;
 }
 
-/* ギルドカードモーダル */
+/* 繧ｮ繝ｫ繝峨き繝ｼ繝峨Δ繝ｼ繝繝ｫ */
 .gc-modal {
   position: fixed;
   inset: 0;
@@ -5235,7 +5235,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   transform: none;
 }
 
-/* ===== Dev Status レーダーチャート ===== */
+/* ===== Dev Status 繝ｬ繝ｼ繝繝ｼ繝√Ε繝ｼ繝・===== */
 
 .dev-status-section {
   text-align: center;
@@ -5268,7 +5268,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   #auth-area { gap: 3px; }
 }
 
-/* ===== SILVERアンロック演出 ===== */
+/* ===== SILVER繧｢繝ｳ繝ｭ繝・け貍泌・ ===== */
 
 .ruo-overlay {
   position: fixed;
@@ -5306,7 +5306,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   padding: 40px 24px;
 }
 
-/* 六角形 */
+/* 蜈ｭ隗貞ｽ｢ */
 .ruo-hex-wrap {
   position: relative;
   width: 160px;
@@ -5351,7 +5351,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   text-shadow: 0 0 20px var(--uc, #B8C8D8);
 }
 
-/* 拡張リング */
+/* 諡｡蠑ｵ繝ｪ繝ｳ繧ｰ */
 .ruo-ring {
   position: absolute;
   inset: 0;
@@ -5377,7 +5377,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
-/* テキスト */
+/* 繝・く繧ｹ繝・*/
 .ruo-unlock-label {
   font-size: 1.6rem;
   font-weight: 900;
@@ -5414,7 +5414,7 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   50%       { opacity: 0.6; }
 }
 
-/* ===== TITANテーマ ===== */
+/* ===== TITAN繝・・繝・===== */
 
 body.titan-theme::before {
   content: '';
@@ -5497,7 +5497,7 @@ body.titan-theme .profile-rank-badge {
   to   { background-position: 0 100px; }
 }
 
-/* TITAN解放演出 */
+/* TITAN隗｣謾ｾ貍泌・ */
 .titan-uo {
   position: fixed;
   inset: 0;
@@ -5579,7 +5579,7 @@ body.titan-theme .profile-rank-badge {
   50%       { opacity: 0.7; }
 }
 
-/* ===== OVERLORDテーマ ===== */
+/* ===== OVERLORD繝・・繝・===== */
 
 body.overlord-theme::before {
   background: repeating-linear-gradient(
@@ -5613,7 +5613,7 @@ body.overlord-theme .profile-rank-badge {
   border-color: rgba(255, 215, 0, 0.65) !important;
 }
 
-/* TITANバッジをOVERLORD色で上書き */
+/* TITAN繝舌ャ繧ｸ繧丹VERLORD濶ｲ縺ｧ荳頑嶌縺・*/
 body.overlord-theme .titan-badge-header {
   background: rgba(255, 215, 0, 0.1) !important;
   border-color: rgba(255, 215, 0, 0.5) !important;
@@ -5625,7 +5625,7 @@ body.overlord-theme .titan-badge-header {
   50%       { box-shadow: 0 0 18px rgba(255, 215, 0, 0.8); }
 }
 
-/* OVERLORD解放演出 */
+/* OVERLORD隗｣謾ｾ貍泌・ */
 .overlord-uo {
   position: fixed;
   inset: 0;
@@ -5852,7 +5852,7 @@ body.overlord-theme .titan-badge-header {
   margin: 0;
 }
 
-/* ===== 実行時間バッジ ===== */
+/* ===== 螳溯｡梧凾髢薙ヰ繝・ず ===== */
 
 .exec-time-badge {
   display: inline-block;
@@ -5867,7 +5867,7 @@ body.overlord-theme .titan-badge-header {
   vertical-align: middle;
 }
 
-/* ===== パーセンタイル ===== */
+/* ===== 繝代・繧ｻ繝ｳ繧ｿ繧､繝ｫ ===== */
 
 .stat-pct-row {
   margin-top: 6px;
@@ -5891,7 +5891,7 @@ body.overlord-theme .titan-badge-header {
   color: rgba(255, 255, 255, 0.22);
 }
 
-/* ===== スカウト UI ===== */
+/* ===== 繧ｹ繧ｫ繧ｦ繝・UI ===== */
 .gc-scout-section {
   margin-top: 16px;
   border-top: 1px solid #1a3040;
@@ -5901,7 +5901,7 @@ body.overlord-theme .titan-badge-header {
   gap: 10px;
 }
 
-/* スカウト通知バッジ */
+/* 繧ｹ繧ｫ繧ｦ繝磯夂衍繝舌ャ繧ｸ */
 .gc-scout-badge {
   display: flex;
   align-items: center;
@@ -5949,7 +5949,7 @@ body.overlord-theme .titan-badge-header {
   justify-content: center;
 }
 
-/* スカウトメッセージ一覧 */
+/* 繧ｹ繧ｫ繧ｦ繝医Γ繝・そ繝ｼ繧ｸ荳隕ｧ */
 .gc-scout-msgs {
   display: flex;
   flex-direction: column;
@@ -5992,7 +5992,7 @@ body.overlord-theme .titan-badge-header {
   flex-shrink: 0;
 }
 
-/* オプトイントグル行 */
+/* 繧ｪ繝励ヨ繧､繝ｳ繝医げ繝ｫ陦・*/
 .gc-scout-row {
   display: flex;
   align-items: center;
@@ -6044,7 +6044,7 @@ body.overlord-theme .titan-badge-header {
   transform: translateX(20px);
 }
 
-/* ===== 教本ページ ===== */
+/* ===== 謨呎悽繝壹・繧ｸ ===== */
 
 #page-textbook {
   max-width: 860px;
@@ -6052,7 +6052,7 @@ body.overlord-theme .titan-badge-header {
   padding: 24px 16px 60px;
 }
 
-/* テキストブック TOC */
+/* 繝・く繧ｹ繝医ヶ繝・け TOC */
 .textbook-toc {
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,107,0,0.18);
@@ -6218,7 +6218,7 @@ body.overlord-theme .titan-badge-header {
 }
 
 .textbook-tips-list li::before {
-  content: '→';
+  content: '竊・;
   position: absolute;
   left: 0;
   color: #FFD700;
@@ -6245,11 +6245,11 @@ body.overlord-theme .titan-badge-header {
 
 .textbook-cta-btn:hover { background: #e55e00; }
 
-/* 教本タブボタン */
+/* 謨呎悽繧ｿ繝悶・繧ｿ繝ｳ */
 #tab-textbook { color: #FFD700; }
 #tab-textbook.active { border-bottom-color: #FFD700; color: #FFD700; }
 
-/* 問題一覧 — 教本バナー */
+/* 蝠城｡御ｸ隕ｧ 窶・謨呎悽繝舌リ繝ｼ */
 .textbook-list-banner {
   display: flex;
   align-items: center;
@@ -6290,7 +6290,7 @@ body.overlord-theme .titan-badge-header {
 
 .textbook-banner-btn:hover { background: rgba(255,215,0,0.22); }
 
-/* 問題詳細 — 教本リンクボタン */
+/* 蝠城｡瑚ｩｳ邏ｰ 窶・謨呎悽繝ｪ繝ｳ繧ｯ繝懊ち繝ｳ */
 .detail-bookmark-btn {
   background: none; border: none; cursor: pointer;
   font-size: 1.1rem; line-height: 1;
@@ -6317,7 +6317,7 @@ body.overlord-theme .titan-badge-header {
 
 .detail-textbook-btn:hover { background: rgba(255,215,0,0.1); }
 
-/* ===== SNS シェアボタン ===== */
+/* ===== SNS 繧ｷ繧ｧ繧｢繝懊ち繝ｳ ===== */
 .share-x-btn {
   display: inline-flex;
   align-items: center;
@@ -6338,7 +6338,7 @@ body.overlord-theme .titan-badge-header {
 .share-x-btn:hover { background: #1a1a1a; transform: scale(1.04); }
 .share-x-btn:active { transform: scale(0.97); }
 
-/* バッジカード内シェアボタン */
+/* 繝舌ャ繧ｸ繧ｫ繝ｼ繝牙・繧ｷ繧ｧ繧｢繝懊ち繝ｳ */
 .badge-share-btn {
   display: none;
   margin-top: 6px;
@@ -6355,14 +6355,14 @@ body.overlord-theme .titan-badge-header {
 .badge-earned:hover .badge-share-btn { display: inline-block; }
 .badge-share-btn:hover { background: #222; }
 
-/* 問題クリア後シェアボタン */
+/* 蝠城｡後け繝ｪ繧｢蠕後す繧ｧ繧｢繝懊ち繝ｳ */
 .clear-share-row {
   display: flex;
   justify-content: center;
   margin-top: 10px;
 }
 
-/* ===== 問題一覧 検索・フィルターバー ===== */
+/* ===== 蝠城｡御ｸ隕ｧ 讀懃ｴ｢繝ｻ繝輔ぅ繝ｫ繧ｿ繝ｼ繝舌・ ===== */
 #list-filter-bar {
   padding: 12px 16px 0;
   position: sticky;
@@ -6373,7 +6373,7 @@ body.overlord-theme .titan-badge-header {
   border-bottom: 1px solid rgba(255,107,0,0.15);
 }
 
-/* 検索行（検索ボックス + モバイルトリガー） */
+/* 讀懃ｴ｢陦鯉ｼ域､懃ｴ｢繝懊ャ繧ｯ繧ｹ + 繝｢繝舌う繝ｫ繝医Μ繧ｬ繝ｼ・・*/
 #list-search-row {
   display: flex;
   gap: 8px;
@@ -6382,7 +6382,7 @@ body.overlord-theme .titan-badge-header {
 }
 #list-search-row #list-search-wrap { margin-bottom: 0; flex: 1; }
 
-/* モバイルトリガーボタン（デスクトップでは非表示） */
+/* 繝｢繝舌う繝ｫ繝医Μ繧ｬ繝ｼ繝懊ち繝ｳ・医ョ繧ｹ繧ｯ繝医ャ繝励〒縺ｯ髱櫁｡ｨ遉ｺ・・*/
 #filter-sheet-trigger {
   display: none;
   flex-shrink: 0;
@@ -6407,14 +6407,14 @@ body.overlord-theme .titan-badge-header {
   line-height: 1;
 }
 
-/* ── フィルターシート ─────────────────────────────────────── */
-/* デスクトップ: 普通のインラインブロック */
+/* 笏笏 繝輔ぅ繝ｫ繧ｿ繝ｼ繧ｷ繝ｼ繝・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
+/* 繝・せ繧ｯ繝医ャ繝・ 譎ｮ騾壹・繧､繝ｳ繝ｩ繧､繝ｳ繝悶Ο繝・け */
 #filter-sheet { position: static; }
 #filter-sheet-overlay { display: none; }
 #filter-sheet-content { background: none; padding: 0; }
 #filter-sheet-header  { display: none; }
 
-/* モバイル(640px以下): ボトムシート */
+/* 繝｢繝舌う繝ｫ(640px莉･荳・: 繝懊ヨ繝繧ｷ繝ｼ繝・*/
 @media (max-width: 640px) {
   #filter-sheet-trigger { display: flex; align-items: center; gap: 6px; }
 
@@ -6542,7 +6542,7 @@ body.overlord-theme .titan-badge-header {
 .rank-filter-btn:hover { border-color: rgba(255,107,0,0.5); color: #FF6B00; }
 .rank-filter-btn.active { background: rgba(255,107,0,0.18); border-color: #FF6B00; color: #FF6B00; }
 
-/* ランク別の色 */
+/* 繝ｩ繝ｳ繧ｯ蛻･縺ｮ濶ｲ */
 .rank-filter-btn.rank-rookie.active    { border-color:#9B9B9B; color:#9B9B9B; background:rgba(155,155,155,0.12); }
 .rank-filter-btn.rank-bronze.active    { border-color:#C47A2F; color:#C47A2F; background:rgba(196,122,47,0.12); }
 .rank-filter-btn.rank-silver.active    { border-color:#C0C0C0; color:#C0C0C0; background:rgba(192,192,192,0.12); }
@@ -6555,7 +6555,7 @@ body.overlord-theme .titan-badge-header {
 .rank-filter-btn.rank-overlord.active  { border-color:#FF1744; color:#FF1744; background:rgba(255,23,68,0.12); }
 .rank-filter-btn.rank-predator.active  { border-color:#F0F; color:#F0F; background:rgba(255,0,255,0.1); }
 
-/* ブックマーク・復習フィルター */
+/* 繝悶ャ繧ｯ繝槭・繧ｯ繝ｻ蠕ｩ鄙偵ヵ繧｣繝ｫ繧ｿ繝ｼ */
 #list-special-filters {
   display: flex;
   gap: 8px;
@@ -6579,7 +6579,7 @@ body.overlord-theme .titan-badge-header {
 #btn-filter-bookmark.active { background: rgba(255,214,0,0.15); border-color: #FFD600; color: #FFD600; }
 #btn-filter-wrong.active    { background: rgba(255,69,58,0.15); border-color: #FF453A; color: #FF453A; }
 
-/* カードのブックマークボタン */
+/* 繧ｫ繝ｼ繝峨・繝悶ャ繧ｯ繝槭・繧ｯ繝懊ち繝ｳ */
 .card-bookmark-btn {
   background: none;
   border: none;
@@ -6602,14 +6602,14 @@ body.overlord-theme .titan-badge-header {
   line-height: 1.9;
 }
 #list-filter-empty::before {
-  content: '🔍';
+  content: '剥';
   display: block;
   font-size: 2.8rem;
   margin-bottom: 14px;
   opacity: 0.35;
 }
 
-/* ===== Googleログインボタン ===== */
+/* ===== Google繝ｭ繧ｰ繧､繝ｳ繝懊ち繝ｳ ===== */
 #google-signin-btn {
   width: 100%;
   display: flex;
@@ -6648,7 +6648,7 @@ body.overlord-theme .titan-badge-header {
   background: rgba(255,255,255,0.1);
 }
 
-/* ===== 問題報告 ===== */
+/* ===== 蝠城｡悟ｱ蜻・===== */
 .report-section {
   text-align: right;
   padding-top: 0;
@@ -6665,7 +6665,7 @@ body.overlord-theme .titan-badge-header {
 }
 .report-btn:hover { color: #FF6B00; }
 
-/* 報告モーダル */
+/* 蝣ｱ蜻翫Δ繝ｼ繝繝ｫ */
 .report-overlay {
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.6);
@@ -6751,7 +6751,7 @@ body.overlord-theme .titan-badge-header {
 .report-msg-ok    { color: #00E676; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; }
 .report-msg-error { color: #FF4444; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; }
 
-/* ========== ランキング ========== */
+/* ========== 繝ｩ繝ｳ繧ｭ繝ｳ繧ｰ ========== */
 .ranking-wrap { max-width: 680px; margin: 0 auto; padding: 20px 16px 80px; }
 
 .ranking-header {
@@ -6864,7 +6864,7 @@ body.overlord-theme .titan-badge-header {
   clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
 }
 
-/* フォローボタン */
+/* 繝輔か繝ｭ繝ｼ繝懊ち繝ｳ */
 .follow-btn {
   flex-shrink: 0;
   padding: 3px 10px;
@@ -6891,7 +6891,7 @@ body.overlord-theme .titan-badge-header {
   color: #FF453A;
 }
 
-/* プロフィールのフォロー数 */
+/* 繝励Ο繝輔ぅ繝ｼ繝ｫ縺ｮ繝輔か繝ｭ繝ｼ謨ｰ */
 .profile-follow-counts {
   display: flex;
   align-items: center;
@@ -6906,7 +6906,7 @@ body.overlord-theme .titan-badge-header {
 .follow-count-item:hover { color: #FF6B00; }
 .follow-count-sep { color: rgba(237,224,200,0.25); }
 
-/* 次の問題へボタン */
+/* 谺｡縺ｮ蝠城｡後∈繝懊ち繝ｳ */
 .next-prob-btn {
   display: flex; align-items: center; gap: 12px;
   width: 100%; margin-top: 12px;
@@ -6952,7 +6952,7 @@ body.overlord-theme .titan-badge-header {
   animation: npbIn 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;
 }
 
-/* コンテストバッジ（問題カード） */
+/* 繧ｳ繝ｳ繝・せ繝医ヰ繝・ず・亥撫鬘後き繝ｼ繝会ｼ・*/
 .contest-card-badge {
   display: inline-block;
   font-size: 0.6rem; font-weight: 900;
@@ -6966,7 +6966,7 @@ body.overlord-theme .titan-badge-header {
   letter-spacing: 0.06em;
 }
 
-/* コンテスト言語セレクター */
+/* 繧ｳ繝ｳ繝・せ繝郁ｨ隱槭そ繝ｬ繧ｯ繧ｿ繝ｼ */
 .contest-lang-row { padding: 12px 20px 0; }
 .contest-lang-select {
   padding: 5px 10px;
@@ -6981,7 +6981,7 @@ body.overlord-theme .titan-badge-header {
 }
 .contest-lang-select option { background: #1a1510; }
 
-/* ストリーク未学習リマインダー */
+/* 繧ｹ繝医Μ繝ｼ繧ｯ譛ｪ蟄ｦ鄙偵Μ繝槭う繝ｳ繝繝ｼ */
 .streak-reminder {
   display: inline-block;
   font-size: 0.65rem; font-weight: 700;
@@ -6999,7 +6999,7 @@ body.overlord-theme .titan-badge-header {
   50% { opacity: 0.6; }
 }
 
-/* プロフィールシェアボタン */
+/* 繝励Ο繝輔ぅ繝ｼ繝ｫ繧ｷ繧ｧ繧｢繝懊ち繝ｳ */
 .profile-share-btn {
   margin-top: 10px;
   padding: 5px 14px;
@@ -7018,7 +7018,7 @@ body.overlord-theme .titan-badge-header {
    Main Menu UI Enhancements
    =================================================================== */
 
-/* ── コンボポップアップ ──────────────────────────────────────── */
+/* 笏笏 繧ｳ繝ｳ繝懊・繝・・繧｢繝・・ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .combo-popup {
   position: fixed;
   top: 42%;
@@ -7055,20 +7055,20 @@ body.overlord-theme .titan-badge-header {
   100% { opacity: 0; transform: translate(-50%, -58%) scale(0.92); }
 }
 
-/* ── ランディング: STEP タイトル強化グロー ───────────────────── */
+/* 笏笏 繝ｩ繝ｳ繝・ぅ繝ｳ繧ｰ: STEP 繧ｿ繧､繝医Ν蠑ｷ蛹悶げ繝ｭ繝ｼ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 @keyframes stepGlow {
   0%, 100% { text-shadow: 0 0 32px rgba(255,107,0,0.50), 0 0 64px rgba(255,107,0,0.18); }
   50%       { text-shadow: 0 0 52px rgba(255,107,0,0.75), 0 0 100px rgba(255,107,0,0.32); }
 }
 .landing-title-step { animation: stepGlow 3.2s ease-in-out infinite; }
 
-/* ── 統計数字グロー ───────────────────────────────────────────── */
+/* 笏笏 邨ｱ險域焚蟄励げ繝ｭ繝ｼ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .ls-num { text-shadow: 0 0 22px rgba(255,107,0,0.45); }
 .landing-stats-row {
   box-shadow: 0 0 40px rgba(255,107,0,0.06), inset 0 1px 0 rgba(255,107,0,0.14);
 }
 
-/* ── 機能カード強化 ─────────────────────────────────────────── */
+/* 笏笏 讖溯・繧ｫ繝ｼ繝牙ｼｷ蛹・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .landing-card {
   transition: border-color 0.25s, transform 0.22s, box-shadow 0.22s;
   position: relative;
@@ -7092,7 +7092,7 @@ body.overlord-theme .titan-badge-header {
 .lc-icon { display: inline-block; transition: transform 0.22s; }
 .landing-card:hover .lc-icon { transform: scale(1.2) translateY(-1px); }
 
-/* ── 言語バッジ hover ────────────────────────────────────────── */
+/* 笏笏 險隱槭ヰ繝・ず hover 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .landing-lang {
   display: inline-block;
   transition: opacity 0.2s, text-shadow 0.2s, transform 0.18s;
@@ -7104,7 +7104,7 @@ body.overlord-theme .titan-badge-header {
   transform: translateY(-3px);
 }
 
-/* ── プライマリボタン pulse ──────────────────────────────────── */
+/* 笏笏 繝励Λ繧､繝槭Μ繝懊ち繝ｳ pulse 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 @keyframes ctaPulse {
   0%, 100% { box-shadow: 0 0 18px rgba(255,107,0,0.22); }
   50%       { box-shadow: 0 0 36px rgba(255,107,0,0.48); }
@@ -7117,14 +7117,14 @@ body.overlord-theme .titan-badge-header {
   transition: transform 0.15s, box-shadow 0.15s;
 }
 
-/* ── 言語選択: カード入場アニメーション ──────────────────────── */
+/* 笏笏 險隱樣∈謚・ 繧ｫ繝ｼ繝牙・蝣ｴ繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 @keyframes cardIn {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 .lang-card { animation: cardIn 0.32s ease both; }
 
-/* ── 言語選択: ランクカラーホバーグロー ──────────────────────── */
+/* 笏笏 險隱樣∈謚・ 繝ｩ繝ｳ繧ｯ繧ｫ繝ｩ繝ｼ繝帙ヰ繝ｼ繧ｰ繝ｭ繝ｼ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .lang-available:hover {
   transform: translateY(-7px);
   border-color: color-mix(in srgb, var(--lc, #FF6B00) 65%, transparent);
@@ -7133,11 +7133,11 @@ body.overlord-theme .titan-badge-header {
     0 0 32px color-mix(in srgb, var(--lc, #FF6B00) 22%, transparent);
 }
 
-/* ── 言語カード上バー強化 ─────────────────────────────────────── */
+/* 笏笏 險隱槭き繝ｼ繝我ｸ翫ヰ繝ｼ蠑ｷ蛹・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .lang-card-bar { height: 4px; transition: height 0.2s; }
 .lang-available:hover .lang-card-bar { height: 7px; }
 
-/* ── 言語カード進捗フッター ──────────────────────────────────── */
+/* 笏笏 險隱槭き繝ｼ繝蛾ｲ謐励ヵ繝・ち繝ｼ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .lang-card-footer {
   display: flex;
   align-items: center;
@@ -7166,7 +7166,7 @@ body.overlord-theme .titan-badge-header {
   white-space: nowrap;
 }
 
-/* ── セクションヘッダー: ランクカラー左ボーダー + 背景チント ── */
+/* 笏笏 繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ繝倥ャ繝繝ｼ: 繝ｩ繝ｳ繧ｯ繧ｫ繝ｩ繝ｼ蟾ｦ繝懊・繝繝ｼ + 閭梧勹繝√Φ繝・笏笏 */
 .lang-section-header {
   border-left: 3px solid color-mix(in srgb, var(--rc, #FF6B00) 60%, transparent);
   border-bottom-color: color-mix(in srgb, var(--rc, #FF6B00) 20%, transparent);
@@ -7177,7 +7177,7 @@ body.overlord-theme .titan-badge-header {
   padding-left: 14px;
 }
 
-/* ── ダッシュボードウィジェット ─────────────────────────────── */
+/* 笏笏 繝繝・す繝･繝懊・繝峨え繧｣繧ｸ繧ｧ繝・ヨ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .db-widget {
   background: rgba(14,12,9,0.80);
   border: 1px solid rgba(255,107,0,0.14);
@@ -7222,7 +7222,7 @@ body.overlord-theme .titan-badge-header {
   flex-shrink: 0;
 }
 
-/* 今日の目標バー */
+/* 莉頑律縺ｮ逶ｮ讓吶ヰ繝ｼ */
 .db-goal { display: flex; flex-direction: column; gap: 5px; }
 .db-goal-meta {
   display: flex;
@@ -7256,7 +7256,7 @@ body.overlord-theme .titan-badge-header {
 }
 .db-goal-fill.db-goal-done { background: #00E676; box-shadow: 0 0 8px #00E676; }
 
-/* 続きからボタン + カレンダー行 */
+/* 邯壹″縺九ｉ繝懊ち繝ｳ + 繧ｫ繝ｬ繝ｳ繝繝ｼ陦・*/
 .db-bottom {
   display: flex;
   align-items: center;
@@ -7314,14 +7314,14 @@ body.overlord-theme .titan-badge-header {
 .db-cal-3 { background: rgba(255,107,0,0.62); }
 .db-cal-4 { background: rgba(255,107,0,0.85); box-shadow: 0 0 6px rgba(255,107,0,0.5); }
 
-/* モバイル */
+/* 繝｢繝舌う繝ｫ */
 @media (max-width: 600px) {
   .db-widget { padding: 14px 16px 13px; gap: 12px; }
   .db-val { font-size: 1.5rem; }
   .db-continue-btn { font-size: 0.74rem; padding: 6px 14px; }
 }
 
-/* ── テストケース可視化 ──────────────────────────────────────── */
+/* 笏笏 繝・せ繝医こ繝ｼ繧ｹ蜿ｯ隕門喧 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .test-compare {
   margin-top: 10px;
   border: 1px solid rgba(255,255,255,0.08);
@@ -7369,7 +7369,7 @@ body.overlord-theme .titan-badge-header {
 .tc-row-ok .tc-icon { color: #00E676; }
 .tc-row-ng .tc-icon { color: #FF453A; }
 
-/* ── 問題詳細 2カラムレイアウト ─────────────────────────────── */
+/* 笏笏 蝠城｡瑚ｩｳ邏ｰ 2繧ｫ繝ｩ繝繝ｬ繧､繧｢繧ｦ繝・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 #page-detail:has(.detail-split) {
   max-width: 1260px;
 }
@@ -7393,11 +7393,11 @@ body.overlord-theme .titan-badge-header {
   min-width: 0;
 }
 
-/* スクロールバー（detail-left） */
+/* 繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ繝舌・・・etail-left・・*/
 .detail-left::-webkit-scrollbar { width: 4px; }
 .detail-left::-webkit-scrollbar-thumb { background: rgba(255,107,0,0.25); border-radius: 2px; }
 
-/* モバイル: 縦積みに戻す */
+/* 繝｢繝舌う繝ｫ: 邵ｦ遨阪∩縺ｫ謌ｻ縺・*/
 @media (max-width: 900px) {
   #page-detail:has(.detail-split) { max-width: 780px; }
   .detail-split { flex-direction: column; }
@@ -7407,7 +7407,7 @@ body.overlord-theme .titan-badge-header {
   }
 }
 
-/* ── 問題カード hover preview tooltip ──────────────────────────── */
+/* 笏笏 蝠城｡後き繝ｼ繝・hover preview tooltip 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 #card-preview-tooltip {
   position: fixed;
   z-index: 9000;
@@ -7440,16 +7440,16 @@ body.overlord-theme .titan-badge-header {
   line-height: 1.7;
 }
 
-/* タッチデバイスでは非表示 */
+/* 繧ｿ繝・メ繝・ヰ繧､繧ｹ縺ｧ縺ｯ髱櫁｡ｨ遉ｺ */
 @media (hover: none) {
   #card-preview-tooltip { display: none !important; }
 }
 
 /* ===================================================================
-   UI Enhancement Pass — 2025
+   UI Enhancement Pass 窶・2025
    =================================================================== */
 
-/* ── ナビタブ強化 ─────────────────────────────────────────────── */
+/* 笏笏 繝翫ン繧ｿ繝門ｼｷ蛹・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .nav-tab {
   border-bottom-width: 3px;
 }
@@ -7463,7 +7463,7 @@ body.overlord-theme .titan-badge-header {
   text-shadow: 0 0 18px rgba(255,107,0,0.60);
 }
 
-/* ── 問題カードホバー強化 ─────────────────────────────────────── */
+/* 笏笏 蝠城｡後き繝ｼ繝峨・繝舌・蠑ｷ蛹・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .problem-card:hover {
   transform: translateX(5px);
   background: rgba(20,14,8,0.80);
@@ -7481,19 +7481,19 @@ body.overlord-theme .titan-badge-header {
 .rank-card-overlord:hover{ box-shadow: -4px 0 24px rgba(255,23,68,0.55); }
 .rank-card-predator:hover{ box-shadow: -4px 0 24px rgba(255,0,255,0.45); }
 
-/* ── 実行ボタン強化 ──────────────────────────────────────────── */
+/* 笏笏 螳溯｡後・繧ｿ繝ｳ蠑ｷ蛹・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .run-btn:hover:not(:disabled) {
   box-shadow: 0 0 22px rgba(0,255,136,0.35), 0 4px 18px rgba(0,0,0,0.5);
   transform: translateY(-2px);
 }
 
-/* ── 学習完了ボタン強化 ──────────────────────────────────────── */
+/* 笏笏 蟄ｦ鄙貞ｮ御ｺ・・繧ｿ繝ｳ蠑ｷ蛹・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .learn-btn:hover:not(:disabled) {
   box-shadow: 0 0 18px rgba(255,107,0,0.35);
   transform: translateY(-1px);
 }
 
-/* ── 認証ボタン強化 ──────────────────────────────────────────── */
+/* 笏笏 隱崎ｨｼ繝懊ち繝ｳ蠑ｷ蛹・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .auth-btn {
   transition: background 0.18s, box-shadow 0.18s, transform 0.15s;
 }
@@ -7502,7 +7502,7 @@ body.overlord-theme .titan-badge-header {
   transform: translateY(-1px);
 }
 
-/* ── 入力フォーカスグロー ────────────────────────────────────── */
+/* 笏笏 蜈･蜉帙ヵ繧ｩ繝ｼ繧ｫ繧ｹ繧ｰ繝ｭ繝ｼ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 #code-editor:focus,
 textarea:focus,
 input[type="text"]:focus,
@@ -7512,7 +7512,7 @@ input[type="password"]:focus {
   box-shadow: 0 0 0 2px rgba(255,107,0,0.35), 0 0 16px rgba(255,107,0,0.12);
 }
 
-/* ── 空状態スタイル ──────────────────────────────────────────── */
+/* 笏笏 遨ｺ迥ｶ諷九せ繧ｿ繧､繝ｫ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -7543,7 +7543,7 @@ input[type="password"]:focus {
   line-height: 1.7;
 }
 
-/* ── プログレスバーシマー ────────────────────────────────────── */
+/* 笏笏 繝励Ο繧ｰ繝ｬ繧ｹ繝舌・繧ｷ繝槭・ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 @keyframes barShimmer {
   0%   { background-position: -200% 0; }
   100% { background-position:  200% 0; }
@@ -7561,15 +7561,15 @@ input[type="password"]:focus {
   animation: barShimmer 2.8s linear infinite;
 }
 
-/* ── セクションヘッダー下線グロー ───────────────────────────── */
+/* 笏笏 繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ繝倥ャ繝繝ｼ荳狗ｷ壹げ繝ｭ繝ｼ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .section-title::after {
   box-shadow: 0 0 8px rgba(255,107,0,0.45);
 }
 
-/* ── カードスタック間隔の微調整 ─────────────────────────────── */
+/* 笏笏 繧ｫ繝ｼ繝峨せ繧ｿ繝・け髢馴囈縺ｮ蠕ｮ隱ｿ謨ｴ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .problem-card { margin-bottom: 5px; }
 
-/* ── モーダルバックドロップ強化 ─────────────────────────────── */
+/* 笏笏 繝｢繝ｼ繝繝ｫ繝舌ャ繧ｯ繝峨Ο繝・・蠑ｷ蛹・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 #auth-modal,
 .report-overlay,
 .modal-overlay {
@@ -7577,27 +7577,27 @@ input[type="password"]:focus {
   -webkit-backdrop-filter: blur(4px);
 }
 
-/* ── トーストアニメーション改善 ─────────────────────────────── */
+/* 笏笏 繝医・繧ｹ繝医い繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ謾ｹ蝟・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 @keyframes toastIn {
   from { opacity: 0; transform: translateX(-50%) translateY(12px) scale(0.95); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0)     scale(1); }
 }
 #toast-msg { animation: toastIn 0.22s cubic-bezier(0.34,1.56,0.64,1); }
 
-/* ── バッジ/ストリークラベル強化 ────────────────────────────── */
+/* 笏笏 繝舌ャ繧ｸ/繧ｹ繝医Μ繝ｼ繧ｯ繝ｩ繝吶Ν蠑ｷ蛹・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .streak-badge,
 .lv-badge {
   box-shadow: 0 0 10px rgba(255,107,0,0.20);
 }
 
-/* ── ランキング行ホバー ───────────────────────────────────────── */
+/* 笏笏 繝ｩ繝ｳ繧ｭ繝ｳ繧ｰ陦後・繝舌・ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .ranking-row { transition: background 0.15s, transform 0.15s; }
 .ranking-row:hover {
   background: rgba(255,107,0,0.06);
   transform: translateX(3px);
 }
 
-/* ── スクロールバー統一 ─────────────────────────────────────── */
+/* 笏笏 繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ繝舌・邨ｱ荳 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
 ::-webkit-scrollbar-thumb {
@@ -7606,7 +7606,7 @@ input[type="password"]:focus {
 }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,107,0,0.55); }
 
-/* ── モバイル 480px 微調整 ───────────────────────────────────── */
+/* 笏笏 繝｢繝舌う繝ｫ 480px 蠕ｮ隱ｿ謨ｴ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 @media (max-width: 480px) {
   .nav-tab {
     padding: 10px 12px;
@@ -7619,7 +7619,7 @@ input[type="password"]:focus {
   .empty-state { padding: 44px 16px; }
 }
 
-/* ── ランクアンロックモーダル ────────────────────────────────── */
+/* 笏笏 繝ｩ繝ｳ繧ｯ繧｢繝ｳ繝ｭ繝・け繝｢繝ｼ繝繝ｫ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 #rank-unlock-modal {
   position: fixed; inset: 0; z-index: 9400;
   display: flex; align-items: center; justify-content: center;
@@ -7682,7 +7682,7 @@ input[type="password"]:focus {
   color: rgba(255,255,255,0.3);
 }
 
-/* ── スキルレーダーチャート ─────────────────────────────────── */
+/* 笏笏 繧ｹ繧ｭ繝ｫ繝ｬ繝ｼ繝繝ｼ繝√Ε繝ｼ繝・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .radar-chart-wrap {
   display: flex;
   justify-content: center;
@@ -7695,7 +7695,7 @@ input[type="password"]:focus {
   overflow: visible;
 }
 
-/* ── バッジウォール ティア別グループ ────────────────────────── */
+/* 笏笏 繝舌ャ繧ｸ繧ｦ繧ｩ繝ｼ繝ｫ 繝・ぅ繧｢蛻･繧ｰ繝ｫ繝ｼ繝・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .badge-tier-group { margin-bottom: 20px; }
 .badge-tier-head {
   display: flex; align-items: center; gap: 8px;
@@ -7714,7 +7714,7 @@ input[type="password"]:focus {
   font-family: 'Share Tech Mono', monospace;
 }
 
-/* ── 学習時間バーチャート ───────────────────────────────────── */
+/* 笏笏 蟄ｦ鄙呈凾髢薙ヰ繝ｼ繝√Ε繝ｼ繝・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .study-chart-wrap {
   overflow-x: auto;
   scrollbar-width: none;
@@ -7737,9 +7737,9 @@ input[type="password"]:focus {
 }
 .study-chart-meta strong { color: #FF6B00; }
 
-/* ══════════════════════════════════════════════
-   キャリアページ
-══════════════════════════════════════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武
+   繧ｭ繝｣繝ｪ繧｢繝壹・繧ｸ
+笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武 */
 .career-page { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }
 
 .career-header { margin-bottom: 24px; }
@@ -7751,7 +7751,7 @@ input[type="password"]:focus {
 }
 .career-header-sub { font-size: 0.82rem; color: rgba(237,224,200,0.45); }
 
-/* ── カード ── */
+/* 笏笏 繧ｫ繝ｼ繝・笏笏 */
 .career-cards { display: flex; flex-direction: column; gap: 10px; }
 .career-card {
   background: rgba(14,10,6,0.75);
@@ -7771,7 +7771,7 @@ input[type="password"]:focus {
   box-shadow: 0 4px 32px rgba(0,0,0,0.5), -2px 0 20px color-mix(in srgb, var(--cc,#FF6B00) 28%, transparent) !important;
 }
 
-/* ── カードヘッダー ── */
+/* 笏笏 繧ｫ繝ｼ繝峨・繝・ム繝ｼ 笏笏 */
 .career-card-head {
   display: flex; align-items: center; gap: 14px;
   padding: 14px 18px;
@@ -7815,7 +7815,7 @@ input[type="password"]:focus {
   font-size: 0.7rem; color: rgba(237,224,200,0.3); flex-shrink: 0;
 }
 
-/* ── カード展開ボディ ── */
+/* 笏笏 繧ｫ繝ｼ繝牙ｱ暮幕繝懊ョ繧｣ 笏笏 */
 .career-card-body {
   padding: 0 18px 18px;
   border-top: 1px solid rgba(255,255,255,0.06);
@@ -7835,7 +7835,7 @@ input[type="password"]:focus {
   margin: 14px 0 10px;
 }
 
-/* ── 難易度別ロードマップ ── */
+/* 笏笏 髮｣譏灘ｺｦ蛻･繝ｭ繝ｼ繝峨・繝・・ 笏笏 */
 .cr-roadmap-phases { display: flex; flex-direction: column; gap: 12px; }
 
 .cr-phase { display: flex; flex-direction: column; gap: 6px; }
@@ -7877,7 +7877,7 @@ input[type="password"]:focus {
   line-height: 1.4; margin-top: 2px;
 }
 
-/* ── 関連言語タグ（プログレスバー付き） ── */
+/* 笏笏 髢｢騾｣險隱槭ち繧ｰ・医・繝ｭ繧ｰ繝ｬ繧ｹ繝舌・莉倥″・・笏笏 */
 .cr-lang-tags { display: flex; flex-wrap: wrap; gap: 8px; }
 .cr-lang-tag {
   display: flex; align-items: center; gap: 7px;
@@ -7911,7 +7911,7 @@ input[type="password"]:focus {
   .cr-lang-tag { min-width: 110px; }
 }
 
-/* ── 闇の仕事セクション ── */
+/* 笏笏 髣・・莉穂ｺ九そ繧ｯ繧ｷ繝ｧ繝ｳ 笏笏 */
 .dark-side-section { margin-top: 24px; }
 
 .dark-side-toggle {
@@ -7987,7 +7987,7 @@ input[type="password"]:focus {
   font-size: 0.68rem; color: #FF4444; line-height: 1.5;
 }
 
-/* ── DARK OPS TRAININGボタン ── */
+/* 笏笏 DARK OPS TRAINING繝懊ち繝ｳ 笏笏 */
 .dark-training-btn {
   display: flex; align-items: center; gap: 10px;
   width: 100%; margin-top: 16px;
@@ -8038,7 +8038,7 @@ input[type="password"]:focus {
   transform: translateX(3px);
 }
 
-/* キャリアフィルターバナー */
+/* 繧ｭ繝｣繝ｪ繧｢繝輔ぅ繝ｫ繧ｿ繝ｼ繝舌リ繝ｼ */
 .career-filter-banner {
   display: flex;
   align-items: center;
@@ -8075,11 +8075,11 @@ input[type="password"]:focus {
   color: #fff;
 }
 
-/* ══════════════════════════════════════════════════════
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武
    UIUX POLISH BATCH
-══════════════════════════════════════════════════════ */
+笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武 */
 
-/* ── ページ遷移フェードイン ──────────────────────────────── */
+/* 笏笏 繝壹・繧ｸ驕ｷ遘ｻ繝輔ぉ繝ｼ繝峨う繝ｳ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 @keyframes pageEnter {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -8088,7 +8088,7 @@ input[type="password"]:focus {
   animation: pageEnter 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* ── ナビタブ: 洗練されたインジケーター ──────────────────── */
+/* 笏笏 繝翫ン繧ｿ繝・ 豢礼ｷｴ縺輔ｌ縺溘う繝ｳ繧ｸ繧ｱ繝ｼ繧ｿ繝ｼ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 #nav-tabs {
   position: sticky;
   top: 0;
@@ -8096,7 +8096,7 @@ input[type="password"]:focus {
 .nav-tab {
   position: relative;
   transition: color 0.18s, background 0.18s;
-  /* border-bottomはactive時のみ表示 - ::afterで置き換え */
+  /* border-bottom縺ｯactive譎ゅ・縺ｿ陦ｨ遉ｺ - ::after縺ｧ鄂ｮ縺肴鋤縺・*/
   border-bottom: 2px solid transparent !important;
 }
 .nav-tab::after {
@@ -8119,7 +8119,7 @@ input[type="password"]:focus {
   transform: scale(0.97);
 }
 
-/* ── 問題カード: スタガー入場 ─────────────────────────────── */
+/* 笏笏 蝠城｡後き繝ｼ繝・ 繧ｹ繧ｿ繧ｬ繝ｼ蜈･蝣ｴ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 @keyframes cardSlideIn {
   from { opacity: 0; transform: translateX(-6px); }
   to   { opacity: 1; transform: translateX(0); }
@@ -8129,7 +8129,7 @@ input[type="password"]:focus {
   will-change: transform, opacity;
 }
 
-/* ── 問題カード: ホバー洗練 ───────────────────────────────── */
+/* 笏笏 蝠城｡後き繝ｼ繝・ 繝帙ヰ繝ｼ豢礼ｷｴ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .problem-card {
   transition: transform 0.18s cubic-bezier(0.22,1,0.36,1),
               background 0.18s,
@@ -8143,7 +8143,7 @@ input[type="password"]:focus {
   transform: translateX(3px) scale(0.995) !important;
 }
 
-/* ── ランクバッジ: 高ランクにグロー点滅 ──────────────────── */
+/* 笏笏 繝ｩ繝ｳ繧ｯ繝舌ャ繧ｸ: 鬮倥Λ繝ｳ繧ｯ縺ｫ繧ｰ繝ｭ繝ｼ轤ｹ貊・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 @keyframes legendPulse {
   0%,100% { box-shadow: 0 0 6px currentColor; }
   50%      { box-shadow: 0 0 18px currentColor, 0 0 30px currentColor; }
@@ -8155,7 +8155,7 @@ input[type="password"]:focus {
   animation: legendPulse 2.4s ease-in-out infinite;
 }
 
-/* ── サーチバー: フォーカス強化 ──────────────────────────── */
+/* 笏笏 繧ｵ繝ｼ繝√ヰ繝ｼ: 繝輔か繝ｼ繧ｫ繧ｹ蠑ｷ蛹・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 #search-input,
 .search-input {
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
@@ -8168,13 +8168,13 @@ input[type="password"]:focus {
   outline: none;
 }
 
-/* ── ボタン汎用: プレス状態 ──────────────────────────────── */
+/* 笏笏 繝懊ち繝ｳ豎守畑: 繝励Ξ繧ｹ迥ｶ諷・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 button:active:not(:disabled) {
   transform: scale(0.97);
   transition: transform 0.08s;
 }
 
-/* ── ランディングCTAボタン: グロー強化 ──────────────────── */
+/* 笏笏 繝ｩ繝ｳ繝・ぅ繝ｳ繧ｰCTA繝懊ち繝ｳ: 繧ｰ繝ｭ繝ｼ蠑ｷ蛹・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .landing-btn-primary {
   transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
 }
@@ -8186,7 +8186,7 @@ button:active:not(:disabled) {
   transform: translateY(1px) scale(0.98);
 }
 
-/* ── 言語カード: ホバー洗練 ──────────────────────────────── */
+/* 笏笏 險隱槭き繝ｼ繝・ 繝帙ヰ繝ｼ豢礼ｷｴ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .lang-available {
   transition: transform 0.2s cubic-bezier(0.22,1,0.36,1),
               box-shadow 0.2s,
@@ -8199,7 +8199,7 @@ button:active:not(:disabled) {
   transform: translateY(-1px) scale(1.005);
 }
 
-/* ── キャリアカード: ホバーリフト ───────────────────────── */
+/* 笏笏 繧ｭ繝｣繝ｪ繧｢繧ｫ繝ｼ繝・ 繝帙ヰ繝ｼ繝ｪ繝輔ヨ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .career-card {
   transition: transform 0.2s cubic-bezier(0.22,1,0.36,1),
               box-shadow 0.2s,
@@ -8210,7 +8210,7 @@ button:active:not(:disabled) {
   box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(var(--cc,255,107,0),0.12);
 }
 
-/* ── プログレスバー: アニメーション ─────────────────────── */
+/* 笏笏 繝励Ο繧ｰ繝ｬ繧ｹ繝舌・: 繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 @keyframes progressShimmer {
   0%   { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -8226,7 +8226,7 @@ button:active:not(:disabled) {
   animation: progressShimmer 2.4s linear infinite;
 }
 
-/* ── 連続学習ストリーク: 光らせる ────────────────────────── */
+/* 笏笏 騾｣邯壼ｭｦ鄙偵せ繝医Μ繝ｼ繧ｯ: 蜈峨ｉ縺帙ｋ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 @keyframes streakGlow {
   0%,100% { text-shadow: 0 0 6px rgba(255,107,0,0.4); }
   50%      { text-shadow: 0 0 16px rgba(255,107,0,0.85), 0 0 30px rgba(255,107,0,0.3); }
@@ -8236,7 +8236,7 @@ button:active:not(:disabled) {
   animation: streakGlow 2.8s ease-in-out infinite;
 }
 
-/* ── スクロールバー: オレンジテーマ ────────────────────── */
+/* 笏笏 繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ繝舌・: 繧ｪ繝ｬ繝ｳ繧ｸ繝・・繝・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(255,107,0,0.25) transparent;
@@ -8249,7 +8249,7 @@ button:active:not(:disabled) {
 }
 *::-webkit-scrollbar-thumb:hover { background: rgba(255,107,0,0.45); }
 
-/* ── モーダル: 入場アニメーション ───────────────────────── */
+/* 笏笏 繝｢繝ｼ繝繝ｫ: 蜈･蝣ｴ繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 @keyframes modalEnter {
   from { opacity: 0; transform: scale(0.95) translateY(8px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
@@ -8262,7 +8262,7 @@ button:active:not(:disabled) {
   animation: modalEnter 0.22s cubic-bezier(0.22,1,0.36,1) both;
 }
 
-/* ── フォーム入力: フォーカスリング ─────────────────────── */
+/* 笏笏 繝輔か繝ｼ繝蜈･蜉・ 繝輔か繝ｼ繧ｫ繧ｹ繝ｪ繝ｳ繧ｰ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 input:focus,
 textarea:focus {
   outline: none;
@@ -8271,7 +8271,7 @@ textarea:focus {
   box-shadow: 0 0 0 2px rgba(255,107,0,0.15);
 }
 
-/* ── クリアエフェクト: より派手に ───────────────────────── */
+/* 笏笏 繧ｯ繝ｪ繧｢繧ｨ繝輔ぉ繧ｯ繝・ 繧医ｊ豢ｾ謇九↓ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 @keyframes clearedPop {
   0%   { transform: scale(0.8) rotate(-2deg); opacity: 0; }
   60%  { transform: scale(1.06) rotate(1deg); opacity: 1; }
@@ -8281,7 +8281,7 @@ textarea:focus {
   animation: clearedPop 0.38s cubic-bezier(0.22,1,0.36,1) both;
 }
 
-/* ── スマホ: タッチターゲット拡大 ───────────────────────── */
+/* 笏笏 繧ｹ繝槭・: 繧ｿ繝・メ繧ｿ繝ｼ繧ｲ繝・ヨ諡｡螟ｧ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 @media (max-width: 640px) {
   .nav-tab {
     padding: 15px 18px;
@@ -8301,12 +8301,12 @@ textarea:focus {
   button { min-height: 36px; }
 }
 
-/* ── ユニットヘッダー: 微細強化 ─────────────────────────── */
+/* 笏笏 繝ｦ繝九ャ繝医・繝・ム繝ｼ: 蠕ｮ邏ｰ蠑ｷ蛹・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .unit-header {
   transition: color 0.2s;
 }
 
-/* ── ヘッダーXPバー: グラデーション ─────────────────────── */
+/* 笏笏 繝倥ャ繝繝ｼXP繝舌・: 繧ｰ繝ｩ繝・・繧ｷ繝ｧ繝ｳ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .exp-bar-fill {
   background-image: linear-gradient(90deg,
     rgba(255,255,255,0.0) 0%,
@@ -8315,7 +8315,7 @@ textarea:focus {
   background-blend-mode: overlay;
 }
 
-/* ── 空状態: アニメーション ─────────────────────────────── */
+/* 笏笏 遨ｺ迥ｶ諷・ 繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 @keyframes emptyFloat {
   0%,100% { transform: translateY(0); }
   50%     { transform: translateY(-5px); }
@@ -8324,7 +8324,7 @@ textarea:focus {
   animation: emptyFloat 3.2s ease-in-out infinite;
 }
 
-/* ── テキストブックバナー: ホバー ───────────────────────── */
+/* 笏笏 繝・く繧ｹ繝医ヶ繝・け繝舌リ繝ｼ: 繝帙ヰ繝ｼ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .textbook-list-banner {
   transition: background 0.18s, border-color 0.18s, transform 0.18s;
 }
@@ -8332,7 +8332,7 @@ textarea:focus {
   transform: translateX(3px);
 }
 
-/* ── デイリーチャレンジバナー: pulse ────────────────────── */
+/* 笏笏 繝・う繝ｪ繝ｼ繝√Ε繝ｬ繝ｳ繧ｸ繝舌リ繝ｼ: pulse 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 @keyframes dcPulse {
   0%,100% { box-shadow: 0 0 0 rgba(255,107,0,0); }
   50%     { box-shadow: 0 0 18px rgba(255,107,0,0.20); }
@@ -8341,7 +8341,7 @@ textarea:focus {
   animation: dcPulse 2.5s ease-in-out infinite;
 }
 
-/* ── ランク解放ダイアログ: リッチ入場 ───────────────────── */
+/* 笏笏 繝ｩ繝ｳ繧ｯ隗｣謾ｾ繝繧､繧｢繝ｭ繧ｰ: 繝ｪ繝・メ蜈･蝣ｴ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 @keyframes rankUnlockIn {
   0%   { opacity: 0; transform: scale(0.7) rotate(-4deg); }
   70%  { transform: scale(1.05) rotate(1deg); }
@@ -8351,7 +8351,7 @@ textarea:focus {
   animation: rankUnlockIn 0.45s cubic-bezier(0.22,1,0.36,1) both;
 }
 
-/* ── フォーカス可視化 (accessibility) ─────────────────── */
+/* 笏笏 繝輔か繝ｼ繧ｫ繧ｹ蜿ｯ隕門喧 (accessibility) 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 button:focus-visible,
 a:focus-visible {
   outline: 2px solid rgba(255,107,0,0.6);
@@ -8359,13 +8359,13 @@ a:focus-visible {
   border-radius: 2px;
 }
 
-/* ── セクションタイトル: ライン強化 ─────────────────────── */
+/* 笏笏 繧ｻ繧ｯ繧ｷ繝ｧ繝ｳ繧ｿ繧､繝医Ν: 繝ｩ繧､繝ｳ蠑ｷ蛹・笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 .section-title::after,
 .list-section-head::after {
   transition: width 0.4s ease;
 }
 
-/* ── スムーズスクロール ──────────────────────────────────── */
+/* 笏笏 繧ｹ繝繝ｼ繧ｺ繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
 html {
   scroll-behavior: smooth;
 }
@@ -8376,11 +8376,11 @@ html {
   scroll-behavior: smooth;
 }
 
-/* ══════════════════════════════════════════════════════
-   タブ・ランクフィルター ツールチップ
-══════════════════════════════════════════════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武
+   繧ｿ繝悶・繝ｩ繝ｳ繧ｯ繝輔ぅ繝ｫ繧ｿ繝ｼ 繝・・繝ｫ繝√ャ繝・
+笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武 */
 
-/* 共通 data-tip ツールチップ */
+/* 蜈ｱ騾・data-tip 繝・・繝ｫ繝√ャ繝・*/
 [data-tip] {
   position: relative;
 }
@@ -8426,7 +8426,7 @@ html {
   opacity: 1;
 }
 
-/* ナビタブのツールチップ: 下に重ならないよう下端からさらに上に */
+/* 繝翫ン繧ｿ繝悶・繝・・繝ｫ繝√ャ繝・ 荳九↓驥阪↑繧峨↑縺・ｈ縺・ｸ狗ｫｯ縺九ｉ縺輔ｉ縺ｫ荳翫↓ */
 .nav-tab[data-tip]::before {
   bottom: calc(100% + 12px);
 }
@@ -8434,7 +8434,7 @@ html {
   bottom: calc(100% + 6px);
 }
 
-/* ランクフィルターボタン: ツールチップが左右に寄ると画面外に出るため調整 */
+/* 繝ｩ繝ｳ繧ｯ繝輔ぅ繝ｫ繧ｿ繝ｼ繝懊ち繝ｳ: 繝・・繝ｫ繝√ャ繝励′蟾ｦ蜿ｳ縺ｫ蟇・ｋ縺ｨ逕ｻ髱｢螟悶↓蜃ｺ繧九◆繧∬ｪｿ謨ｴ */
 .rank-filter-btn[data-tip]::before {
   font-size: 0.65rem;
   max-width: 180px;
@@ -8443,9 +8443,9 @@ html {
   line-height: 1.4;
 }
 
-/* ══════════════════════════════════════════════════════
-   職業診断クイズモーダル
-══════════════════════════════════════════════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武
+   閨ｷ讌ｭ險ｺ譁ｭ繧ｯ繧､繧ｺ繝｢繝ｼ繝繝ｫ
+笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武 */
 
 #career-quiz-modal {
   position: fixed;
@@ -8480,7 +8480,7 @@ html {
   scrollbar-color: rgba(255,107,0,0.2) transparent;
 }
 
-/* 職業選択肢ボタン */
+/* 閨ｷ讌ｭ驕ｸ謚櫁い繝懊ち繝ｳ */
 .cq-choices {
   display: flex;
   flex-direction: column;
@@ -8525,7 +8525,7 @@ html {
   flex: 1;
 }
 
-/* 診断結果カード */
+/* 險ｺ譁ｭ邨先棡繧ｫ繝ｼ繝・*/
 .cq-result-card {
   background: rgba(14,12,9,0.85);
   border: 1px solid rgba(255,107,0,0.35);
@@ -8552,7 +8552,7 @@ html {
   line-height: 1.6;
 }
 
-/* キャリアページのクイズボタン */
+/* 繧ｭ繝｣繝ｪ繧｢繝壹・繧ｸ縺ｮ繧ｯ繧､繧ｺ繝懊ち繝ｳ */
 .career-quiz-btn {
   margin-top: 12px;
   display: block;
@@ -8564,9 +8564,9 @@ html {
   .cq-choice-btn  { font-size: 0.85rem; padding: 11px 12px; }
 }
 
-/* ══════════════════════════════════════════════════════
-   問題詳細ページ ナビゲーション・ユニット進捗
-══════════════════════════════════════════════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武
+   蝠城｡瑚ｩｳ邏ｰ繝壹・繧ｸ 繝翫ン繧ｲ繝ｼ繧ｷ繝ｧ繝ｳ繝ｻ繝ｦ繝九ャ繝磯ｲ謐・
+笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武 */
 
 .detail-nav {
   display: flex;
@@ -8632,7 +8632,7 @@ html {
   letter-spacing: 0.06em;
 }
 
-/* ユニット進捗バー */
+/* 繝ｦ繝九ャ繝磯ｲ謐励ヰ繝ｼ */
 .detail-unit-bar {
   height: 3px;
   background: rgba(255,255,255,0.07);
@@ -8648,7 +8648,7 @@ html {
   box-shadow: 0 0 6px rgba(255,107,0,0.5);
 }
 
-/* detail-meta の右側ボタン群 */
+/* detail-meta 縺ｮ蜿ｳ蛛ｴ繝懊ち繝ｳ鄒､ */
 .detail-meta {
   display: flex;
   flex-direction: column;
@@ -8662,11 +8662,11 @@ html {
   margin-bottom: 10px;
 }
 
-/* ══════════════════════════════════════════════════════
-   トグルボタン カラーバリアント
-══════════════════════════════════════════════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武
+   繝医げ繝ｫ繝懊ち繝ｳ 繧ｫ繝ｩ繝ｼ繝舌Μ繧｢繝ｳ繝・
+笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武 */
 
-/* ヒント: 黄色系 */
+/* 繝偵Φ繝・ 鮟・牡邉ｻ */
 .toggle-hint {
   border-left-color: rgba(255,210,0,0.55) !important;
 }
@@ -8676,7 +8676,7 @@ html {
   color: #ffd200 !important;
 }
 
-/* 正解例: オレンジ（デフォルトと同じだが明示） */
+/* 豁｣隗｣萓・ 繧ｪ繝ｬ繝ｳ繧ｸ・医ョ繝輔か繝ｫ繝医→蜷後§縺縺梧・遉ｺ・・*/
 .toggle-answer {
   border-left-color: rgba(255,107,0,0.55) !important;
 }
@@ -8686,7 +8686,7 @@ html {
   color: var(--orange) !important;
 }
 
-/* 解説: 青系 */
+/* 隗｣隱ｬ: 髱堤ｳｻ */
 .toggle-explain {
   border-left-color: rgba(80,160,255,0.55) !important;
 }
@@ -8696,9 +8696,9 @@ html {
   color: #50a0ff !important;
 }
 
-/* ══════════════════════════════════════════════════════
-   次の問題へボタン・全クリアヒント
-══════════════════════════════════════════════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武
+   谺｡縺ｮ蝠城｡後∈繝懊ち繝ｳ繝ｻ蜈ｨ繧ｯ繝ｪ繧｢繝偵Φ繝・
+笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武 */
 
 .next-problem-btn {
   display: block;
@@ -8741,9 +8741,9 @@ html {
   clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
 }
 
-/* ══════════════════════════════════════════════════════
-   続きからボタン (問題一覧)
-══════════════════════════════════════════════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武
+   邯壹″縺九ｉ繝懊ち繝ｳ (蝠城｡御ｸ隕ｧ)
+笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武 */
 
 .resume-btn {
   display: flex;
@@ -8794,9 +8794,9 @@ html {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ══════════════════════════════════════════════════════
-   言語カード おすすめバッジ
-══════════════════════════════════════════════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武
+   險隱槭き繝ｼ繝・縺翫☆縺吶ａ繝舌ャ繧ｸ
+笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武 */
 
 .lang-card-rec-badge {
   display: inline-flex;
@@ -8822,9 +8822,9 @@ html {
   50%      { box-shadow: 0 0 8px 2px rgba(255,210,0,0.18); }
 }
 
-/* ══════════════════════════════════════════════════════
-   レスポンシブ追加
-══════════════════════════════════════════════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武
+   繝ｬ繧ｹ繝昴Φ繧ｷ繝冶ｿｽ蜉
+笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武 */
 
 @media (max-width: 600px) {
   .detail-unit-name { max-width: 120px; }
@@ -8833,9 +8833,9 @@ html {
   .resume-btn { font-size: 0.88rem; padding: 11px 14px; }
 }
 
-/* ══════════════════════════════════════════════════════
-   フィルターピル
-══════════════════════════════════════════════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武
+   繝輔ぅ繝ｫ繧ｿ繝ｼ繝斐Ν
+笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武 */
 
 .filter-pills {
   display: flex;
@@ -8873,9 +8873,9 @@ html {
 }
 .fp-x:hover { color: var(--orange); }
 
-/* ══════════════════════════════════════════════════════
-   復習モードバナー
-══════════════════════════════════════════════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武
+   蠕ｩ鄙偵Δ繝ｼ繝峨ヰ繝翫・
+笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武 */
 
 .review-mode-banner {
   display: flex;
@@ -8903,9 +8903,9 @@ html {
 }
 .rmb-exit-btn:hover { background: rgba(255,60,60,0.22); color: #ff6666; }
 
-/* ══════════════════════════════════════════════════════
-   エディターフォントサイズ調整
-══════════════════════════════════════════════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武
+   繧ｨ繝・ぅ繧ｿ繝ｼ繝輔か繝ｳ繝医し繧､繧ｺ隱ｿ謨ｴ
+笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武 */
 
 .editor-font-ctrl {
   display: flex;
@@ -8941,9 +8941,9 @@ html {
   text-align: center;
 }
 
-/* ══════════════════════════════════════════════════════
-   コード下書きバッジ
-══════════════════════════════════════════════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武
+   繧ｳ繝ｼ繝我ｸ区嶌縺阪ヰ繝・ず
+笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武 */
 
 .draft-badge {
   display: inline-block;
@@ -8960,9 +8960,9 @@ html {
 }
 .draft-badge.hidden { display: none !important; }
 
-/* ══════════════════════════════════════════════════════
-   学習時間バッジ
-══════════════════════════════════════════════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武
+   蟄ｦ鄙呈凾髢薙ヰ繝・ず
+笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武 */
 
 .study-time-badge {
   font-family: 'Share Tech Mono', monospace;
@@ -8976,9 +8976,9 @@ html {
   white-space: nowrap;
 }
 
-/* ══════════════════════════════════════════════════════
-   ナビ キーボードヒント
-══════════════════════════════════════════════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武
+   繝翫ン 繧ｭ繝ｼ繝懊・繝峨ヲ繝ｳ繝・
+笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武 */
 
 .nav-kbd {
   display: inline-block;
@@ -8988,9 +8988,9 @@ html {
   vertical-align: middle;
 }
 
-/* ══════════════════════════════════════════════════════
-   ブックマークアニメーション
-══════════════════════════════════════════════════════ */
+/* 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武
+   繝悶ャ繧ｯ繝槭・繧ｯ繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ
+笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武 */
 
 @keyframes bmPop {
   0%   { transform: scale(1); }
@@ -9000,7 +9000,7 @@ html {
 }
 .bm-pop { animation: bmPop 0.45s cubic-bezier(0.22,1,0.36,1) !important; }
 
-/* ===== TEXTBOOK 説明文 ===== */
+/* ===== TEXTBOOK 隱ｬ譏取枚 ===== */
 
 .textbook-section-desc {
   font-size: 13.5px;
@@ -9053,324 +9053,7 @@ html {
   margin: 0;
 }
 
-/* 目次 */
-.intro-toc-card {
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 14px;
-  padding: 20px 22px 16px;
-  margin-bottom: 24px;
-}
-.intro-toc-heading {
-  font-size: 13px;
-  font-weight: 700;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: 14px;
-}
-.intro-toc-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 6px;
-}
-.intro-toc-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 7px 10px;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: background .15s;
-  cursor: pointer;
-}
-.intro-toc-item:hover { background: rgba(74,222,128,.1); }
-.intro-toc-num {
-  width: 22px;
-  height: 22px;
-  background: linear-gradient(135deg, #16a34a, #22c55e);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 800;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.intro-toc-text {
-  font-size: 13px;
-  color: #cbd5e1;
-}
-.intro-toc-text code {
-  background: rgba(255,255,255,.08);
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-size: 12px;
-  color: #86efac;
-}
-
-/* チャプターカード */
-.intro-chapter {
-  background: rgba(255,255,255,.03);
-  border: 1px solid rgba(255,255,255,.07);
-  border-left: 3px solid #22c55e;
-  border-radius: 12px;
-  padding: 24px 24px 20px;
-  margin-bottom: 18px;
-  scroll-margin-top: 72px;
-}
-.intro-ch-head {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 18px;
-}
-.intro-ch-num {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #16a34a, #22c55e);
-  color: #fff;
-  font-size: 15px;
-  font-weight: 900;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(34,197,94,.4);
-}
-.intro-ch-icon { font-size: 20px; }
-.intro-ch-title {
-  font-size: 18px;
-  font-weight: 800;
-  color: #f1f5f9;
-}
-
-/* チャプター本文 */
-.intro-ch-body {
-  font-size: 14px;
-  line-height: 1.8;
-  color: #cbd5e1;
-}
-.intro-ch-body p { margin: 0 0 12px; }
-.intro-ch-body p:last-child { margin-bottom: 0; }
-.intro-ch-body strong { color: #f1f5f9; }
-.intro-ch-body em { color: #86efac; font-style: normal; font-weight: 600; }
-.intro-ch-body code {
-  background: rgba(134,239,172,.12);
-  color: #86efac;
-  padding: 1px 6px;
-  border-radius: 4px;
-  font-size: 13px;
-  font-family: 'Consolas', 'Courier New', monospace;
-}
-
-/* コードブロック */
-.intro-code {
-  background: #0d1117;
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 10px;
-  padding: 18px 20px;
-  overflow-x: auto;
-  margin: 14px 0 4px;
-  font-size: 13px;
-  line-height: 1.7;
-  color: #e6edf3;
-  font-family: 'Consolas', 'Courier New', monospace;
-  white-space: pre;
-}
-
-/* Tip */
-.intro-tip {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  background: rgba(234,179,8,.08);
-  border: 1px solid rgba(234,179,8,.22);
-  border-radius: 8px;
-  padding: 10px 14px;
-  margin-top: 14px;
-  font-size: 13px;
-  color: #fde68a;
-  line-height: 1.6;
-}
-.intro-tip-icon { font-size: 16px; flex-shrink: 0; }
-.intro-tip code {
-  background: rgba(234,179,8,.18);
-  color: #fde68a;
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-size: 12px;
-}
-
-/* 比喩ブロック */
-.intro-analogy {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  background: rgba(99,102,241,.1);
-  border: 1px solid rgba(99,102,241,.2);
-  border-radius: 10px;
-  padding: 14px 16px;
-  margin: 14px 0;
-  font-size: 13px;
-  line-height: 1.7;
-  color: #c7d2fe;
-}
-.intro-analogy-icon { font-size: 24px; flex-shrink: 0; }
-.intro-analogy strong { color: #e0e7ff; }
-.intro-analogy code {
-  background: rgba(99,102,241,.2);
-  color: #c7d2fe;
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-family: monospace;
-}
-
-/* パーツ解説テーブル */
-.intro-parts-table {
-  background: rgba(0,0,0,.2);
-  border-radius: 10px;
-  padding: 4px 0;
-  margin: 14px 0;
-}
-.intro-parts-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 9px 16px;
-  border-bottom: 1px solid rgba(255,255,255,.05);
-  font-size: 13px;
-}
-.intro-parts-row:last-child { border-bottom: none; }
-.intro-parts-kw {
-  background: rgba(134,239,172,.12);
-  color: #86efac;
-  padding: 3px 10px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-family: monospace;
-  min-width: 110px;
-  text-align: center;
-  display: inline-block;
-}
-.intro-parts-row > span { color: #94a3b8; }
-
-/* コンパイルフロー */
-.intro-flow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin: 18px 0;
-}
-.intro-flow-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255,255,255,.05);
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 10px;
-  padding: 12px 16px;
-  font-size: 12px;
-  color: #94a3b8;
-  text-align: center;
-  min-width: 80px;
-}
-.intro-flow-icon { font-size: 22px; }
-.intro-flow-arrow { font-size: 18px; color: #22c55e; font-weight: 700; }
-
-/* エラー一覧 */
-.intro-errors {
-  margin: 14px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.intro-error-item {
-  background: rgba(239,68,68,.07);
-  border: 1px solid rgba(239,68,68,.18);
-  border-radius: 8px;
-  padding: 10px 14px;
-}
-.intro-error-msg {
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 12px;
-  color: #fca5a5;
-  margin-bottom: 4px;
-}
-.intro-error-meaning {
-  font-size: 13px;
-  color: #94a3b8;
-}
-.intro-error-meaning code {
-  background: rgba(239,68,68,.12);
-  color: #fca5a5;
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-family: monospace;
-}
-
-/* フッター */
-.intro-footer-section {
-  text-align: center;
-  background: linear-gradient(135deg, rgba(22,163,74,.12), rgba(34,197,94,.06));
-  border: 1px solid rgba(34,197,94,.2);
-  border-radius: 16px;
-  padding: 32px 24px;
-  margin-top: 32px;
-  margin-bottom: 20px;
-}
-.intro-footer-title {
-  font-size: 22px;
-  font-weight: 900;
-  color: #f1f5f9;
-  margin-bottom: 10px;
-}
-.intro-footer-body {
-  font-size: 14px;
-  color: #94a3b8;
-  line-height: 1.7;
-  margin-bottom: 20px;
-}
-.intro-footer-btns {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-.intro-go-problems {
-  background: linear-gradient(135deg, #16a34a, #22c55e);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 28px;
-  font-size: 15px;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(34,197,94,.4);
-  transition: transform .15s, box-shadow .15s;
-}
-.intro-go-problems:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(34,197,94,.5); }
-.intro-go-textbook {
-  background: rgba(255,255,255,.07);
-  color: #94a3b8;
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 10px;
-  padding: 12px 24px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background .15s;
-}
-.intro-go-textbook:hover { background: rgba(255,255,255,.12); color: #e2e8f0; }
-
-/* INTRO タブ自体を緑系の色に */
+/* INTRO 繧ｿ繝冶・菴薙ｒ邱醍ｳｻ縺ｮ濶ｲ縺ｫ */
 #tab-intro { color: #86efac !important; }
 #tab-intro.active {
   color: #fff !important;
@@ -9378,19 +9061,13 @@ html {
   border-color: transparent !important;
 }
 
-/* レスポンシブ */
 @media (max-width: 600px) {
   .intro-page-title { font-size: 22px; }
-  .intro-toc-grid { grid-template-columns: 1fr 1fr; }
-  .intro-ch-title { font-size: 16px; }
-  .intro-flow { gap: 4px; }
-  .intro-flow-step { min-width: 60px; padding: 8px 10px; }
-  .intro-parts-kw { min-width: 80px; }
 }
 
 /* ===== Round 3 ===== */
 
-/* スクロールトップボタン */
+/* 繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ繝医ャ繝励・繧ｿ繝ｳ */
 #scroll-top-btn {
   position: fixed;
   bottom: 24px;
@@ -9416,7 +9093,7 @@ html {
 #scroll-top-btn.stt-visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
 #scroll-top-btn:hover { transform: translateY(-3px) !important; }
 
-/* ユニット全クリア演出 */
+/* 繝ｦ繝九ャ繝亥・繧ｯ繝ｪ繧｢貍泌・ */
 #unit-clear-overlay {
   position: fixed;
   inset: 0;
@@ -9459,7 +9136,7 @@ html {
   color: #94a3b8;
 }
 
-/* リスト上部バー */
+/* 繝ｪ繧ｹ繝井ｸ企Κ繝舌・ */
 .list-top-bar { margin-bottom: 10px; }
 .list-top-row {
   display: flex;
@@ -9493,7 +9170,7 @@ html {
 }
 .density-btn:hover { background: rgba(255,255,255,.12); }
 
-/* 1日の目標 */
+/* 1譌･縺ｮ逶ｮ讓・*/
 .daily-goal-wrap {
   display: flex;
   align-items: center;
@@ -9528,7 +9205,7 @@ html {
 }
 .goal-edit-btn:hover { color: #f97316; }
 
-/* 連続学習リスクバナー */
+/* 騾｣邯壼ｭｦ鄙偵Μ繧ｹ繧ｯ繝舌リ繝ｼ */
 .streak-risk-banner {
   background: linear-gradient(90deg, rgba(234,179,8,.15), rgba(234,179,8,.05));
   border: 1px solid rgba(234,179,8,.35);
@@ -9543,7 +9220,7 @@ html {
 }
 .streak-risk-banner.hidden { display: none; }
 
-/* ランク別進捗 */
+/* 繝ｩ繝ｳ繧ｯ蛻･騾ｲ謐・*/
 .rank-progress-panel {
   background: rgba(255,255,255,.04);
   border: 1px solid rgba(255,255,255,.07);
@@ -9581,7 +9258,7 @@ html {
 }
 .rp-pct { width: 36px; text-align: right; color: #64748b; font-size: 11px; }
 
-/* 苦手バッジ */
+/* 闍ｦ謇九ヰ繝・ず */
 .weak-badge {
   display: inline-block;
   background: rgba(239,68,68,.2);
@@ -9595,7 +9272,7 @@ html {
   vertical-align: middle;
 }
 
-/* 検索サジェスト */
+/* 讀懃ｴ｢繧ｵ繧ｸ繧ｧ繧ｹ繝・*/
 #search-suggest-wrap {
   position: absolute;
   top: 100%;
@@ -9628,7 +9305,7 @@ html {
 }
 .suggest-title { color: #e2e8f0; }
 
-/* 問題メモ */
+/* 蝠城｡後Γ繝｢ */
 .problem-note-panel {
   background: rgba(255,255,255,.03);
   border: 1px solid rgba(255,255,255,.07);
@@ -9677,7 +9354,7 @@ html {
 }
 .pnp-save-btn:hover { background: rgba(249,115,22,.3); }
 
-/* 実行ボタン行 */
+/* 螳溯｡後・繧ｿ繝ｳ陦・*/
 .run-btn-row {
   display: flex;
   align-items: center;
@@ -9726,7 +9403,7 @@ html {
 }
 .speed-timer.speed-overtime { color: #f87171; }
 
-/* コンパクト密度 */
+/* 繧ｳ繝ｳ繝代け繝亥ｯ・ｺｦ */
 .density-compact .problem-card {
   padding: 8px 14px;
 }
@@ -9738,39 +9415,13 @@ html {
   font-size: 11px;
 }
 
-/* レスポンシブ (Round 3) */
+/* 繝ｬ繧ｹ繝昴Φ繧ｷ繝・(Round 3) */
 @media (max-width: 600px) {
   #unit-clear-box { padding: 28px 24px; }
   .uc-name { font-size: 22px; }
   .daily-goal-track { max-width: 120px; }
   .run-btn-row { gap: 6px; }
   .speed-mode-btn { padding: 7px 8px; font-size: 11px; }
-}
-
-/* ===== 初心者ガイド (🔰 beginner tab) ===== */
-#tab-beginner {
-  border-bottom: 2px solid transparent;
-  transition: border-color .2s;
-}
-#tab-beginner.active, #tab-beginner:hover {
-  color: #a78bfa;
-  border-bottom-color: #a78bfa;
-}
-
-.beginner-page-header {
-  text-align: center;
-  padding: 36px 20px 24px;
-}
-.beginner-page-title {
-  font-size: 28px;
-  font-weight: 800;
-  color: #f1f5f9;
-  margin: 0 0 8px;
-}
-.beginner-page-sub {
-  font-size: 14px;
-  color: #94a3b8;
-  margin: 0;
 }
 
 .beginner-lang-grid {
@@ -9827,7 +9478,7 @@ html {
   margin-top: 4px;
 }
 
-/* ===== 言語別初心者ガイド共通 (bgl) ===== */
+/* ===== 險隱槫挨蛻晏ｿ・・ぎ繧､繝牙・騾・(bgl) ===== */
 .bgl-back-btn {
   display: inline-flex;
   align-items: center;
@@ -9937,7 +9588,7 @@ html {
   position: relative;
 }
 .bgl-usefor-list li::before {
-  content: '▸';
+  content: '笆ｸ';
   position: absolute;
   left: 0;
   color: #a78bfa;
@@ -10092,66 +9743,6 @@ html {
 }
 .bgl-cta-secondary:hover { background: #0f172a; color: #cbd5e1; }
 
-/* intro tab — 現在言語バナー */
-.intro-current-banner {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  background: linear-gradient(135deg, rgba(124,58,237,.18), rgba(167,139,250,.08));
-  border: 1.5px solid rgba(167,139,250,.4);
-  border-radius: 14px;
-  padding: 16px 20px;
-  margin: 0 16px 20px;
-  cursor: pointer;
-  transition: border-color .15s, background .15s;
-}
-.intro-current-banner:hover {
-  border-color: #a78bfa;
-  background: linear-gradient(135deg, rgba(124,58,237,.28), rgba(167,139,250,.12));
-}
-.intro-current-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .08em;
-  color: #a78bfa;
-  background: rgba(167,139,250,.15);
-  padding: 3px 8px;
-  border-radius: 20px;
-  flex-shrink: 0;
-}
-.intro-current-emoji {
-  font-size: 36px;
-  flex-shrink: 0;
-}
-.intro-current-text {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  flex: 1;
-}
-.intro-current-name {
-  font-size: 18px;
-  font-weight: 800;
-  color: #f1f5f9;
-}
-.intro-current-tagline {
-  font-size: 12px;
-  color: #94a3b8;
-}
-.intro-current-arrow {
-  font-size: 13px;
-  font-weight: 700;
-  color: #a78bfa;
-  flex-shrink: 0;
-}
-.intro-lang-section-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  padding: 0 20px 10px;
-}
 .blc-now {
   font-size: 9px;
   font-weight: 800;
@@ -10167,7 +9758,7 @@ html {
   background: rgba(124,58,237,.1) !important;
 }
 
-/* intro tab — language-aware header additions */
+/* intro tab 窶・language-aware header additions */
 .intro-page-header {
   text-align: center;
   padding: 32px 20px 16px;
