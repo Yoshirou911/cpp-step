@@ -1937,6 +1937,10 @@ function renderLangSelect() {
     '<div class="lang-page-header">' +
       '<div class="lang-page-title">◆ SELECT LANGUAGE</div>' +
       '<div class="lang-page-sub">学習する言語を選択してください</div>' +
+      '<div class="lang-quick-access">' +
+        '<button class="lang-qa-btn" onclick="goToCareerDirect()">🎯 CAREER</button>' +
+        '<button class="lang-qa-btn lang-qa-intro" onclick="goToIntroDirect()">🌱 INTRO</button>' +
+      '</div>' +
       '<button class="lang-quiz-btn" onclick="openQuizModal()">🧭 どの言語を選べばいいかわからない方はこちら</button>' +
     '</div>' +
     _buildDashboard();
@@ -35467,33 +35471,16 @@ function renderIntro() {
   var c = document.getElementById('intro-content');
   if (!c) return;
 
-  var currentLangId = currentLanguage || 'cpp';
+  var currentLangId = currentLanguage; // null のまま — 強制デフォルトなし
   var langs = Object.keys(langBeginnerData);
   var h = '';
 
-  // ページヘッダー
   h += '<div class="intro-page-header">';
   h += '<span class="intro-page-badge">🌱 INTRO</span>';
   h += '<h1 class="intro-page-title">入門ガイド</h1>';
   h += '<p class="intro-page-sub">言語を選んで、その言語のイントロを読もう。</p>';
   h += '</div>';
 
-  // 現在の言語 — 目立つバナー
-  var cur = langBeginnerData[currentLangId];
-  if (cur) {
-    h += '<div class="intro-current-banner" onclick="openBeginnerLang(\'' + currentLangId + '\')">';
-    h += '<span class="intro-current-label">現在の言語</span>';
-    h += '<span class="intro-current-emoji">' + cur.emoji + '</span>';
-    h += '<div class="intro-current-text">';
-    h += '<span class="intro-current-name">' + cur.name + '</span>';
-    h += '<span class="intro-current-tagline">' + cur.tagline + '</span>';
-    h += '</div>';
-    h += '<span class="intro-current-arrow">→ イントロを見る</span>';
-    h += '</div>';
-  }
-
-  // 全言語グリッド
-  h += '<div class="intro-lang-section-title">すべての言語</div>';
   h += '<div class="beginner-lang-grid">';
   langs.forEach(function(lid) {
     var d = langBeginnerData[lid];
@@ -35512,6 +35499,22 @@ function renderIntro() {
   h += '</div>';
 
   c.innerHTML = h;
+}
+
+function goToIntroDirect() {
+  showNavAndProgress();
+  setActiveTab('intro');
+  history.pushState({ page: 'intro', lang: currentLanguage, tab: 'intro' }, '');
+  renderIntro();
+  showPage('intro');
+}
+
+function goToCareerDirect() {
+  showNavAndProgress();
+  setActiveTab('career');
+  history.pushState({ page: 'career', lang: currentLanguage, tab: 'career' }, '');
+  renderCareer();
+  showPage('career');
 }
 
 function renderBeginner() {
