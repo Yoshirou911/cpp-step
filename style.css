@@ -8939,6 +8939,372 @@ html {
 }
 .bm-pop { animation: bmPop 0.45s cubic-bezier(0.22,1,0.36,1) !important; }
 
+/* ===== INTRO TAB ===== */
+
+.intro-page-header {
+  text-align: center;
+  padding: 40px 20px 28px;
+}
+.intro-page-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #166534, #15803d);
+  color: #bbf7d0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+}
+.intro-page-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: #f1f5f9;
+  margin: 8px 0;
+  letter-spacing: -0.5px;
+}
+.intro-page-sub {
+  font-size: 14px;
+  color: #94a3b8;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* 目次 */
+.intro-toc-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  padding: 20px 22px 16px;
+  margin-bottom: 24px;
+}
+.intro-toc-heading {
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+}
+.intro-toc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 6px;
+}
+.intro-toc-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background .15s;
+  cursor: pointer;
+}
+.intro-toc-item:hover { background: rgba(74,222,128,.1); }
+.intro-toc-num {
+  width: 22px;
+  height: 22px;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.intro-toc-text {
+  font-size: 13px;
+  color: #cbd5e1;
+}
+.intro-toc-text code {
+  background: rgba(255,255,255,.08);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #86efac;
+}
+
+/* チャプターカード */
+.intro-chapter {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-left: 3px solid #22c55e;
+  border-radius: 12px;
+  padding: 24px 24px 20px;
+  margin-bottom: 18px;
+  scroll-margin-top: 72px;
+}
+.intro-ch-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.intro-ch-num {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 900;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(34,197,94,.4);
+}
+.intro-ch-icon { font-size: 20px; }
+.intro-ch-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #f1f5f9;
+}
+
+/* チャプター本文 */
+.intro-ch-body {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #cbd5e1;
+}
+.intro-ch-body p { margin: 0 0 12px; }
+.intro-ch-body p:last-child { margin-bottom: 0; }
+.intro-ch-body strong { color: #f1f5f9; }
+.intro-ch-body em { color: #86efac; font-style: normal; font-weight: 600; }
+.intro-ch-body code {
+  background: rgba(134,239,172,.12);
+  color: #86efac;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: 'Consolas', 'Courier New', monospace;
+}
+
+/* コードブロック */
+.intro-code {
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px;
+  padding: 18px 20px;
+  overflow-x: auto;
+  margin: 14px 0 4px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #e6edf3;
+  font-family: 'Consolas', 'Courier New', monospace;
+  white-space: pre;
+}
+
+/* Tip */
+.intro-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(234,179,8,.08);
+  border: 1px solid rgba(234,179,8,.22);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 14px;
+  font-size: 13px;
+  color: #fde68a;
+  line-height: 1.6;
+}
+.intro-tip-icon { font-size: 16px; flex-shrink: 0; }
+.intro-tip code {
+  background: rgba(234,179,8,.18);
+  color: #fde68a;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* 比喩ブロック */
+.intro-analogy {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: rgba(99,102,241,.1);
+  border: 1px solid rgba(99,102,241,.2);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 14px 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #c7d2fe;
+}
+.intro-analogy-icon { font-size: 24px; flex-shrink: 0; }
+.intro-analogy strong { color: #e0e7ff; }
+.intro-analogy code {
+  background: rgba(99,102,241,.2);
+  color: #c7d2fe;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: monospace;
+}
+
+/* パーツ解説テーブル */
+.intro-parts-table {
+  background: rgba(0,0,0,.2);
+  border-radius: 10px;
+  padding: 4px 0;
+  margin: 14px 0;
+}
+.intro-parts-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  font-size: 13px;
+}
+.intro-parts-row:last-child { border-bottom: none; }
+.intro-parts-kw {
+  background: rgba(134,239,172,.12);
+  color: #86efac;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: monospace;
+  min-width: 110px;
+  text-align: center;
+  display: inline-block;
+}
+.intro-parts-row > span { color: #94a3b8; }
+
+/* コンパイルフロー */
+.intro-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 18px 0;
+}
+.intro-flow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 12px;
+  color: #94a3b8;
+  text-align: center;
+  min-width: 80px;
+}
+.intro-flow-icon { font-size: 22px; }
+.intro-flow-arrow { font-size: 18px; color: #22c55e; font-weight: 700; }
+
+/* エラー一覧 */
+.intro-errors {
+  margin: 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.intro-error-item {
+  background: rgba(239,68,68,.07);
+  border: 1px solid rgba(239,68,68,.18);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.intro-error-msg {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  color: #fca5a5;
+  margin-bottom: 4px;
+}
+.intro-error-meaning {
+  font-size: 13px;
+  color: #94a3b8;
+}
+.intro-error-meaning code {
+  background: rgba(239,68,68,.12);
+  color: #fca5a5;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: monospace;
+}
+
+/* フッター */
+.intro-footer-section {
+  text-align: center;
+  background: linear-gradient(135deg, rgba(22,163,74,.12), rgba(34,197,94,.06));
+  border: 1px solid rgba(34,197,94,.2);
+  border-radius: 16px;
+  padding: 32px 24px;
+  margin-top: 32px;
+  margin-bottom: 20px;
+}
+.intro-footer-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: #f1f5f9;
+  margin-bottom: 10px;
+}
+.intro-footer-body {
+  font-size: 14px;
+  color: #94a3b8;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+.intro-footer-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.intro-go-problems {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 28px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(34,197,94,.4);
+  transition: transform .15s, box-shadow .15s;
+}
+.intro-go-problems:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(34,197,94,.5); }
+.intro-go-textbook {
+  background: rgba(255,255,255,.07);
+  color: #94a3b8;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+}
+.intro-go-textbook:hover { background: rgba(255,255,255,.12); color: #e2e8f0; }
+
+/* INTRO タブ自体を緑系の色に */
+#tab-intro { color: #86efac !important; }
+#tab-intro.active {
+  color: #fff !important;
+  background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+  border-color: transparent !important;
+}
+
+/* レスポンシブ */
+@media (max-width: 600px) {
+  .intro-page-title { font-size: 22px; }
+  .intro-toc-grid { grid-template-columns: 1fr 1fr; }
+  .intro-ch-title { font-size: 16px; }
+  .intro-flow { gap: 4px; }
+  .intro-flow-step { min-width: 60px; padding: 8px 10px; }
+  .intro-parts-kw { min-width: 80px; }
+}
+
 /* ===== Round 3 ===== */
 
 /* スクロールトップボタン */
