@@ -456,6 +456,7 @@ var _filterRank     = '';
 var _filterBookmark = false;
 var _filterWrong    = false;
 var _filterUnsolved = false;
+var _careerFilter   = null; // { careerId, careerTitle, careerIcon, careerColor, ids: Set }
 
 function toggleFilterBookmark() {
   _filterBookmark = !_filterBookmark;
@@ -31362,16 +31363,29 @@ function renderList() {
     list.appendChild(tbBanner);
   }
 
+  // キャリアフィルターバナー
+  if (_careerFilter) {
+    var cfBanner = document.createElement('div');
+    cfBanner.className = 'career-filter-banner';
+    cfBanner.style.borderColor = _careerFilter.careerColor + '88';
+    cfBanner.innerHTML =
+      '<span class="cf-icon">' + _careerFilter.careerIcon + '</span>' +
+      '<span class="cf-label"><strong>' + escapeHtml(_careerFilter.careerTitle) + '</strong> 向けピックアップ（' + _careerFilter.ids.size + '問）</span>' +
+      '<button class="cf-clear-btn" onclick="clearCareerFilter()">✕ 解除</button>';
+    list.appendChild(cfBanner);
+  }
+
   // フィルター適用
   var allProblems = getProblems();
-  if (_filterQuery || _filterRank || _filterBookmark || _filterWrong || _filterUnsolved) {
+  if (_careerFilter || _filterQuery || _filterRank || _filterBookmark || _filterWrong || _filterUnsolved) {
     allProblems = allProblems.filter(function(p) {
+      var matchCareer   = !_careerFilter   || _careerFilter.ids.has(p.id);
       var matchRank     = !_filterRank     || p.rank === _filterRank;
       var matchQuery    = !_filterQuery    || p.title.toLowerCase().indexOf(_filterQuery) !== -1 || (p.question && p.question.toLowerCase().indexOf(_filterQuery) !== -1);
       var matchBookmark = !_filterBookmark || isBookmarked(p.id);
       var matchWrong    = !_filterWrong    || isWrongAnswer(p.id);
       var matchUnsolved = !_filterUnsolved || !isLearned(p.id);
-      return matchRank && matchQuery && matchBookmark && matchWrong && matchUnsolved;
+      return matchCareer && matchRank && matchQuery && matchBookmark && matchWrong && matchUnsolved;
     });
   }
 
@@ -33520,7 +33534,7 @@ function renderCareer() {
     // 関連言語タグ（クリックで問題へジャンプ）
     var langTagsHTML = relevantPct.map(function(lp) {
       var fillW = lp.pct + '%';
-      return '<div class="cr-lang-tag cr-lang-clickable" style="border-color:' + lp.color + '55" onclick="event.stopPropagation();goToLangProblems(\'' + lp.lid + '\')" title="' + lp.name + 'の問題へ">' +
+      return '<div class="cr-lang-tag cr-lang-clickable" style="border-color:' + lp.color + '55" onclick="event.stopPropagation();goToLangProblems(\'' + lp.lid + '\',\'' + c.id + '\')" title="' + lp.name + 'の問題へ">' +
         '<span class="cr-lang-name" style="color:' + lp.color + '">' + lp.name + '</span>' +
         '<div class="cr-lang-bar-wrap"><div class="cr-lang-bar-fill" style="width:' + fillW + ';background:' + lp.color + '"></div></div>' +
         '<span class="cr-lang-pct" style="color:' + lp.color + '">' + lp.pct + '%</span>' +
@@ -33663,7 +33677,55 @@ function toggleCareer(id) {
   renderCareer();
 }
 
-async function goToLangProblems(lid) {
+var CAREER_REC_PROBLEMS = {
+  'frontend':       { 'html': [1,2,3,4,5,6,7,8,9,10], 'javascript': [1,2,3,4,5,6,7,8,9,10], 'typescript': [1,2,3,4,5,6,7,8] },
+  'backend':        { 'python': [5,6,7,8,9,10,11,12,13,14], 'sql': [1,2,3,4,5,6,7,8,9,10], 'java': [5,6,7,8,9,10,11,12], 'go': [5,6,7,8,9,10,11,12] },
+  'ai':             { 'python': [7,8,9,10,11,12,13,14,15] },
+  'game':           { 'cpp': [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], 'csharp': [1,2,3,4,5,6,7,8,9,10] },
+  'mobile':         { 'swift': [1,2,3,4,5,6,7,8,9,10], 'kotlin': [1,2,3,4,5,6,7,8,9,10] },
+  'infra':          { 'bash': [1,2,3,4,5,6,7,8,9,10], 'python': [1,2,3,4,5,6,7,8], 'go': [1,2,3,4,5,6,7,8] },
+  'security':       { 'python': [5,6,7,8,9,10,11,12,13], 'c': [5,6,7,8,9,10,11,12,13], 'bash': [5,6,7,8,9,10] },
+  'embedded':       { 'c': [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], 'cpp': [5,6,7,8,9,10,11,12] },
+  'competitive':    { 'cpp': [5,6,7,8,9,10,11,12,13,14,15], 'python': [5,6,7,8,9,10,11,12,13,14,15] },
+  'blockchain':     { 'javascript': [8,9,10,11,12,13,14,15], 'python': [8,9,10,11,12,13,14,15] },
+  'xr':             { 'csharp': [5,6,7,8,9,10,11,12,13,14], 'cpp': [8,9,10,11,12,13,14,15] },
+  'robotics':       { 'cpp': [5,6,7,8,9,10,11,12,13,14], 'python': [5,6,7,8,9,10,11,12] },
+  'dataeng':        { 'python': [8,9,10,11,12,13,14,15], 'sql': [8,9,10,11,12,13,14,15] },
+  'oss':            { 'c': [10,11,12,13,14,15], 'cpp': [10,11,12,13,14,15], 'rust': [8,9,10,11,12,13,14,15] },
+  'quantum':        { 'python': [10,11,12,13,14,15] },
+  'compiler':       { 'c': [10,11,12,13,14,15], 'cpp': [10,11,12,13,14,15], 'rust': [8,9,10,11,12,13,14,15] },
+  'creative':       { 'javascript': [5,6,7,8,9,10,11,12], 'cpp': [8,9,10,11,12,13,14] },
+  'bioinformatics': { 'python': [8,9,10,11,12,13,14,15] },
+  'space':          { 'c': [8,9,10,11,12,13,14,15], 'cpp': [8,9,10,11,12,13,14,15] },
+  'audio':          { 'c': [8,9,10,11,12,13,14], 'cpp': [8,9,10,11,12,13,14] },
+  'uiux':           { 'html': [1,2,3,4,5,6,7,8,9,10,11,12], 'javascript': [1,2,3,4,5,6,7,8] },
+  'mlops':          { 'python': [8,9,10,11,12,13,14,15], 'bash': [5,6,7,8,9,10] },
+  'cto':            { 'javascript': [10,11,12,13,14,15], 'python': [10,11,12,13,14,15], 'go': [10,11,12,13,14,15] },
+};
+
+function clearCareerFilter() {
+  _careerFilter = null;
+  renderList();
+}
+
+async function goToLangProblems(lid, careerId) {
+  if (careerId) {
+    var career = CAREERS.find(function(c) { return c.id === careerId; });
+    var recIds = career && CAREER_REC_PROBLEMS[careerId] && CAREER_REC_PROBLEMS[careerId][lid];
+    if (career && recIds) {
+      _careerFilter = {
+        careerId: careerId,
+        careerTitle: career.title,
+        careerIcon: career.icon,
+        careerColor: career.color,
+        ids: new Set(recIds)
+      };
+    } else {
+      _careerFilter = null;
+    }
+  } else {
+    _careerFilter = null;
+  }
   await selectLanguage(lid);
   switchTab('problems');
 }
