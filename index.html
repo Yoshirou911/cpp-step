@@ -91,6 +91,16 @@
     </div>
   </header>
 
+  <!-- ゲストモードバナー（匿名ログイン時のみ表示） -->
+  <div id="anon-banner" class="anon-banner hidden">
+    <span>ゲストモードで利用中。<strong>登録すると学習記録が永続保存されます。</strong></span>
+    <button class="anon-banner-register" onclick="openAuthModal()">登録する →</button>
+    <button class="anon-banner-close" onclick="this.closest('#anon-banner').classList.add('hidden')" aria-label="閉じる">✕</button>
+  </div>
+
+  <!-- 同期インジケーター -->
+  <div id="sync-indicator" class="sync-indicator">✓ synced</div>
+
   <!-- 広告バナー (無課金ユーザーのみ表示、認証後にJS側で表示) -->
   <div class="ad-slot ad-banner-top" style="display:none">
     <!-- code-step-banner -->

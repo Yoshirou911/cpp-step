@@ -9807,3 +9807,109 @@ html {
   .bgl-cta { flex-direction: column; }
 }
 
+/* ========== ゲスト（匿名）バナー ========== */
+.anon-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: linear-gradient(90deg, rgba(0,180,255,0.10) 0%, rgba(0,100,180,0.08) 100%);
+  border-bottom: 1px solid rgba(0,180,255,0.18);
+  font-size: 0.78rem;
+  color: rgba(180,220,255,0.85);
+  flex-wrap: wrap;
+}
+.anon-banner strong { color: #00B4FF; }
+.anon-banner-register {
+  margin-left: 4px;
+  padding: 3px 10px;
+  background: #00B4FF;
+  color: #000;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.anon-banner-register:hover { background: #33C8FF; }
+.anon-banner-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: rgba(180,220,255,0.5);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0 2px;
+  line-height: 1;
+}
+.anon-banner-close:hover { color: rgba(180,220,255,0.9); }
+
+/* ========== ストリークウィジェット（問題一覧） ========== */
+.streak-widget {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  background: linear-gradient(90deg, rgba(255,107,0,0.10) 0%, rgba(255,50,0,0.06) 100%);
+  border: 1px solid rgba(255,107,0,0.20);
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+.streak-widget-fire {
+  font-size: 1.5rem;
+  line-height: 1;
+  animation: streak-pulse 2s ease-in-out infinite;
+}
+.streak-widget-body { display: flex; flex-direction: column; gap: 1px; }
+.streak-widget-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #FF6B00;
+  line-height: 1;
+}
+.streak-widget-label {
+  font-size: 0.68rem;
+  color: rgba(237,224,200,0.5);
+  letter-spacing: 0.05em;
+}
+.streak-widget-best {
+  margin-left: auto;
+  font-size: 0.70rem;
+  color: rgba(237,224,200,0.4);
+  text-align: right;
+  line-height: 1.5;
+}
+.streak-widget-today {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  padding: 4px 8px;
+  background: rgba(0,230,118,0.10);
+  border: 1px solid rgba(0,230,118,0.18);
+  border-radius: 4px;
+  color: #00E676;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
+/* ========== 同期インジケーター ========== */
+.sync-indicator {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  padding: 5px 12px;
+  background: rgba(0,0,0,0.75);
+  border: 1px solid rgba(0,230,118,0.35);
+  border-radius: 20px;
+  font-size: 0.70rem;
+  color: #00E676;
+  font-family: 'Share Tech Mono', monospace;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 9999;
+}
+.sync-indicator.visible { opacity: 1; }
+

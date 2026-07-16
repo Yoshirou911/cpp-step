@@ -709,6 +709,27 @@ function _selectSuggestion(id, title) {
   renderList();
 }
 
+// ===== 匿名ログイン（登録不要でコード実行を可能にする） =====
+
+async function ensureAnonSession() {
+  if (currentUser) return true;
+  if (!_supabase) return false;
+  try {
+    var existing = await _supabase.auth.getSession();
+    if (existing.data && existing.data.session) {
+      if (!currentUser) currentUser = existing.data.session.user;
+      return true;
+    }
+    var res = await _supabase.auth.signInAnonymously();
+    if (res.error || !res.data || !res.data.user) return false;
+    currentUser = res.data.user;
+    updateAuthUI();
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
+
 // ===== 連続学習日数リマインダー =====
 function _checkStreakReminder() {
   var loginDays = lsGetJSON('login_days', []);
@@ -2915,10 +2936,30 @@ function renderList() {
   // ストリークリマインダーチェック
   _checkStreakReminder();
 
+  // ストリークウィジェット（2日以上で表示）
+  var _localDays = lsGetJSON('login_days', []);
+  var _sw = calcStreak(_localDays);
+  var streakWidgetHtml = '';
+  if (_sw.current >= 2) {
+    var _todayKey2 = getTodayJST();
+    var _studiedToday = (lsGetJSON('study_log', {})[_todayKey2] || 0) > 0;
+    streakWidgetHtml =
+      '<div class="streak-widget">' +
+        '<span class="streak-widget-fire">🔥</span>' +
+        '<div class="streak-widget-body">' +
+          '<div class="streak-widget-num">' + _sw.current + ' 日連続</div>' +
+          '<div class="streak-widget-label">STREAK</div>' +
+        '</div>' +
+        (_studiedToday ? '<span class="streak-widget-today">✓ 今日達成</span>' : '') +
+        '<div class="streak-widget-best">最長 <strong>' + _sw.best + '</strong> 日<br>累計 ' + _sw.total + ' 日</div>' +
+      '</div>';
+  }
+
   // ランク別進捗 + ランダム問題ボタン + 密度切り替え + 目標バー
   var topBarEl = document.createElement('div');
   topBarEl.className = 'list-top-bar';
   topBarEl.innerHTML =
+    streakWidgetHtml +
     '<div class="list-top-row">' +
       '<button class="random-prob-btn" onclick="goToRandomProblem()" title="未クリアからランダムに選ぶ">🎲 ランダム問題</button>' +
       '<button id="density-toggle-btn" class="density-btn" onclick="toggleListDensity()">' + (_listDensity === 'compact' ? '☷ 標準' : '☰ コンパクト') + '</button>' +
@@ -4270,6 +4311,11 @@ function setEditorMode(mode) {
 async function runCode() {
   const code = aceEditor ? aceEditor.getValue().trim() : '';
   if (!code) { showToast('コードを入力してください'); return; }
+  // 未ログインなら匿名セッションを自動作成して登録不要で実行できるようにする
+  if (!currentUser) {
+    var _anonOk = await ensureAnonSession();
+    if (!_anonOk) { showToast('コード実行にはネットワーク接続が必要です'); return; }
+  }
 
   const btn        = document.querySelector(".run-btn");
   const outputArea = document.getElementById("output-area");
@@ -4644,7 +4690,10 @@ async function askAI(system, messages) {
 // ===== コードフィードバック =====
 
 async function getAIFeedback(problemId) {
-  if (!currentUser) { openAuthModal(); return; }
+  if (!currentUser) {
+    var _ok = await ensureAnonSession();
+    if (!_ok) { openAuthModal(); return; }
+  }
   const p = getProblems().find(function(x) { return x.id === problemId; });
   if (!p) return;
   const code = aceEditor ? aceEditor.getValue().trim() : '';
@@ -4799,6 +4848,14 @@ async function getFollowCounts(uid) {
   } catch(e) { return { following: 0, followers: 0 }; }
 }
 
+function _showSyncIndicator() {
+  var el = document.getElementById('sync-indicator');
+  if (!el) return;
+  el.classList.add('visible');
+  clearTimeout(_showSyncIndicator._t);
+  _showSyncIndicator._t = setTimeout(function() { el.classList.remove('visible'); }, 2000);
+}
+
 async function syncUserStats(addedXP, lang) {
   if (!currentUser || !_supabase) return;
   var now  = new Date();
@@ -4824,6 +4881,7 @@ async function syncUserStats(addedXP, lang) {
       lang_cleared:      lc,
       updated_at:        new Date().toISOString()
     });
+    _showSyncIndicator();
   } catch(e) {}
 }
 
@@ -6596,7 +6654,10 @@ function renderMissionDetail(id) {
 // ===== ミッションAIレビュー =====
 
 async function getMissionAIFeedback(missionId) {
-  if (!currentUser) { openAuthModal(); return; }
+  if (!currentUser) {
+    var _ok = await ensureAnonSession();
+    if (!_ok) { openAuthModal(); return; }
+  }
   const m = getMissions().find(function(x) { return x.id === missionId; });
   if (!m) return;
   const code = aceEditor ? aceEditor.getValue().trim() : '';
@@ -6951,7 +7012,10 @@ var _lastGolfSubmit = {}; // { [problemId]: lastLen } 二重送信防止
 var _golfSubmitting = {}; // { [problemId]: true } 送信中フラグ
 
 async function submitAndRefreshGolf(problemId) {
-  if (!currentUser) { alert('ログインが必要です'); return; }
+  if (!currentUser) {
+    var _ok = await ensureAnonSession();
+    if (!_ok) { showToast('ゴルフ提出にはネットワーク接続が必要です'); return; }
+  }
   if (!aceEditor) return;
   if (_golfSubmitting[problemId]) return;
   var len = aceEditor.getValue().length;
@@ -7217,8 +7281,8 @@ async function renderProfile() {
   var earned = BADGES.filter(function(b) { return b.check(stats); });
   var locked = BADGES.filter(function(b) { return !b.check(stats); });
 
-  var avatarLetter = currentUser ? currentUser.email.charAt(0).toUpperCase() : 'G';
-  var displayName  = currentUser ? currentUser.email : 'GUEST';
+  var avatarLetter = currentUser ? (currentUser.email ? currentUser.email.charAt(0).toUpperCase() : '?') : 'G';
+  var displayName  = currentUser ? (currentUser.email || 'GUEST（匿名）') : 'GUEST';
 
   var tierColors = {
     bronze:   '#C47A2F',
@@ -8268,16 +8332,20 @@ async function authSignOut() {
 }
 
 function updateAuthUI() {
-  var btn     = document.getElementById('auth-btn');
-  var info    = document.getElementById('user-info');
-  var emailEl = document.getElementById('user-email-display');
+  var btn      = document.getElementById('auth-btn');
+  var info     = document.getElementById('user-info');
+  var emailEl  = document.getElementById('user-email-display');
+  var anonBnr  = document.getElementById('anon-banner');
   if (currentUser) {
+    var isAnon = !currentUser.email;
     btn.classList.add('hidden');
     info.classList.remove('hidden');
-    emailEl.textContent = currentUser.email;
+    emailEl.textContent = isAnon ? 'ゲスト' : currentUser.email;
+    if (anonBnr) anonBnr.classList.toggle('hidden', !isAnon);
   } else {
     btn.classList.remove('hidden');
     info.classList.add('hidden');
+    if (anonBnr) anonBnr.classList.add('hidden');
   }
 }
 
