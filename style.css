@@ -8502,3 +8502,272 @@ html {
   #career-quiz-box { padding: 20px 16px 24px; }
   .cq-choice-btn  { font-size: 0.85rem; padding: 11px 12px; }
 }
+
+/* ══════════════════════════════════════════════════════
+   問題詳細ページ ナビゲーション・ユニット進捗
+══════════════════════════════════════════════════════ */
+
+.detail-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.detail-nav-btn {
+  background: rgba(255,107,0,0.07);
+  border: 1px solid rgba(255,107,0,0.22);
+  color: rgba(237,224,200,0.70);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  white-space: nowrap;
+}
+.detail-nav-btn:hover {
+  background: rgba(255,107,0,0.18);
+  border-color: var(--orange);
+  color: var(--orange);
+}
+.detail-nav-disabled {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.18);
+  cursor: default;
+  pointer-events: none;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  padding: 5px 12px;
+  white-space: nowrap;
+}
+.detail-unit-pos {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+  min-width: 0;
+}
+.detail-unit-name {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: rgba(160,144,112,0.65);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+.detail-unit-count {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(237,224,200,0.55);
+  letter-spacing: 0.06em;
+}
+
+/* ユニット進捗バー */
+.detail-unit-bar {
+  height: 3px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 2px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.detail-unit-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--orange), #ff9900);
+  border-radius: 2px;
+  transition: width 0.6s cubic-bezier(0.22,1,0.36,1);
+  box-shadow: 0 0 6px rgba(255,107,0,0.5);
+}
+
+/* detail-meta の右側ボタン群 */
+.detail-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+.detail-meta-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+/* ══════════════════════════════════════════════════════
+   トグルボタン カラーバリアント
+══════════════════════════════════════════════════════ */
+
+/* ヒント: 黄色系 */
+.toggle-hint {
+  border-left-color: rgba(255,210,0,0.55) !important;
+}
+.toggle-hint:hover {
+  background: rgba(255,210,0,0.08) !important;
+  border-left-color: #ffd200 !important;
+  color: #ffd200 !important;
+}
+
+/* 正解例: オレンジ（デフォルトと同じだが明示） */
+.toggle-answer {
+  border-left-color: rgba(255,107,0,0.55) !important;
+}
+.toggle-answer:hover {
+  background: rgba(255,107,0,0.10) !important;
+  border-left-color: var(--orange) !important;
+  color: var(--orange) !important;
+}
+
+/* 解説: 青系 */
+.toggle-explain {
+  border-left-color: rgba(80,160,255,0.55) !important;
+}
+.toggle-explain:hover {
+  background: rgba(80,160,255,0.08) !important;
+  border-left-color: #50a0ff !important;
+  color: #50a0ff !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   次の問題へボタン・全クリアヒント
+══════════════════════════════════════════════════════ */
+
+.next-problem-btn {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, rgba(255,107,0,0.12), rgba(255,153,0,0.08));
+  border: 1px solid rgba(255,107,0,0.40);
+  border-left: 3px solid var(--orange);
+  color: rgba(237,224,200,0.88);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.0rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: left;
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.12s;
+}
+.next-problem-btn:hover {
+  background: linear-gradient(135deg, rgba(255,107,0,0.22), rgba(255,153,0,0.15));
+  border-color: var(--orange);
+  color: #fff;
+  transform: translateX(3px);
+}
+.next-problem-btn:active {
+  transform: translateX(1px) scale(0.99);
+}
+
+.all-cleared-hint {
+  margin-top: 14px;
+  padding: 14px 18px;
+  background: rgba(255,107,0,0.06);
+  border: 1px solid rgba(255,107,0,0.20);
+  border-left: 3px solid rgba(255,107,0,0.50);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.82rem;
+  color: rgba(237,224,200,0.65);
+  letter-spacing: 0.04em;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+
+/* ══════════════════════════════════════════════════════
+   続きからボタン (問題一覧)
+══════════════════════════════════════════════════════ */
+
+.resume-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 13px 18px;
+  background: linear-gradient(135deg, rgba(255,107,0,0.08), rgba(255,153,0,0.04));
+  border: 1px solid rgba(255,107,0,0.28);
+  border-left: 3px solid var(--orange);
+  color: rgba(237,224,200,0.80);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: left;
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.12s;
+  animation: fadeInDown 0.3s ease both;
+}
+.resume-btn:hover {
+  background: linear-gradient(135deg, rgba(255,107,0,0.16), rgba(255,153,0,0.10));
+  border-color: var(--orange);
+  color: #fff;
+  transform: translateX(3px);
+}
+.resume-btn:active { transform: translateX(1px) scale(0.99); }
+
+.resume-title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.resume-rank {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 2px;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════════════════════
+   言語カード おすすめバッジ
+══════════════════════════════════════════════════════ */
+
+.lang-card-rec-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.10em;
+  color: #ffd200;
+  background: rgba(255,210,0,0.12);
+  border: 1px solid rgba(255,210,0,0.30);
+  padding: 2px 8px;
+  border-radius: 2px;
+  margin-left: 6px;
+  vertical-align: middle;
+  clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+  animation: badgePulse 2.4s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(255,210,0,0); }
+  50%      { box-shadow: 0 0 8px 2px rgba(255,210,0,0.18); }
+}
+
+/* ══════════════════════════════════════════════════════
+   レスポンシブ追加
+══════════════════════════════════════════════════════ */
+
+@media (max-width: 600px) {
+  .detail-unit-name { max-width: 120px; }
+  .detail-nav-btn, .detail-nav-disabled { padding: 4px 9px; font-size: 0.70rem; }
+  .next-problem-btn { font-size: 0.88rem; padding: 12px 14px; }
+  .resume-btn { font-size: 0.88rem; padding: 11px 14px; }
+}

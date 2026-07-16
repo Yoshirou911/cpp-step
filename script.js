@@ -1660,7 +1660,11 @@ function renderLangSelect() {
         '<div class="lang-card-bar" style="background:' + lang.color + '"></div>' +
         '<div class="lang-card-body">' +
           '<div class="lang-card-top">' +
-            '<div class="lang-card-name">' + lang.name + '</div>' +
+            '<div class="lang-card-name">' + lang.name +
+              (['python','html','javascript'].indexOf(lang.id) >= 0
+                ? '<span class="lang-card-rec-badge">★ 初心者向け</span>'
+                : '') +
+            '</div>' +
             '<div class="lang-card-status' + (lang.available ? ' lang-status-open' : '') + '">' +
               (lang.available ? lang.problems + ' PROBLEMS' : 'COMING SOON') +
             '</div>' +
@@ -31415,6 +31419,22 @@ function renderList() {
     return;
   }
 
+  // 「続きから」ボタン：フィルターなし・未クリア問題がある場合のみ表示
+  if (!_filterQuery && !_filterRank && !_filterBookmark && !_filterWrong && !_filterUnsolved && !_careerFilter) {
+    var firstUnsolved = allProblems.find(function(p) { return !isLearned(p.id); });
+    if (firstUnsolved) {
+      var resumeEl = document.createElement('button');
+      resumeEl.className = 'resume-btn';
+      resumeEl.innerHTML = '▶ 続きから ： <span class="resume-title">' + escapeHtml(firstUnsolved.title) + '</span><span class="resume-rank rank-' + (firstUnsolved.rank||'rookie').toLowerCase() + '">' + (firstUnsolved.rank||'ROOKIE') + '</span>';
+      resumeEl.onclick = function() {
+        history.pushState({ page: 'detail', lang: currentLanguage, id: firstUnsolved.id }, '');
+        renderDetail(firstUnsolved.id);
+        showPage('detail');
+      };
+      list.appendChild(resumeEl);
+    }
+  }
+
   var _cardIdx = 0;
   unitOrder.forEach(function(unitName) {
     // 単元ヘッダー
@@ -31549,18 +31569,45 @@ function renderDetail(id) {
   editorDirty = false;  // 新しい問題ではリセット
   _judging = false;     // 前の問題のAI判定が残っていてもリセット
 
+  // 前後の問題を計算
+  var allProbs = getProblems();
+  var probIdx  = allProbs.findIndex(function(x) { return x.id === id; });
+  var prevP    = probIdx > 0 ? allProbs[probIdx - 1] : null;
+  var nextP    = probIdx < allProbs.length - 1 ? allProbs[probIdx + 1] : null;
+  // ユニット内位置
+  var unitProbs   = allProbs.filter(function(x) { return x.unit === p.unit; });
+  var unitPos     = unitProbs.findIndex(function(x) { return x.id === id; }) + 1;
+  var unitTotal   = unitProbs.length;
+  var unitCleared = unitProbs.filter(function(x) { return isLearned(x.id); }).length;
+
   const detail = document.getElementById("detail-content");
   detail.innerHTML =
     '<div class="detail-split">' +
     '<div class="detail-left">' +
     '<div class="detail-meta">' +
-      '<span class="detail-unit">' + escapeHtml(p.unit) + '</span>' +
-      (langTextbooks[currentLanguage]
-        ? '<button class="detail-textbook-btn" onclick="switchTab(\'textbook\')">📖 ' + escapeHtml(langTextbooks[currentLanguage].name) + ' 入門ガイド</button>'
-        : '') +
-      '<button class="detail-bookmark-btn' + (isBookmarked(p.id) ? ' bookmarked' : '') + '" id="detail-bm-btn" onclick="toggleDetailBookmark(' + p.id + ')" title="ブックマーク">' +
-        (isBookmarked(p.id) ? '🔖' : '☆') +
-      '</button>' +
+      '<div class="detail-nav">' +
+        (prevP
+          ? '<button class="detail-nav-btn detail-nav-prev" onclick="goToDetailProblem(' + prevP.id + ')" title="' + escapeHtml(prevP.title) + '">← 前</button>'
+          : '<span class="detail-nav-btn detail-nav-disabled">←</span>') +
+        '<div class="detail-unit-pos">' +
+          '<span class="detail-unit-name">' + escapeHtml(p.unit) + '</span>' +
+          '<span class="detail-unit-count">' + unitPos + ' / ' + unitTotal + '</span>' +
+        '</div>' +
+        (nextP
+          ? '<button class="detail-nav-btn detail-nav-next" onclick="goToDetailProblem(' + nextP.id + ')" title="' + escapeHtml(nextP.title) + '">次 →</button>'
+          : '<span class="detail-nav-btn detail-nav-disabled">→</span>') +
+      '</div>' +
+      '<div class="detail-meta-right">' +
+        (langTextbooks[currentLanguage]
+          ? '<button class="detail-textbook-btn" onclick="switchTab(\'textbook\')">📖 ' + escapeHtml(langTextbooks[currentLanguage].name) + ' 入門ガイド</button>'
+          : '') +
+        '<button class="detail-bookmark-btn' + (isBookmarked(p.id) ? ' bookmarked' : '') + '" id="detail-bm-btn" onclick="toggleDetailBookmark(' + p.id + ')" title="ブックマーク">' +
+          (isBookmarked(p.id) ? '🔖' : '☆') +
+        '</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="detail-unit-bar">' +
+      '<div class="detail-unit-fill" style="width:' + Math.round(unitCleared / unitTotal * 100) + '%"></div>' +
     '</div>' +
     '<h2>' + escapeHtml(p.title) + '</h2>' +
     '<span class="rank-badge rank-' + p.rank.toLowerCase() + ' rank-badge-lg" style="display:inline-block;margin-bottom:18px;">' + escapeHtml(p.rank) + '</span>' +
@@ -31571,7 +31618,7 @@ function renderDetail(id) {
     '</div>' +
 
     '<div class="section">' +
-      '<button class="toggle-btn" onclick="toggleSection(\'hint-' + p.id + '\')" data-toggle-for="hint-' + p.id + '" data-open="💡 ヒントを見る" data-close="💡 ヒントを閉じる">💡 ヒントを見る</button>' +
+      '<button class="toggle-btn toggle-hint" onclick="toggleSection(\'hint-' + p.id + '\')" data-toggle-for="hint-' + p.id + '" data-open="💡 ヒントを見る" data-close="💡 ヒントを閉じる">💡 ヒントを見る</button>' +
       '<div id="hint-' + p.id + '" class="hidden toggle-content">' +
         '<p>' + escapeHtml(p.hint) + '</p>' +
       '</div>' +
@@ -31580,14 +31627,14 @@ function renderDetail(id) {
     '<div class="section">' +
       (effectiveHighRanks.indexOf(p.rank) >= 0 && !learned
         ? '<p class="high-rank-lock">🔒 正解すると模範解答が表示されます</p>'
-        : '<button class="toggle-btn" onclick="toggleSection(\'answer-' + p.id + '\')" data-toggle-for="answer-' + p.id + '" data-open="📋 正解例を見る" data-close="📋 正解例を閉じる">📋 正解例を見る</button>' +
+        : '<button class="toggle-btn toggle-answer" onclick="toggleSection(\'answer-' + p.id + '\')" data-toggle-for="answer-' + p.id + '" data-open="📋 正解例を見る" data-close="📋 正解例を閉じる">📋 正解例を見る</button>' +
           '<div id="answer-' + p.id + '" class="hidden toggle-content">' +
             '<pre><code>' + escapeHtml(p.answer) + '</code></pre>' +
           '</div>') +
     '</div>' +
 
     '<div class="section">' +
-      '<button class="toggle-btn" onclick="toggleSection(\'explanation-' + p.id + '\')" data-toggle-for="explanation-' + p.id + '" data-open="📖 解説を見る" data-close="📖 解説を閉じる">📖 解説を見る</button>' +
+      '<button class="toggle-btn toggle-explain" onclick="toggleSection(\'explanation-' + p.id + '\')" data-toggle-for="explanation-' + p.id + '" data-open="📖 解説を見る" data-close="📖 解説を閉じる">📖 解説を見る</button>' +
       '<div id="explanation-' + p.id + '" class="hidden toggle-content">' +
         '<p>' + escapeHtml(p.explanation) + '</p>' +
       '</div>' +
@@ -31648,7 +31695,10 @@ function renderDetail(id) {
 
     '<div class="section">' +
       (learned
-        ? '<button id="learn-btn" class="learn-btn learned" onclick="toggleLearned(' + p.id + ')">✔ CLEARED  ／  クリックで取り消す</button>'
+        ? '<button id="learn-btn" class="learn-btn learned" onclick="toggleLearned(' + p.id + ')">✔ CLEARED  ／  クリックで取り消す</button>' +
+          (nextP
+            ? '<button class="next-problem-btn" onclick="goToDetailProblem(' + nextP.id + ')">次の問題へ : ' + escapeHtml(nextP.title) + ' →</button>'
+            : '<div class="all-cleared-hint">🎉 このランクの問題を全てクリアしました！</div>')
         : '<p class="manual-clear-hint">実行して自動判定されます ／ <button class="manual-clear-link" onclick="toggleLearned(' + p.id + ')">手動でクリア</button></p>'
       ) +
     '</div>' +
@@ -33714,6 +33764,13 @@ var CAREER_REC_PROBLEMS = {
 function clearCareerFilter() {
   _careerFilter = null;
   renderList();
+}
+
+function goToDetailProblem(id) {
+  history.pushState({ page: 'detail', lang: currentLanguage, id: id }, '');
+  renderDetail(id);
+  showPage('detail');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 async function goToLangProblems(lid, careerId) {
