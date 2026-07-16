@@ -8034,24 +8034,28 @@ input[type="password"]:focus {
 }
 .nav-tab {
   position: relative;
-  overflow: hidden;
   transition: color 0.18s, background 0.18s;
+  /* border-bottomはactive時のみ表示 - ::afterで置き換え */
+  border-bottom: 2px solid transparent !important;
 }
 .nav-tab::after {
   content: '';
   position: absolute;
-  bottom: 0; left: 50%; right: 50%;
+  bottom: -2px; left: 50%; right: 50%;
   height: 2px;
   background: var(--orange);
-  box-shadow: 0 0 8px rgba(255,107,0,0.7);
-  transition: left 0.22s cubic-bezier(0.22,1,0.36,1),
-              right 0.22s cubic-bezier(0.22,1,0.36,1);
+  box-shadow: 0 0 10px rgba(255,107,0,0.8);
+  transition: left 0.25s cubic-bezier(0.22,1,0.36,1),
+              right 0.25s cubic-bezier(0.22,1,0.36,1);
 }
 .nav-tab.active::after {
   left: 0; right: 0;
 }
+.nav-tab.active {
+  border-bottom-color: transparent !important;
+}
 .nav-tab:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
 /* ── 問題カード: スタガー入場 ─────────────────────────────── */
