@@ -425,7 +425,11 @@ function toggleDetailBookmark(id) {
   else            { list.splice(idx, 1); bmed = false; showToast('ブックマークを解除しました'); }
   lsSet(_bookmarkKey(), JSON.stringify(list));
   var btn = document.getElementById('detail-bm-btn');
-  if (btn) { btn.textContent = bmed ? '🔖' : '☆'; btn.classList.toggle('bookmarked', bmed); }
+  if (btn) {
+    btn.textContent = bmed ? '🔖' : '☆';
+    btn.classList.toggle('bookmarked', bmed);
+    if (bmed) { btn.classList.add('bm-pop'); setTimeout(function() { btn.classList.remove('bm-pop'); }, 500); }
+  }
 }
 
 // ===== 復習モード =====
@@ -457,6 +461,79 @@ var _filterBookmark = false;
 var _filterWrong    = false;
 var _filterUnsolved = false;
 var _careerFilter   = null; // { careerId, careerTitle, careerIcon, careerColor, ids: Set }
+
+// ===== コード下書き自動保存 =====
+var _draftSaveTimer  = null;
+var _suppressDraftSave = false;
+
+function _draftKey(id) {
+  return 'draft_' + (currentLanguage || 'cpp') + '_' + id;
+}
+function _saveDraftThrottled() {
+  if (_suppressDraftSave) return;
+  clearTimeout(_draftSaveTimer);
+  _draftSaveTimer = setTimeout(function() {
+    if (aceEditor && currentProblemId) {
+      lsSet(_draftKey(currentProblemId), aceEditor.getValue());
+    }
+  }, 1200);
+}
+function _loadDraft(id) { try { return localStorage.getItem(_draftKey(id)); } catch(e) { return null; } }
+function _clearDraft(id) { try { localStorage.removeItem(_draftKey(id)); } catch(e) {} }
+
+// ===== 学習時間 =====
+var _problemStartTime = 0;
+
+function _timeKey(id) { return 'time_' + (currentLanguage || 'cpp') + '_' + id; }
+function _saveProblemTime(id) {
+  if (!_problemStartTime || !id) return;
+  var elapsed = Math.floor((Date.now() - _problemStartTime) / 1000);
+  if (elapsed < 3) return;
+  var prev = parseInt(localStorage.getItem(_timeKey(id)) || '0');
+  lsSet(_timeKey(id), String(prev + elapsed));
+  _problemStartTime = 0;
+}
+function _getProblemTime(id) { return parseInt(localStorage.getItem(_timeKey(id)) || '0'); }
+function _formatTime(sec) {
+  if (sec < 60) return sec + '秒';
+  var m = Math.floor(sec / 60), s = sec % 60;
+  return m + '分' + (s > 0 ? s + '秒' : '');
+}
+
+// ===== エディターフォントサイズ =====
+var _editorFontSize = parseInt(localStorage.getItem('editor_font_size') || '14');
+function editorFontLarger() {
+  _editorFontSize = Math.min(_editorFontSize + 1, 22);
+  lsSet('editor_font_size', String(_editorFontSize));
+  if (aceEditor) aceEditor.setOption('fontSize', _editorFontSize + 'px');
+  var d = document.getElementById('editor-font-size-display');
+  if (d) d.textContent = _editorFontSize + 'px';
+}
+function editorFontSmaller() {
+  _editorFontSize = Math.max(_editorFontSize - 1, 11);
+  lsSet('editor_font_size', String(_editorFontSize));
+  if (aceEditor) aceEditor.setOption('fontSize', _editorFontSize + 'px');
+  var d = document.getElementById('editor-font-size-display');
+  if (d) d.textContent = _editorFontSize + 'px';
+}
+
+// ===== フィルタークリア =====
+function clearFilter(type) {
+  if (type === 'query') {
+    _filterQuery = '';
+    var s = document.getElementById('list-search-input');
+    if (s) s.value = '';
+    var cb = document.getElementById('list-search-clear');
+    if (cb) cb.classList.add('hidden');
+  } else if (type === 'rank') {
+    _filterRank = '';
+    document.querySelectorAll('.rank-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+  } else if (type === 'bookmark') { toggleFilterBookmark(); return; }
+  else if (type === 'wrong')    { toggleFilterWrong(); return; }
+  else if (type === 'unsolved') { toggleFilterUnsolved(); return; }
+  renderList();
+}
+
 
 function toggleFilterBookmark() {
   _filterBookmark = !_filterBookmark;
@@ -31419,6 +31496,37 @@ function renderList() {
     return;
   }
 
+  // アクティブフィルターピル
+  var _activePills = [];
+  if (_filterQuery)    _activePills.push({ label: '🔍 ' + (_filterQuery.length > 15 ? _filterQuery.substring(0,15)+'…' : _filterQuery), type: 'query' });
+  if (_filterRank)     _activePills.push({ label: '🏅 ' + _filterRank, type: 'rank' });
+  if (_filterBookmark) _activePills.push({ label: '🔖 ブックマーク', type: 'bookmark' });
+  if (_filterWrong)    _activePills.push({ label: '❌ 要復習', type: 'wrong' });
+  if (_filterUnsolved) _activePills.push({ label: '⬜ 未クリア', type: 'unsolved' });
+  if (_activePills.length > 0) {
+    var pillsWrap = document.createElement('div');
+    pillsWrap.className = 'filter-pills';
+    _activePills.forEach(function(fp) {
+      var pill = document.createElement('span');
+      pill.className = 'filter-pill';
+      pill.innerHTML = '<span class="fp-label">' + fp.label + '</span><button class="fp-x" onclick="clearFilter(\'' + fp.type + '\')" title="解除">✕</button>';
+      pillsWrap.appendChild(pill);
+    });
+    list.appendChild(pillsWrap);
+  }
+
+  // 要復習モードバナー
+  if (_filterWrong) {
+    var wrongCount = allProblems.length;
+    var reviewBanner = document.createElement('div');
+    reviewBanner.className = 'review-mode-banner';
+    reviewBanner.innerHTML =
+      '<span class="rmb-icon">📚</span>' +
+      '<span class="rmb-label"><strong>復習モード</strong>  ' + wrongCount + '問を再挑戦しよう</span>' +
+      '<button class="rmb-exit-btn" onclick="clearFilter(\'wrong\')">✕ 終了</button>';
+    list.appendChild(reviewBanner);
+  }
+
   // 「続きから」ボタン：フィルターなし・未クリア問題がある場合のみ表示
   if (!_filterQuery && !_filterRank && !_filterBookmark && !_filterWrong && !_filterUnsolved && !_careerFilter) {
     var firstUnsolved = allProblems.find(function(p) { return !isLearned(p.id); });
@@ -31587,17 +31695,18 @@ function renderDetail(id) {
     '<div class="detail-meta">' +
       '<div class="detail-nav">' +
         (prevP
-          ? '<button class="detail-nav-btn detail-nav-prev" onclick="goToDetailProblem(' + prevP.id + ')" title="' + escapeHtml(prevP.title) + '">← 前</button>'
+          ? '<button class="detail-nav-btn detail-nav-prev" onclick="goToDetailProblem(' + prevP.id + ')" title="' + escapeHtml(prevP.title) + '">← 前<span class="nav-kbd">◀</span></button>'
           : '<span class="detail-nav-btn detail-nav-disabled">←</span>') +
         '<div class="detail-unit-pos">' +
           '<span class="detail-unit-name">' + escapeHtml(p.unit) + '</span>' +
           '<span class="detail-unit-count">' + unitPos + ' / ' + unitTotal + '</span>' +
         '</div>' +
         (nextP
-          ? '<button class="detail-nav-btn detail-nav-next" onclick="goToDetailProblem(' + nextP.id + ')" title="' + escapeHtml(nextP.title) + '">次 →</button>'
+          ? '<button class="detail-nav-btn detail-nav-next" onclick="goToDetailProblem(' + nextP.id + ')" title="' + escapeHtml(nextP.title) + '">次 →<span class="nav-kbd">▶</span></button>'
           : '<span class="detail-nav-btn detail-nav-disabled">→</span>') +
       '</div>' +
       '<div class="detail-meta-right">' +
+        (function() { var t = _getProblemTime(p.id); return t > 10 ? '<span class="study-time-badge">⏱ ' + _formatTime(t) + '</span>' : ''; })() +
         (langTextbooks[currentLanguage]
           ? '<button class="detail-textbook-btn" onclick="switchTab(\'textbook\')">📖 ' + escapeHtml(langTextbooks[currentLanguage].name) + ' 入門ガイド</button>'
           : '') +
@@ -31648,7 +31757,13 @@ function renderDetail(id) {
         '<button id="mode-scratch" class="mode-btn active" onclick="editorScratch()">📋 テンプレート</button>' +
         '<button id="mode-fill"   class="mode-btn"        onclick="editorFill()">📝 穴埋め</button>' +
         '<button class="mode-btn basicform-btn"            onclick="showBasicForm()">📖 基本形</button>' +
+        '<div class="editor-font-ctrl">' +
+          '<button class="font-btn" onclick="editorFontSmaller()" title="文字を小さく">A-</button>' +
+          '<span id="editor-font-size-display" class="font-size-disp">' + _editorFontSize + 'px</span>' +
+          '<button class="font-btn" onclick="editorFontLarger()" title="文字を大きく">A+</button>' +
+        '</div>' +
       '</div>' +
+      '<div id="draft-badge" class="draft-badge hidden">📝 下書きから復元</div>' +
       '<div id="code-editor" class="code-editor-ace"></div>' +
       '<div class="editor-options">' +
         '<label class="stdin-label">標準入力（cin用）：</label>' +
@@ -31710,10 +31825,18 @@ function renderDetail(id) {
 
   // 別の問題に移動した場合、または言語が変わった場合はリセット
   var langChanged = prevLang !== null && prevLang !== getAceMode();
+  var _draft = _loadDraft(id);
   var initCode = (prevProblemId !== null && (prevProblemId !== id || langChanged))
-    ? getStarterCode()
-    : (savedCode !== null ? savedCode : getStarterCode());
+    ? (_draft || getStarterCode())
+    : (savedCode !== null ? savedCode : (_draft || getStarterCode()));
+  _suppressDraftSave = true;
   initAceEditor(initCode);
+  _suppressDraftSave = false;
+  // 下書きバッジを表示
+  var draftBadge = document.getElementById('draft-badge');
+  if (draftBadge) draftBadge.classList.toggle('hidden', !_draft);
+  // 学習時間スタート
+  _problemStartTime = Date.now();
   refreshGolfBoard(p.id);
 
   var chatToggle = document.getElementById('chat-toggle');
@@ -32425,7 +32548,7 @@ function initAceEditor(initialCode) {
   _suppressDirty = false;
 
   aceEditor.setOptions({
-    fontSize          : '14px',
+    fontSize          : _editorFontSize + 'px',
     fontFamily        : "'Share Tech Mono', 'Consolas', monospace",
     showPrintMargin   : false,
     tabSize           : 4,
@@ -32450,7 +32573,7 @@ function initAceEditor(initialCode) {
     if (counter && aceEditor) counter.textContent = aceEditor.getValue().length;
   }
   aceEditor.session.on('change', function() {
-    if (!_suppressDirty) editorDirty = true;
+    if (!_suppressDirty) { editorDirty = true; _saveDraftThrottled(); }
     _updateGolfCounter();
   });
   _updateGolfCounter();
@@ -32862,8 +32985,10 @@ function showJudgeResult(problemId, passed, byAI) {
       // コンボカウント
       _comboCount++;
       if (_comboCount >= 2) showComboEffect(_comboCount);
-      // 進捗を保存
+      // 進捗を保存・後処理
       saveProgress(problemId);
+      _saveProblemTime(problemId);
+      _clearDraft(problemId);
       // ランクアンロックチェック
       var _prob0 = getProblems().find(function(x) { return x.id === problemId; });
       if (_prob0 && _prob0.rank) _checkRankUnlock(_prob0.rank);
@@ -36162,8 +36287,12 @@ function toggleLearned(id) {
   } else {
     var _golfLen = (aceEditor && currentProblemId === id) ? aceEditor.getValue().length : 0;
     saveProgress(id);
+    _saveProblemTime(id);
+    _clearDraft(id);
+    _comboCount++;
     playClearSound();
     showClearEffect();
+    if (_comboCount >= 2) showComboEffect(_comboCount);
     _checkSilverUnlock(id);
     checkTitanTheme();
     if (_golfLen > 0) submitCodeGolfEntry(id, _golfLen);
@@ -38400,4 +38529,52 @@ function startWithLanguage(langId) {
   startApp();
   setTimeout(function() { selectLanguage(langId); }, 80);
 }
+
+// ===== キーボードショートカット（←/→ で前後の問題） =====
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  // エディタ・入力欄では無視
+  var tag = (e.target || {}).tagName || '';
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target && e.target.isContentEditable)) return;
+  if (e.target && e.target.classList && e.target.classList.contains('ace_text-input')) return;
+
+  var detailPage = document.getElementById('page-detail');
+  if (!detailPage || detailPage.classList.contains('hidden')) return;
+  if (!currentProblemId) return;
+
+  var probs = getProblems();
+  var idx = probs.findIndex(function(x) { return x.id === currentProblemId; });
+  if (e.key === 'ArrowLeft' && idx > 0) {
+    e.preventDefault();
+    goToDetailProblem(probs[idx - 1].id);
+  } else if (e.key === 'ArrowRight' && idx >= 0 && idx < probs.length - 1) {
+    e.preventDefault();
+    goToDetailProblem(probs[idx + 1].id);
+  }
+});
+
+// ===== スワイプジェスチャー（モバイル：前後の問題） =====
+(function() {
+  var _swipeX = 0;
+  var _swipeY = 0;
+  document.addEventListener('touchstart', function(e) {
+    _swipeX = e.changedTouches[0].clientX;
+    _swipeY = e.changedTouches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', function(e) {
+    var detailPage = document.getElementById('page-detail');
+    if (!detailPage || detailPage.classList.contains('hidden')) return;
+    if (!currentProblemId) return;
+    var dx = e.changedTouches[0].clientX - _swipeX;
+    var dy = e.changedTouches[0].clientY - _swipeY;
+    if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.8) return; // 縦スクロールは無視
+    var probs = getProblems();
+    var idx = probs.findIndex(function(x) { return x.id === currentProblemId; });
+    if (dx < 0 && idx >= 0 && idx < probs.length - 1) {
+      goToDetailProblem(probs[idx + 1].id); // 左スワイプ → 次
+    } else if (dx > 0 && idx > 0) {
+      goToDetailProblem(probs[idx - 1].id); // 右スワイプ → 前
+    }
+  }, { passive: true });
+})();
 
