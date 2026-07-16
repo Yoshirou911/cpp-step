@@ -57,6 +57,8 @@ export default async function handler(req, res) {
 
   if (!apiKey) return res.status(500).json({ error: 'APIキーが設定されていません' });
   if (!messages || !Array.isArray(messages)) return res.status(400).json({ error: '不正なリクエストです' });
+  if (messages.length > 30) return res.status(400).json({ error: 'メッセージが多すぎます（最大30件）' });
+  if (JSON.stringify(messages).length > 80000) return res.status(400).json({ error: 'メッセージが大きすぎます' });
 
   const groqMessages = [
     { role: 'system', content: system },
