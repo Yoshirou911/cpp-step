@@ -7949,3 +7949,9 @@ input[type="password"]:focus {
 .dtb-icon { font-size: 1rem; flex-shrink: 0; }
 .dtb-label { flex: 1; text-align: left; }
 .dtb-arrow { font-size: 0.75rem; flex-shrink: 0; opacity: 0.7; }
+
+.admin-btn-preview-mode {
+  background: rgba(255, 140, 0, 0.12) !important;
+  border-color: rgba(255, 140, 0, 0.5) !important;
+  color: #FF8C00 !important;
+}

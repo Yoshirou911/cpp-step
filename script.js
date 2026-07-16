@@ -1904,10 +1904,15 @@ function adminTogglePreview() {
 function adminToggleAdminMode() {
   if (!_realUserIsAdmin) return;
   currentUserIsAdmin = !currentUserIsAdmin;
-  var btn = document.getElementById('admin-admin-toggle');
-  if (btn) {
-    btn.textContent = currentUserIsAdmin ? '● 管理者モード中' : '○ 非管理者として表示中';
-    btn.classList.toggle('active-preview', !currentUserIsAdmin);
+  var toggleBtn = document.getElementById('admin-admin-toggle');
+  if (toggleBtn) {
+    toggleBtn.textContent = currentUserIsAdmin ? '● 管理者モード中' : '○ 非管理者として表示中';
+    toggleBtn.classList.toggle('active-preview', !currentUserIsAdmin);
+  }
+  var adminBtn = document.getElementById('admin-panel-btn');
+  if (adminBtn) {
+    adminBtn.textContent = currentUserIsAdmin ? '⚙ 管理者パネルを開く' : '🔑 管理者に戻る';
+    adminBtn.classList.toggle('admin-btn-preview-mode', !currentUserIsAdmin);
   }
   if (currentLanguage) { renderCareer(); renderList(); }
 }
@@ -30587,6 +30592,289 @@ print(f'Encrypted:  {encrypted}')
 print(f'Decrypted:  {decrypted}')`,
     expected: "Plaintext:  HELLO WORLD\nKey:        KEY\nEncrypted:  RIJVS UYVJN\nDecrypted:  HELLO WORLD",
     explanation: "ヴィジュネル暗号は16世紀に発明された多表式換字暗号。単一シフトのシーザー暗号より解読困難だが、鍵の長さが分かれば頻度分析で解読できる（カシスキー検定）。現代ではAES-GCMが標準的。" },
+  { id: 16, unit: "UNIT 06  ◆  エンコーディング", rank: "ROOKIE",
+    title: "Base64デコード",
+    question: "Base64エンコードされた文字列 'SGVsbG8sIFdvcmxkIQ==' をデコードして出力してください。\nBase64はバイナリデータをASCII文字列で表現するエンコード方式です。",
+    hint: "Python標準ライブラリの base64 モジュールを使います。b64decode() でデコードし、.decode() でstr変換。",
+    answer:
+`import base64
+encoded = "SGVsbG8sIFdvcmxkIQ=="
+decoded = base64.b64decode(encoded).decode()
+print(f"Encoded: {encoded}")
+print(f"Decoded: {decoded}")`,
+    expected: "Encoded: SGVsbG8sIFdvcmxkIQ==\nDecoded: Hello, World!",
+    explanation: "Base64は3バイトを4文字のASCIIに変換するエンコード方式。URLやメール添付でバイナリを送る際に使われる。パディング'='は3の倍数に満たない場合に追加される。" },
+  { id: 17, unit: "UNIT 06  ◆  Webセキュリティ", rank: "BRONZE",
+    title: "SQLインジェクション検出",
+    question: "以下の入力値に対してSQLインジェクション攻撃パターンを検出し、[BLOCKED]または[SAFE]を出力してください。\n入力: 'admin' / 'admin\\' OR \\'1\\'=\\'1' / 'SELECT * FROM users' / 'hello world' / '\\'; DROP TABLE users;--'",
+    hint: "SELECT・DROP・OR '1・UNION・--・' OR などのキーワードを大文字に統一して検索します。",
+    answer:
+`def check_sqli(s):
+    keywords = ["SELECT", "DROP", "OR '1", "UNION", "--", "' OR"]
+    return any(k.upper() in s.upper() for k in keywords)
+
+inputs = ["admin", "admin' OR '1'='1", "SELECT * FROM users",
+          "hello world", "'; DROP TABLE users;--"]
+for inp in inputs:
+    print(f"[{'BLOCKED' if check_sqli(inp) else 'SAFE'}] {inp}")`,
+    expected: "[SAFE] admin\n[BLOCKED] admin' OR '1'='1\n[BLOCKED] SELECT * FROM users\n[SAFE] hello world\n[BLOCKED] '; DROP TABLE users;--",
+    explanation: "SQLインジェクションはWebアプリの脆弱性第1位（OWASP Top10）。ユーザー入力をSQLクエリに直接埋め込むと、攻撃者は認証を突破しDBを操作できる。対策はプリペアドステートメント一択。" },
+  { id: 18, unit: "UNIT 06  ◆  暗号", rank: "BRONZE",
+    title: "ワンタイムパッド（完全秘匿）",
+    question: "ワンタイムパッドで平文 'ATTACK' を鍵 [3,14,1,19,5,20] で暗号化し、復号して元に戻ることを確認してください。\n各文字のシフト量を鍵から取り、mod 26 で処理します。",
+    hint: "暗号化: (ord(c)-65+key[i])%26+65。復号: (ord(c)-65-key[i])%26+65。",
+    answer:
+`message = "ATTACK"
+key = [3, 14, 1, 19, 5, 20]
+enc = ''.join(chr((ord(c)-65+key[i])%26+65) for i,c in enumerate(message))
+dec = ''.join(chr((ord(c)-65-key[i])%26+65) for i,c in enumerate(enc))
+print(f"Encrypted: {enc}")
+print(f"Decrypted: {dec}")`,
+    expected: "Encrypted: DHUTHE\nDecrypted: ATTACK",
+    explanation: "ワンタイムパッドは鍵が真に乱数かつ使い捨てであれば情報理論的に解読不可能な唯一の暗号。鍵の長さがメッセージと同じである必要があり、実用上の鍵配送問題から現代では量子鍵配送(QKD)で注目される。" },
+  { id: 19, unit: "UNIT 07  ◆  公開鍵暗号", rank: "GOLD",
+    title: "RSA暗号の基礎",
+    question: "小さな素数 p=61, q=53 を使ったRSA暗号を実装してください。\ne=17 として秘密鍵 d を求め、メッセージ m=65 を暗号化・復号してください。",
+    hint: "n=p*q、phi=(p-1)*(q-1)、d=pow(e,-1,phi)（Python3.8以降）。暗号化: pow(m,e,n)、復号: pow(c,d,n)。",
+    answer:
+`p, q = 61, 53
+n = p * q
+phi = (p-1)*(q-1)
+e = 17
+d = pow(e, -1, phi)
+msg = 65
+cipher = pow(msg, e, n)
+plain = pow(cipher, d, n)
+print(f"n = {n}")
+print(f"e = {e}, d = {d}")
+print(f"cipher = {cipher}")
+print(f"plain  = {plain}")`,
+    expected: "n = 3233\ne = 17, d = 2753\ncipher = 2138\nplain  = 65",
+    explanation: "RSAは1977年発明の公開鍵暗号。n=p*qの素因数分解困難性が安全性の根拠。秘密鍵dはフェルマーの小定理により17*2753≡1(mod 3120)。実用では2048〜4096ビット素数を使用する。" },
+  { id: 20, unit: "UNIT 06  ◆  Webセキュリティ", rank: "ROOKIE",
+    title: "フィッシングURL判定",
+    question: "以下のURLをSAFE/PHISHING/UNSAFEに分類して出力してください。\nURL一覧: https://google.com / http://g00gle.com/login / http://paypa1.com/verify / https://amazon.co.jp / http://192.168.1.1/steal",
+    hint: "g00gle・paypa1 等の視覚的なスプーフィングを検出。http:// (非HTTPS)はUNSAFE扱い。",
+    answer:
+`def check_url(url):
+    suspicious = ["g00gle", "paypa1", "amaz0n", "micros0ft", "app1e"]
+    domain = url.split("//")[1].split("/")[0].lower()
+    for s in suspicious:
+        if s in domain:
+            return "PHISHING"
+    if not url.startswith("https://"):
+        return "UNSAFE"
+    return "SAFE"
+
+urls = ["https://google.com", "http://g00gle.com/login",
+        "http://paypa1.com/verify", "https://amazon.co.jp",
+        "http://192.168.1.1/steal"]
+for u in urls:
+    print(f"{check_url(u)}: {u}")`,
+    expected: "SAFE: https://google.com\nPHISHING: http://g00gle.com/login\nPHISHING: http://paypa1.com/verify\nSAFE: https://amazon.co.jp\nUNSAFE: http://192.168.1.1/steal",
+    explanation: "フィッシングはサイバー攻撃の入口として最も多い手法。0をo、1をl、4をaに置き換えた偽ドメイン（ホモグラフ攻撃）や非HTTPSサイトへの誘導が典型。" },
+  { id: 21, unit: "UNIT 07  ◆  マルウェア解析", rank: "SILVER",
+    title: "エントロピー計算（マルウェア検出）",
+    question: "ファイルデータのエントロピーを計算してください。高エントロピー(>3.5)はパック/暗号化されたマルウェアの特徴です。\n対象: normal.exe('AABBCCDDAABBCCDDAABBCCDD') / packed.exe('xK9mZ2qR7nP4tL6vY1wF8sH3') / text.dll('HELLOWORLD'*3)",
+    hint: "Shannon entropy: H = -Σ p(x)*log2(p(x))。collections.Counter で文字頻度を取得。",
+    answer:
+`import math
+from collections import Counter
+
+def entropy(data):
+    c = Counter(data)
+    n = len(data)
+    return -sum((v/n)*math.log2(v/n) for v in c.values())
+
+samples = {"normal.exe": "AABBCCDDAABBCCDDAABBCCDD",
+           "packed.exe": "xK9mZ2qR7nP4tL6vY1wF8sH3",
+           "text.dll":   "HELLOWORLD" * 3}
+for name, data in samples.items():
+    e = entropy(data)
+    print(f"{name}: entropy={e:.2f} [{'HIGH RISK' if e > 3.5 else 'LOW RISK'}]")`,
+    expected: "normal.exe: entropy=2.00 [LOW RISK]\npacked.exe: entropy=4.58 [HIGH RISK]\ntext.dll: entropy=2.65 [LOW RISK]",
+    explanation: "Shannonエントロピーは情報の不確かさを測る指標。UPX等でパックされたマルウェアは内容がほぼランダムになり高エントロピーになる。セキュリティツールはこれを静的解析のヒューリスティックに使用する。" },
+  { id: 22, unit: "UNIT 06  ◆  古典暗号", rank: "BRONZE",
+    title: "ポリビウス暗号",
+    question: "5×5マスのポリビウス方陣（I/J統合）で 'HACK' を暗号化し、復号して元に戻ることを確認してください。\n各文字を (行番号)(列番号) の2桁数字に変換します。",
+    hint: "square='ABCDEFGHIKLMNOPQRSTUVWXYZ'（25文字）。インデックス i → 行=i//5+1, 列=i%5+1。",
+    answer:
+`square = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
+msg = "HACK"
+encoded = []
+for c in msg:
+    i = square.index(c)
+    encoded.append(f"{i//5+1}{i%5+1}")
+print("Encoded:", ' '.join(encoded))
+decoded = ''.join(square[(int(p[0])-1)*5+(int(p[1])-1)] for p in encoded)
+print("Decoded:", decoded)`,
+    expected: "Encoded: 23 11 13 25\nDecoded: HACK",
+    explanation: "ポリビウス暗号は紀元前2世紀のギリシャの発明。J省略の5×5方陣で文字を座標に変換する。現代でも軍の手旗信号（タップコード）として使われ続けている。" },
+  { id: 23, unit: "UNIT 06  ◆  Webセキュリティ", rank: "BRONZE",
+    title: "ディレクトリトラバーサル検出",
+    question: "ファイルパスへのディレクトリトラバーサル攻撃を検出してください。\n対象パス: /var/www/html/index.html / ../../etc/passwd / /images/../../../etc/shadow / normal/file.txt / C:\\\\Windows\\\\System32\\\\cmd.exe",
+    hint: "../ や .. や C:\\\\Windows が含まれるパスは危険。any()で危険パターンをチェック。",
+    answer:
+`def is_safe(path):
+    return not any(d in path for d in ["../", "..", "//", "/etc/", "C:\\\\Windows"])
+
+paths = ["/var/www/html/index.html", "../../etc/passwd",
+         "/images/../../../etc/shadow", "normal/file.txt",
+         "C:\\\\Windows\\\\System32\\\\cmd.exe"]
+for p in paths:
+    print(f"[{'SAFE   ' if is_safe(p) else 'BLOCKED'}] {p}")`,
+    expected: "[SAFE   ] /var/www/html/index.html\n[BLOCKED] ../../etc/passwd\n[BLOCKED] /images/../../../etc/shadow\n[SAFE   ] normal/file.txt\n[BLOCKED] C:\\Windows\\System32\\cmd.exe",
+    explanation: "ディレクトリトラバーサルは../を使ってWebサーバーのルート外のファイルにアクセスする攻撃。/etc/passwdやWindowsの設定ファイルが盗まれる。対策はパスの正規化とホワイトリスト検証。" },
+  { id: 24, unit: "UNIT 07  ◆  公開鍵暗号", rank: "GOLD",
+    title: "Diffie-Hellman鍵交換",
+    question: "Diffie-Hellman鍵交換を実装してください。\n素数p=23、原始根g=5、Aliceの秘密a=6、Bobの秘密b=15 を使い、両者が同じ共有秘密を得られることを確認してください。",
+    hint: "公開値: A=g^a mod p, B=g^b mod p。共有秘密: Alice→B^a mod p, Bob→A^b mod p。pow(base,exp,mod)を使用。",
+    answer:
+`p, g, a, b = 23, 5, 6, 15
+A = pow(g, a, p)
+B = pow(g, b, p)
+sA = pow(B, a, p)
+sB = pow(A, b, p)
+print(f"Public: p={p}, g={g}")
+print(f"Alice public key: {A}")
+print(f"Bob public key:   {B}")
+print(f"Shared secret (Alice): {sA}")
+print(f"Shared secret (Bob):   {sB}")
+print(f"Match: {sA == sB}")`,
+    expected: "Public: p=23, g=5\nAlice public key: 8\nBob public key:   19\nShared secret (Alice): 2\nShared secret (Bob):   2\nMatch: True",
+    explanation: "DH鍵交換は1976年発明。盗聴者が g,p,A,B を全て知っていても離散対数問題（g^x mod p の x を求める）の困難性により共有秘密を求められない。現代TLSでもECDH（楕円曲線版）として使用中。" },
+  { id: 25, unit: "UNIT 07  ◆  パスワード解析", rank: "SILVER",
+    title: "ハッシュ辞書攻撃",
+    question: "カスタムハッシュ関数に対して辞書攻撃を実装してください。\nターゲットハッシュは h('secret') の値。辞書: ['password','123456','admin','secret','letmein','qwerty']",
+    hint: "h(s): v=0、各文字で v=(v*31+ord(c))%65536 を繰り返す。一致したら CRACKED、しなければ Miss を出力。",
+    answer:
+`def h(s):
+    v = 0
+    for c in s:
+        v = (v*31 + ord(c)) % 65536
+    return v
+
+target = h("secret")
+words = ["password", "123456", "admin", "secret", "letmein", "qwerty"]
+print(f"Target hash: {target}")
+for w in words:
+    hv = h(w)
+    if hv == target:
+        print(f"CRACKED: '{w}' -> {hv}")
+        break
+    print(f"Miss: '{w}' -> {hv}")`,
+    expected: "Target hash: 20144\nMiss: 'password' -> 47771\nMiss: '123456' -> 1635\nMiss: 'admin' -> 847\nCRACKED: 'secret' -> 20144",
+    explanation: "辞書攻撃は最も実用的なパスワード解読手法。Have I Been Pwnedには83億件以上の漏洩パスワードが収録される。対策はbcrypt/Argon2などのスローハッシュ関数とソルトの使用。" },
+  { id: 26, unit: "UNIT 07  ◆  サイドチャネル", rank: "SILVER",
+    title: "タイミング攻撃シミュレーション",
+    question: "通常の比較関数がタイミング情報をリークすることを示してください。\nシークレット 'TOKEN123' に対し ['AAAAAAAA','TAAAAAAA','TOKEN123'] を比較し、各試行で何文字一致したかを出力。定数時間比較も実装してください。",
+    hint: "vulnerable_cmp: 不一致で即break→一致数が漏洩。const_time_cmp: XORですべてのビットを比較。",
+    answer:
+`def vulnerable_cmp(a, b):
+    matches = 0
+    for x, y in zip(a, b):
+        if x != y:
+            break
+        matches += 1
+    return matches, a == b
+
+def const_time_cmp(a, b):
+    result = 0
+    for x, y in zip(a, b):
+        result |= ord(x) ^ ord(y)
+    return result == 0
+
+secret = "TOKEN123"
+guesses = ["AAAAAAAA", "TAAAAAAA", "TOKEN123"]
+print("=== Timing Leak Demo ===")
+for g in guesses:
+    m, ok = vulnerable_cmp(secret, g)
+    print(f"'{g}': {m} chars match -> {'OK' if ok else 'FAIL'}")
+print("Safe compare:", const_time_cmp(secret, "TOKEN123"))`,
+    expected: "=== Timing Leak Demo ===\n'AAAAAAAA': 0 chars match -> FAIL\n'TAAAAAAA': 1 chars match -> FAIL\n'TOKEN123': 8 chars match -> OK\nSafe compare: True",
+    explanation: "タイミング攻撃はサイドチャネル攻撃の一種。早期リターンする比較関数は一致文字数が多いほど処理時間が長くなり、攻撃者はミリ秒単位の差でトークンを1文字ずつ推測できる。Python の hmac.compare_digest() が安全な実装。" },
+  { id: 27, unit: "UNIT 07  ◆  メモリ解析", rank: "SILVER",
+    title: "バッファオーバーフロー検出",
+    question: "スタックバッファオーバーフローをシミュレートしてください。\nバッファサイズ64バイトに対し 'A'*72+'BBBB'+'C'*20 を入力し、オーバーフロー量とEIPが上書きされるアドレスを出力してください。",
+    hint: "overflow = data[BUFFER_SIZE:]。eip_region = overflow[0:4]。.encode().hex()で16進表示。",
+    answer:
+`BUFFER_SIZE = 64
+data = "A" * 72 + "BBBB" + "C" * 20
+
+def analyze(data, buf):
+    if len(data) <= buf:
+        return None
+    overflow = data[buf:]
+    return overflow[0:4] if len(overflow) >= 4 else None
+
+r = analyze(data, BUFFER_SIZE)
+print(f"Input size:     {len(data)} bytes")
+print(f"Buffer size:    {BUFFER_SIZE} bytes")
+print(f"Overflow:       {len(data)-BUFFER_SIZE} bytes")
+print(f"EIP overwrite:  {'0x'+r.encode().hex() if r else 'None'}")
+print(f"Exploit:        {'POSSIBLE' if r else 'SAFE'}")`,
+    expected: "Input size:     96 bytes\nBuffer size:    64 bytes\nOverflow:       32 bytes\nEIP overwrite:  0x41414141\nExploit:        POSSIBLE",
+    explanation: "バッファオーバーフローは1988年のMorrisワーム以来の古典的脆弱性。スタック上のリターンアドレス(EIP)を上書きして任意コード実行が可能。対策はASLR・NX/DEP・Stack Canary・CFI。" },
+  { id: 28, unit: "UNIT 06  ◆  バイナリ解析", rank: "BRONZE",
+    title: "バイナリパッチ適用",
+    question: "バイナリデータにパッチを当てて内容を書き換えてください。\nbytes 'Hello World' (0x48〜0x64) のオフセット6〜10を 0x48,0x61,0x78,0x78,0x78 で上書きし、変更前後を表示。",
+    hint: "bytearray()は可変バイト列。インデックスで直接値を書き換えられる。.decode()でstr変換。",
+    answer:
+`original = bytearray([0x48,0x65,0x6C,0x6C,0x6F,0x20,0x57,0x6F,0x72,0x6C,0x64])
+print("Before:", bytes(original).decode())
+patch = {6: 0x48, 7: 0x61, 8: 0x78, 9: 0x78, 10: 0x78}
+for offset, byte in patch.items():
+    original[offset] = byte
+print("After: ", bytes(original).decode())
+print("Patch applied at offsets:", sorted(patch.keys()))`,
+    expected: "Before: Hello World\nAfter:  Hello Haxxx\nPatch applied at offsets: [6, 7, 8, 9, 10]",
+    explanation: "バイナリパッチはゲームチート・クラッキング・セキュリティ研究の基礎技術。実行ファイルの条件分岐命令(JE/JNE)を書き換えるとライセンス認証を無効化できる。逆にセキュリティパッチも同じ技術で適用される。" },
+  { id: 29, unit: "UNIT 07  ◆  ステガノグラフィー", rank: "GOLD",
+    title: "LSBステガノグラフィー",
+    question: "画像ピクセル値の最下位ビット(LSB)にメッセージ 'Hi' を埋め込み、抽出してください。\nピクセル列: [200,153,87,42,198,144,255,0,100,200,50,175,88,112,64,33,220,100,45,180,77,213,99,14]",
+    hint: "各文字を8ビット展開し、pixel[i]のLSBにbit[i]を書き込む。pixel = (pixel & ~1) | bit。",
+    answer:
+`def hide(pixels, msg):
+    bits = []
+    for c in msg + '\\0':
+        for i in range(8):
+            bits.append((ord(c) >> (7-i)) & 1)
+    r = list(pixels)
+    for i, b in enumerate(bits):
+        r[i] = (r[i] & ~1) | b
+    return r
+
+def reveal(pixels):
+    chars = []
+    for i in range(0, len(pixels), 8):
+        byte = sum((pixels[i+j] & 1) << (7-j) for j in range(8))
+        if byte == 0: break
+        chars.append(chr(byte))
+    return ''.join(chars)
+
+pixels = [200,153,87,42,198,144,255,0,100,200,50,175,88,112,64,33,220,100,45,180,77,213,99,14]
+m = hide(pixels, "Hi")
+print("Original pixels:", pixels[:8])
+print("Modified pixels:", m[:8])
+print(f"Hidden message:  '{reveal(m)}'")`,
+    expected: "Original pixels: [200, 153, 87, 42, 198, 144, 255, 0]\nModified pixels: [200, 153, 86, 42, 199, 144, 254, 0]\nHidden message:  'Hi'",
+    explanation: "LSBステガノグラフィーは画像の最下位ビットを変えても人間の目には見えないことを利用した情報隠蔽技術。PNG画像1枚に数KBのデータを隠せる。検出にはSteganalysis(chi-square検定等)が使われる。" },
+  { id: 30, unit: "UNIT 07  ◆  マルウェア", rank: "GOLD",
+    title: "ワーム伝播シミュレーション",
+    question: "ネットワークワームの指数的な伝播をシミュレートしてください。\n総ホスト数1000、初期感染1台、1台あたり3台を感染させる能力で6ラウンドシミュレート。",
+    hint: "new = min(infected * rate, total - infected)。感染数は最大totalまで。",
+    answer:
+`def worm(total, start, rate, rounds):
+    infected = start
+    print(f"Round 0: {infected}/{total} hosts infected")
+    for r in range(1, rounds+1):
+        new = min(infected * rate, total - infected)
+        infected += new
+        print(f"Round {r}: {infected}/{total} infected ({infected/total*100:.1f}%)")
+
+worm(1000, 1, 3, 6)`,
+    expected: "Round 0: 1/1000 hosts infected\nRound 1: 4/1000 infected (0.4%)\nRound 2: 16/1000 infected (1.6%)\nRound 3: 64/1000 infected (6.4%)\nRound 4: 256/1000 infected (25.6%)\nRound 5: 1000/1000 infected (100.0%)\nRound 6: 1000/1000 infected (100.0%)",
+    explanation: "Morrisワーム(1988)は6000台のUNIXを感染させた世界初のワーム。現代のWannaCry(2017)は150カ国30万台を数日で感染。指数的伝播はR0(基本再生産数)が1を超えると制御不能になる。" },
 ];
 
 // ===== 言語別データ取得ヘルパー =====
@@ -33040,6 +33328,142 @@ var CAREERS = [
       { phase: 'advanced',     label: '量子ML / 化学計算',   color: '#BB77DD', desc: '量子機械学習・分子シミュレーション' },
       { phase: 'professional', label: '量子ハードウェア連携', color: '#9B59B6', desc: 'IBM・Google・IonQ の実機で実験' },
       { phase: 'professional', label: '研究機関 / 企業就職', color: '#00E676', desc: '大学院・国研・量子スタートアップ → 超高待遇' },
+    ]
+  },
+  {
+    id: 'compiler', icon: '🔬', color: '#8B4513',
+    title: 'コンパイラ/言語エンジニア',
+    desc: '字句解析・構文解析・コード生成を実装し、プログラミング言語処理系・コンパイラ・インタプリタを開発する。最も深いレイヤーの職種。',
+    salary: '550〜1100万円', demand: 2,
+    csLangs: ['c', 'cpp', 'rust'],
+    steps: [
+      { phase: 'beginner',     label: '計算機科学基礎',        color: '#8B4513', desc: 'オートマトン・形式言語・文脈自由文法の概念' },
+      { phase: 'beginner',     label: 'C / C++ / Rust',        color: '#A0522D', desc: '低レベル言語・メモリ管理・コンパイル処理の基礎' },
+      { phase: 'basic',        label: '字句解析・構文解析',    color: '#CD853F', desc: '手書きParserとBison/ANTLRの基礎' },
+      { phase: 'basic',        label: '抽象構文木(AST)',        color: '#DEB887', desc: 'ノード設計・意味解析・型チェック' },
+      { phase: 'advanced',     label: 'コード生成',             color: '#8B4513', desc: 'アセンブリ出力・LLVM IR・最適化パス設計' },
+      { phase: 'advanced',     label: '最適化技術',             color: '#A0522D', desc: '定数畳み込み・不要コード除去・インライン展開' },
+      { phase: 'professional', label: '独自言語設計',          color: '#CD853F', desc: 'EBNF仕様書・エラーメッセージ設計・標準ライブラリ' },
+      { phase: 'professional', label: '就職・転職',             color: '#00E676', desc: 'LLVM/GCC貢献・Apple・Google・JetBrains → 内定' },
+    ]
+  },
+  {
+    id: 'creative', icon: '🎨', color: '#FF69B4',
+    title: 'クリエイティブコーダー',
+    desc: 'p5.js・openFrameworks・TouchDesignerなどで「動く絵」「音に反応するビジュアル」「AIアート」を作る。コードと芸術の境界を消す職種。',
+    salary: '作品販売・ライブ演出・企業案件', demand: 2,
+    csLangs: ['javascript', 'cpp', 'python'],
+    steps: [
+      { phase: 'beginner',     label: '数学・アート基礎',      color: '#FF69B4', desc: '三角関数・ベクトル・色彩理論・デザイン原則' },
+      { phase: 'beginner',     label: 'p5.js 入門',             color: '#FF1493', desc: 'キャンバス・描画・アニメーションループ' },
+      { phase: 'basic',        label: 'ジェネラティブアート',   color: '#FF69B4', desc: 'パーリンノイズ・フラクタル・粒子システム' },
+      { phase: 'basic',        label: 'openFrameworks / C++',   color: '#CC1177', desc: 'リアルタイム映像処理・OpenGL' },
+      { phase: 'advanced',     label: '音楽×ビジュアル',        color: '#FF69B4', desc: 'Web Audio API・FFT・音に反応するグラフィクス' },
+      { phase: 'advanced',     label: 'GLSLシェーダー',         color: '#FF1493', desc: '頂点シェーダー・フラグメントシェーダー・SDF' },
+      { phase: 'professional', label: 'AIアート統合',           color: '#FF69B4', desc: 'Stable Diffusion・ControlNet×コード生成' },
+      { phase: 'professional', label: '発表・受注',             color: '#00E676', desc: 'NFT・ライブVJ・企業インスタレーション制作' },
+    ]
+  },
+  {
+    id: 'bioinformatics', icon: '🧬', color: '#00B050',
+    title: 'バイオインフォマティクスエンジニア',
+    desc: 'DNAシーケンス解析・創薬AI・タンパク質構造予測など生命科学のデータ処理を行う。PythonとAI両方の知識が必要。AlphaFold以来注目度急上昇。',
+    salary: '500〜950万円（研究職含む）', demand: 3,
+    csLangs: ['python', 'sql', 'c'],
+    steps: [
+      { phase: 'beginner',     label: '生物学基礎',             color: '#00B050', desc: 'DNA・タンパク質・セントラルドグマの概念' },
+      { phase: 'beginner',     label: 'Python / Biopython',     color: '#009040', desc: 'FASTA形式・塩基配列操作・Pandas' },
+      { phase: 'basic',        label: '統計・R / SciPy',        color: '#00B050', desc: '統計検定・主成分分析・クラスタリング' },
+      { phase: 'basic',        label: '次世代シーケンサー解析', color: '#007030', desc: 'FastQC・STAR・SAMtools でRNA-seq' },
+      { phase: 'advanced',     label: 'タンパク質構造予測',     color: '#00B050', desc: 'AlphaFold・PyMOL・構造ベース創薬' },
+      { phase: 'advanced',     label: 'シングルセル解析',       color: '#009040', desc: 'scRNA-seq・Seurat / Scanpy' },
+      { phase: 'professional', label: '創薬AI開発',             color: '#00B050', desc: '分子グラフNN・ドッキングシミュレーション' },
+      { phase: 'professional', label: '就職・転職',             color: '#00E676', desc: '製薬会社・バイオスタートアップ → 内定' },
+    ]
+  },
+  {
+    id: 'space', icon: '🚀', color: '#1A1AFF',
+    title: '宇宙/衛星ソフトウェアエンジニア',
+    desc: '衛星・ロケット・宇宙探査機に搭載されるフライトソフトウェアを開発する。JAXA・SpaceX・ispace などが主要雇用先。究極のミッションクリティカル。',
+    salary: '500〜1000万円', demand: 2,
+    csLangs: ['c', 'cpp', 'python'],
+    steps: [
+      { phase: 'beginner',     label: 'C / C++ 基礎',           color: '#1A1AFF', desc: '確実な基礎がすべての前提・ポインタ・組み込み' },
+      { phase: 'beginner',     label: '軌道力学・制御理論',     color: '#3333FF', desc: 'ケプラー方程式・PID制御・姿勢制御の概念' },
+      { phase: 'basic',        label: 'リアルタイムOS',         color: '#5555FF', desc: 'FreeRTOS・VxWorks・タスク管理・割り込み' },
+      { phase: 'basic',        label: 'MISRA-C / DO-178C',      color: '#7777FF', desc: '航空宇宙向け安全規格・コーディング標準' },
+      { phase: 'advanced',     label: '姿勢制御システム',       color: '#1A1AFF', desc: 'スタートラッカー・リアクションホイール制御' },
+      { phase: 'advanced',     label: 'GNC開発',                color: '#3333FF', desc: '誘導・航法・制御の統合ソフトウェア設計' },
+      { phase: 'professional', label: '地上局・テレメトリ',     color: '#5555FF', desc: '衛星との通信プロトコル設計・リアルタイム監視' },
+      { phase: 'professional', label: '就職・転職',             color: '#00E676', desc: 'JAXA・三菱重工・ispace・Axelspace → 内定' },
+    ]
+  },
+  {
+    id: 'audio', icon: '🎵', color: '#E040FB',
+    title: '音響DSPエンジニア',
+    desc: 'DAW・シンセサイザー・ANCノイキャン・空間音響など音のソフトウェアを開発する。物理×数学×プログラミングの融合。Apple・Sony・Roland等が雇用先。',
+    salary: '450〜900万円', demand: 2,
+    csLangs: ['c', 'cpp', 'python'],
+    steps: [
+      { phase: 'beginner',     label: '音響理論基礎',           color: '#E040FB', desc: '波形・周波数・サンプリング定理・フーリエ変換' },
+      { phase: 'beginner',     label: 'C / C++ 基礎',           color: '#CC33DD', desc: '低レイテンシ・リアルタイム処理・バッファ管理' },
+      { phase: 'basic',        label: 'デジタルフィルター',     color: '#E040FB', desc: 'FIR・IIRフィルター・ローパス・バンドパス設計' },
+      { phase: 'basic',        label: 'JUCE フレームワーク',    color: '#AA22CC', desc: 'クロスプラットフォームオーディオプラグイン開発' },
+      { phase: 'advanced',     label: 'シンセサイザー開発',     color: '#E040FB', desc: 'FM合成・ウェーブテーブル・加算合成の実装' },
+      { phase: 'advanced',     label: '空間音響',               color: '#CC33DD', desc: 'バイノーラル・アンビソニックス・HRTF処理' },
+      { phase: 'professional', label: 'ANC / ノイキャン開発',   color: '#E040FB', desc: 'AirPods・WH-1000X級の適応フィルタリング' },
+      { phase: 'professional', label: '就職・転職',             color: '#00E676', desc: 'Apple・Sony・ヤマハ・Roland・DAWメーカー → 内定' },
+    ]
+  },
+  {
+    id: 'uiux', icon: '✏️', color: '#FE5D26',
+    title: 'UI/UXデザイナー',
+    desc: 'ユーザーリサーチ・情報設計・プロトタイプ作成から視覚デザインまで手がける。コードも書けるデザイナーは特に高需要。',
+    salary: '400〜800万円', demand: 4,
+    csLangs: ['html', 'javascript'],
+    steps: [
+      { phase: 'beginner',     label: 'デザイン基礎',           color: '#FE5D26', desc: 'レイアウト・タイポグラフィ・色彩理論・Gestalt原則' },
+      { phase: 'beginner',     label: 'Figma 入門',             color: '#EE4D16', desc: 'コンポーネント・オートレイアウト・プロトタイプ' },
+      { phase: 'basic',        label: 'ユーザーリサーチ',       color: '#FE5D26', desc: 'インタビュー・ユーザビリティテスト・アクセシビリティ' },
+      { phase: 'basic',        label: '情報アーキテクチャ',     color: '#DD3D06', desc: 'IA設計・カードソート・フローマップ作成' },
+      { phase: 'advanced',     label: 'デザインシステム',       color: '#FE5D26', desc: 'コンポーネントライブラリ・デザイントークン管理' },
+      { phase: 'advanced',     label: 'フロントエンド連携',     color: '#EE4D16', desc: 'HTML/CSS/JS でプロトタイプ実装・デザイン→コード' },
+      { phase: 'professional', label: 'プロダクト思考',         color: '#FE5D26', desc: 'OKR・グロースデザイン・A/Bテスト設計' },
+      { phase: 'professional', label: '就職・転職',             color: '#00E676', desc: 'SaaS企業・スタートアップ・大手テック → 内定' },
+    ]
+  },
+  {
+    id: 'mlops', icon: '🔄', color: '#20B2AA',
+    title: 'MLOpsエンジニア',
+    desc: 'AIモデルをプロダクション環境で安定稼働させるインフラを構築・運用する。AI開発とSREを橋渡しする役職で需要急増中。',
+    salary: '600〜1100万円', demand: 5,
+    csLangs: ['python', 'go', 'bash'],
+    steps: [
+      { phase: 'beginner',     label: 'Python / Linux 基礎',    color: '#20B2AA', desc: 'スクリプト・Docker・クラウド基礎' },
+      { phase: 'beginner',     label: '機械学習基礎',           color: '#1A9090', desc: 'モデルの学習・評価・推論の仕組みを理解' },
+      { phase: 'basic',        label: 'MLパイプライン',         color: '#20B2AA', desc: 'Airflow・Kubeflow・MLflow で実験管理' },
+      { phase: 'basic',        label: 'モデルサービング',       color: '#159090', desc: 'FastAPI・Triton Inference Server・TorchServe' },
+      { phase: 'advanced',     label: '継続的学習 / 監視',      color: '#20B2AA', desc: 'データドリフト検知・自動再学習・モデル監視' },
+      { phase: 'advanced',     label: 'Kubernetes × GPU',       color: '#1A9090', desc: 'Ray・KubeFlow Pipelines・GPU Operator' },
+      { phase: 'professional', label: 'フィーチャーストア設計', color: '#20B2AA', desc: 'Feast・Tecton・大規模特徴量管理アーキテクト' },
+      { phase: 'professional', label: '就職・転職',             color: '#00E676', desc: 'テック企業・AI特化スタートアップ → 内定' },
+    ]
+  },
+  {
+    id: 'cto', icon: '👑', color: '#C0392B',
+    title: 'スタートアップCTO / テックリード',
+    desc: '技術選定・チームビルディング・プロダクトのアーキテクチャ決定まで担う技術のトップ。エンジニアとしてのゴール職のひとつ。',
+    salary: '800〜2000万円以上 ＋エクイティ', demand: 3,
+    csLangs: ['javascript', 'python', 'go'],
+    steps: [
+      { phase: 'beginner',     label: '幅広いスキル習得',       color: '#C0392B', desc: '複数言語・DB・インフラ・セキュリティの基礎' },
+      { phase: 'beginner',     label: 'OSSコントリビュート',    color: '#A93226', desc: '副業・OSS・GitHubに実績を積む' },
+      { phase: 'basic',        label: 'リードエンジニア経験',   color: '#C0392B', desc: 'チームの技術的意思決定・コードレビュー主導' },
+      { phase: 'basic',        label: 'システム設計',           color: '#922B21', desc: 'スケーラビリティ・可用性・セキュリティ設計' },
+      { phase: 'advanced',     label: 'プロダクト思考',         color: '#C0392B', desc: 'ビジネス目標との技術戦略整合・ロードマップ策定' },
+      { phase: 'advanced',     label: 'チームビルディング',     color: '#A93226', desc: '採用・技術文化形成・エンジニア育成' },
+      { phase: 'professional', label: '資金調達との連携',       color: '#C0392B', desc: 'VCへの技術説明・デューデリジェンス対応' },
+      { phase: 'professional', label: 'Exit / 独立',           color: '#00E676', desc: '上場・M&A → 次のスタートアップ創業というループ' },
     ]
   },
 ];
@@ -36289,8 +36713,8 @@ async function renderProfile() {
         '<button class="profile-share-btn" onclick="shareProfile()">𝕏 シェア</button>' +
       '</div>' +
     '</div>' +
-    (currentUserIsAdmin
-      ? '<button id="admin-panel-btn" class="admin-open-btn" onclick="openAdminPanel()">⚙ 管理者パネルを開く</button>'
+    (_realUserIsAdmin
+      ? '<button id="admin-panel-btn" class="admin-open-btn' + (!currentUserIsAdmin ? ' admin-btn-preview-mode' : '') + '" onclick="openAdminPanel()">' + (currentUserIsAdmin ? '⚙ 管理者パネルを開く' : '🔑 管理者に戻る') + '</button>'
       : '') +
 
     // ─── ギルドカード ───
