@@ -3307,6 +3307,19 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
 }
 .guest-login-btn:hover { background: #e05500; }
 
+.profile-backup-section { margin-top: 8px; }
+.profile-backup-desc { font-size: 0.82rem; color: rgba(237,224,200,0.5); margin: 6px 0 14px; line-height: 1.6; }
+.profile-backup-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.profile-backup-btn {
+  background: rgba(255,107,0,0.08); border: 1.5px solid rgba(255,107,0,0.3);
+  color: rgba(255,107,0,0.85); border-radius: 8px;
+  padding: 9px 20px; font-size: 0.82rem; font-family: 'Share Tech Mono', monospace;
+  cursor: pointer; transition: background .15s, border-color .15s;
+}
+.profile-backup-btn:hover { background: rgba(255,107,0,0.15); border-color: rgba(255,107,0,0.7); }
+.profile-backup-import { border-color: rgba(100,200,100,0.3); color: rgba(100,200,100,0.9); }
+.profile-backup-import:hover { background: rgba(100,200,100,0.1); border-color: rgba(100,200,100,0.6); }
+
 .detail-not-found {
   text-align: center; padding: 60px 20px;
   color: rgba(237,224,200,0.45);

@@ -2284,15 +2284,17 @@ async function adminSetPremium(isPremium) {
 
 // ===== 汎用トースト =====
 var _toastTimer = null;
-function showToast(message, type) {
+function showToast(message, typeOrDuration) {
   if (_toastTimer) { clearTimeout(_toastTimer); }
   var existing = document.querySelector('.app-toast');
   if (existing) existing.remove();
   var el = document.createElement('div');
-  el.className = 'app-toast' + (type === 'error' ? ' error' : '');
+  var isError = typeOrDuration === 'error';
+  var dur = typeof typeOrDuration === 'number' ? typeOrDuration : 2800;
+  el.className = 'app-toast' + (isError ? ' error' : '');
   el.textContent = message;
   document.body.appendChild(el);
-  _toastTimer = setTimeout(function() { el.remove(); _toastTimer = null; }, 2800);
+  _toastTimer = setTimeout(function() { el.remove(); _toastTimer = null; }, dur);
 }
 
 function openPremiumModal() {
@@ -7582,7 +7584,17 @@ async function renderProfile() {
         '</div>' +
         sections.join('') +
       '</div>';
-    })()
+    })() +
+
+    // ─── データバックアップ ───
+    '<div class="profile-section profile-backup-section">' +
+      '<div class="profile-section-title">// DATA BACKUP</div>' +
+      '<p class="profile-backup-desc">進捗・ブックマーク・ログインデータをJSONファイルに保存し、別端末や再インストール時に復元できます。</p>' +
+      '<div class="profile-backup-btns">' +
+        '<button class="profile-backup-btn" onclick="exportProgress()">📥 エクスポート</button>' +
+        '<button class="profile-backup-btn profile-backup-import" onclick="importProgress()">📤 インポート</button>' +
+      '</div>' +
+    '</div>'
 
   // XPバーアニメーション
   requestAnimationFrame(function() {
@@ -7607,6 +7619,75 @@ async function renderProfile() {
     console.error('[renderProfile]', e);
     content.innerHTML = '<div class="profile-loading" style="color:#FF4444;animation:none">⚠ 読み込みに失敗しました。ページを更新してお試しください。</div>';
   }
+}
+
+// ===== 進捗エクスポート / インポート =====
+
+var _BACKUP_LANGS = ['cpp','python','javascript','ruby','typescript','kotlin','swift','java','csharp','go','c','rust','html','sql','bash','regex','php','dark'];
+var _BACKUP_MISC  = ['login_days','study_log','daily_goal','soundEnabled','last_language'];
+
+function exportProgress() {
+  var data = { _version: 1, _date: new Date().toISOString() };
+  _BACKUP_LANGS.forEach(function(lang) {
+    ['_progress','_mission_progress','_bookmarks','_started_at'].forEach(function(suffix) {
+      var v = localStorage.getItem(lang + suffix);
+      if (v) data[lang + suffix] = v;
+    });
+  });
+  _BACKUP_MISC.forEach(function(key) {
+    var v = localStorage.getItem(key);
+    if (v) data[key] = v;
+  });
+  var json = JSON.stringify(data, null, 2);
+  var blob = new Blob([json], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'codestep-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('📥 進捗データをダウンロードしました');
+}
+
+function importProgress() {
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        var data = JSON.parse(ev.target.result);
+        var imported = 0;
+        var allowed = {};
+        _BACKUP_LANGS.forEach(function(lang) {
+          ['_progress','_mission_progress','_bookmarks','_started_at'].forEach(function(s) {
+            allowed[lang + s] = true;
+          });
+        });
+        _BACKUP_MISC.forEach(function(k) { allowed[k] = true; });
+        Object.keys(data).forEach(function(key) {
+          if (!allowed[key]) return;
+          var val = typeof data[key] === 'string' ? data[key] : JSON.stringify(data[key]);
+          lsSet(key, val);
+          imported++;
+        });
+        _progressCache = null;
+        _missionProgressCache = null;
+        showToast('✓ ' + imported + '件のデータをインポートしました。ページをリロードしてください。', 6000);
+      } catch(e) {
+        showToast('⚠ ファイルの読み込みに失敗しました');
+      }
+    };
+    reader.readAsText(file);
+  };
+  document.body.appendChild(input);
+  input.click();
+  document.body.removeChild(input);
 }
 
 function _buildStudyTimeChartHTML() {
@@ -8944,4 +9025,12 @@ document.addEventListener('keydown', function(e) {
     }
   }, { passive: true });
 })();
+
+// ===== オフライン検知 =====
+window.addEventListener('offline', function() {
+  showToast('⚡ オフラインです。インターネット接続を確認してください。', 6000);
+});
+window.addEventListener('online', function() {
+  showToast('✓ オンラインに戻りました');
+});
 
