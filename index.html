@@ -105,6 +105,10 @@
 
   <!-- タブナビゲーション -->
   <div id="nav-tabs" class="hidden">
+    <div id="nav-history-btns">
+      <button id="nav-back-btn" onclick="history.back()" title="前のページへ">&#8592;</button>
+      <button id="nav-fwd-btn" onclick="history.forward()" title="次のページへ">&#8594;</button>
+    </div>
     <button class="nav-tab active" id="tab-problems" onclick="switchTab('problems')" data-tip="コードを書いて問題を解く">◆ PROBLEMS</button>
     <button class="nav-tab" id="tab-missions" onclick="switchTab('missions')" data-tip="複数問題クリアでバッジ獲得">◆ MISSIONS</button>
     <button class="nav-tab" id="tab-guide" onclick="switchTab('guide')" data-tip="文法・パターン解説">◆ GUIDE</button>

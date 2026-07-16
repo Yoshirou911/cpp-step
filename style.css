@@ -804,6 +804,33 @@ a.landing-text-link { text-decoration: underline; }
 }
 
 /* ========== タブナビゲーション ========== */
+#nav-history-btns {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 8px 0 6px;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255,107,0,0.12);
+}
+#nav-back-btn, #nav-fwd-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255,107,0,0.45);
+  font-size: 18px;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color .15s, background .15s;
+  line-height: 1;
+}
+#nav-back-btn:hover, #nav-fwd-btn:hover {
+  color: rgba(255,107,0,0.9);
+  background: rgba(255,107,0,0.08);
+}
 #nav-tabs {
   background: rgba(5,4,2,0.88);
   backdrop-filter: blur(20px);
