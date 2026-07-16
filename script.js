@@ -2035,7 +2035,7 @@ function showNavAndProgress() {
 }
 
 function setActiveTab(tab) {
-  ['problems', 'missions', 'guide', 'intro', 'textbook', 'ranking', 'career', 'beginner', 'contest'].forEach(function(t) {
+  ['problems', 'missions', 'guide', 'intro', 'textbook', 'ranking', 'career', 'contest'].forEach(function(t) {
     var el = document.getElementById('tab-' + t);
     if (el) el.classList.toggle('active', t === tab);
   });
@@ -2446,12 +2446,8 @@ function restoreState(state) {
     setActiveTab('career');
     renderCareer();
     showPage('career');
-  } else if (state.page === 'beginner') {
-    setActiveTab('beginner');
-    renderBeginner();
-    showPage('beginner');
   } else if (state.page === 'beginner-lang') {
-    setActiveTab('beginner');
+    setActiveTab('intro');
     openBeginnerLang(state.langId);
     showPage('beginner-lang');
   } else if (state.page === 'profile') {
@@ -31542,7 +31538,7 @@ function showPage(name) {
   if (_mce) _mce.classList.add('hidden');
   // 全ページを非表示にしてから対象だけ表示
   ["page-landing", "page-lang", "page-list", "page-detail", "page-guide",
-   "page-mission-list", "page-mission-detail", "page-profile", "page-textbook", "page-ranking", "page-contest", "page-career", "page-intro", "page-beginner", "page-beginner-lang"].forEach(function(id) {
+   "page-mission-list", "page-mission-detail", "page-profile", "page-textbook", "page-ranking", "page-contest", "page-career", "page-intro", "page-beginner-lang"].forEach(function(id) {
     document.getElementById(id).classList.add("hidden");
   });
   var _pageEl = document.getElementById("page-" + name);
@@ -34919,10 +34915,6 @@ function switchTab(tab) {
     history.pushState({ page: 'career', lang: currentLanguage, tab: 'career' }, '');
     renderCareer();
     showPage('career');
-  } else if (tab === 'beginner') {
-    history.pushState({ page: 'beginner', lang: currentLanguage, tab: 'beginner' }, '');
-    renderBeginner();
-    showPage('beginner');
   } else {
     history.pushState({ page: 'guide', lang: currentLanguage, tab: 'guide' }, '');
     renderGuide();
@@ -35474,16 +35466,51 @@ function _renderLangBeginnerGuide(langId) {
 function renderIntro() {
   var c = document.getElementById('intro-content');
   if (!c) return;
-  var langId = currentLanguage || 'cpp';
-  var d = langBeginnerData[langId];
 
+  var currentLangId = currentLanguage || 'cpp';
+  var langs = Object.keys(langBeginnerData);
   var h = '';
+
+  // ページヘッダー
   h += '<div class="intro-page-header">';
-  h += '<span class="intro-page-badge">🌱 BEGINNER GUIDE</span>';
-  h += '<h1 class="intro-page-title">' + (d ? d.emoji + ' ' + d.name : '入門ガイド') + '</h1>';
-  h += '<p class="intro-page-sub">' + (d ? d.tagline : 'プログラミング入門ガイド') + '</p>';
+  h += '<span class="intro-page-badge">🌱 INTRO</span>';
+  h += '<h1 class="intro-page-title">入門ガイド</h1>';
+  h += '<p class="intro-page-sub">言語を選んで、その言語のイントロを読もう。</p>';
   h += '</div>';
-  h += _renderLangBeginnerGuide(langId);
+
+  // 現在の言語 — 目立つバナー
+  var cur = langBeginnerData[currentLangId];
+  if (cur) {
+    h += '<div class="intro-current-banner" onclick="openBeginnerLang(\'' + currentLangId + '\')">';
+    h += '<span class="intro-current-label">現在の言語</span>';
+    h += '<span class="intro-current-emoji">' + cur.emoji + '</span>';
+    h += '<div class="intro-current-text">';
+    h += '<span class="intro-current-name">' + cur.name + '</span>';
+    h += '<span class="intro-current-tagline">' + cur.tagline + '</span>';
+    h += '</div>';
+    h += '<span class="intro-current-arrow">→ イントロを見る</span>';
+    h += '</div>';
+  }
+
+  // 全言語グリッド
+  h += '<div class="intro-lang-section-title">すべての言語</div>';
+  h += '<div class="beginner-lang-grid">';
+  langs.forEach(function(lid) {
+    var d = langBeginnerData[lid];
+    var isCurrent = lid === currentLangId;
+    var stars = '';
+    for (var i = 1; i <= 5; i++) stars += (i <= d.difficulty ? '★' : '☆');
+    var diffColor = ['', '#22c55e', '#22c55e', '#f59e0b', '#f97316', '#ef4444'][d.difficulty] || '#64748b';
+    h += '<div class="beginner-lang-card' + (isCurrent ? ' blc-current' : '') + '" onclick="openBeginnerLang(\'' + lid + '\')">';
+    h += '<div class="blc-emoji">' + d.emoji + '</div>';
+    h += '<div class="blc-name">' + d.name + (isCurrent ? ' <span class="blc-now">NOW</span>' : '') + '</div>';
+    h += '<div class="blc-tagline">' + d.tagline + '</div>';
+    h += '<div class="blc-diff" style="color:' + diffColor + '">' + stars + '</div>';
+    h += '<div class="blc-arrow">→ イントロを見る</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+
   c.innerHTML = h;
 }
 
@@ -35528,7 +35555,7 @@ function openBeginnerLang(langId) {
   h += '</div>';
   h += _renderLangBeginnerGuide(langId);
   c.innerHTML = h;
-  history.pushState({ page: 'beginner-lang', lang: currentLanguage, tab: 'beginner', langId: langId }, '');
+  history.pushState({ page: 'beginner-lang', lang: currentLanguage, tab: 'intro', langId: langId }, '');
   showPage('beginner-lang');
 }
 
