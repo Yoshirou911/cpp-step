@@ -90,6 +90,6 @@ export default async function handler(req, res) {
     if (e.name === 'AbortError') {
       return res.status(504).json({ error: 'タイムアウト（25秒）' });
     }
-    return res.status(500).json({ error: 'サーバーエラー: ' + e.message });
+    return res.status(500).json({ error: 'サーバーエラーが発生しました。時間をおいて再試行してください。' });
   }
 }

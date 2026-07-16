@@ -110,6 +110,6 @@ export default async function handler(req, res) {
 
   } catch (e) {
     console.error('create-checkout error:', e);
-    return res.status(500).json({ error: 'サーバーエラー: ' + e.message });
+    return res.status(500).json({ error: 'サーバーエラーが発生しました。時間をおいて再試行してください。' });
   }
 }

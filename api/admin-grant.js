@@ -132,6 +132,6 @@ export default async function handler(req, res) {
 
   } catch (e) {
     console.error('admin-grant error:', e);
-    return res.status(500).json({ error: 'サーバーエラー: ' + e.message });
+    return res.status(500).json({ error: 'サーバーエラーが発生しました。' });
   }
 }

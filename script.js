@@ -2555,23 +2555,23 @@ function getMissionProgressKey() {
 }
 
 function getCompiler() {
-  if (currentLanguage === 'python') return 'cpython-3.12.7';
+  if (currentLanguage === 'python') return 'cpython-3.13.8';
   if (currentLanguage === 'javascript') return 'nodejs-head';
   if (currentLanguage === 'ruby') return 'ruby-3.4.9';
   if (currentLanguage === 'typescript') return 'typescript-5.6.2';
   if (currentLanguage === 'kotlin') return 'kotlin';
-  if (currentLanguage === 'swift') return 'swift-5.10';
+  if (currentLanguage === 'swift') return 'swift-6.0.1';
   if (currentLanguage === 'java') return 'openjdk-head';
-  if (currentLanguage === 'csharp') return 'mono-6.12.0.206';
-  if (currentLanguage === 'go') return 'go-1.20.6';
+  if (currentLanguage === 'csharp') return 'mono-6.12.0.199';
+  if (currentLanguage === 'go') return 'go-1.23.2';
   if (currentLanguage === 'c') return 'gcc-head';
-  if (currentLanguage === 'rust') return 'rust-1.73.0';
+  if (currentLanguage === 'rust') return 'rust-1.82.0';
   if (currentLanguage === 'html') return null;
-  if (currentLanguage === 'sql') return 'cpython-3.12.7';
+  if (currentLanguage === 'sql') return 'cpython-3.13.8';
   if (currentLanguage === 'bash') return 'bash';
   if (currentLanguage === 'regex') return 'nodejs-head';
-  if (currentLanguage === 'php') return 'php-8.2.0';
-  if (currentLanguage === 'dark') return 'cpython-3.12.7';
+  if (currentLanguage === 'php') return 'php-8.3.12';
+  if (currentLanguage === 'dark') return 'cpython-3.13.8';
   return 'gcc-head';
 }
 
