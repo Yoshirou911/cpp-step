@@ -2035,7 +2035,7 @@ function showNavAndProgress() {
 }
 
 function setActiveTab(tab) {
-  ['problems', 'missions', 'guide', 'intro', 'textbook', 'ranking', 'contest'].forEach(function(t) {
+  ['problems', 'missions', 'guide', 'intro', 'textbook', 'ranking', 'career', 'beginner', 'contest'].forEach(function(t) {
     var el = document.getElementById('tab-' + t);
     if (el) el.classList.toggle('active', t === tab);
   });
@@ -2446,6 +2446,14 @@ function restoreState(state) {
     setActiveTab('career');
     renderCareer();
     showPage('career');
+  } else if (state.page === 'beginner') {
+    setActiveTab('beginner');
+    renderBeginner();
+    showPage('beginner');
+  } else if (state.page === 'beginner-lang') {
+    setActiveTab('beginner');
+    openBeginnerLang(state.langId);
+    showPage('beginner-lang');
   } else if (state.page === 'profile') {
     renderProfile();
     showPage('profile');
@@ -31534,7 +31542,7 @@ function showPage(name) {
   if (_mce) _mce.classList.add('hidden');
   // 全ページを非表示にしてから対象だけ表示
   ["page-landing", "page-lang", "page-list", "page-detail", "page-guide",
-   "page-mission-list", "page-mission-detail", "page-profile", "page-textbook", "page-ranking", "page-contest", "page-career", "page-intro"].forEach(function(id) {
+   "page-mission-list", "page-mission-detail", "page-profile", "page-textbook", "page-ranking", "page-contest", "page-career", "page-intro", "page-beginner", "page-beginner-lang"].forEach(function(id) {
     document.getElementById(id).classList.add("hidden");
   });
   var _pageEl = document.getElementById("page-" + name);
@@ -34911,6 +34919,10 @@ function switchTab(tab) {
     history.pushState({ page: 'career', lang: currentLanguage, tab: 'career' }, '');
     renderCareer();
     showPage('career');
+  } else if (tab === 'beginner') {
+    history.pushState({ page: 'beginner', lang: currentLanguage, tab: 'beginner' }, '');
+    renderBeginner();
+    showPage('beginner');
   } else {
     history.pushState({ page: 'guide', lang: currentLanguage, tab: 'guide' }, '');
     renderGuide();
@@ -35154,6 +35166,370 @@ function renderIntro() {
   h += '</div>';
 
   c.innerHTML = h;
+}
+
+// ===== 言語別初心者ガイド =====
+
+var langBeginnerData = {
+  cpp: {
+    name: 'C++', emoji: '⚙️',
+    tagline: 'ゲーム・OS・競技プログラミングで使われる高速言語',
+    difficulty: 4, usedFor: ['ゲーム開発（Unreal Engine）', 'OS・ドライバ開発', '競技プログラミング', '組み込み・IoT', '高頻度トレーディング'],
+    hello: '#include <iostream>\nusing namespace std;\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}',
+    keywords: ['#include', 'using namespace std', 'int main()', 'cout', 'cin', 'endl', 'return', 'int/double/string', 'if/else', 'for/while', 'class', 'vector'],
+    mistakes: [
+      { bad: 'cout << "Hello"', good: 'cout << "Hello";', note: 'セミコロン ; を忘れずに' },
+      { bad: '#include iostream', good: '#include <iostream>', note: '角括弧 < > が必要' },
+      { bad: 'Int x = 5;', good: 'int x = 5;', note: '型名は小文字' },
+      { bad: 'return;', good: 'return 0;', note: 'main関数は 0 を返す' },
+    ],
+    tips: ['コンパイルエラーは上から読む', 'まずは cin/cout だけ覚えよう', '型（int/double/string）を意識する', '括弧 {} の対応を必ず確認'],
+  },
+  python: {
+    name: 'Python', emoji: '🐍',
+    tagline: 'AI・データ分析・Web開発で最も人気の言語',
+    difficulty: 2, usedFor: ['AI・機械学習', 'データ分析', 'Web開発（Django/Flask）', '自動化・スクリプト', '科学技術計算'],
+    hello: 'print("Hello, World!")',
+    keywords: ['print()', 'input()', 'def', 'return', 'if/elif/else', 'for/while', 'in', 'import', 'list/dict/tuple', 'class', 'lambda'],
+    mistakes: [
+      { bad: 'print "Hello"', good: 'print("Hello")', note: 'Python3では括弧が必須' },
+      { bad: 'if x > 0 {', good: 'if x > 0:', note: 'コロン : を忘れずに、{ } は不要' },
+      { bad: 'def foo() {', good: 'def foo():', note: 'コロン : とインデントで構造を表す' },
+      { bad: 'x = "5" + 3', good: 'x = int("5") + 3', note: '文字列と数値は型変換が必要' },
+    ],
+    tips: ['インデント（字下げ）が文法の一部', '# でコメント', 'f-string（f"Hello {name}"）は便利', 'pip でライブラリを追加できる'],
+  },
+  javascript: {
+    name: 'JavaScript', emoji: '🟨',
+    tagline: 'ブラウザで動く唯一の言語・Webの必須スキル',
+    difficulty: 2, usedFor: ['Webフロントエンド', 'Web アニメーション', 'Node.js（サーバー）', 'React/Vue アプリ', 'ブラウザ拡張機能'],
+    hello: 'console.log("Hello, World!");',
+    keywords: ['console.log()', 'let/const/var', 'function', 'return', 'if/else', 'for/while', 'document', 'addEventListener', 'async/await', 'fetch', 'JSON'],
+    mistakes: [
+      { bad: 'var x = 5\nconsole.log(x)', good: 'let x = 5;\nconsole.log(x);', note: 'let/constを使い、セミコロンを付ける習慣を' },
+      { bad: 'if (x = 5)', good: 'if (x === 5)', note: '= は代入、=== は比較' },
+      { bad: 'console.log("値：" + x)', good: 'console.log(`値：${x}`)', note: 'テンプレートリテラルが読みやすい' },
+    ],
+    tips: ['ブラウザの開発者ツール（F12）で動作確認', '=== で厳密比較', 'const を優先して使う', '非同期処理はasync/await'],
+  },
+  typescript: {
+    name: 'TypeScript', emoji: '🔷',
+    tagline: 'JavaScriptに型安全を追加した大規模開発向け言語',
+    difficulty: 3, usedFor: ['大規模Webアプリ', 'Reactアプリ', 'Next.js', '企業・チーム開発', 'API設計'],
+    hello: 'const greeting: string = "Hello, World!";\nconsole.log(greeting);',
+    keywords: ['const/let', 'string/number/boolean', 'interface', 'type', 'generic<T>', 'async/await', 'readonly', 'optional?', 'union |', 'enum'],
+    mistakes: [
+      { bad: 'let x = "hello"\nx = 5', good: 'let x: string = "hello"', note: '型を宣言すると間違いをコンパイル時に発見できる' },
+      { bad: 'function greet(name) {}', good: 'function greet(name: string): void {}', note: '引数と戻り値の型を必ず書く' },
+    ],
+    tips: ['JavaScriptの知識がそのまま活かせる', 'any型の使いすぎに注意', 'interfaceで型を定義する', 'tsconfig.json の strict: true が推奨'],
+  },
+  java: {
+    name: 'Java', emoji: '☕',
+    tagline: '企業システム・Androidアプリ開発の定番言語',
+    difficulty: 3, usedFor: ['企業・業務システム', 'Androidアプリ', 'Webバックエンド（Spring）', '大規模開発', 'クラウドサービス'],
+    hello: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
+    keywords: ['public class', 'public static void main', 'System.out.println', 'String', 'int/double/boolean', 'if/else', 'for/while', 'ArrayList', 'import', 'new'],
+    mistakes: [
+      { bad: 'System.out.println("Hello")', good: 'System.out.println("Hello");', note: 'セミコロン必須' },
+      { bad: 'class main {}', good: 'class Main {}', note: 'クラス名は大文字始まり（PascalCase）' },
+      { bad: 'String[] args', good: '（これは正しい）', note: 'mainメソッドの引数は String[] args が必須' },
+    ],
+    tips: ['クラス名とファイル名は一致させる', 'IDE（IntelliJ）が便利', 'null 参照に注意', 'Javaは「書いたら動く」型の安定感がある'],
+  },
+  ruby: {
+    name: 'Ruby', emoji: '💎',
+    tagline: 'シンプルな文法・Web開発（Rails）で人気',
+    difficulty: 2, usedFor: ['Webアプリ（Ruby on Rails）', 'スクリプト自動化', 'プロトタイプ開発', 'EC サイト'],
+    hello: 'puts "Hello, World!"',
+    keywords: ['puts/print', 'def...end', 'if...end', 'do...end', 'each', 'map', 'nil', 'true/false', 'require', 'class...end', 'attr_accessor'],
+    mistakes: [
+      { bad: 'puts("Hello")', good: 'puts "Hello"', note: 'Rubyでは () なしが慣習（動くが）' },
+      { bad: 'def foo\n  ...\n{', good: 'def foo\n  ...\nend', note: 'ブロックは { } でなく end で閉じる' },
+    ],
+    tips: ['日本人が作った言語（まつもとゆきひろ氏）', 'すべてがオブジェクト', 'Railsを覚えるとWebアプリが速く作れる', 'irb でインタラクティブに試せる'],
+  },
+  kotlin: {
+    name: 'Kotlin', emoji: '🟣',
+    tagline: 'Androidの公式言語・Javaより簡潔に書ける',
+    difficulty: 3, usedFor: ['Androidアプリ開発', 'Webバックエンド（Ktor）', 'マルチプラットフォーム開発'],
+    hello: 'fun main() {\n    println("Hello, World!")\n}',
+    keywords: ['fun', 'val/var', 'println()', 'String/Int/Boolean', 'if/else', 'when', 'for/while', 'null?', 'data class', 'lambda'],
+    mistakes: [
+      { bad: 'var x: Int = "5"', good: 'var x: Int = 5', note: '型と値が一致しないとコンパイルエラー' },
+      { bad: 'x!!.method()', good: 'x?.method()', note: '!! はnull安全チェックを無視するので危険' },
+    ],
+    tips: ['val は変更不可（= const）、var は変更可能', 'null安全が言語レベルで組み込まれている', 'Javaとの相互運用が可能', 'Android Studioで開発できる'],
+  },
+  swift: {
+    name: 'Swift', emoji: '🍎',
+    tagline: 'iOSアプリ開発の公式言語・AppleのOSSプロジェクト',
+    difficulty: 3, usedFor: ['iOSアプリ開発', 'macOSアプリ', 'watchOSアプリ', 'Appleエコシステム全般'],
+    hello: 'print("Hello, World!")',
+    keywords: ['let/var', 'print()', 'String/Int/Double/Bool', 'if/else', 'for...in', 'func', 'return', 'Optional?', 'class/struct', 'guard'],
+    mistakes: [
+      { bad: 'var x = nil', good: 'var x: String? = nil', note: 'nilを使うにはOptional型（?）が必要' },
+      { bad: 'if let x = x { }', good: '// guard letも検討', note: 'Optional bindingのパターンをしっかり覚える' },
+    ],
+    tips: ['Xcodeがないと開発できない（Macが必要）', 'Optional型（?）はSwiftの核心', 'SwiftUIで宣言的UIが書ける', 'Playgroundで手軽に試せる'],
+  },
+  csharp: {
+    name: 'C#', emoji: '🔵',
+    tagline: 'Unityゲーム開発・Windows アプリ開発の標準',
+    difficulty: 3, usedFor: ['Unityゲーム開発', 'Windowsアプリ', 'Webバックエンド（ASP.NET）', '企業システム'],
+    hello: 'using System;\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello, World!");\n    }\n}',
+    keywords: ['using', 'class', 'static void Main', 'Console.WriteLine', 'string/int/bool', 'if/else', 'for/while', 'List<>', 'var', 'async/await'],
+    mistakes: [
+      { bad: 'Console.writeline("Hi")', good: 'Console.WriteLine("Hi");', note: 'Lが大文字（メソッド名はPascalCase）' },
+      { bad: 'string s = null\ns.Length', good: 's?.Length', note: 'null参照には ?. を使う' },
+    ],
+    tips: ['Unityを使うならC#は必須', 'Visual StudioがIDEとして最強', 'Javaに似た構文なので学習しやすい', 'NuGetでパッケージ管理'],
+  },
+  go: {
+    name: 'Go', emoji: '🐹',
+    tagline: 'Googleが作ったシンプル・高速なサーバー開発言語',
+    difficulty: 2, usedFor: ['クラウド・マイクロサービス', 'CLI ツール', 'Webサーバー', 'Docker/Kubernetesなどのインフラ'],
+    hello: 'package main\nimport "fmt"\nfunc main() {\n    fmt.Println("Hello, World!")\n}',
+    keywords: ['package main', 'import', 'fmt.Println', 'func', 'var', ':=', 'if/else', 'for', 'goroutine', 'channel', 'error'],
+    mistakes: [
+      { bad: 'import "fmt"\nimport "os"', good: 'import (\n    "fmt"\n    "os"\n)', note: '複数importはグループにまとめる' },
+      { bad: 'x := 5\n// xを使わない', good: 'xを必ず使う', note: 'Goでは未使用変数はコンパイルエラー' },
+    ],
+    tips: ['宣言した変数は必ず使う', ':= で型推論して宣言', 'gofmt で自動整形', 'error型を戻り値で返すのがGoの流儀'],
+  },
+  c: {
+    name: 'C言語', emoji: '🔧',
+    tagline: 'すべてのプログラミング言語の祖先・低レベル制御の王様',
+    difficulty: 4, usedFor: ['OS開発（Linux/Windows）', '組み込み・マイコン', 'デバイスドライバ', 'パフォーマンス重視の処理'],
+    hello: '#include <stdio.h>\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}',
+    keywords: ['#include', 'printf/scanf', 'int main()', 'return', 'int/char/float/double', 'if/else', 'for/while', 'pointer *', 'struct', 'malloc/free'],
+    mistakes: [
+      { bad: 'printf("Hello")', good: 'printf("Hello\\n");', note: '改行は \\n、セミコロン必須' },
+      { bad: 'int *p;\n*p = 5;', good: 'int x = 5;\nint *p = &x;', note: 'ポインタは初期化してから使う' },
+      { bad: 'char s[5];\nscanf("%s", &s)', good: 'scanf("%s", s);', note: '配列名はすでにポインタなので & 不要' },
+    ],
+    tips: ['C言語を学ぶとメモリの仕組みがわかる', 'ポインタは「アドレスを格納する変数」', 'malloc したら必ず free する', 'C言語ができると他の言語も理解しやすい'],
+  },
+  rust: {
+    name: 'Rust', emoji: '🦀',
+    tagline: 'メモリ安全・超高速・次世代システム言語',
+    difficulty: 5, usedFor: ['システムプログラミング', 'WebAssembly', 'ゲームエンジン', '高性能サーバー', 'CLIツール'],
+    hello: 'fn main() {\n    println!("Hello, World!");\n}',
+    keywords: ['fn', 'let/mut', 'println!', 'String/&str', 'if/else', 'loop/while/for', 'ownership', 'borrow &', 'lifetime', 'Result/Option', 'struct/enum'],
+    mistakes: [
+      { bad: 'let x = 5;\nx = 6;', good: 'let mut x = 5;\nx = 6;', note: 'デフォルトは不変。変更するには mut が必要' },
+      { bad: 'let s = String::from("hi");\nlet s2 = s;\nprintln!("{}", s);', good: 'let s2 = s.clone();', note: '所有権の移動（move）に注意' },
+    ],
+    tips: ['所有権（ownership）がRustの核心', 'コンパイルエラーは親切なので読もう', 'Rustを覚えるとメモリ管理の本質が理解できる', 'cargo がパッケージ管理ツール'],
+  },
+  html: {
+    name: 'HTML', emoji: '🌐',
+    tagline: 'Webページの骨格を作るマークアップ言語',
+    difficulty: 1, usedFor: ['Webページ作成', 'ランディングページ', 'メールテンプレート', 'Web学習の入口'],
+    hello: '<!DOCTYPE html>\n<html>\n<body>\n    <h1>Hello, World!</h1>\n</body>\n</html>',
+    keywords: ['<!DOCTYPE html>', '<html>', '<head>', '<body>', '<h1>～<h6>', '<p>', '<a href>', '<img src>', '<div>', '<span>', '<class>', '<id>'],
+    mistakes: [
+      { bad: '<p>テキスト', good: '<p>テキスト</p>', note: '閉じタグを忘れずに（<br>など例外あり）' },
+      { bad: '<img src=photo.jpg>', good: '<img src="photo.jpg">', note: '属性値は " " で囲む' },
+      { bad: '<a href=https://...>', good: '<a href="https://...">', note: 'URLも " " で囲む' },
+    ],
+    tips: ['HTMLはプログラムではなくマークアップ言語', 'CSSで見た目、JSで動きをつける', 'ブラウザの「検証」でHTMLを確認できる', 'W3C バリデーターで文法チェック'],
+  },
+  sql: {
+    name: 'SQL', emoji: '🗃️',
+    tagline: 'データベースを操作する標準的なクエリ言語',
+    difficulty: 2, usedFor: ['データベース操作', 'データ分析・集計', 'Webアプリのデータ管理', 'BI・レポート作成'],
+    hello: 'SELECT "Hello, World!" AS message;',
+    keywords: ['SELECT', 'FROM', 'WHERE', 'INSERT INTO', 'UPDATE', 'DELETE', 'JOIN', 'GROUP BY', 'ORDER BY', 'HAVING', 'CREATE TABLE', 'INDEX'],
+    mistakes: [
+      { bad: 'SELECT name FROM users WHERE id = 1', good: 'SELECT name FROM users WHERE id = 1;', note: 'セミコロンで文を終える' },
+      { bad: "SELECT * FROM users WHERE name = 'Tanaka' AND", good: '末尾のANDを削除', note: '条件の最後にAND/ORを残さない' },
+      { bad: 'DELETE FROM users', good: 'DELETE FROM users WHERE id = 1', note: 'WHEREなしは全件削除！必ず条件を付ける' },
+    ],
+    tips: ['SELECTだけ覚えれば多くのことができる', 'WHERE句で絞り込み、ORDER BYで並び替え', 'JOINでテーブルを結合できる', 'DELETE/UPDATEはWHEREを必ず確認してから'],
+  },
+  bash: {
+    name: 'Bash', emoji: '🐚',
+    tagline: 'Linux/Macのターミナル操作・自動化スクリプト',
+    difficulty: 3, usedFor: ['Linux/Mac自動化', 'CI/CDパイプライン', 'サーバー管理', 'ファイル操作スクリプト', 'DevOps'],
+    hello: '#!/bin/bash\necho "Hello, World!"',
+    keywords: ['echo', 'cd/ls/mkdir', 'if/fi', 'for/do/done', '$変数', '$1/$2', '|（パイプ）', '>', '>>', 'chmod', 'cron', 'grep/sed/awk'],
+    mistakes: [
+      { bad: 'if [ $x = 5 ]', good: 'if [ "$x" = "5" ]', note: '変数は " " で囲む（スペースがある場合の保護）' },
+      { bad: 'x=5\necho $x + 1', good: 'x=5\necho $((x + 1))', note: '算術演算は $(( )) の中で' },
+    ],
+    tips: ['#!/bin/bash を1行目に書く（シバン）', 'chmod +x script.sh で実行権限を付ける', '変数に $ を付けてアクセス', 'man コマンドでマニュアルを読める'],
+  },
+  regex: {
+    name: '正規表現', emoji: '🔍',
+    tagline: '文字列の検索・置換・バリデーションのパターン言語',
+    difficulty: 4, usedFor: ['ログ解析', '入力バリデーション', '文字列置換', 'スクレイピング', 'コード検索'],
+    hello: '// メールアドレスを検索するパターン\n/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/',
+    keywords: ['.（任意1文字）', '*（0回以上）', '+（1回以上）', '?（0か1回）', '[abc]（文字クラス）', '^（行頭）', '$（行末）', '\\d', '\\w', '\\s', '()', '|'],
+    mistakes: [
+      { bad: '/hello.world/', good: '/hello\\.world/', note: '. は任意の文字にマッチする。文字の . にするには \\. と書く' },
+      { bad: '/\\d+/', good: '/^\\d+$/', note: '全体にマッチさせるには ^ と $ で囲む' },
+    ],
+    tips: ['regex101.com でリアルタイム確認できる', '最初は \\d（数字）と \\w（英数字）だけ覚えれば十分', '欲張りマッチ（greedy）に注意', 'キャプチャグループ（）は便利'],
+  },
+  php: {
+    name: 'PHP', emoji: '🐘',
+    tagline: 'Webサーバーサイドの王道・WordPressの開発言語',
+    difficulty: 2, usedFor: ['WordPress開発', 'Webバックエンド（Laravel）', 'ECサイト', 'CMSシステム', 'API開発'],
+    hello: '<?php\necho "Hello, World!";\n?>',
+    keywords: ['<?php', 'echo', '$変数', 'if/else', 'for/while', 'function', 'array()', '=>', 'include/require', 'class', 'mysql/PDO'],
+    mistakes: [
+      { bad: 'echo "Hello"', good: 'echo "Hello";', note: 'セミコロン必須' },
+      { bad: 'x = 5;', good: '$x = 5;', note: 'PHPの変数名は $ で始まる' },
+      { bad: '<?php\n$x = 1\n?>', good: '<?php\n$x = 1;\n?>', note: '各文にセミコロンを付ける' },
+    ],
+    tips: ['変数は必ず $ で始まる', 'WordPressの世界シェアは約40%', 'Laravelで本格的なWebアプリ開発', 'XSSやSQLインジェクション対策を必ず学ぶ'],
+  },
+};
+
+function _renderLangBeginnerGuide(langId) {
+  var d = langBeginnerData[langId];
+  if (!d) return '<p style="padding:20px;color:#94a3b8;">このガイドはまだ準備中です。</p>';
+
+  var stars = '';
+  for (var i = 1; i <= 5; i++) {
+    stars += '<span style="color:' + (i <= d.difficulty ? '#f59e0b' : '#334155') + '">★</span>';
+  }
+  var diffLabel = ['', '超かんたん', 'かんたん', '普通', 'むずかしい', '上級者向け'][d.difficulty] || '';
+  var usedForColor = ['', '#22c55e', '#22c55e', '#f59e0b', '#f97316', '#ef4444'][d.difficulty] || '#64748b';
+
+  var h = '';
+
+  // ヘッダー
+  h += '<div class="bgl-header">';
+  h += '<span class="bgl-emoji">' + d.emoji + '</span>';
+  h += '<div class="bgl-header-text">';
+  h += '<h2 class="bgl-lang-name">' + d.name + '</h2>';
+  h += '<p class="bgl-tagline">' + d.tagline + '</p>';
+  h += '</div>';
+  h += '</div>';
+
+  // 難易度・用途
+  h += '<div class="bgl-info-row">';
+  h += '<div class="bgl-info-card">';
+  h += '<div class="bgl-info-label">難易度</div>';
+  h += '<div class="bgl-stars">' + stars + '</div>';
+  h += '<div class="bgl-diff-label" style="color:' + usedForColor + '">' + diffLabel + '</div>';
+  h += '</div>';
+  h += '<div class="bgl-info-card bgl-usefor-card">';
+  h += '<div class="bgl-info-label">活用シーン</div>';
+  h += '<ul class="bgl-usefor-list">';
+  d.usedFor.forEach(function(u) { h += '<li>' + u + '</li>'; });
+  h += '</ul>';
+  h += '</div>';
+  h += '</div>';
+
+  // Hello World
+  h += '<div class="bgl-section">';
+  h += '<div class="bgl-section-title">👋 Hello World</div>';
+  h += '<pre class="bgl-code"><code>' + escapeHtml(d.hello) + '</code></pre>';
+  h += '</div>';
+
+  // キーワード
+  h += '<div class="bgl-section">';
+  h += '<div class="bgl-section-title">🔑 覚えておきたいキーワード</div>';
+  h += '<div class="bgl-keywords">';
+  d.keywords.forEach(function(kw) { h += '<span class="bgl-kw">' + escapeHtml(kw) + '</span>'; });
+  h += '</div>';
+  h += '</div>';
+
+  // よくあるミス
+  h += '<div class="bgl-section">';
+  h += '<div class="bgl-section-title">⚠️ よくあるミス</div>';
+  h += '<div class="bgl-mistakes">';
+  d.mistakes.forEach(function(m) {
+    h += '<div class="bgl-mistake-item">';
+    h += '<div class="bgl-mistake-bad"><span class="bgl-badge-bad">✗ NG</span><code>' + escapeHtml(m.bad) + '</code></div>';
+    h += '<div class="bgl-mistake-note">→ ' + m.note + '</div>';
+    if (m.good && m.good !== m.bad) {
+      h += '<div class="bgl-mistake-good"><span class="bgl-badge-good">✓ OK</span><code>' + escapeHtml(m.good) + '</code></div>';
+    }
+    h += '</div>';
+  });
+  h += '</div>';
+  h += '</div>';
+
+  // Tips
+  h += '<div class="bgl-section">';
+  h += '<div class="bgl-section-title">💡 Tips</div>';
+  h += '<ul class="bgl-tips">';
+  d.tips.forEach(function(t) { h += '<li>' + escapeHtml(t) + '</li>'; });
+  h += '</ul>';
+  h += '</div>';
+
+  // CTA
+  h += '<div class="bgl-cta">';
+  h += '<button class="bgl-cta-btn" onclick="switchTab(\'problems\')">◆ 問題を解いてみよう</button>';
+  h += '<button class="bgl-cta-btn bgl-cta-secondary" onclick="switchTab(\'textbook\')">📖 文法リファレンス</button>';
+  h += '</div>';
+
+  return h;
+}
+
+function renderIntro() {
+  var c = document.getElementById('intro-content');
+  if (!c) return;
+  var langId = currentLanguage || 'cpp';
+  var d = langBeginnerData[langId];
+
+  var h = '';
+  h += '<div class="intro-page-header">';
+  h += '<span class="intro-page-badge">🌱 BEGINNER GUIDE</span>';
+  h += '<h1 class="intro-page-title">' + (d ? d.emoji + ' ' + d.name : '入門ガイド') + '</h1>';
+  h += '<p class="intro-page-sub">' + (d ? d.tagline : 'プログラミング入門ガイド') + '</p>';
+  h += '</div>';
+  h += _renderLangBeginnerGuide(langId);
+  c.innerHTML = h;
+}
+
+function renderBeginner() {
+  var c = document.getElementById('beginner-content');
+  if (!c) return;
+
+  var langs = Object.keys(langBeginnerData);
+  var h = '';
+
+  h += '<div class="beginner-page-header">';
+  h += '<h1 class="beginner-page-title">🔰 初心者ガイド</h1>';
+  h += '<p class="beginner-page-sub">気になる言語を選んで、入門ガイドを読んでみよう。</p>';
+  h += '</div>';
+
+  h += '<div class="beginner-lang-grid">';
+  langs.forEach(function(lid) {
+    var d = langBeginnerData[lid];
+    var stars = '';
+    for (var i = 1; i <= 5; i++) stars += (i <= d.difficulty ? '★' : '☆');
+    var diffColor = ['', '#22c55e', '#22c55e', '#f59e0b', '#f97316', '#ef4444'][d.difficulty] || '#64748b';
+    h += '<div class="beginner-lang-card" onclick="openBeginnerLang(\'' + lid + '\')">';
+    h += '<div class="blc-emoji">' + d.emoji + '</div>';
+    h += '<div class="blc-name">' + d.name + '</div>';
+    h += '<div class="blc-tagline">' + d.tagline + '</div>';
+    h += '<div class="blc-diff" style="color:' + diffColor + '">' + stars + '</div>';
+    h += '<div class="blc-arrow">→ ガイドを読む</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+
+  c.innerHTML = h;
+}
+
+function openBeginnerLang(langId) {
+  var c = document.getElementById('beginner-lang-content');
+  if (!c) return;
+  var d = langBeginnerData[langId];
+  var h = '';
+  h += '<div class="bgl-lang-header-wrap">';
+  h += '<span class="bgl-page-badge">🔰 初心者ガイド</span>';
+  h += '</div>';
+  h += _renderLangBeginnerGuide(langId);
+  c.innerHTML = h;
+  history.pushState({ page: 'beginner-lang', lang: currentLanguage, tab: 'beginner', langId: langId }, '');
+  showPage('beginner-lang');
 }
 
 var langTextbooks = {
