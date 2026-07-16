@@ -8939,3 +8939,362 @@ html {
 }
 .bm-pop { animation: bmPop 0.45s cubic-bezier(0.22,1,0.36,1) !important; }
 
+/* ===== Round 3 ===== */
+
+/* スクロールトップボタン */
+#scroll-top-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 20px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f97316, #fb923c);
+  color: #fff;
+  border: none;
+  font-size: 18px;
+  line-height: 42px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(249,115,22,.45);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity .25s, transform .25s;
+  z-index: 999;
+  padding: 0;
+}
+#scroll-top-btn.stt-visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+#scroll-top-btn:hover { transform: translateY(-3px) !important; }
+
+/* ユニット全クリア演出 */
+#unit-clear-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  cursor: pointer;
+}
+#unit-clear-overlay.hidden { display: none; }
+#unit-clear-box {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border: 2px solid #f97316;
+  border-radius: 20px;
+  padding: 40px 56px;
+  text-align: center;
+  box-shadow: 0 0 60px rgba(249,115,22,.5);
+  animation: ucPop .45s cubic-bezier(.22,1,.36,1);
+}
+@keyframes ucPop {
+  from { transform: scale(.7); opacity: 0; }
+  to   { transform: scale(1);  opacity: 1; }
+}
+.uc-label {
+  font-size: 13px;
+  letter-spacing: 4px;
+  color: #f97316;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.uc-name {
+  font-size: 28px;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 10px;
+}
+.uc-sub {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+/* リスト上部バー */
+.list-top-bar { margin-bottom: 10px; }
+.list-top-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.random-prob-btn {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(124,58,237,.4);
+  transition: transform .15s, box-shadow .15s;
+}
+.random-prob-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(124,58,237,.5); }
+.density-btn {
+  background: rgba(255,255,255,.07);
+  color: #94a3b8;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.density-btn:hover { background: rgba(255,255,255,.12); }
+
+/* 1日の目標 */
+.daily-goal-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+.daily-goal-track {
+  flex: 1;
+  max-width: 200px;
+  height: 7px;
+  background: rgba(255,255,255,.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.daily-goal-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #86efac);
+  border-radius: 4px;
+  transition: width .4s ease;
+}
+.daily-goal-fill.goal-done { background: linear-gradient(90deg, #f97316, #fb923c); }
+.daily-goal-text { white-space: nowrap; min-width: 70px; }
+.goal-edit-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0 2px;
+}
+.goal-edit-btn:hover { color: #f97316; }
+
+/* 連続学習リスクバナー */
+.streak-risk-banner {
+  background: linear-gradient(90deg, rgba(234,179,8,.15), rgba(234,179,8,.05));
+  border: 1px solid rgba(234,179,8,.35);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  color: #fbbf24;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.streak-risk-banner.hidden { display: none; }
+
+/* ランク別進捗 */
+.rank-progress-panel {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+.rp-title {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #64748b;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+.rp-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+  font-size: 12px;
+}
+.rp-rank { width: 56px; color: #94a3b8; font-weight: 600; }
+.rp-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.rp-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width .5s ease;
+}
+.rp-pct { width: 36px; text-align: right; color: #64748b; font-size: 11px; }
+
+/* 苦手バッジ */
+.weak-badge {
+  display: inline-block;
+  background: rgba(239,68,68,.2);
+  color: #f87171;
+  border: 1px solid rgba(239,68,68,.35);
+  border-radius: 10px;
+  font-size: 10px;
+  padding: 1px 7px;
+  font-weight: 700;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+/* 検索サジェスト */
+#search-suggest-wrap {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #1e293b;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  z-index: 500;
+  overflow: hidden;
+  margin-top: 4px;
+}
+#search-suggest-wrap.hidden { display: none; }
+.suggest-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: background .1s;
+  font-size: 13px;
+}
+.suggest-item:hover { background: rgba(249,115,22,.12); }
+.suggest-rank {
+  font-size: 10px;
+  color: #64748b;
+  width: 44px;
+  flex-shrink: 0;
+}
+.suggest-title { color: #e2e8f0; }
+
+/* 問題メモ */
+.problem-note-panel {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 16px;
+}
+.pnp-header {
+  font-size: 14px;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin-bottom: 4px;
+}
+.pnp-sub {
+  font-size: 11px;
+  color: #64748b;
+  margin-left: 6px;
+  font-weight: 400;
+}
+.problem-note-area {
+  width: 100%;
+  min-height: 90px;
+  background: rgba(0,0,0,.25);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  color: #cbd5e1;
+  font-size: 13px;
+  padding: 10px 12px;
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: inherit;
+  margin-top: 8px;
+}
+.problem-note-area:focus { outline: none; border-color: #f97316; }
+.pnp-save-btn {
+  margin-top: 8px;
+  background: rgba(249,115,22,.18);
+  color: #f97316;
+  border: 1px solid rgba(249,115,22,.35);
+  border-radius: 8px;
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s;
+}
+.pnp-save-btn:hover { background: rgba(249,115,22,.3); }
+
+/* 実行ボタン行 */
+.run-btn-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.copy-code-btn {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px;
+  color: #94a3b8;
+  font-size: 16px;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s;
+  flex-shrink: 0;
+}
+.copy-code-btn:hover { background: rgba(255,255,255,.13); color: #e2e8f0; }
+.speed-mode-btn {
+  background: rgba(234,179,8,.12);
+  border: 1px solid rgba(234,179,8,.3);
+  border-radius: 8px;
+  color: #fbbf24;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 12px;
+  cursor: pointer;
+  transition: background .15s;
+  white-space: nowrap;
+}
+.speed-mode-btn:hover { background: rgba(234,179,8,.22); }
+.speed-mode-btn.speed-active {
+  background: rgba(234,179,8,.25);
+  border-color: #fbbf24;
+}
+.speed-timer {
+  font-size: 18px;
+  font-weight: 900;
+  color: #fbbf24;
+  letter-spacing: 1px;
+  min-width: 56px;
+}
+.speed-timer.speed-overtime { color: #f87171; }
+
+/* コンパクト密度 */
+.density-compact .problem-card {
+  padding: 8px 14px;
+}
+.density-compact .problem-card .card-title {
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+.density-compact .problem-card .card-meta {
+  font-size: 11px;
+}
+
+/* レスポンシブ (Round 3) */
+@media (max-width: 600px) {
+  #unit-clear-box { padding: 28px 24px; }
+  .uc-name { font-size: 22px; }
+  .daily-goal-track { max-width: 120px; }
+  .run-btn-row { gap: 6px; }
+  .speed-mode-btn { padding: 7px 8px; font-size: 11px; }
+}
+

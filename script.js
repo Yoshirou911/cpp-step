@@ -517,6 +517,237 @@ function editorFontSmaller() {
   if (d) d.textContent = _editorFontSize + 'px';
 }
 
+// ===== ランダム問題 =====
+function goToRandomProblem() {
+  var all = getProblems();
+  var pool = all.filter(function(p) { return !isLearned(p.id); });
+  if (pool.length === 0) pool = all;
+  var p = pool[Math.floor(Math.random() * pool.length)];
+  if (!p) return;
+  showToast('🎲 ランダム問題：' + p.title);
+  setTimeout(function() {
+    history.pushState({ page: 'detail', lang: currentLanguage, id: p.id }, '');
+    renderDetail(p.id);
+    showPage('detail');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 400);
+}
+
+// ===== コードコピー =====
+function copyEditorCode() {
+  if (!aceEditor) return;
+  var code = aceEditor.getValue();
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(code).then(function() { showToast('📋 コードをコピーしました'); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = code;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    showToast('📋 コードをコピーしました');
+  }
+}
+
+// ===== スクロールトップ =====
+function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+(function() {
+  window.addEventListener('scroll', function() {
+    var btn = document.getElementById('scroll-top-btn');
+    if (btn) btn.classList.toggle('stt-visible', window.scrollY > 400);
+  }, { passive: true });
+})();
+
+// ===== 問題メモ =====
+function _noteKey(id) { return 'note_' + (currentLanguage || 'cpp') + '_' + id; }
+function saveNote(id) {
+  var ta = document.getElementById('problem-note-' + id);
+  if (!ta) return;
+  lsSet(_noteKey(id), ta.value);
+  showToast('📝 メモを保存しました');
+}
+function getNote(id) { return localStorage.getItem(_noteKey(id)) || ''; }
+
+// ===== 苦手問題カウント =====
+function _wcKey(id) { return 'wc_' + (currentLanguage || 'cpp') + '_' + id; }
+function _incWrongCount(id) {
+  var n = parseInt(localStorage.getItem(_wcKey(id)) || '0') + 1;
+  lsSet(_wcKey(id), String(n));
+}
+function getWrongCount(id) { return parseInt(localStorage.getItem(_wcKey(id)) || '0'); }
+function isAutoWeak(id) { return getWrongCount(id) >= 3; }
+
+// ===== ユニット全クリア演出 =====
+function _checkUnitClear(id) {
+  var p = getProblems().find(function(x) { return x.id === id; });
+  if (!p) return;
+  var unitProbs = getProblems().filter(function(x) { return x.unit === p.unit; });
+  var cleared = unitProbs.filter(function(x) { return isLearned(x.id); }).length;
+  if (cleared === unitProbs.length) {
+    setTimeout(function() { _showUnitClearEffect(p.unit); }, 800);
+  }
+}
+function _showUnitClearEffect(unitName) {
+  var overlay = document.getElementById('unit-clear-overlay');
+  var nameEl  = document.getElementById('uc-unit-name');
+  if (!overlay || !nameEl) return;
+  nameEl.textContent = unitName;
+  overlay.classList.remove('hidden');
+  if (window.confetti) {
+    confetti({ particleCount: 80, angle: 60,  spread: 55, origin: { x: 0,   y: 0.6 }, colors: ['#FF6B00','#FFD700','#ffffff'] });
+    setTimeout(function() {
+      confetti({ particleCount: 80, angle: 120, spread: 55, origin: { x: 1,   y: 0.6 }, colors: ['#FF6B00','#FFD700','#ffffff'] });
+    }, 180);
+  }
+  overlay.addEventListener('click', function() { overlay.classList.add('hidden'); }, { once: true });
+  setTimeout(function() { overlay.classList.add('hidden'); }, 3200);
+}
+
+// ===== 1日の目標問題数 =====
+var _dailyGoal = parseInt(localStorage.getItem('daily_goal') || '3');
+function _todayKey() { return new Date().toISOString().slice(0, 10); }
+function getTodayCleared() { return parseInt(localStorage.getItem('dc_' + _todayKey()) || '0'); }
+function _incDailyCleared() {
+  var n = getTodayCleared() + 1;
+  lsSet('dc_' + _todayKey(), String(n));
+  _renderDailyGoalBar();
+}
+function setDailyGoal(n) {
+  _dailyGoal = Math.max(1, Math.min(20, parseInt(n) || 3));
+  lsSet('daily_goal', String(_dailyGoal));
+  _renderDailyGoalBar();
+}
+function _editDailyGoal() {
+  var n = parseInt(prompt('1日の目標問題数を入力（1〜20）', String(_dailyGoal)));
+  if (!isNaN(n)) setDailyGoal(n);
+}
+function _renderDailyGoalBar() {
+  var bar = document.getElementById('daily-goal-bar');
+  var txt = document.getElementById('daily-goal-text');
+  if (!bar || !txt) return;
+  var done = getTodayCleared();
+  var pct  = Math.min(100, Math.round(done / _dailyGoal * 100));
+  bar.style.width = pct + '%';
+  txt.textContent = done + ' / ' + _dailyGoal + '問';
+  bar.parentElement.parentElement.classList.toggle('goal-done', done >= _dailyGoal);
+}
+
+// ===== 表示密度切り替え =====
+var _listDensity = localStorage.getItem('list_density') || 'standard';
+function toggleListDensity() {
+  _listDensity = _listDensity === 'standard' ? 'compact' : 'standard';
+  lsSet('list_density', _listDensity);
+  _applyListDensity();
+}
+function _applyListDensity() {
+  var el = document.getElementById('page-list');
+  if (el) el.classList.toggle('density-compact', _listDensity === 'compact');
+  var btn = document.getElementById('density-toggle-btn');
+  if (btn) btn.textContent = _listDensity === 'compact' ? '☷ 標準' : '☰ コンパクト';
+}
+
+// ===== スピードチャレンジ =====
+var _speedMode    = false;
+var _speedSec     = 0;
+var _speedTimer   = null;
+var _speedLimit   = 300;
+function toggleSpeedMode() {
+  _speedMode = !_speedMode;
+  if (_speedMode) {
+    _speedSec = 0;
+    _speedTimer = setInterval(function() {
+      _speedSec++;
+      var disp = document.getElementById('speed-timer-display');
+      if (disp) {
+        var rem = _speedLimit - _speedSec;
+        var m = Math.floor(Math.abs(rem) / 60), s = Math.abs(rem) % 60;
+        disp.textContent = (rem < 0 ? '+' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+        disp.classList.toggle('speed-overtime', rem < 0);
+      }
+    }, 1000);
+    showToast('⏱ スピードチャレンジ開始！5分以内に解こう');
+  } else {
+    clearInterval(_speedTimer);
+    _speedTimer = null;
+    var disp = document.getElementById('speed-timer-display');
+    if (disp) disp.textContent = '';
+    showToast('スピードチャレンジを終了しました（' + _formatTime(_speedSec) + '）');
+  }
+  var btn = document.getElementById('speed-mode-btn');
+  if (btn) { btn.classList.toggle('speed-active', _speedMode); btn.textContent = _speedMode ? '⏹ 終了' : '⚡ スピード'; }
+}
+
+// ===== 検索オートコンプリート =====
+var _suggestVisible = false;
+function _showSearchSuggestions(query) {
+  var wrap = document.getElementById('search-suggest-wrap');
+  if (!wrap || !query || query.length < 1) { _hideSearchSuggestions(); return; }
+  var probs = getProblems();
+  var q = query.toLowerCase();
+  var matches = probs.filter(function(p) { return p.title.toLowerCase().indexOf(q) !== -1; }).slice(0, 6);
+  if (matches.length === 0) { _hideSearchSuggestions(); return; }
+  wrap.innerHTML = matches.map(function(p) {
+    return '<div class="suggest-item" onmousedown="event.preventDefault();_selectSuggestion(' + p.id + ',\'' + escapeHtml(p.title).replace(/'/g,'\\\'') + '\')">' +
+      '<span class="suggest-rank rank-' + (p.rank || 'rookie').toLowerCase() + '">' + (p.rank || 'ROOKIE') + '</span>' +
+      '<span class="suggest-title">' + escapeHtml(p.title) + '</span>' +
+    '</div>';
+  }).join('');
+  wrap.classList.remove('hidden');
+  _suggestVisible = true;
+}
+function _hideSearchSuggestions() {
+  var wrap = document.getElementById('search-suggest-wrap');
+  if (wrap) wrap.classList.add('hidden');
+  _suggestVisible = false;
+}
+function _selectSuggestion(id, title) {
+  _hideSearchSuggestions();
+  var inp = document.getElementById('list-search-input');
+  if (inp) inp.value = title;
+  _filterQuery = title.toLowerCase();
+  renderList();
+}
+
+// ===== 連続学習日数リマインダー =====
+function _checkStreakReminder() {
+  var loginDays = lsGetJSON('login_days', []);
+  if (loginDays.length === 0) return;
+  var streak = calcStreak(loginDays);
+  if (streak.current < 2) return;
+  var today = _todayKey();
+  var lastDay = loginDays[loginDays.length - 1];
+  if (lastDay === today) return; // 今日はもう記録済み → 安全
+  // 昨日以降ログインなし → ストリーク危機
+  var banner = document.getElementById('streak-risk-banner');
+  if (banner) {
+    banner.innerHTML = '🔥 <strong>' + streak.current + '日連続</strong>継続中！今日も学習してストリークを守ろう';
+    banner.classList.remove('hidden');
+  }
+}
+
+// ===== ランク別進捗ゲージ =====
+function _buildRankProgressHTML() {
+  var RANKS = ['ROOKIE','BRONZE','SILVER','GOLD','PLATINUM','DIAMOND','MASTER','LEGEND','TITAN'];
+  var COLORS = {ROOKIE:'#888',BRONZE:'#CD7F32',SILVER:'#B8C8D8',GOLD:'#EFC050',PLATINUM:'#00C8B4',DIAMOND:'#5588FF',MASTER:'#C040FF',LEGEND:'#FF2244',TITAN:'#FF2020'};
+  var all = getProblems();
+  var rows = RANKS.map(function(rank) {
+    var total   = all.filter(function(p) { return p.rank === rank; }).length;
+    if (total === 0) return '';
+    var cleared = all.filter(function(p) { return p.rank === rank && isLearned(p.id); }).length;
+    var pct = Math.round(cleared / total * 100);
+    var color = COLORS[rank] || '#888';
+    return '<div class="rp-row">' +
+      '<span class="rp-rank" style="color:' + color + '">' + rank + '</span>' +
+      '<div class="rp-track"><div class="rp-fill" style="width:' + pct + '%;background:' + color + '"></div></div>' +
+      '<span class="rp-pct">' + cleared + '/' + total + '</span>' +
+    '</div>';
+  }).join('');
+  return '<div class="rank-progress-panel">' +
+    '<div class="rp-title">◆ ランク別進捗</div>' + rows +
+  '</div>';
+}
+
 // ===== フィルタークリア =====
 function clearFilter(type) {
   if (type === 'query') {
@@ -588,6 +819,12 @@ function onFilterInput(val) {
   _filterQuery = val.replace(/　/g, ' ').trim().toLowerCase();
   var clearBtn = document.getElementById('list-search-clear');
   if (clearBtn) clearBtn.classList.toggle('hidden', !_filterQuery);
+  // オートコンプリート
+  if (_filterQuery.length >= 1) {
+    _showSearchSuggestions(_filterQuery);
+  } else {
+    _hideSearchSuggestions();
+  }
   // 120ms デバウンスで高速タイピング時の過剰 renderList を防ぐ
   clearTimeout(_filterTimer);
   _filterTimer = setTimeout(renderList, 120);
@@ -31395,6 +31632,37 @@ function renderList() {
   if (!list) return;
   list.innerHTML = "";
 
+  // 表示密度適用
+  _applyListDensity();
+
+  // ストリークリマインダーチェック
+  _checkStreakReminder();
+
+  // ランク別進捗 + ランダム問題ボタン + 密度切り替え + 目標バー
+  var topBarEl = document.createElement('div');
+  topBarEl.className = 'list-top-bar';
+  topBarEl.innerHTML =
+    '<div class="list-top-row">' +
+      '<button class="random-prob-btn" onclick="goToRandomProblem()" title="未クリアからランダムに選ぶ">🎲 ランダム問題</button>' +
+      '<button id="density-toggle-btn" class="density-btn" onclick="toggleListDensity()">' + (_listDensity === 'compact' ? '☷ 標準' : '☰ コンパクト') + '</button>' +
+    '</div>' +
+    '<div class="daily-goal-wrap">' +
+      '<div class="daily-goal-label">今日の目標</div>' +
+      '<div class="daily-goal-track"><div id="daily-goal-bar" class="daily-goal-fill"></div></div>' +
+      '<span id="daily-goal-text" class="daily-goal-text"></span>' +
+      '<button class="goal-edit-btn" onclick="_editDailyGoal()" title="目標を変更">✎</button>' +
+    '</div>' +
+    '<div id="streak-risk-banner" class="streak-risk-banner hidden"></div>';
+  list.appendChild(topBarEl);
+  _renderDailyGoalBar();
+
+  // ランク別進捗ゲージ（フィルターなし時のみ）
+  if (!_filterQuery && !_filterRank && !_filterBookmark && !_filterWrong && !_filterUnsolved && !_careerFilter) {
+    var rpEl = document.createElement('div');
+    rpEl.innerHTML = _buildRankProgressHTML();
+    list.appendChild(rpEl.firstElementChild);
+  }
+
   // 無料ユーザー向け広告スロット
   if (!currentUserIsPremium) {
     var adTop = document.createElement('div');
@@ -31574,12 +31842,14 @@ function renderList() {
       _cardIdx++;
 
       var bookmarked = isBookmarked(p.id);
+      var isWeak = isAutoWeak(p.id);
       card.innerHTML =
         '<div class="card-left">' +
           '<span class="card-num">' + String(p.id).padStart(2, '0') + '</span>' +
           '<span class="problem-title">' + escapeHtml(p.title) + '</span>' +
           (isDailyCard   ? '<span class="dc-card-badge">🎯 TODAY</span>' : '') +
           (isContestCard ? '<span class="contest-card-badge">🏆 CONTEST</span>' : '') +
+          (isWeak && !learned ? '<span class="weak-badge">🔥 苦手</span>' : '') +
         '</div>' +
         '<div class="card-right">' +
           '<span class="rank-badge rank-' + (p.rank || 'rookie').toLowerCase() + '">' + escapeHtml(p.rank || 'ROOKIE') + '</span>' +
@@ -31769,7 +32039,12 @@ function renderDetail(id) {
         '<label class="stdin-label">標準入力（cin用）：</label>' +
         '<input id="stdin-input" class="stdin-input" type="text" placeholder="例: 5">' +
       '</div>' +
-      '<button class="run-btn" title="Ctrl+Enter で実行" onclick="runCode()">▶ 実行する<span class="run-btn-kbd">Ctrl+↵</span></button>' +
+      '<div class="run-btn-row">' +
+        '<button class="run-btn" title="Ctrl+Enter で実行" onclick="runCode()">▶ 実行する<span class="run-btn-kbd">Ctrl+↵</span></button>' +
+        '<button class="copy-code-btn" onclick="copyEditorCode()" title="コードをコピー">📋</button>' +
+        '<button id="speed-mode-btn" class="speed-mode-btn" onclick="toggleSpeedMode()" title="スピードチャレンジ（5分以内に解く）">⚡ スピード</button>' +
+        '<span id="speed-timer-display" class="speed-timer"></span>' +
+      '</div>' +
       '<div id="output-area" class="hidden">' +
         '<p class="output-label">実行結果：<span id="exec-time-badge" class="exec-time-badge hidden"></span></p>' +
         '<pre id="output-text"></pre>' +
@@ -31821,7 +32096,14 @@ function renderDetail(id) {
       '<button class="report-btn" data-pid="' + p.id + '" data-ptitle="' + escapeHtml(p.title) + '" onclick="openReportModal(+this.dataset.pid, this.dataset.ptitle)">⚑ 問題の誤りを報告</button>' +
     '</div>' +
     '</div>' +  // close detail-right
-    '</div>';   // close detail-split
+
+    // ===== メモパネル (detail-left の下部、全幅) =====
+    '</div>' +  // close detail-split
+    '<div class="problem-note-panel">' +
+      '<div class="pnp-header">📝 メモ<span class="pnp-sub">（自分だけのノート）</span></div>' +
+      '<textarea id="problem-note-' + p.id + '" class="problem-note-area" placeholder="考え方・詰まったポイント・次回のヒントなど自由に...">' + escapeHtml(getNote(p.id)) + '</textarea>' +
+      '<button class="pnp-save-btn" onclick="saveNote(' + p.id + ')">保存</button>' +
+    '</div>'; // close
 
   // 別の問題に移動した場合、または言語が変わった場合はリセット
   var langChanged = prevLang !== null && prevLang !== getAceMode();
@@ -32989,6 +33271,8 @@ function showJudgeResult(problemId, passed, byAI) {
       saveProgress(problemId);
       _saveProblemTime(problemId);
       _clearDraft(problemId);
+      _incDailyCleared();
+      _checkUnitClear(problemId);
       // ランクアンロックチェック
       var _prob0 = getProblems().find(function(x) { return x.id === problemId; });
       if (_prob0 && _prob0.rank) _checkRankUnlock(_prob0.rank);
@@ -33040,6 +33324,7 @@ function showJudgeResult(problemId, passed, byAI) {
     if (_comboCount >= 2) showComboBreak(_comboCount);
     _comboCount = 0;
     trackWrongAnswer(problemId);
+    _incWrongCount(problemId);
     var judgeArea = document.getElementById("judge-area");
     if (judgeArea) {
       judgeArea.innerHTML =
@@ -33892,6 +34177,7 @@ function clearCareerFilter() {
 }
 
 function goToDetailProblem(id) {
+  // スピードモードを引き継ぎ（問題移動時はタイマーリセットせずに続行）
   history.pushState({ page: 'detail', lang: currentLanguage, id: id }, '');
   renderDetail(id);
   showPage('detail');
@@ -36289,6 +36575,8 @@ function toggleLearned(id) {
     saveProgress(id);
     _saveProblemTime(id);
     _clearDraft(id);
+    _incDailyCleared();
+    _checkUnitClear(id);
     _comboCount++;
     playClearSound();
     showClearEffect();

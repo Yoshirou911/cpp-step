@@ -222,10 +222,11 @@
   <div id="page-list" class="hidden">
     <div id="list-filter-bar">
       <div id="list-search-row">
-        <div id="list-search-wrap">
+        <div id="list-search-wrap" style="position:relative">
           <span class="list-search-icon">🔍</span>
-          <input id="list-search-input" type="text" placeholder="問題を検索..." oninput="onFilterInput(this.value)" autocomplete="off">
+          <input id="list-search-input" type="text" placeholder="問題を検索..." oninput="onFilterInput(this.value)" onblur="_hideSearchSuggestions()" autocomplete="off">
           <button id="list-search-clear" class="hidden" onclick="clearSearchText()">✕</button>
+          <div id="search-suggest-wrap" class="hidden"></div>
         </div>
         <button id="filter-sheet-trigger" onclick="openFilterSheet()">⊕ 絞り込む<span id="filter-badge" class="hidden"></span></button>
       </div>
@@ -357,6 +358,18 @@
   <div id="mission-clear-effect" class="hidden">
     <div class="clear-effect-text mission">◆ MISSION COMPLETE ◆</div>
   </div>
+
+  <!-- ユニット全クリア演出 -->
+  <div id="unit-clear-overlay" class="hidden">
+    <div id="unit-clear-box">
+      <div class="uc-label">◆ UNIT CLEAR ◆</div>
+      <div id="uc-unit-name" class="uc-name"></div>
+      <div class="uc-sub">ユニットを制覇しました！</div>
+    </div>
+  </div>
+
+  <!-- スクロールトップボタン -->
+  <button id="scroll-top-btn" onclick="scrollToTop()" title="上に戻る">▲</button>
 
   <!-- 認証モーダル -->
   <div id="auth-modal" class="hidden">
