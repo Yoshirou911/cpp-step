@@ -688,7 +688,7 @@ function _showSearchSuggestions(query) {
   var matches = probs.filter(function(p) { return p.title.toLowerCase().indexOf(q) !== -1; }).slice(0, 6);
   if (matches.length === 0) { _hideSearchSuggestions(); return; }
   wrap.innerHTML = matches.map(function(p) {
-    return '<div class="suggest-item" onmousedown="event.preventDefault();_selectSuggestion(' + p.id + ',\'' + escapeHtml(p.title).replace(/'/g,'\\\'') + '\')">' +
+    return '<div class="suggest-item" data-pid="' + p.id + '" data-title="' + escapeHtml(p.title) + '" onmousedown="event.preventDefault();_selectSuggestion(+this.dataset.pid,this.dataset.title)">' +
       '<span class="suggest-rank rank-' + (p.rank || 'rookie').toLowerCase() + '">' + (p.rank || 'ROOKIE') + '</span>' +
       '<span class="suggest-title">' + escapeHtml(p.title) + '</span>' +
     '</div>';
@@ -5902,7 +5902,7 @@ async function renderRanking() {
       var posCls = i < 3 ? 'rank-pos rank-pos-' + (i + 1) : 'rank-pos';
       var posStr = i < 3 ? posLabel[i] : (i + 1) + '.';
       var followBtn = (!isMe && myId)
-        ? '<button class="follow-btn' + (following ? ' following' : '') + '" onclick="event.stopPropagation();toggleFollow(' + JSON.stringify(row.uid) + ')">' +
+        ? '<button class="follow-btn' + (following ? ' following' : '') + '" data-uid="' + row.uid + '" onclick="event.stopPropagation();toggleFollow(this.dataset.uid)">' +
             (following ? '✓ フォロー中' : '+ フォロー') +
           '</button>'
         : '';
@@ -7247,7 +7247,7 @@ async function renderProfile() {
         '</div>' +
         '<div class="badge-name" style="color:' + nameCol + '">' + b.name + '</div>' +
         '<div class="badge-desc" style="color:' + descCol + '">' + b.desc + '</div>' +
-        (isEarned ? '<button class="badge-share-btn" onclick="shareBadge(' + JSON.stringify(b.name) + ',' + JSON.stringify(b.desc) + ')">𝕏 シェア</button>' : '') +
+        (isEarned ? '<button class="badge-share-btn" data-name="' + escapeHtml(b.name) + '" data-desc="' + escapeHtml(b.desc) + '" onclick="shareBadge(this.dataset.name,this.dataset.desc)">𝕏 シェア</button>' : '') +
       '</div>'
     );
   }
