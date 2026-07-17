@@ -6409,6 +6409,12 @@ function renderToolList() {
   h += '<span class="tool-list-count">' + progress.length + ' / ' + tg.problems.length + '</span>';
   h += '</div>';
   h += '<div class="tool-list-desc">' + escapeHtml(tg.desc) + '</div>';
+  h += '<div class="tl-tab-row">';
+  h += '<button class="tl-tab active" id="tlt-textbook" onclick="switchToolTab(\'textbook\')">📖 教本</button>';
+  h += '<button class="tl-tab" id="tlt-practice" onclick="switchToolTab(\'practice\')">✏️ 練習問題</button>';
+  h += '</div>';
+  h += '<div id="tl-panel-textbook">' + _buildToolTextbook(tg) + '</div>';
+  h += '<div id="tl-panel-practice" class="hidden">';
   if (tg.guide) {
     var g = tg.guide;
     var gid = tg.id;
@@ -6456,7 +6462,43 @@ function renderToolList() {
     h += '</div>';
   });
   h += '</div>';
+  h += '</div>';
   c.innerHTML = h;
+}
+
+function _buildToolTextbook(tg) {
+  if (!tg.textbook || !tg.textbook.length) return '';
+  var h = '<div class="tb-wrap">';
+  tg.textbook.forEach(function(ch) {
+    h += '<div class="tb-chapter">';
+    h += '<div class="tb-ch-title">' + escapeHtml(ch.title) + '</div>';
+    ch.commands.forEach(function(item) {
+      h += '<div class="tb-cmd-card">';
+      h += '<div class="tb-cmd-name"><code>' + escapeHtml(item.cmd) + '</code></div>';
+      h += '<div class="tb-cmd-desc">' + escapeHtml(item.desc) + '</div>';
+      if (item.example) {
+        h += '<pre class="tb-cmd-example">' + escapeHtml(item.example) + '</pre>';
+      }
+      if (item.note) {
+        h += '<div class="tb-cmd-note"><span class="tb-note-label">📌</span><pre class="tb-note-body">' + escapeHtml(item.note) + '</pre></div>';
+      }
+      h += '</div>';
+    });
+    h += '</div>';
+  });
+  h += '</div>';
+  return h;
+}
+
+function switchToolTab(which) {
+  var tbPanel = document.getElementById('tl-panel-textbook');
+  var prPanel = document.getElementById('tl-panel-practice');
+  var tbBtn   = document.getElementById('tlt-textbook');
+  var prBtn   = document.getElementById('tlt-practice');
+  if (tbPanel) tbPanel.classList.toggle('hidden', which !== 'textbook');
+  if (prPanel) prPanel.classList.toggle('hidden', which !== 'practice');
+  if (tbBtn)   tbBtn.classList.toggle('active', which === 'textbook');
+  if (prBtn)   prBtn.classList.toggle('active', which === 'practice');
 }
 
 function toggleToolProblem(id) {
