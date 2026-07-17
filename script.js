@@ -2076,8 +2076,25 @@ function setActiveTab(tab) {
 }
 
 function openSidebar() {
+  renderSidebarLangs();
   document.getElementById('sidebar-nav').classList.add('open');
   document.getElementById('sidebar-overlay').classList.add('open');
+}
+
+function renderSidebarLangs() {
+  var c = document.getElementById('sidebar-langs');
+  if (!c) return;
+  var h = '';
+  LANGUAGE_GROUPS.forEach(function(g) {
+    g.langs.forEach(function(lang) {
+      var isCurrent = lang.id === currentLanguage;
+      h += '<button class="sl-lang-chip' + (isCurrent ? ' sl-active' : '') + '" ' +
+           'style="--lc:' + lang.color + '" ' +
+           'onclick="selectLanguage(\'' + lang.id + '\');closeSidebar()">' +
+           lang.name + '</button>';
+    });
+  });
+  c.innerHTML = h;
 }
 
 function closeSidebar() {

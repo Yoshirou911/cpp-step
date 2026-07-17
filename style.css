@@ -10035,6 +10035,49 @@ html {
   box-shadow: 0 0 10px rgba(255,107,0,0.15);
 }
 
+/* サイドバー言語セクション */
+#sidebar-lang-divider {
+  padding: 12px 22px 8px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  color: rgba(255,107,0,0.4);
+  border-top: 1px solid rgba(255,107,0,0.1);
+  flex-shrink: 0;
+}
+#sidebar-langs {
+  padding: 4px 14px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.sl-lang-chip {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.45);
+  font-size: 0.68rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.sl-lang-chip:hover {
+  border-color: var(--lc);
+  color: var(--lc);
+  background: rgba(255,255,255,0.04);
+}
+.sl-lang-chip.sl-active {
+  border-color: var(--lc);
+  color: var(--lc);
+  background: rgba(255,255,255,0.06);
+  font-weight: 800;
+  box-shadow: 0 0 6px color-mix(in srgb, var(--lc) 30%, transparent);
+}
+
 /* トップバー（スリム版） */
 #nav-menu-btn {
   background: transparent;
