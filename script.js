@@ -4380,6 +4380,16 @@ async function runCode() {
     if (!res.ok) {
       var _errBody = {};
       try { _errBody = await res.json(); } catch(e) {}
+      if (res.status === 401) {
+        if (_supabase) {
+          var _ref = await _supabase.auth.refreshSession();
+          if (!_ref.error && _ref.data && _ref.data.session) {
+            showToast('セッションを更新しました。もう一度実行してください');
+            return;
+          }
+        }
+        throw new Error('セッションが切れています。ページを再読み込みしてください（F5）');
+      }
       var _errMsg = _errBody.error || ('HTTP ' + res.status + (_isKotlin ? ' — Kotlin APIエラー' : ' — Wandbox APIエラー'));
       throw new Error(_errMsg);
     }
