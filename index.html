@@ -130,6 +130,7 @@
       <button class="nav-tab" id="tab-ranking" onclick="switchTab('ranking')">🏆 RANKING</button>
       <button class="nav-tab" id="tab-career" onclick="switchTab('career')">🎯 CAREER</button>
       <button class="nav-tab" id="tab-contest" onclick="switchTab('contest')">🎯 CONTEST</button>
+      <button class="nav-tab" id="tab-tools" onclick="switchTab('tools')">🔧 TOOLS</button>
     </div>
     <div id="sidebar-lang-divider">◆ 言語を選ぶ</div>
     <div id="sidebar-langs"></div>
@@ -318,6 +319,16 @@
   <!-- コンテストページ -->
   <div id="page-contest" class="hidden">
     <div id="contest-content"></div>
+  </div>
+
+  <!-- ツール学習: ツール選択ページ -->
+  <div id="page-tools" class="hidden">
+    <div id="tools-content"></div>
+  </div>
+
+  <!-- ツール学習: 問題一覧ページ -->
+  <div id="page-tool-list" class="hidden">
+    <div id="tool-list-content"></div>
   </div>
 
   <!-- ミッション一覧ページ -->
@@ -684,6 +695,7 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script defer src="data/problems.js"></script>
   <script defer src="data/guide-data.js"></script>
+  <script defer src="data/tools-data.js"></script>
   <script defer src="script.js"></script>
 </body>
 </html>

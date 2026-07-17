@@ -2060,7 +2060,7 @@ function showNavAndProgress() {
 }
 
 function setActiveTab(tab) {
-  ['problems', 'missions', 'guide', 'ranking', 'career', 'contest'].forEach(function(t) {
+  ['problems', 'missions', 'guide', 'ranking', 'career', 'contest', 'tools'].forEach(function(t) {
     var el = document.getElementById('tab-' + t);
     if (!el) return;
     el.classList.toggle('active', t === tab);
@@ -2069,7 +2069,7 @@ function setActiveTab(tab) {
   });
   var labelMap = {
     problems: 'PROBLEMS', missions: 'MISSIONS', guide: 'GUIDE',
-    ranking: 'RANKING', career: 'CAREER', contest: 'CONTEST'
+    ranking: 'RANKING', career: 'CAREER', contest: 'CONTEST', tools: 'TOOLS'
   };
   var labelEl = document.getElementById('nav-current-label');
   if (labelEl && labelMap[tab]) labelEl.textContent = labelMap[tab];
@@ -2504,6 +2504,15 @@ function restoreState(state) {
   } else if (state.page === 'profile') {
     renderProfile();
     showPage('profile');
+  } else if (state.page === 'tools') {
+    setActiveTab('tools');
+    renderToolsPage();
+    showPage('tools');
+  } else if (state.page === 'tool-list') {
+    setActiveTab('tools');
+    currentTool = state.tool || null;
+    renderToolList();
+    showPage('tool-list');
   }
 }
 
@@ -2845,7 +2854,8 @@ function showPage(name) {
   if (_mce) _mce.classList.add('hidden');
   // 全ページを非表示にしてから対象だけ表示
   ["page-landing", "page-lang", "page-list", "page-detail", "page-guide",
-   "page-mission-list", "page-mission-detail", "page-profile", "page-ranking", "page-contest", "page-career"].forEach(function(id) {
+   "page-mission-list", "page-mission-detail", "page-profile", "page-ranking", "page-contest", "page-career",
+   "page-tools", "page-tool-list"].forEach(function(id) {
     document.getElementById(id).classList.add("hidden");
   });
   var _pageEl = document.getElementById("page-" + name);
@@ -6333,6 +6343,166 @@ function goToContestProblem(id) {
   showPage('detail');
 }
 
+// ===== TOOLS セクション（プログラミング学習とは独立） =====
+
+var currentTool = null;
+
+function getToolProgress(toolId) {
+  try { return JSON.parse(localStorage.getItem('tool_progress_' + toolId) || '[]'); } catch(e) { return []; }
+}
+
+function saveToolProgress(toolId, problemId) {
+  var progress = getToolProgress(toolId);
+  if (progress.indexOf(problemId) === -1) {
+    progress.push(problemId);
+    try { localStorage.setItem('tool_progress_' + toolId, JSON.stringify(progress)); } catch(e) {}
+  }
+}
+
+function renderToolsPage() {
+  var c = document.getElementById('tools-content');
+  if (!c) return;
+  var h = '<div class="tools-page-header">';
+  h += '<div class="tools-page-title">🔧 TOOLS</div>';
+  h += '<div class="tools-page-sub">プログラミング以外のIT必須スキルを学ぶ</div>';
+  h += '</div>';
+  h += '<div class="tools-grid">';
+  TOOL_GROUPS.forEach(function(tg) {
+    var progress = getToolProgress(tg.id);
+    var total = tg.problems.length;
+    var cleared = progress.length;
+    var pct = total > 0 ? Math.round(cleared / total * 100) : 0;
+    h += '<div class="tool-card" style="--tc:' + tg.color + '" onclick="selectTool(\'' + tg.id + '\')">';
+    h += '<div class="tool-card-icon">' + tg.icon + '</div>';
+    h += '<div class="tool-card-name">' + escapeHtml(tg.name) + '</div>';
+    h += '<div class="tool-card-desc">' + escapeHtml(tg.desc) + '</div>';
+    h += '<div class="tool-card-progress">';
+    h += '<div class="tool-progress-bar"><div class="tool-progress-fill" style="width:' + pct + '%;background:var(--tc)"></div></div>';
+    h += '<span class="tool-progress-text">' + cleared + ' / ' + total + ' クリア</span>';
+    h += '</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+  c.innerHTML = h;
+}
+
+function selectTool(toolId) {
+  currentTool = toolId;
+  renderToolList();
+  history.pushState({ page: 'tool-list', tool: toolId, tab: 'tools' }, '');
+  showPage('tool-list');
+}
+
+function renderToolList() {
+  var c = document.getElementById('tool-list-content');
+  if (!c) return;
+  var tg = null;
+  for (var i = 0; i < TOOL_GROUPS.length; i++) {
+    if (TOOL_GROUPS[i].id === currentTool) { tg = TOOL_GROUPS[i]; break; }
+  }
+  if (!tg) return;
+  var progress = getToolProgress(tg.id);
+  var h = '<button class="tool-back-btn" onclick="switchTab(\'tools\')">← ツール一覧に戻る</button>';
+  h += '<div class="tool-list-header" style="--tc:' + tg.color + '">';
+  h += '<span class="tool-list-icon">' + tg.icon + '</span>';
+  h += '<span class="tool-list-name">' + escapeHtml(tg.name) + '</span>';
+  h += '<span class="tool-list-count">' + progress.length + ' / ' + tg.problems.length + '</span>';
+  h += '</div>';
+  h += '<div class="tool-list-desc">' + escapeHtml(tg.desc) + '</div>';
+  h += '<div class="tool-problems-list">';
+  tg.problems.forEach(function(p, idx) {
+    var isCleared = progress.indexOf(p.id) !== -1;
+    h += '<div class="tool-problem-card' + (isCleared ? ' tp-cleared' : '') + '" id="tpc-' + p.id + '">';
+    h += '<div class="tool-problem-header" onclick="toggleToolProblem(\'' + p.id + '\')">';
+    h += '<span class="tp-num">' + String(idx + 1).padStart(2, '0') + '</span>';
+    h += '<span class="tp-title">' + escapeHtml(p.title) + '</span>';
+    if (isCleared) h += '<span class="tp-cleared-badge">✓</span>';
+    h += '<span class="tp-chevron" id="tpc-chevron-' + p.id + '">▶</span>';
+    h += '</div>';
+    h += '<div class="tool-problem-body hidden" id="tpb-' + p.id + '">';
+    h += '<p class="tp-question">' + escapeHtml(p.question) + '</p>';
+    h += '<div class="tp-input-row">';
+    h += '<input class="tp-input" id="tpi-' + p.id + '" type="text" placeholder="コマンドを入力..." spellcheck="false" autocomplete="off"';
+    h += ' onkeydown="if(event.key===\'Enter\')checkToolAnswer(\'' + tg.id + '\',\'' + p.id + '\')">';
+    h += '<button class="tp-submit-btn" onclick="checkToolAnswer(\'' + tg.id + '\',\'' + p.id + '\')">確認</button>';
+    h += '</div>';
+    h += '<div class="tp-feedback hidden" id="tpf-' + p.id + '"></div>';
+    if (p.hint) {
+      h += '<div class="tp-hint-wrap">';
+      h += '<button class="tp-hint-btn" onclick="toggleToolHint(\'' + p.id + '\')">💡 ヒント</button>';
+      h += '<div class="tp-hint hidden" id="tph-' + p.id + '">' + escapeHtml(p.hint) + '</div>';
+      h += '</div>';
+    }
+    h += '</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+  c.innerHTML = h;
+}
+
+function toggleToolProblem(id) {
+  var body = document.getElementById('tpb-' + id);
+  var chevron = document.getElementById('tpc-chevron-' + id);
+  if (!body || !chevron) return;
+  var isHidden = body.classList.toggle('hidden');
+  chevron.textContent = isHidden ? '▶' : '▼';
+  if (!isHidden) {
+    var input = document.getElementById('tpi-' + id);
+    if (input) setTimeout(function() { input.focus(); }, 80);
+  }
+}
+
+function toggleToolHint(id) {
+  var hint = document.getElementById('tph-' + id);
+  if (hint) hint.classList.toggle('hidden');
+}
+
+function checkToolAnswer(toolId, problemId) {
+  var tg = null;
+  for (var i = 0; i < TOOL_GROUPS.length; i++) {
+    if (TOOL_GROUPS[i].id === toolId) { tg = TOOL_GROUPS[i]; break; }
+  }
+  if (!tg) return;
+  var p = null;
+  for (var j = 0; j < tg.problems.length; j++) {
+    if (tg.problems[j].id === problemId) { p = tg.problems[j]; break; }
+  }
+  if (!p) return;
+  var input = document.getElementById('tpi-' + problemId);
+  var feedback = document.getElementById('tpf-' + problemId);
+  if (!input || !feedback) return;
+  var userAnswer = input.value.trim();
+  if (!userAnswer) { input.focus(); return; }
+  var isCorrect = false;
+  for (var k = 0; k < p.answers.length; k++) {
+    if (userAnswer === p.answers[k].trim()) { isCorrect = true; break; }
+  }
+  feedback.classList.remove('hidden');
+  if (isCorrect) {
+    feedback.className = 'tp-feedback tp-correct';
+    feedback.innerHTML = '✓ 正解！　<code>' + escapeHtml(p.answers[0]) + '</code>';
+    saveToolProgress(toolId, problemId);
+    var card = document.getElementById('tpc-' + problemId);
+    if (card && !card.classList.contains('tp-cleared')) {
+      card.classList.add('tp-cleared');
+      var badge = card.querySelector('.tp-cleared-badge');
+      if (!badge) {
+        var titleEl = card.querySelector('.tp-title');
+        if (titleEl) {
+          var b = document.createElement('span');
+          b.className = 'tp-cleared-badge';
+          b.textContent = '✓';
+          titleEl.after(b);
+        }
+      }
+    }
+  } else {
+    feedback.className = 'tp-feedback tp-wrong';
+    feedback.textContent = '✗ 不正解。もう一度試してみよう。';
+    input.select();
+  }
+}
+
 function switchTab(tab) {
   closeSidebar();
   playNavTab();
@@ -6357,6 +6527,11 @@ function switchTab(tab) {
     history.pushState({ page: 'career', lang: currentLanguage, tab: 'career' }, '');
     renderCareer();
     showPage('career');
+  } else if (tab === 'tools') {
+    showNavAndProgress();
+    history.pushState({ page: 'tools', tab: 'tools' }, '');
+    renderToolsPage();
+    showPage('tools');
   } else {
     history.pushState({ page: 'guide', lang: currentLanguage, tab: 'guide' }, '');
     renderGuide();
