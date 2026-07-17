@@ -1,7 +1,7 @@
 /**
  * POST /api/run-code
  * Wandbox (wandbox.org) へのプロキシ — Kotlin 以外の全言語
- * Wandbox障害時は Judge0 CE (ce.judge0.com) に自動フォールバック
+ * Wandbox障害時は { _wandboxFailed: true } を返してクライアント側フォールバックに委ねる
  * ボディ: { code, compiler, stdin?, options? }
  */
 
@@ -19,68 +19,6 @@ function isRateLimited(ip) {
   entry.count++;
   rateLimitMap.set(ip, entry);
   return entry.count > MAX_REQS;
-}
-
-// Judge0 CE 言語ID
-const JUDGE0_LANG = {
-  cpp:        54,
-  c:          50,
-  python:     71,
-  java:       62,
-  javascript: 63,
-  typescript: 74,
-  ruby:       72,
-  go:         60,
-  rust:       73,
-  swift:      83,
-};
-
-function getJudge0LangId(compiler, options) {
-  if (/cpython|python/.test(compiler))   return JUDGE0_LANG.python;
-  if (/ruby/.test(compiler))             return JUDGE0_LANG.ruby;
-  if (/openjdk|java/.test(compiler))     return JUDGE0_LANG.java;
-  if (/nodejs|node/.test(compiler))      return JUDGE0_LANG.javascript;
-  if (/typescript/.test(compiler))       return JUDGE0_LANG.typescript;
-  if (/rust/.test(compiler))             return JUDGE0_LANG.rust;
-  if (/\bgo-/.test(compiler))            return JUDGE0_LANG.go;
-  if (/swift/.test(compiler))            return JUDGE0_LANG.swift;
-  if (/gcc|g\+\+|clang/.test(compiler)) {
-    return (options && /c11|c99|c89|c17/.test(options)) ? JUDGE0_LANG.c : JUDGE0_LANG.cpp;
-  }
-  return null;
-}
-
-async function runOnJudge0(code, compiler, stdin, options) {
-  const langId = getJudge0LangId(compiler, options);
-  if (!langId) return null;
-
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 12000);
-  try {
-    const response = await fetch('https://ce.judge0.com/submissions?base64_encoded=false&wait=true', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        source_code: code,
-        language_id: langId,
-        stdin: stdin || '',
-      }),
-      signal: controller.signal
-    });
-    clearTimeout(timer);
-    if (!response.ok) return null;
-    const data = await response.json();
-    if (!data || !data.status) return null;
-    return {
-      program_output: data.stdout        || '',
-      compiler_error: data.compile_output|| '',
-      program_error:  data.stderr        || '',
-      _source: 'judge0',
-    };
-  } catch (e) {
-    clearTimeout(timer);
-    return null;
-  }
 }
 
 export default async function handler(req, res) {
@@ -139,28 +77,21 @@ export default async function handler(req, res) {
     clearTimeout(timeout);
 
     if (!response.ok) {
-      const fallback = await runOnJudge0(code, compiler, stdin, options);
-      if (fallback) return res.json(fallback);
-      return res.status(502).json({ error: 'コード実行サービスに接続できません（HTTP ' + response.status + '）。時間をおいて再試行してください。' });
+      // Wandboxサーバーエラー → クライアント側でフォールバック
+      return res.json({ _wandboxFailed: true });
     }
 
     const data = await response.json();
 
-    // Wandboxサーバー障害（OCIエラー）→ Judge0 フォールバック
+    // Wandboxインフラ障害（OCIエラー）→ クライアント側でフォールバック
     if (data.compiler_error && data.compiler_error.includes('OCI runtime error')) {
-      const fallback = await runOnJudge0(code, compiler, stdin, options);
-      if (fallback) return res.json(fallback);
+      return res.json({ _wandboxFailed: true });
     }
 
     return res.json(data);
 
   } catch (e) {
-    // Wandboxタイムアウト・接続失敗 → Judge0 フォールバック
-    const fallback = await runOnJudge0(code, compiler, stdin, options);
-    if (fallback) return res.json(fallback);
-    if (e.name === 'AbortError') {
-      return res.status(504).json({ error: 'タイムアウト（15秒）。無限ループや長時間処理が含まれていないか確認してください。' });
-    }
-    return res.status(502).json({ error: 'コード実行サービスに接続できません。時間をおいて再試行してください。' });
+    // Wandboxタイムアウト・接続失敗 → クライアント側でフォールバック
+    return res.json({ _wandboxFailed: true });
   }
 }

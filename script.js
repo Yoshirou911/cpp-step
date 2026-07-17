@@ -4306,6 +4306,40 @@ function setEditorMode(mode) {
   aceEditor.focus();
 }
 
+// ===== Wandbox障害時のクライアント側フォールバック（Judge0 CE）=====
+
+var _JUDGE0_LANG_IDS = {
+  'cpp': 54, 'c': 50, 'python': 71, 'java': 62,
+  'javascript': 63, 'typescript': 74, 'ruby': 72,
+  'go': 60, 'rust': 73, 'swift': 83
+};
+
+async function _runOnJudge0Client(code, stdin) {
+  var langId = _JUDGE0_LANG_IDS[currentLanguage] || 54;
+  var ctrl = new AbortController();
+  var timer = setTimeout(function() { ctrl.abort(); }, 15000);
+  try {
+    var r = await fetch('https://ce.judge0.com/submissions?base64_encoded=false&wait=true', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ source_code: code, language_id: langId, stdin: stdin || '' }),
+      signal: ctrl.signal
+    });
+    clearTimeout(timer);
+    if (!r.ok) throw new Error('Judge0 HTTP ' + r.status);
+    var d = await r.json();
+    if (!d || !d.status) throw new Error('Judge0 応答エラー');
+    return {
+      program_output: d.stdout        || '',
+      compiler_error: d.compile_output|| '',
+      program_error:  d.stderr        || '',
+    };
+  } catch (e) {
+    clearTimeout(timer);
+    throw e;
+  }
+}
+
 // ===== コードを実行する（Wandbox API + 自動判定） =====
 
 async function runCode() {
@@ -4402,26 +4436,36 @@ async function runCode() {
     const data = await res.json();
     outputArea.classList.remove("hidden");
 
-    if (data._source === 'judge0') {
-      showToast('Wandbox障害中のため代替サービスで実行しました');
+    // Wandbox障害時はブラウザから直接Judge0へ
+    let runData = data;
+    if (data._wandboxFailed) {
+      showToast('Wandbox障害中。代替サービスで実行中...');
+      try {
+        runData = await _runOnJudge0Client(code, stdin);
+        showToast('代替サービスで実行しました（Wandbox障害中）');
+      } catch (_je) {
+        outputText.textContent = '⚠ コード実行サービスが現在利用できません。しばらく待ってから再試行してください。';
+        outputText.className = 'output-error';
+        return;
+      }
     }
 
-    if (data.compiler_error) {
-      outputText.textContent = "コンパイルエラー:\n" + data.compiler_error;
+    if (runData.compiler_error) {
+      outputText.textContent = "コンパイルエラー:\n" + runData.compiler_error;
       outputText.className = "output-error";
-    } else if (data.program_error && !data.program_output) {
-      outputText.textContent = "実行時エラー:\n" + data.program_error;
+    } else if (runData.program_error && !runData.program_output) {
+      outputText.textContent = "実行時エラー:\n" + runData.program_error;
       outputText.className = "output-error";
     } else {
-      const output = (data.program_output || "") + (data.program_error ? "\n[stderr]\n" + data.program_error : "");
+      const output = (runData.program_output || "") + (runData.program_error ? "\n[stderr]\n" + runData.program_error : "");
       outputText.textContent = output || "(出力なし)";
       outputText.className = "output-success";
 
-      // 実行時間バッジ
+      // 実行時間バッジ（Judge0フォールバック時は非表示）
       var _timeBadge = document.getElementById('exec-time-badge');
       if (_timeBadge) {
-        if (data.program_time != null) {
-          var _ms = data.program_time < 1 ? Math.round(data.program_time * 1000) + 'ms' : data.program_time.toFixed(2) + 's';
+        if (runData.program_time != null) {
+          var _ms = runData.program_time < 1 ? Math.round(runData.program_time * 1000) + 'ms' : runData.program_time.toFixed(2) + 's';
           _timeBadge.textContent = '⚡ ' + _ms;
           _timeBadge.classList.remove('hidden');
         } else {
@@ -4430,8 +4474,8 @@ async function runCode() {
       }
 
       // 出力がある＆まだクリアしていない → 自動判定
-      if (data.program_output && _capturedProblemId && !isLearned(_capturedProblemId)) {
-        startAutoJudge(_capturedProblemId, data.program_output);
+      if (runData.program_output && _capturedProblemId && !isLearned(_capturedProblemId)) {
+        startAutoJudge(_capturedProblemId, runData.program_output);
       } else if (isLearned(_capturedProblemId)) {
         if (judgeArea) {
           judgeArea.innerHTML = '<div class="judge-pass">✔ CLEARED</div>';
