@@ -4306,7 +4306,7 @@ function setEditorMode(mode) {
   aceEditor.focus();
 }
 
-// ===== Wandbox障害時のクライアント側フォールバック（Judge0 CE）=====
+// ===== Wandbox障害時のクライアント側フォールバック =====
 
 var _JUDGE0_LANG_IDS = {
   'cpp': 54, 'c': 50, 'python': 71, 'java': 62,
@@ -4314,6 +4314,7 @@ var _JUDGE0_LANG_IDS = {
   'go': 60, 'rust': 73, 'swift': 83
 };
 
+// フォールバック1: Judge0 CE
 async function _runOnJudge0Client(code, stdin) {
   var langId = _JUDGE0_LANG_IDS[currentLanguage] || 54;
   var ctrl = new AbortController();
@@ -4326,9 +4327,9 @@ async function _runOnJudge0Client(code, stdin) {
       signal: ctrl.signal
     });
     clearTimeout(timer);
-    if (!r.ok) throw new Error('Judge0 HTTP ' + r.status);
+    if (!r.ok) return null;
     var d = await r.json();
-    if (!d || !d.status) throw new Error('Judge0 応答エラー');
+    if (!d || !d.status) return null;
     return {
       program_output: d.stdout        || '',
       compiler_error: d.compile_output|| '',
@@ -4336,7 +4337,45 @@ async function _runOnJudge0Client(code, stdin) {
     };
   } catch (e) {
     clearTimeout(timer);
-    throw e;
+    return null;
+  }
+}
+
+// フォールバック2: Godbolt（C/C++ のみ）
+async function _runOnGodboltClient(code, stdin) {
+  var userArgs = currentLanguage === 'c' ? '-x c -std=c11' : '';
+  var ctrl = new AbortController();
+  var timer = setTimeout(function() { ctrl.abort(); }, 15000);
+  try {
+    var r = await fetch('https://godbolt.org/api/compiler/g132/compile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        source: code,
+        options: {
+          userArguments: userArgs,
+          executeParameters: { args: '', stdin: stdin || '' },
+          compilerOptions: { executorRequest: true },
+          filters: { execute: true },
+          tools: []
+        }
+      }),
+      signal: ctrl.signal
+    });
+    clearTimeout(timer);
+    if (!r.ok) return null;
+    var d = await r.json();
+    var stdout_text = (d.stdout || []).map(function(x) { return x.text; }).join('\n');
+    var stderr_text = (d.stderr || []).map(function(x) { return x.text; }).join('\n');
+    var isCompileError = d.code !== 0 && !stdout_text;
+    return {
+      program_output: stdout_text,
+      compiler_error: isCompileError ? stderr_text : '',
+      program_error:  !isCompileError ? stderr_text : '',
+    };
+  } catch (e) {
+    clearTimeout(timer);
+    return null;
   }
 }
 
@@ -4436,18 +4475,24 @@ async function runCode() {
     const data = await res.json();
     outputArea.classList.remove("hidden");
 
-    // Wandbox障害時はブラウザから直接Judge0へ
+    // Wandbox障害時はブラウザから直接フォールバックへ
     let runData = data;
     if (data._wandboxFailed) {
       showToast('Wandbox障害中。代替サービスで実行中...');
-      try {
-        runData = await _runOnJudge0Client(code, stdin);
-        showToast('代替サービスで実行しました（Wandbox障害中）');
-      } catch (_je) {
-        outputText.textContent = '⚠ コード実行サービスが現在利用できません。しばらく待ってから再試行してください。';
+      // 1. Judge0 CE を試す
+      runData = await _runOnJudge0Client(code, stdin);
+      // 2. Judge0 もコンテナエラーなら Godbolt（C/C++ のみ）を試す
+      if (!runData || (runData.compiler_error + runData.program_error).includes('catatonit')) {
+        if (currentLanguage === 'cpp' || currentLanguage === 'c') {
+          runData = await _runOnGodboltClient(code, stdin);
+        }
+      }
+      if (!runData) {
+        outputText.textContent = '⚠ コード実行サービスが現在すべて利用できません。しばらく待ってから再試行してください。';
         outputText.className = 'output-error';
         return;
       }
+      showToast('代替サービスで実行しました（Wandbox障害中）');
     }
 
     if (runData.compiler_error) {
