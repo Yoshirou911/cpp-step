@@ -4355,7 +4355,7 @@ async function runCode() {
     }
     var _isKotlin  = currentLanguage === 'kotlin';
     const controller = new AbortController();
-    const _timeout   = setTimeout(function() { controller.abort(); }, _isKotlin ? 30000 : 20000);
+    const _timeout   = setTimeout(function() { controller.abort(); }, _isKotlin ? 30000 : 35000);
     var _fetchUrl  = _isKotlin ? '/api/run-kotlin' : '/api/run-code';
     var _wandboxBody = { code: code, compiler: getCompiler(), stdin: stdin };
     if (currentLanguage === 'c') _wandboxBody.options = 'c11';
