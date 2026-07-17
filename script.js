@@ -4311,19 +4311,17 @@ function setEditorMode(mode) {
 async function runCode() {
   const code = aceEditor ? aceEditor.getValue().trim() : '';
   if (!code) { showToast('コードを入力してください'); return; }
-  // 未ログインなら匿名セッションを自動作成して登録不要で実行できるようにする
-  if (!currentUser) {
-    var _anonOk = await ensureAnonSession();
-    if (!_anonOk) { showToast('コード実行にはネットワーク接続が必要です'); return; }
-  }
 
   const btn        = document.querySelector(".run-btn");
   const outputArea = document.getElementById("output-area");
   const outputText = document.getElementById("output-text");
   const judgeArea  = document.getElementById("judge-area");
   if (!btn || !outputArea || !outputText) return;
+  if (btn.disabled) return; // 連打防止
+
   const stdinEl = document.getElementById("stdin-input");
   const stdin   = stdinEl ? stdinEl.value : '';
+  const _capturedProblemId = currentProblemId; // ナビゲーション競合防止
 
   // HTML/CSS: iframeプレビュー（Wandbox不使用）
   if (currentLanguage === 'html') {
@@ -4338,8 +4336,6 @@ async function runCode() {
     previewFrame.style.display = 'block';
     outputArea.classList.add('hidden');
     if (judgeArea) judgeArea.classList.add('hidden');
-    btn.textContent = '▶ 実行する';
-    btn.disabled = false;
     return;
   }
 
@@ -4352,6 +4348,11 @@ async function runCode() {
   if (judgeArea) judgeArea.classList.add("hidden");
 
   try {
+    // 未ログインなら匿名セッションを自動作成して登録不要で実行できるようにする
+    if (!currentUser) {
+      var _anonOk = await ensureAnonSession();
+      if (!_anonOk) { showToast('コード実行にはネットワーク接続が必要です'); return; }
+    }
     var _isKotlin  = currentLanguage === 'kotlin';
     const controller = new AbortController();
     const _timeout   = setTimeout(function() { controller.abort(); }, _isKotlin ? 30000 : 20000);
@@ -4425,9 +4426,9 @@ async function runCode() {
       }
 
       // 出力がある＆まだクリアしていない → 自動判定
-      if (data.program_output && currentProblemId && !isLearned(currentProblemId)) {
-        startAutoJudge(currentProblemId, data.program_output);
-      } else if (isLearned(currentProblemId)) {
+      if (data.program_output && _capturedProblemId && !isLearned(_capturedProblemId)) {
+        startAutoJudge(_capturedProblemId, data.program_output);
+      } else if (isLearned(_capturedProblemId)) {
         if (judgeArea) {
           judgeArea.innerHTML = '<div class="judge-pass">✔ CLEARED</div>';
           judgeArea.classList.remove("hidden");
@@ -4691,13 +4692,22 @@ async function askAI(system, messages) {
     var _tok  = _sess.data && _sess.data.session && _sess.data.session.access_token;
     if (_tok) askHeaders['Authorization'] = 'Bearer ' + _tok;
   }
-  const res = await fetch('/api/ask', {
-    method: 'POST',
-    headers: askHeaders,
-    body: JSON.stringify({ system: system, messages: msgArray })
-  });
+  const _askCtrl = new AbortController();
+  const _askTimer = setTimeout(function() { _askCtrl.abort(); }, 35000);
+  let res;
+  try {
+    res = await fetch('/api/ask', {
+      method: 'POST',
+      headers: askHeaders,
+      body: JSON.stringify({ system: system, messages: msgArray }),
+      signal: _askCtrl.signal
+    });
+  } finally {
+    clearTimeout(_askTimer);
+  }
   const data = await res.json();
   if (data.error) throw new Error(data.error);
+  if (!data.reply) throw new Error('AI応答が空です。しばらく待ってから再試行してください。');
   return data.reply;
 }
 
@@ -7049,7 +7059,10 @@ async function submitAndRefreshGolf(problemId) {
     if (btn) { btn.textContent = '✓ 提出しました！'; setTimeout(function() { if (btn) btn.textContent = '⛳ このコードを提出する'; }, 2000); }
   } finally {
     _golfSubmitting[problemId] = false;
-    if (btn) btn.disabled = false;
+    if (btn) {
+      btn.disabled = false;
+      if (btn.textContent === '送信中...') btn.textContent = '⛳ このコードを提出する';
+    }
   }
 }
 

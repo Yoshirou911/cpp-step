@@ -91,11 +91,11 @@ export default async function handler(req, res) {
     );
     clearTimeout(timeoutId);
 
-    const data = await response.json();
-
     if (!response.ok) {
       return res.status(502).json({ error: 'AIサービスに接続できませんでした。時間をおいて再試行してください。' });
     }
+
+    const data = await response.json();
 
     if (!data.choices || !data.choices[0]) {
       return res.status(500).json({ error: 'AI応答が空です。しばらく待ってから再試行してください。' });
