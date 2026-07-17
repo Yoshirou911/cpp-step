@@ -4369,7 +4369,7 @@ async function runCode() {
       if (_runTok) _runHeaders['Authorization'] = 'Bearer ' + _runTok;
     }
 
-    const res = await fetch(_fetchUrl, {
+    let res = await fetch(_fetchUrl, {
       method:  "POST",
       headers: _runHeaders,
       body:    _fetchBody,
@@ -4377,17 +4377,21 @@ async function runCode() {
     });
     clearTimeout(_timeout);
 
+    if (res.status === 401 && _supabase) {
+      var _ref = await _supabase.auth.refreshSession();
+      if (!_ref.error && _ref.data && _ref.data.session) {
+        _runHeaders['Authorization'] = 'Bearer ' + _ref.data.session.access_token;
+        const _ctrl2 = new AbortController();
+        const _t2 = setTimeout(function() { _ctrl2.abort(); }, _isKotlin ? 30000 : 20000);
+        res = await fetch(_fetchUrl, { method: 'POST', headers: _runHeaders, body: _fetchBody, signal: _ctrl2.signal });
+        clearTimeout(_t2);
+      }
+    }
+
     if (!res.ok) {
       var _errBody = {};
       try { _errBody = await res.json(); } catch(e) {}
       if (res.status === 401) {
-        if (_supabase) {
-          var _ref = await _supabase.auth.refreshSession();
-          if (!_ref.error && _ref.data && _ref.data.session) {
-            showToast('セッションを更新しました。もう一度実行してください');
-            return;
-          }
-        }
         throw new Error('セッションが切れています。ページを再読み込みしてください（F5）');
       }
       var _errMsg = _errBody.error || ('HTTP ' + res.status + (_isKotlin ? ' — Kotlin APIエラー' : ' — Wandbox APIエラー'));
