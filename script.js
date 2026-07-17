@@ -8085,6 +8085,9 @@ function openAuthModal() {
   var modal = document.getElementById('auth-modal');
   if (!modal) return;
   modal.classList.remove('hidden');
+  if (currentUser && !currentUser.email) {
+    switchAuthTab('signup');
+  }
   setTimeout(function() {
     var emailEl = document.getElementById('auth-email');
     if (emailEl) emailEl.focus();
@@ -8272,9 +8275,12 @@ async function submitAuth() {
   btn.disabled = true;
   btn.textContent = '...';
 
+  var _wasAnon = !!(currentUser && !currentUser.email);
   var result;
   if (_currentAuthTab === 'login') {
     result = await _supabase.auth.signInWithPassword({ email: email, password: pass });
+  } else if (_wasAnon) {
+    result = await _supabase.auth.updateUser({ email: email, password: pass });
   } else {
     result = await _supabase.auth.signUp({ email: email, password: pass });
   }
@@ -8289,11 +8295,12 @@ async function submitAuth() {
   }
 
   // サインアップ後にメール確認が必要な場合
-  if (_currentAuthTab === 'signup' && result.data && result.data.user && !result.data.session) {
+  if (_currentAuthTab === 'signup' && result.data && result.data.user && (_wasAnon || !result.data.session)) {
     _pendingConfirmEmail = email;
     sucEl.innerHTML =
-      '確認メールを送信しました。受信ボックスをご確認ください。<br>' +
-      '<button class="auth-text-link" style="margin-top:6px;display:inline-block" ' +
+      '確認メールを送信しました。受信ボックスをご確認ください。' +
+      (_wasAnon ? '<br><span style="font-size:0.75rem;color:#4caf50">✓ ゲストの学習記録はそのまま引き継がれます</span>' : '') +
+      '<br><button class="auth-text-link" style="margin-top:6px;display:inline-block" ' +
         'onclick="resendConfirmEmail()">メールが届かない場合は再送する</button>';
     sucEl.classList.remove('hidden');
     return;
