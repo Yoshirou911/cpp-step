@@ -4428,7 +4428,7 @@ async function runCode() {
     }
     var _isKotlin  = currentLanguage === 'kotlin';
     const controller = new AbortController();
-    const _timeout   = setTimeout(function() { controller.abort(); }, _isKotlin ? 30000 : 30000);
+    const _timeout   = setTimeout(function() { controller.abort(); }, 30000);
     var _fetchUrl  = _isKotlin ? '/api/run-kotlin' : '/api/run-code';
     var _wandboxBody = { code: code, compiler: getCompiler(), stdin: stdin };
     if (currentLanguage === 'c') _wandboxBody.options = 'c11';
@@ -4481,10 +4481,15 @@ async function runCode() {
       showToast('Wandbox障害中。代替サービスで実行中...');
       // 1. Judge0 CE を試す
       runData = await _runOnJudge0Client(code, stdin);
-      // 2. Judge0 もコンテナエラーなら Godbolt（C/C++ のみ）を試す
-      if (!runData || (runData.compiler_error + runData.program_error).includes('catatonit')) {
+      // Judge0 のコンテナ障害パターンを検出
+      var _j0Err = runData ? (runData.compiler_error || '') + (runData.program_error || '') : '';
+      var _j0ContainerFailed = !runData || /catatonit|failed to fork|failed to spawn|Resource temporarily unavailable/.test(_j0Err);
+      // 2. Judge0 もコンテナエラーなら Godbolt（C/C++ のみ）、それ以外はnullにして統一エラー表示
+      if (_j0ContainerFailed) {
         if (currentLanguage === 'cpp' || currentLanguage === 'c') {
           runData = await _runOnGodboltClient(code, stdin);
+        } else {
+          runData = null;
         }
       }
       if (!runData) {
