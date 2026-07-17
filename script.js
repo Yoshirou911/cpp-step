@@ -6409,6 +6409,25 @@ function renderToolList() {
   h += '<span class="tool-list-count">' + progress.length + ' / ' + tg.problems.length + '</span>';
   h += '</div>';
   h += '<div class="tool-list-desc">' + escapeHtml(tg.desc) + '</div>';
+  if (tg.guide) {
+    var g = tg.guide;
+    var gid = tg.id;
+    h += '<div class="tg-section">';
+    h += '<div class="tg-toggle" onclick="toggleToolGuide(\'' + gid + '\')">';
+    h += '<span>📖 ' + escapeHtml(tg.name) + ' とは？</span>';
+    h += '<span class="tg-chevron" id="tg-chev-' + gid + '">▶</span>';
+    h += '</div>';
+    h += '<div class="tg-body hidden" id="tg-body-' + gid + '">';
+    h += '<div class="tg-block"><div class="tg-label">◆ 概要</div><p class="tg-text">' + escapeHtml(g.what) + '</p></div>';
+    h += '<div class="tg-block"><div class="tg-label">◆ なぜ学ぶのか</div><p class="tg-text">' + escapeHtml(g.why) + '</p></div>';
+    h += '<div class="tg-block"><div class="tg-label">◆ 基本概念</div><div class="tg-concepts">';
+    g.concepts.forEach(function(cv) {
+      h += '<div class="tg-concept"><span class="tg-term">' + escapeHtml(cv.term) + '</span><span class="tg-desc">' + escapeHtml(cv.desc) + '</span></div>';
+    });
+    h += '</div></div>';
+    h += '</div>';
+    h += '</div>';
+  }
   h += '<div class="tool-problems-list">';
   tg.problems.forEach(function(p, idx) {
     var isCleared = progress.indexOf(p.id) !== -1;
@@ -6455,6 +6474,14 @@ function toggleToolProblem(id) {
 function toggleToolHint(id) {
   var hint = document.getElementById('tph-' + id);
   if (hint) hint.classList.toggle('hidden');
+}
+
+function toggleToolGuide(toolId) {
+  var body = document.getElementById('tg-body-' + toolId);
+  var chev = document.getElementById('tg-chev-' + toolId);
+  if (!body || !chev) return;
+  var hidden = body.classList.toggle('hidden');
+  chev.textContent = hidden ? '▶' : '▼';
 }
 
 function checkToolAnswer(toolId, problemId) {

@@ -10404,3 +10404,67 @@ html {
   line-height: 1.5;
 }
 
+/* ガイドセクション */
+.tg-section {
+  margin-bottom: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.tg-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 16px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.04em;
+  user-select: none;
+  transition: background 0.15s;
+}
+.tg-toggle:hover { background: rgba(255,255,255,0.04); }
+.tg-chevron {
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.3);
+}
+.tg-body {
+  padding: 4px 16px 16px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.tg-block { margin-top: 14px; }
+.tg-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: rgba(255,107,0,0.7);
+  margin-bottom: 6px;
+}
+.tg-text {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.75;
+  margin: 0;
+}
+.tg-concepts {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 4px;
+}
+.tg-concept {
+  display: flex;
+  gap: 10px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+.tg-term {
+  flex-shrink: 0;
+  min-width: 110px;
+  color: rgba(255,255,255,0.75);
+  font-weight: 700;
+}
+.tg-desc { color: rgba(255,255,255,0.48); }
+
