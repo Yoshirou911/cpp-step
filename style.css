@@ -10012,6 +10012,29 @@ html {
   border-bottom: none;
 }
 
+/* ヘッダー内☰ボタン */
+#header-menu-btn {
+  background: transparent;
+  border: 1px solid rgba(255,107,0,0.25);
+  color: rgba(255,107,0,0.7);
+  font-size: 20px;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+#header-menu-btn:hover {
+  color: var(--orange);
+  border-color: rgba(255,107,0,0.7);
+  background: rgba(255,107,0,0.08);
+  box-shadow: 0 0 10px rgba(255,107,0,0.15);
+}
+
 /* トップバー（スリム版） */
 #nav-menu-btn {
   background: transparent;
