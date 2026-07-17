@@ -144,13 +144,12 @@ export default async function handler(req, res) {
     return res.json(data);
 
   } catch (e) {
-    if (e.name === 'AbortError') {
-      // タイムアウトは重いコードの可能性が高いのでPistonフォールバックしない
-      return res.status(504).json({ error: 'タイムアウト（20秒）。処理が重すぎる可能性があります。' });
-    }
-    // Wandbox接続失敗 → Piston フォールバック
+    // Wandboxタイムアウト・接続失敗 → Piston フォールバック
     const fallback = await runOnPiston(code, compiler, stdin, options);
     if (fallback) return res.json(fallback);
+    if (e.name === 'AbortError') {
+      return res.status(504).json({ error: 'タイムアウト（20秒）。無限ループや長時間処理が含まれていないか確認してください。' });
+    }
     return res.status(502).json({ error: 'コード実行サービスに接続できません。時間をおいて再試行してください。' });
   }
 }
