@@ -2067,6 +2067,22 @@ function setActiveTab(tab) {
     if (t === tab) el.setAttribute('aria-current', 'page');
     else el.removeAttribute('aria-current');
   });
+  var labelMap = {
+    problems: 'PROBLEMS', missions: 'MISSIONS', guide: 'GUIDE',
+    ranking: 'RANKING', career: 'CAREER', contest: 'CONTEST'
+  };
+  var labelEl = document.getElementById('nav-current-label');
+  if (labelEl && labelMap[tab]) labelEl.textContent = labelMap[tab];
+}
+
+function openSidebar() {
+  document.getElementById('sidebar-nav').classList.add('open');
+  document.getElementById('sidebar-overlay').classList.add('open');
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar-nav').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
 }
 
 async function selectLanguage(langId) {
@@ -2824,20 +2840,9 @@ function showPage(name) {
   var _h = _pageEl.querySelector('h1,h2,h3,[tabindex="-1"]');
   if (_h) { _h.setAttribute('tabindex', '-1'); _h.focus({ preventScroll: true }); }
 
-  // 言語選択画面ではRANKINGタブのみ表示
   if (name === 'lang') {
-    document.getElementById('nav-tabs').classList.remove('hidden');
-    ['problems','missions','guide','contest'].forEach(function(t) {
-      var el = document.getElementById('tab-' + t);
-      if (el) el.classList.add('hidden');
-    });
     document.getElementById('progress-text').classList.add('hidden');
     document.getElementById('progress-bar-wrap').classList.add('hidden');
-  } else {
-    ['problems','missions','guide','contest'].forEach(function(t) {
-      var el = document.getElementById('tab-' + t);
-      if (el) el.classList.remove('hidden');
-    });
   }
   // 詳細ページから一覧などに戻るときスクロール位置をトップにリセット
   if (name !== 'detail' && name !== 'mission-detail') {
@@ -6312,6 +6317,7 @@ function goToContestProblem(id) {
 }
 
 function switchTab(tab) {
+  closeSidebar();
   playNavTab();
   setActiveTab(tab);
   if (tab === 'problems') {

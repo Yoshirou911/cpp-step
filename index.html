@@ -113,18 +113,33 @@
     <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   </div>
 
-  <!-- タブナビゲーション -->
-  <nav id="nav-tabs" class="hidden" aria-label="メインナビゲーション">
+  <!-- サイドバーオーバーレイ -->
+  <div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <!-- 左サイドバードロワー -->
+  <aside id="sidebar-nav" aria-label="メインナビゲーション">
+    <div id="sidebar-head">
+      <span id="sidebar-logo">◆ MENU</span>
+      <button id="sidebar-close-btn" onclick="closeSidebar()" aria-label="閉じる">✕</button>
+    </div>
+    <div id="sidebar-items">
+      <button class="nav-tab active" id="tab-problems" onclick="switchTab('problems')" aria-current="page">◆ PROBLEMS</button>
+      <button class="nav-tab" id="tab-missions" onclick="switchTab('missions')">◆ MISSIONS</button>
+      <button class="nav-tab" id="tab-guide" onclick="switchTab('guide')">◆ GUIDE</button>
+      <button class="nav-tab" id="tab-ranking" onclick="switchTab('ranking')">🏆 RANKING</button>
+      <button class="nav-tab" id="tab-career" onclick="switchTab('career')">🎯 CAREER</button>
+      <button class="nav-tab" id="tab-contest" onclick="switchTab('contest')">🎯 CONTEST</button>
+    </div>
+  </aside>
+
+  <!-- トップナビバー（スリム化） -->
+  <nav id="nav-tabs" class="hidden" aria-label="トップバー">
     <div id="nav-history-btns">
       <button id="nav-back-btn" onclick="history.back()" title="前のページへ" aria-label="前のページへ戻る">&#8592;</button>
       <button id="nav-fwd-btn" onclick="history.forward()" title="次のページへ" aria-label="次のページへ進む">&#8594;</button>
     </div>
-    <button class="nav-tab active" id="tab-problems" onclick="switchTab('problems')" data-tip="コードを書いて問題を解く" aria-current="page">◆ PROBLEMS</button>
-    <button class="nav-tab" id="tab-missions" onclick="switchTab('missions')" data-tip="複数問題クリアでバッジ獲得">◆ MISSIONS</button>
-    <button class="nav-tab" id="tab-guide" onclick="switchTab('guide')" data-tip="文法・パターン解説">◆ GUIDE</button>
-    <button class="nav-tab" id="tab-ranking" onclick="switchTab('ranking')" data-tip="全国ランキング">🏆 RANKING</button>
-    <button class="nav-tab" id="tab-career" onclick="switchTab('career')" data-tip="職業別おすすめ学習ルート">🎯 CAREER</button>
-    <button class="nav-tab" id="tab-contest" onclick="switchTab('contest')" data-tip="コンテスト参加">🎯 CONTEST</button>
+    <button id="nav-menu-btn" onclick="openSidebar()" aria-label="メニューを開く">&#9776;</button>
+    <span id="nav-current-label">PROBLEMS</span>
   </nav>
 
   <!-- ランディングページ（初回訪問者向け） -->
