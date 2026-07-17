@@ -4355,7 +4355,7 @@ async function runCode() {
     }
     var _isKotlin  = currentLanguage === 'kotlin';
     const controller = new AbortController();
-    const _timeout   = setTimeout(function() { controller.abort(); }, _isKotlin ? 30000 : 35000);
+    const _timeout   = setTimeout(function() { controller.abort(); }, _isKotlin ? 30000 : 30000);
     var _fetchUrl  = _isKotlin ? '/api/run-kotlin' : '/api/run-code';
     var _wandboxBody = { code: code, compiler: getCompiler(), stdin: stdin };
     if (currentLanguage === 'c') _wandboxBody.options = 'c11';
@@ -4402,8 +4402,8 @@ async function runCode() {
     const data = await res.json();
     outputArea.classList.remove("hidden");
 
-    if (data._source === 'piston') {
-      showToast('Wandbox障害中のためPistonで実行しました');
+    if (data._source === 'judge0') {
+      showToast('Wandbox障害中のため代替サービスで実行しました');
     }
 
     if (data.compiler_error) {

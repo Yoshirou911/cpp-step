@@ -1,4 +1,8 @@
 {
+  "functions": {
+    "api/run-code.js":    { "maxDuration": 35 },
+    "api/run-kotlin.js":  { "maxDuration": 35 }
+  },
   "rewrites": [
     { "source": "/company", "destination": "/company.html" }
   ],
