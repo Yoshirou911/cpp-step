@@ -73,7 +73,7 @@ export default async function handler(req, res) {
     clearTimeout(timeout);
 
     if (!response.ok) {
-      return res.status(502).json({ error: 'Kotlin Playground API エラー: ' + response.status });
+      return res.status(502).json({ error: 'Kotlin実行サービスに接続できませんでした。時間をおいて再試行してください。' });
     }
 
     const data = await response.json();
