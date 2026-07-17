@@ -1960,7 +1960,6 @@ function renderLangSelect() {
       '<div class="lang-page-sub">学習する言語を選択してください</div>' +
       '<div class="lang-quick-access">' +
         '<button class="lang-qa-btn" onclick="goToCareerDirect()">🎯 CAREER</button>' +
-        '<button class="lang-qa-btn lang-qa-intro" onclick="goToIntroDirect()">🌱 INTRO</button>' +
       '</div>' +
       '<button class="lang-quiz-btn" onclick="openQuizModal()">🧭 どの言語を選べばいいかわからない方はこちら</button>' +
     '</div>' +
@@ -2061,7 +2060,7 @@ function showNavAndProgress() {
 }
 
 function setActiveTab(tab) {
-  ['problems', 'missions', 'guide', 'intro', 'textbook', 'ranking', 'career', 'contest'].forEach(function(t) {
+  ['problems', 'missions', 'guide', 'ranking', 'career', 'contest'].forEach(function(t) {
     var el = document.getElementById('tab-' + t);
     if (!el) return;
     el.classList.toggle('active', t === tab);
@@ -2449,14 +2448,6 @@ function restoreState(state) {
     setActiveTab('guide');
     renderGuide();
     showPage('guide');
-  } else if (state.page === 'intro') {
-    setActiveTab('intro');
-    renderIntro();
-    showPage('intro');
-  } else if (state.page === 'textbook') {
-    setActiveTab('textbook');
-    renderTextbook();
-    showPage('textbook');
   } else if (state.page === 'mission-list') {
     setActiveTab('missions');
     renderMissionList();
@@ -2477,10 +2468,6 @@ function restoreState(state) {
     setActiveTab('career');
     renderCareer();
     showPage('career');
-  } else if (state.page === 'beginner-lang') {
-    setActiveTab('intro');
-    openBeginnerLang(state.langId);
-    showPage('beginner-lang');
   } else if (state.page === 'profile') {
     renderProfile();
     showPage('profile');
@@ -2825,7 +2812,7 @@ function showPage(name) {
   if (_mce) _mce.classList.add('hidden');
   // 全ページを非表示にしてから対象だけ表示
   ["page-landing", "page-lang", "page-list", "page-detail", "page-guide",
-   "page-mission-list", "page-mission-detail", "page-profile", "page-textbook", "page-ranking", "page-contest", "page-career", "page-intro", "page-beginner-lang"].forEach(function(id) {
+   "page-mission-list", "page-mission-detail", "page-profile", "page-ranking", "page-contest", "page-career"].forEach(function(id) {
     document.getElementById(id).classList.add("hidden");
   });
   var _pageEl = document.getElementById("page-" + name);
@@ -2840,14 +2827,14 @@ function showPage(name) {
   // 言語選択画面ではRANKINGタブのみ表示
   if (name === 'lang') {
     document.getElementById('nav-tabs').classList.remove('hidden');
-    ['problems','missions','guide','intro','textbook','contest'].forEach(function(t) {
+    ['problems','missions','guide','contest'].forEach(function(t) {
       var el = document.getElementById('tab-' + t);
       if (el) el.classList.add('hidden');
     });
     document.getElementById('progress-text').classList.add('hidden');
     document.getElementById('progress-bar-wrap').classList.add('hidden');
   } else {
-    ['problems','missions','guide','intro','textbook','contest'].forEach(function(t) {
+    ['problems','missions','guide','contest'].forEach(function(t) {
       var el = document.getElementById('tab-' + t);
       if (el) el.classList.remove('hidden');
     });
@@ -3020,18 +3007,6 @@ function renderList() {
       showPage('detail');
     });
     list.appendChild(dcBanner);
-  }
-
-  // 教本バナー（初心者向け）
-  if (langTextbooks[currentLanguage]) {
-    var tb = langTextbooks[currentLanguage];
-    var tbBanner = document.createElement('div');
-    tbBanner.className = 'textbook-list-banner';
-    tbBanner.innerHTML =
-      '<span class="textbook-banner-icon">' + tb.emoji + '</span>' +
-      '<span class="textbook-banner-text"><strong>' + tb.name + ' 入門ガイド</strong> — まずはここから！基礎文法・パターン・Tipsをまとめています</span>' +
-      '<button class="textbook-banner-btn" onclick="switchTab(\'textbook\')">📖 見る</button>';
-    list.appendChild(tbBanner);
   }
 
   // キャリアフィルターバナー
@@ -3295,9 +3270,6 @@ function renderDetail(id) {
       '</div>' +
       '<div class="detail-meta-right">' +
         (function() { var t = _getProblemTime(p.id); return t > 10 ? '<span class="study-time-badge">⏱ ' + _formatTime(t) + '</span>' : ''; })() +
-        (langTextbooks[currentLanguage]
-          ? '<button class="detail-textbook-btn" onclick="switchTab(\'textbook\')">📖 ' + escapeHtml(langTextbooks[currentLanguage].name) + ' 入門ガイド</button>'
-          : '') +
         '<button class="detail-bookmark-btn' + (isBookmarked(p.id) ? ' bookmarked' : '') + '" id="detail-bm-btn" onclick="toggleDetailBookmark(' + p.id + ')" title="ブックマーク">' +
           (isBookmarked(p.id) ? '🔖' : '☆') +
         '</button>' +
@@ -6350,14 +6322,6 @@ function switchTab(tab) {
     history.pushState({ page: 'mission-list', lang: currentLanguage, tab: 'missions' }, '');
     renderMissionList();
     showPage('mission-list');
-  } else if (tab === 'intro') {
-    history.pushState({ page: 'intro', lang: currentLanguage, tab: 'intro' }, '');
-    renderIntro();
-    showPage('intro');
-  } else if (tab === 'textbook') {
-    history.pushState({ page: 'textbook', lang: currentLanguage, tab: 'textbook' }, '');
-    renderTextbook();
-    showPage('textbook');
   } else if (tab === 'ranking') {
     history.pushState({ page: 'ranking', lang: currentLanguage, tab: 'ranking' }, '');
     renderRanking();
@@ -6375,103 +6339,6 @@ function switchTab(tab) {
     renderGuide();
     showPage('guide');
   }
-}
-
-// ===== 教本ページの描画 =====
-
-function renderTextbook() {
-  var content = document.getElementById('textbook-content');
-  content.innerHTML = '';
-
-  var tb = langTextbooks[currentLanguage] || langTextbooks['cpp'];
-
-  // ヘッダー
-  var header = document.createElement('div');
-  header.className = 'textbook-header';
-  header.innerHTML =
-    '<div class="textbook-title">' + escapeHtml(tb.emoji) + ' ' + escapeHtml(tb.name) + ' 入門ガイド</div>' +
-    '<div class="textbook-intro">' + escapeHtml(tb.intro) + '</div>' +
-    '<div class="textbook-features">' +
-      tb.features.map(function(f) {
-        return '<span class="textbook-feature-tag">✓ ' + escapeHtml(f) + '</span>';
-      }).join('') +
-    '</div>';
-  content.appendChild(header);
-
-  // 目次（TOC）
-  if (tb.sections.length >= 4) {
-    var toc = document.createElement('nav');
-    toc.className = 'textbook-toc';
-    toc.innerHTML =
-      '<div class="textbook-toc-title">📋 目次</div>' +
-      '<ol class="textbook-toc-list">' +
-        tb.sections.map(function(sec, idx) {
-          return '<li><a class="textbook-toc-link" href="#tb-body-' + idx + '" onclick="openTextbookSection(' + idx + ');return false;">' +
-            '<span class="toc-num">' + String(idx + 1).padStart(2, '0') + '</span> ' + escapeHtml(sec.title) +
-          '</a></li>';
-        }).join('') +
-      '</ol>';
-    content.appendChild(toc);
-  }
-
-  // コードセクション
-  var _descs = (langSectionDescs[currentLanguage] || []);
-  tb.sections.forEach(function(sec, idx) {
-    var section = document.createElement('div');
-    section.className = 'textbook-section';
-    section.id = 'tb-section-' + idx;
-
-    var _desc = _descs[idx] || '';
-    section.innerHTML =
-      '<div class="textbook-section-header" onclick="toggleTextbookSection(' + idx + ')">' +
-        '<span class="textbook-section-num">' + String(idx + 1).padStart(2, '0') + '</span>' +
-        '<span class="textbook-section-title">' + escapeHtml(sec.title) + '</span>' +
-        '<span class="textbook-toggle-icon" id="tb-icon-' + idx + '">▶</span>' +
-      '</div>' +
-      '<div class="textbook-section-body hidden" id="tb-body-' + idx + '">' +
-        (_desc ? '<div class="textbook-section-desc">' + _desc + '</div>' : '') +
-        '<pre class="textbook-code"><code>' + escapeHtml(sec.code) + '</code></pre>' +
-      '</div>';
-
-    content.appendChild(section);
-  });
-
-  // Tipsセクション
-  var tips = document.createElement('div');
-  tips.className = 'textbook-tips';
-  tips.innerHTML =
-    '<div class="textbook-tips-title">💡 ポイント・Tips</div>' +
-    '<ul class="textbook-tips-list">' +
-      tb.tips.map(function(t) { return '<li>' + escapeHtml(t) + '</li>'; }).join('') +
-    '</ul>';
-  content.appendChild(tips);
-
-  // 問題一覧へのリンク
-  var cta = document.createElement('div');
-  cta.className = 'textbook-cta';
-  cta.innerHTML =
-    '<button class="textbook-cta-btn" onclick="switchTab(\'problems\')">◆ 問題を解いてみよう</button>';
-  content.appendChild(cta);
-}
-
-// TOCリンクからセクションを開いてスクロール
-function openTextbookSection(idx) {
-  var body = document.getElementById('tb-body-' + idx);
-  var icon = document.getElementById('tb-icon-' + idx);
-  if (body && body.classList.contains('hidden')) {
-    body.classList.remove('hidden');
-    if (icon) icon.textContent = '▼';
-  }
-  var sec = document.getElementById('tb-section-' + idx);
-  if (sec) requestAnimationFrame(function() { sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-}
-
-function toggleTextbookSection(idx) {
-  var body = document.getElementById('tb-body-' + idx);
-  var icon = document.getElementById('tb-icon-' + idx);
-  if (!body || !icon) return;
-  body.classList.toggle('hidden');
-  icon.textContent = body.classList.contains('hidden') ? '▶' : '▼';
 }
 
 // ===== ガイドページの描画 =====
