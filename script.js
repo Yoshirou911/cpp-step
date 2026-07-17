@@ -4402,6 +4402,10 @@ async function runCode() {
     const data = await res.json();
     outputArea.classList.remove("hidden");
 
+    if (data._source === 'piston') {
+      showToast('Wandbox障害中のためPistonで実行しました');
+    }
+
     if (data.compiler_error) {
       outputText.textContent = "コンパイルエラー:\n" + data.compiler_error;
       outputText.className = "output-error";
