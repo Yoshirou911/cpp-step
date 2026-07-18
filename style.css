@@ -10600,3 +10600,46 @@ html {
 }
 .tg-desc { color: rgba(255,255,255,0.48); }
 
+/* ===== CAREERページ おすすめTOOLS ===== */
+.career-tools-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.career-tool-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  background: rgba(0,0,0,0.25);
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.15s ease;
+  user-select: none;
+}
+.career-tool-chip:hover {
+  background: rgba(255,255,255,0.08);
+  transform: translateY(-1px);
+}
+.ctc-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+.ctc-name {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.ctc-progress {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(237,224,200,0.4);
+  margin-left: 2px;
+}
+@media (max-width: 600px) {
+  .career-tool-chip { padding: 5px 11px; }
+  .ctc-name { font-size: 0.7rem; }
+}
+

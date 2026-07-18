@@ -5545,6 +5545,28 @@ function renderCareer() {
       '</div>';
     }).join('');
 
+    // おすすめTOOLSチップ
+    var toolsHTML = '';
+    if (c.recommendedTools && c.recommendedTools.length) {
+      toolsHTML = c.recommendedTools.map(function(tid) {
+        var tg = null;
+        for (var ti = 0; ti < TOOL_GROUPS.length; ti++) {
+          if (TOOL_GROUPS[ti].id === tid) { tg = TOOL_GROUPS[ti]; break; }
+        }
+        if (!tg) return '';
+        var prog = getToolProgress(tid);
+        var total = tg.problems ? tg.problems.length : 0;
+        var cleared = tg.problems
+          ? tg.problems.filter(function(p) { return prog.indexOf(p.id) !== -1; }).length
+          : 0;
+        return '<div class="career-tool-chip" style="border-color:' + tg.color + '66" onclick="event.stopPropagation();goToTool(\'' + tid + '\')">' +
+          '<span class="ctc-icon">' + tg.icon + '</span>' +
+          '<span class="ctc-name" style="color:' + tg.color + '">' + tg.name + '</span>' +
+          '<span class="ctc-progress">' + cleared + '/' + total + '</span>' +
+        '</div>';
+      }).join('');
+    }
+
     // 需要ドット
     var demandDots = '';
     for (var d = 0; d < 5; d++) {
@@ -5574,6 +5596,10 @@ function renderCareer() {
             '<div class="cr-roadmap-phases">' + roadmapHTML + '</div>' +
             '<div class="cr-section-label">▸ この職業の問題を解く</div>' +
             '<div class="cr-lang-tags">' + langTagsHTML + '</div>' +
+            (toolsHTML
+              ? '<div class="cr-section-label">▸ おすすめ TOOLS</div>' +
+                '<div class="career-tools-grid">' + toolsHTML + '</div>'
+              : '') +
           '</div>'
         : '') +
     '</div>';
@@ -6466,6 +6492,11 @@ function selectTool(toolId) {
   history.pushState({ page: 'tool-list', tool: toolId, tab: 'tools' }, '');
   showPage('tool-list');
   requestAnimationFrame(function() { window.scrollTo(0, 0); });
+}
+
+function goToTool(toolId) {
+  switchTab('tools');
+  selectTool(toolId);
 }
 
 function renderToolList() {
