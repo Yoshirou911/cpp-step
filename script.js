@@ -965,6 +965,16 @@ var BADGES = [
   { id: 'pred_c',      name: 'C PREDATOR',      desc: 'C PREDATORランク問題クリア',              tier: 'predator', check: function(s) { return s.predatorC;      } },
   { id: 'pred_rust',   name: 'RUST PREDATOR',   desc: 'Rust PREDATORランク問題クリア',           tier: 'predator', check: function(s) { return s.predatorRust;   } },
   { id: 'true_predator', name: 'TRUE PREDATOR', desc: '全言語のPREDATOR問題クリア。本物のエンジニアの証', tier: 'predator', check: function(s) { return s.predatorCpp && s.predatorPython && s.predatorJs && s.predatorRuby && s.predatorTs && s.predatorKotlin && s.predatorSwift && s.predatorJava && s.predatorCsharp && s.predatorGo && s.predatorC && s.predatorRust; } },
+  // ─── TOOLS ───
+  { id: 'tools_first',   name: 'TOOL STARTER',   desc: 'TOOLSで初めての問題をクリア',  tier: 'bronze',  check: function(s) { return s.toolsAny; } },
+  { id: 'linux_master',  name: 'LINUX MASTER',   desc: 'Linux 全問クリア',             tier: 'diamond', check: function(s) { return s.linuxDone; } },
+  { id: 'git_master',    name: 'GIT MASTER',     desc: 'Git 全問クリア',               tier: 'diamond', check: function(s) { return s.gitDone; } },
+  { id: 'docker_master', name: 'DOCKER MASTER',  desc: 'Docker 全問クリア',            tier: 'diamond', check: function(s) { return s.dockerDone; } },
+  { id: 'vim_master',    name: 'VIM MASTER',     desc: 'Vim 全問クリア',               tier: 'diamond', check: function(s) { return s.vimDone; } },
+  { id: 'net_master',    name: 'NETWORK MASTER', desc: 'ネットワーク 全問クリア',       tier: 'diamond', check: function(s) { return s.networkDone; } },
+  { id: 'npm_master',    name: 'NPM MASTER',     desc: 'npm 全問クリア',               tier: 'diamond', check: function(s) { return s.npmDone; } },
+  { id: 'k8s_master',    name: 'K8S MASTER',     desc: 'Kubernetes 全問クリア',        tier: 'diamond', check: function(s) { return s.kubernetesDone; } },
+  { id: 'tools_all',     name: 'TOOLS COMPLETE', desc: '全ツールグループを完全クリア',  tier: 'master',  check: function(s) { return s.toolsAllDone; } },
 ];
 
 // 全言語の進捗を localStorage から集計（言語切替不要）
@@ -1022,6 +1032,24 @@ function getProfileStats() {
   var bashM   = getM('bash').length;
   var regexM  = getM('regex').length;
   var phpM    = getM('php').length;
+  var linuxDone = false, gitDone = false, dockerDone = false, vimDone = false;
+  var networkDone = false, npmDone = false, kubernetesDone = false, toolsAny = false;
+  if (typeof TOOL_GROUPS !== 'undefined') {
+    TOOL_GROUPS.forEach(function(tg) {
+      var tp = getToolProgress(tg.id);
+      var cl = tg.problems.filter(function(pr) { return tp.indexOf(pr.id) !== -1; }).length;
+      if (cl > 0) toolsAny = true;
+      var done = tg.problems.length > 0 && cl >= tg.problems.length;
+      if (tg.id === 'linux')      linuxDone      = done;
+      if (tg.id === 'git')        gitDone        = done;
+      if (tg.id === 'docker')     dockerDone     = done;
+      if (tg.id === 'vim')        vimDone        = done;
+      if (tg.id === 'network')    networkDone    = done;
+      if (tg.id === 'npm')        npmDone        = done;
+      if (tg.id === 'kubernetes') kubernetesDone = done;
+    });
+  }
+  var toolsAllDone = linuxDone && gitDone && dockerDone && vimDone && networkDone && npmDone && kubernetesDone;
   return {
     cpp: cpp, python: python, js: js, ruby: ruby, ts: ts, kotlin: kotlin, swift: swift, java: java,
     csharp: csharp, go: go, c: c, rust: rust, html: html, sql: sql, bash: bash, regex: regex, php: php,
@@ -1061,7 +1089,10 @@ function getProfileStats() {
     // ストリークは非同期で後から上書きするため初期値0
     currentStreak: 0,
     bestStreak:    0,
-    totalDays:     0
+    totalDays:     0,
+    toolsAny: toolsAny, toolsAllDone: toolsAllDone,
+    linuxDone: linuxDone, gitDone: gitDone, dockerDone: dockerDone,
+    vimDone: vimDone, networkDone: networkDone, npmDone: npmDone, kubernetesDone: kubernetesDone
   };
 }
 
@@ -6493,7 +6524,10 @@ function _buildToolTextbook(tg) {
       h += '<div class="tb-cmd-name"><code>' + escapeHtml(item.cmd) + '</code></div>';
       h += '<div class="tb-cmd-desc">' + escapeHtml(item.desc) + '</div>';
       if (item.example) {
+        h += '<div class="tb-cmd-example-wrap">';
         h += '<pre class="tb-cmd-example">' + escapeHtml(item.example) + '</pre>';
+        h += '<button class="tb-copy-btn" onclick="copyToolCmd(this)" title="コピー">コピー</button>';
+        h += '</div>';
       }
       if (item.note) {
         h += '<div class="tb-cmd-note"><span class="tb-note-label">📌</span><pre class="tb-note-body">' + escapeHtml(item.note) + '</pre></div>';
@@ -6542,6 +6576,27 @@ function toggleToolGuide(toolId) {
   chev.textContent = hidden ? '▶' : '▼';
 }
 
+function copyToolCmd(btn) {
+  var pre = btn.previousElementSibling;
+  if (!pre) return;
+  var text = pre.textContent;
+  var done = function() {
+    btn.textContent = '✓';
+    setTimeout(function() { btn.textContent = 'コピー'; }, 1500);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(function() {
+      var ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta); done();
+    });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta); done();
+  }
+}
+
 function checkToolAnswer(toolId, problemId) {
   var tg = (currentToolGroup && currentToolGroup.id === toolId) ? currentToolGroup : null;
   if (!tg) {
@@ -6562,8 +6617,9 @@ function checkToolAnswer(toolId, problemId) {
   if (!userAnswer) { input.focus(); return; }
   var isCorrect = false;
   var matchedAnswer = p.answers[0];
+  var normUser = userAnswer.replace(/\s+/g, ' ');
   for (var k = 0; k < p.answers.length; k++) {
-    if (userAnswer === p.answers[k].trim()) { isCorrect = true; matchedAnswer = p.answers[k].trim(); break; }
+    if (normUser === p.answers[k].trim().replace(/\s+/g, ' ')) { isCorrect = true; matchedAnswer = p.answers[k].trim(); break; }
   }
   if (isCorrect) {
     feedback.className = 'tp-feedback tp-correct';

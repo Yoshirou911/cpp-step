@@ -10477,6 +10477,32 @@ html {
   line-height: 1.7;
   margin-bottom: 10px;
 }
+.tb-cmd-example-wrap {
+  position: relative;
+  margin-bottom: 8px;
+}
+.tb-cmd-example-wrap .tb-cmd-example {
+  margin-bottom: 0;
+}
+.tb-copy-btn {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: rgba(255,107,0,0.15);
+  border: 1px solid rgba(255,107,0,0.35);
+  color: #FF6B00;
+  font-size: 0.68rem;
+  font-family: 'Share Tech Mono', monospace;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  line-height: 1.5;
+}
+.tb-copy-btn:hover {
+  background: rgba(255,107,0,0.3);
+  color: #fff;
+}
 .tb-cmd-example {
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.78rem;
