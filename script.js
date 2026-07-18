@@ -1049,7 +1049,11 @@ function getProfileStats() {
       if (tg.id === 'kubernetes') kubernetesDone = done;
     });
   }
-  var toolsAllDone = linuxDone && gitDone && dockerDone && vimDone && networkDone && npmDone && kubernetesDone;
+  var toolsAllDone = typeof TOOL_GROUPS !== 'undefined' && TOOL_GROUPS.length > 0
+    && TOOL_GROUPS.every(function(tg) {
+      var tp = getToolProgress(tg.id);
+      return tg.problems.length > 0 && tg.problems.every(function(pr) { return tp.indexOf(pr.id) !== -1; });
+    });
   return {
     cpp: cpp, python: python, js: js, ruby: ruby, ts: ts, kotlin: kotlin, swift: swift, java: java,
     csharp: csharp, go: go, c: c, rust: rust, html: html, sql: sql, bash: bash, regex: regex, php: php,
@@ -5080,7 +5084,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'React / Vue',   color: '#61DAFB', desc: 'コンポーネント設計・状態管理' },
       { phase: 'professional', label: 'テスト / CI',   color: '#FF6B00', desc: 'Jest・Vitest・GitHub Actions' },
       { phase: 'professional', label: '就職・転職',    color: '#00E676', desc: 'ポートフォリオ公開 → 内定' },
-    ]
+    ],
+    recommendedTools: ['git', 'npm']
   },
   {
     id: 'backend', icon: '⚙️', color: '#00ADD8',
@@ -5097,7 +5102,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'DB設計・最適化',  color: '#336791', desc: 'インデックス・正規化・チューニング' },
       { phase: 'professional', label: 'クラウド (AWS)',  color: '#FF9900', desc: 'EC2・RDS・Lambda・S3' },
       { phase: 'professional', label: '就職・転職',      color: '#00E676', desc: 'OSSコントリビュート → 内定' },
-    ]
+    ],
+    recommendedTools: ['git', 'docker', 'linux', 'npm']
   },
   {
     id: 'ai', icon: '🤖', color: '#C040FF',
@@ -5114,7 +5120,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'MLOps',           color: '#20BEFF', desc: 'モデル管理・デプロイ・監視' },
       { phase: 'professional', label: 'Kaggle / 論文',   color: '#C040FF', desc: 'コンペ上位 / arXiv で最新手法を追う' },
       { phase: 'professional', label: '就職・転職',      color: '#00E676', desc: '分析レポート・Kaggle実績 → 内定' },
-    ]
+    ],
+    recommendedTools: ['linux', 'git']
   },
   {
     id: 'game', icon: '🎮', color: '#EFC050',
@@ -5131,7 +5138,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'Unreal Engine',    color: '#000000', desc: 'C++ 連携・ブループリント' },
       { phase: 'professional', label: '自作ゲーム公開',   color: '#5588FF', desc: 'Steam / App Store に申請' },
       { phase: 'professional', label: '就職・転職',       color: '#00E676', desc: 'ポートフォリオ → ゲーム会社内定' },
-    ]
+    ],
+    recommendedTools: ['git']
   },
   {
     id: 'mobile', icon: '📱', color: '#FA7343',
@@ -5148,7 +5156,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'パフォーマンス最適化', color: '#EFC050', desc: 'メモリ・描画・バッテリー効率' },
       { phase: 'professional', label: 'ストア申請',         color: '#FA7343', desc: 'App Store / Google Play 審査対応' },
       { phase: 'professional', label: '就職・転職',         color: '#00E676', desc: 'リリース実績 → 内定' },
-    ]
+    ],
+    recommendedTools: ['git', 'npm']
   },
   {
     id: 'infra', icon: '☁️', color: '#00C8B4',
@@ -5165,7 +5174,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'Terraform / IaC', color: '#7B42BC', desc: 'インフラをコードで管理' },
       { phase: 'professional', label: 'AWS / GCP',       color: '#FF9900', desc: 'クラウド設計・コスト最適化・SLO' },
       { phase: 'professional', label: '就職・転職',      color: '#00E676', desc: '資格(AWS SAA等) → 内定' },
-    ]
+    ],
+    recommendedTools: ['linux', 'docker', 'kubernetes', 'network', 'git']
   },
   {
     id: 'security', icon: '🔐', color: '#FF453A',
@@ -5182,7 +5192,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'ペネトレーションテスト', color: '#EFC050', desc: 'Metasploit・Burp Suite 等の利用' },
       { phase: 'professional', label: '資格取得',             color: '#EFC050', desc: '情報処理安全確保支援士・CEH・OSCP' },
       { phase: 'professional', label: '就職・転職',           color: '#00E676', desc: 'CTF実績・資格 → セキュリティ職内定' },
-    ]
+    ],
+    recommendedTools: ['linux', 'network', 'git']
   },
   {
     id: 'embedded', icon: '🔧', color: '#A8B9CC',
@@ -5199,7 +5210,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'Linux 組み込み',   color: '#4EAA25', desc: 'Yocto・デバイスドライバ・カーネル' },
       { phase: 'professional', label: '自動車 / IoT開発', color: '#A8B9CC', desc: 'AUTOSAR・MISRA-C・機能安全' },
       { phase: 'professional', label: '就職・転職',       color: '#00E676', desc: '電機・自動車メーカー等 → 内定' },
-    ]
+    ],
+    recommendedTools: ['linux', 'git']
   },
   {
     id: 'competitive', icon: '🏆', color: '#FFD700',
@@ -5216,7 +5228,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'AtCoder 水〜青',     color: '#0000FF', desc: 'フロー・文字列・数論・幾何アルゴリズム' },
       { phase: 'professional', label: 'AtCoder 黄〜赤',     color: '#FFD700', desc: '国際情報オリンピック・世界大会レベル' },
       { phase: 'professional', label: 'GAFA直接スカウト',   color: '#00E676', desc: 'レーティングで Google・Meta から声がかかる' },
-    ]
+    ],
+    recommendedTools: ['git']
   },
   {
     id: 'blockchain', icon: '⛓️', color: '#F6851B',
@@ -5233,7 +5246,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'Rust / Solana',        color: '#9945FF', desc: '高速チェーン向けの低レベル開発' },
       { phase: 'professional', label: 'プロトコル設計',       color: '#F6851B', desc: '独自チェーン・クロスチェーン bridge' },
       { phase: 'professional', label: '就職・独立',           color: '#00E676', desc: 'Web3スタートアップ・フリーランス → 高報酬' },
-    ]
+    ],
+    recommendedTools: ['git', 'npm', 'docker']
   },
   {
     id: 'xr', icon: '🥽', color: '#00D4FF',
@@ -5250,7 +5264,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'MR / 空間認識',       color: '#00FFFF', desc: 'ARKit・ARCore・SLAM・平面検出' },
       { phase: 'professional', label: 'Vision Pro / Quest3', color: '#555555', desc: 'Apple・Meta の最新デバイス対応開発' },
       { phase: 'professional', label: '就職・転職',          color: '#00E676', desc: 'メタバース企業・医療・製造 → 内定' },
-    ]
+    ],
+    recommendedTools: ['git']
   },
   {
     id: 'robotics', icon: '🤖', color: '#FF6B35',
@@ -5267,7 +5282,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'コンピュータビジョン', color: '#FFAA22', desc: 'YOLO・点群処理・物体認識' },
       { phase: 'professional', label: '自動運転 / ドローン', color: '#FF6B35', desc: 'Autoware・PX4・ROS2 Control' },
       { phase: 'professional', label: '就職・転職',          color: '#00E676', desc: '自動車メーカー・宇宙・製造ロボ企業 → 内定' },
-    ]
+    ],
+    recommendedTools: ['linux', 'git', 'docker']
   },
   {
     id: 'dataeng', icon: '📊', color: '#1BA3C8',
@@ -5284,7 +5300,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'データ品質 / ガバナンス', color: '#2BC5EE', desc: 'Great Expectations・データカタログ' },
       { phase: 'professional', label: 'データメッシュ設計',  color: '#1BA3C8', desc: '大規模分散データ基盤のアーキテクト' },
       { phase: 'professional', label: '就職・転職',          color: '#00E676', desc: 'テック企業・データ活用企業 → 内定' },
-    ]
+    ],
+    recommendedTools: ['linux', 'git', 'docker', 'kubernetes']
   },
   {
     id: 'oss', icon: '🌐', color: '#F05032',
@@ -5301,7 +5318,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'Rust in Linux',        color: '#DEA584', desc: 'カーネルへの Rust 統合・メモリ安全' },
       { phase: 'professional', label: 'メンテナー就任',       color: '#F05032', desc: '特定サブシステムのオーナーになる' },
       { phase: 'professional', label: '企業スポンサー獲得',   color: '#00E676', desc: 'Red Hat・Google・Meta がフルタイムで雇用' },
-    ]
+    ],
+    recommendedTools: ['git', 'linux']
   },
   {
     id: 'quantum', icon: '⚛️', color: '#9B59B6',
@@ -5318,7 +5336,8 @@ var CAREERS = [
       { phase: 'advanced',     label: '量子ML / 化学計算',   color: '#BB77DD', desc: '量子機械学習・分子シミュレーション' },
       { phase: 'professional', label: '量子ハードウェア連携', color: '#9B59B6', desc: 'IBM・Google・IonQ の実機で実験' },
       { phase: 'professional', label: '研究機関 / 企業就職', color: '#00E676', desc: '大学院・国研・量子スタートアップ → 超高待遇' },
-    ]
+    ],
+    recommendedTools: ['git', 'linux']
   },
   {
     id: 'compiler', icon: '🔬', color: '#8B4513',
@@ -5335,7 +5354,8 @@ var CAREERS = [
       { phase: 'advanced',     label: '最適化技術',             color: '#A0522D', desc: '定数畳み込み・不要コード除去・インライン展開' },
       { phase: 'professional', label: '独自言語設計',          color: '#CD853F', desc: 'EBNF仕様書・エラーメッセージ設計・標準ライブラリ' },
       { phase: 'professional', label: '就職・転職',             color: '#00E676', desc: 'LLVM/GCC貢献・Apple・Google・JetBrains → 内定' },
-    ]
+    ],
+    recommendedTools: ['git', 'linux']
   },
   {
     id: 'creative', icon: '🎨', color: '#FF69B4',
@@ -5352,7 +5372,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'GLSLシェーダー',         color: '#FF1493', desc: '頂点シェーダー・フラグメントシェーダー・SDF' },
       { phase: 'professional', label: 'AIアート統合',           color: '#FF69B4', desc: 'Stable Diffusion・ControlNet×コード生成' },
       { phase: 'professional', label: '発表・受注',             color: '#00E676', desc: 'NFT・ライブVJ・企業インスタレーション制作' },
-    ]
+    ],
+    recommendedTools: ['git', 'npm']
   },
   {
     id: 'bioinformatics', icon: '🧬', color: '#00B050',
@@ -5369,7 +5390,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'シングルセル解析',       color: '#009040', desc: 'scRNA-seq・Seurat / Scanpy' },
       { phase: 'professional', label: '創薬AI開発',             color: '#00B050', desc: '分子グラフNN・ドッキングシミュレーション' },
       { phase: 'professional', label: '就職・転職',             color: '#00E676', desc: '製薬会社・バイオスタートアップ → 内定' },
-    ]
+    ],
+    recommendedTools: ['linux', 'git']
   },
   {
     id: 'space', icon: '🚀', color: '#1A1AFF',
@@ -5386,7 +5408,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'GNC開発',                color: '#3333FF', desc: '誘導・航法・制御の統合ソフトウェア設計' },
       { phase: 'professional', label: '地上局・テレメトリ',     color: '#5555FF', desc: '衛星との通信プロトコル設計・リアルタイム監視' },
       { phase: 'professional', label: '就職・転職',             color: '#00E676', desc: 'JAXA・三菱重工・ispace・Axelspace → 内定' },
-    ]
+    ],
+    recommendedTools: ['linux', 'git']
   },
   {
     id: 'audio', icon: '🎵', color: '#E040FB',
@@ -5403,7 +5426,8 @@ var CAREERS = [
       { phase: 'advanced',     label: '空間音響',               color: '#CC33DD', desc: 'バイノーラル・アンビソニックス・HRTF処理' },
       { phase: 'professional', label: 'ANC / ノイキャン開発',   color: '#E040FB', desc: 'AirPods・WH-1000X級の適応フィルタリング' },
       { phase: 'professional', label: '就職・転職',             color: '#00E676', desc: 'Apple・Sony・ヤマハ・Roland・DAWメーカー → 内定' },
-    ]
+    ],
+    recommendedTools: ['git']
   },
   {
     id: 'uiux', icon: '✏️', color: '#FE5D26',
@@ -5420,7 +5444,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'フロントエンド連携',     color: '#EE4D16', desc: 'HTML/CSS/JS でプロトタイプ実装・デザイン→コード' },
       { phase: 'professional', label: 'プロダクト思考',         color: '#FE5D26', desc: 'OKR・グロースデザイン・A/Bテスト設計' },
       { phase: 'professional', label: '就職・転職',             color: '#00E676', desc: 'SaaS企業・スタートアップ・大手テック → 内定' },
-    ]
+    ],
+    recommendedTools: ['git', 'npm']
   },
   {
     id: 'mlops', icon: '🔄', color: '#20B2AA',
@@ -5437,7 +5462,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'Kubernetes × GPU',       color: '#1A9090', desc: 'Ray・KubeFlow Pipelines・GPU Operator' },
       { phase: 'professional', label: 'フィーチャーストア設計', color: '#20B2AA', desc: 'Feast・Tecton・大規模特徴量管理アーキテクト' },
       { phase: 'professional', label: '就職・転職',             color: '#00E676', desc: 'テック企業・AI特化スタートアップ → 内定' },
-    ]
+    ],
+    recommendedTools: ['linux', 'docker', 'kubernetes', 'git']
   },
   {
     id: 'cto', icon: '👑', color: '#C0392B',
@@ -5454,7 +5480,8 @@ var CAREERS = [
       { phase: 'advanced',     label: 'チームビルディング',     color: '#A93226', desc: '採用・技術文化形成・エンジニア育成' },
       { phase: 'professional', label: '資金調達との連携',       color: '#C0392B', desc: 'VCへの技術説明・デューデリジェンス対応' },
       { phase: 'professional', label: 'Exit / 独立',           color: '#00E676', desc: '上場・M&A → 次のスタートアップ創業というループ' },
-    ]
+    ],
+    recommendedTools: ['git', 'linux', 'docker']
   },
 ];
 
@@ -6579,23 +6606,32 @@ function toggleToolGuide(toolId) {
 }
 
 function copyToolCmd(btn) {
-  var pre = btn.previousElementSibling;
+  var wrap = btn.closest('.tb-cmd-example-wrap');
+  var pre  = wrap ? wrap.querySelector('pre') : null;
   if (!pre) return;
   var text = pre.textContent;
   var done = function() {
     btn.textContent = '✓';
     setTimeout(function() { btn.textContent = 'コピー'; }, 1500);
   };
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(done).catch(function() {
-      var ta = document.createElement('textarea');
-      ta.value = text; document.body.appendChild(ta); ta.select();
-      document.execCommand('copy'); document.body.removeChild(ta); done();
-    });
-  } else {
+  var fail = function() {
+    btn.textContent = '✗';
+    setTimeout(function() { btn.textContent = 'コピー'; }, 1500);
+  };
+  var legacyCopy = function() {
     var ta = document.createElement('textarea');
-    ta.value = text; document.body.appendChild(ta); ta.select();
-    document.execCommand('copy'); document.body.removeChild(ta); done();
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    ok ? done() : fail();
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(legacyCopy);
+  } else {
+    legacyCopy();
   }
 }
 
