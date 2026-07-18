@@ -2511,8 +2511,19 @@ function restoreState(state) {
   } else if (state.page === 'tool-list') {
     setActiveTab('tools');
     currentTool = state.tool || null;
-    renderToolList();
-    showPage('tool-list');
+    currentToolGroup = null;
+    if (currentTool) {
+      for (var ti = 0; ti < TOOL_GROUPS.length; ti++) {
+        if (TOOL_GROUPS[ti].id === currentTool) { currentToolGroup = TOOL_GROUPS[ti]; break; }
+      }
+    }
+    if (!currentToolGroup) {
+      renderToolsPage();
+      showPage('tools');
+    } else {
+      renderToolList();
+      showPage('tool-list');
+    }
   }
 }
 
@@ -6346,6 +6357,7 @@ function goToContestProblem(id) {
 // ===== TOOLS セクション（プログラミング学習とは独立） =====
 
 var currentTool = null;
+var currentToolGroup = null;
 
 function getToolProgress(toolId) {
   try { return JSON.parse(localStorage.getItem('tool_progress_' + toolId) || '[]'); } catch(e) { return []; }
@@ -6370,7 +6382,7 @@ function renderToolsPage() {
   TOOL_GROUPS.forEach(function(tg) {
     var progress = getToolProgress(tg.id);
     var total = tg.problems.length;
-    var cleared = progress.length;
+    var cleared = tg.problems.filter(function(p) { return progress.indexOf(p.id) !== -1; }).length;
     var pct = total > 0 ? Math.round(cleared / total * 100) : 0;
     h += '<div class="tool-card" style="--tc:' + tg.color + '" onclick="selectTool(\'' + tg.id + '\')">';
     h += '<div class="tool-card-icon">' + tg.icon + '</div>';
@@ -6388,6 +6400,10 @@ function renderToolsPage() {
 
 function selectTool(toolId) {
   currentTool = toolId;
+  currentToolGroup = null;
+  for (var i = 0; i < TOOL_GROUPS.length; i++) {
+    if (TOOL_GROUPS[i].id === toolId) { currentToolGroup = TOOL_GROUPS[i]; break; }
+  }
   renderToolList();
   history.pushState({ page: 'tool-list', tool: toolId, tab: 'tools' }, '');
   showPage('tool-list');
@@ -6396,17 +6412,15 @@ function selectTool(toolId) {
 function renderToolList() {
   var c = document.getElementById('tool-list-content');
   if (!c) return;
-  var tg = null;
-  for (var i = 0; i < TOOL_GROUPS.length; i++) {
-    if (TOOL_GROUPS[i].id === currentTool) { tg = TOOL_GROUPS[i]; break; }
-  }
+  var tg = currentToolGroup;
   if (!tg) return;
   var progress = getToolProgress(tg.id);
-  var h = '<button class="tool-back-btn" onclick="switchTab(\'tools\')">← ツール一覧に戻る</button>';
+  var cleared = tg.problems.filter(function(p) { return progress.indexOf(p.id) !== -1; }).length;
+  var h = '<button class="tool-back-btn" onclick="history.back()">← ツール一覧に戻る</button>';
   h += '<div class="tool-list-header" style="--tc:' + tg.color + '">';
   h += '<span class="tool-list-icon">' + tg.icon + '</span>';
   h += '<span class="tool-list-name">' + escapeHtml(tg.name) + '</span>';
-  h += '<span class="tool-list-count">' + progress.length + ' / ' + tg.problems.length + '</span>';
+  h += '<span class="tool-list-count">' + cleared + ' / ' + tg.problems.length + '</span>';
   h += '</div>';
   h += '<div class="tool-list-desc">' + escapeHtml(tg.desc) + '</div>';
   h += '<div class="tl-tab-row">';
@@ -6426,11 +6440,13 @@ function renderToolList() {
     h += '<div class="tg-body hidden" id="tg-body-' + gid + '">';
     h += '<div class="tg-block"><div class="tg-label">◆ 概要</div><p class="tg-text">' + escapeHtml(g.what) + '</p></div>';
     h += '<div class="tg-block"><div class="tg-label">◆ なぜ学ぶのか</div><p class="tg-text">' + escapeHtml(g.why) + '</p></div>';
-    h += '<div class="tg-block"><div class="tg-label">◆ 基本概念</div><div class="tg-concepts">';
-    g.concepts.forEach(function(cv) {
-      h += '<div class="tg-concept"><span class="tg-term">' + escapeHtml(cv.term) + '</span><span class="tg-desc">' + escapeHtml(cv.desc) + '</span></div>';
-    });
-    h += '</div></div>';
+    if (g.concepts && g.concepts.length) {
+      h += '<div class="tg-block"><div class="tg-label">◆ 基本概念</div><div class="tg-concepts">';
+      g.concepts.forEach(function(cv) {
+        h += '<div class="tg-concept"><span class="tg-term">' + escapeHtml(cv.term) + '</span><span class="tg-desc">' + escapeHtml(cv.desc) + '</span></div>';
+      });
+      h += '</div></div>';
+    }
     h += '</div>';
     h += '</div>';
   }
@@ -6527,9 +6543,11 @@ function toggleToolGuide(toolId) {
 }
 
 function checkToolAnswer(toolId, problemId) {
-  var tg = null;
-  for (var i = 0; i < TOOL_GROUPS.length; i++) {
-    if (TOOL_GROUPS[i].id === toolId) { tg = TOOL_GROUPS[i]; break; }
+  var tg = (currentToolGroup && currentToolGroup.id === toolId) ? currentToolGroup : null;
+  if (!tg) {
+    for (var i = 0; i < TOOL_GROUPS.length; i++) {
+      if (TOOL_GROUPS[i].id === toolId) { tg = TOOL_GROUPS[i]; break; }
+    }
   }
   if (!tg) return;
   var p = null;
@@ -6543,14 +6561,18 @@ function checkToolAnswer(toolId, problemId) {
   var userAnswer = input.value.trim();
   if (!userAnswer) { input.focus(); return; }
   var isCorrect = false;
+  var matchedAnswer = p.answers[0];
   for (var k = 0; k < p.answers.length; k++) {
-    if (userAnswer === p.answers[k].trim()) { isCorrect = true; break; }
+    if (userAnswer === p.answers[k].trim()) { isCorrect = true; matchedAnswer = p.answers[k].trim(); break; }
   }
-  feedback.classList.remove('hidden');
   if (isCorrect) {
     feedback.className = 'tp-feedback tp-correct';
-    feedback.innerHTML = '✓ 正解！　<code>' + escapeHtml(p.answers[0]) + '</code>';
+    feedback.innerHTML = '✓ 正解！　<code>' + escapeHtml(matchedAnswer) + '</code>';
     saveToolProgress(toolId, problemId);
+    var newProgress = getToolProgress(toolId);
+    var newCleared = tg.problems.filter(function(pr) { return newProgress.indexOf(pr.id) !== -1; }).length;
+    var countEl = document.querySelector('.tool-list-count');
+    if (countEl) countEl.textContent = newCleared + ' / ' + tg.problems.length;
     var card = document.getElementById('tpc-' + problemId);
     if (card && !card.classList.contains('tp-cleared')) {
       card.classList.add('tp-cleared');
