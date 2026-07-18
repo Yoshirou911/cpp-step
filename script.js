@@ -6438,6 +6438,7 @@ function selectTool(toolId) {
   renderToolList();
   history.pushState({ page: 'tool-list', tool: toolId, tab: 'tools' }, '');
   showPage('tool-list');
+  requestAnimationFrame(function() { window.scrollTo(0, 0); });
 }
 
 function renderToolList() {
@@ -6549,6 +6550,7 @@ function switchToolTab(which) {
   if (prPanel) prPanel.classList.toggle('hidden', which !== 'practice');
   if (tbBtn)   tbBtn.classList.toggle('active', which === 'textbook');
   if (prBtn)   prBtn.classList.toggle('active', which === 'practice');
+  window.scrollTo(0, 0);
 }
 
 function toggleToolProblem(id) {
@@ -6559,7 +6561,7 @@ function toggleToolProblem(id) {
   chevron.textContent = isHidden ? '▶' : '▼';
   if (!isHidden) {
     var input = document.getElementById('tpi-' + id);
-    if (input) setTimeout(function() { input.focus(); }, 80);
+    if (input) setTimeout(function() { input.focus({ preventScroll: true }); }, 80);
   }
 }
 
