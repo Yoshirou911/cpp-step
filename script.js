@@ -6452,7 +6452,46 @@ function saveToolProgress(toolId, problemId) {
   if (progress.indexOf(problemId) === -1) {
     progress.push(problemId);
     try { localStorage.setItem('tool_progress_' + toolId, JSON.stringify(progress)); } catch(e) {}
+    if (currentUser && _supabase) {
+      _supabase.from('progress').upsert({
+        user_id: currentUser.id,
+        language: 'tool_' + toolId,
+        problem_id: problemId
+      }).then(function() {}).catch(function() {});
+    }
   }
+}
+
+async function syncToolProgressFromSupabase(toolId) {
+  if (!currentUser || !_supabase) return;
+  var lang = 'tool_' + toolId;
+  try {
+    var result = await _supabase
+      .from('progress')
+      .select('problem_id')
+      .eq('user_id', currentUser.id)
+      .eq('language', lang);
+    if (result.error) return;
+    var remoteIds = (result.data || []).map(function(r) { return r.problem_id; });
+    var localIds  = getToolProgress(toolId);
+    var merged = remoteIds.slice();
+    localIds.forEach(function(id) { if (merged.indexOf(id) === -1) merged.push(id); });
+    try { localStorage.setItem('tool_progress_' + toolId, JSON.stringify(merged)); } catch(e) {}
+    var toUpload = localIds.filter(function(id) { return remoteIds.indexOf(id) === -1; });
+    if (toUpload.length > 0) {
+      var rows = toUpload.map(function(id) {
+        return { user_id: currentUser.id, language: lang, problem_id: id };
+      });
+      await _supabase.from('progress').upsert(rows);
+    }
+  } catch(e) {}
+}
+
+async function syncAllToolsFromSupabase() {
+  if (!currentUser || !_supabase || typeof TOOL_GROUPS === 'undefined') return;
+  await Promise.all(TOOL_GROUPS.map(function(tg) { return syncToolProgressFromSupabase(tg.id); }));
+  var toolsEl = document.getElementById('page-tools');
+  if (toolsEl && !toolsEl.classList.contains('hidden')) renderToolsPage();
 }
 
 function renderToolsPage() {
@@ -6748,6 +6787,7 @@ function switchTab(tab) {
     history.pushState({ page: 'tools', tab: 'tools' }, '');
     renderToolsPage();
     showPage('tools');
+    syncAllToolsFromSupabase().catch(function() {});
   } else {
     history.pushState({ page: 'guide', lang: currentLanguage, tab: 'guide' }, '');
     renderGuide();
@@ -8795,6 +8835,7 @@ async function initAuth() {
         await syncProgressFromSupabase();
         await syncMissionProgressFromSupabase();
       } catch(e) { console.warn('sync error on auth change:', e); }
+      syncAllToolsFromSupabase().catch(function() {});
       updateProgressDisplay();
       renderList();
     } else if (!currentUser && currentLanguage) {
@@ -8830,6 +8871,7 @@ async function initAuth() {
     if (currentLanguage) {
       await syncProgressFromSupabase();
       await syncMissionProgressFromSupabase();
+      syncAllToolsFromSupabase().catch(function() {});
       updateProgressDisplay();
       renderList();
     }
@@ -8940,6 +8982,7 @@ window.addEventListener('online', function() {
   if (currentUser && _supabase) {
     syncProgressFromSupabase();
     syncMissionProgressFromSupabase();
+    syncAllToolsFromSupabase().catch(function() {});
   }
 });
 
