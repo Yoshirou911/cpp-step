@@ -65,10 +65,9 @@ export default async function handler(req, res) {
   if (system && typeof system === 'string' && system.length > 4000) return res.status(400).json({ error: 'システムプロンプトが長すぎます' });
   if (JSON.stringify(messages).length > 80000) return res.status(400).json({ error: 'メッセージが大きすぎます' });
 
-  const groqMessages = [
-    { role: 'system', content: system },
-    ...messages
-  ];
+  const groqMessages = system
+    ? [{ role: 'system', content: system }, ...messages]
+    : [...messages];
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 15000);

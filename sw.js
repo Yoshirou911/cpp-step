@@ -1,4 +1,4 @@
-var CACHE_NAME = 'code-step-v7';
+var CACHE_NAME = 'code-step-v8';
 var STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -6,6 +6,7 @@ var STATIC_ASSETS = [
   '/script.js',
   '/data/problems.js',
   '/data/guide-data.js',
+  '/data/tools-data.js',
   '/icon.svg',
   '/icon-192.png',
   '/icon-512.png',
@@ -69,7 +70,7 @@ self.addEventListener('notificationclick', function(event) {
 });
 
 // フェッチ: script.js/style.css/index.html はネットワーク優先、その他はキャッシュ優先
-var NETWORK_FIRST = ['/script.js', '/data/problems.js', '/data/guide-data.js', '/style.css', '/index.html', '/'];
+var NETWORK_FIRST = ['/script.js', '/data/problems.js', '/data/guide-data.js', '/data/tools-data.js', '/style.css', '/index.html', '/'];
 
 self.addEventListener('fetch', function(event) {
   if (!event.request.url.startsWith(self.location.origin)) return;

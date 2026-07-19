@@ -4378,7 +4378,8 @@ var _JUDGE0_LANG_IDS = {
 
 // フォールバック1: Judge0 CE
 async function _runOnJudge0Client(code, stdin) {
-  var langId = _JUDGE0_LANG_IDS[currentLanguage] || 54;
+  var langId = _JUDGE0_LANG_IDS[currentLanguage];
+  if (!langId) return null;
   var ctrl = new AbortController();
   var timer = setTimeout(function() { ctrl.abort(); }, 15000);
   try {
@@ -4852,18 +4853,27 @@ async function askAI(system, messages) {
     var _tok  = _sess.data && _sess.data.session && _sess.data.session.access_token;
     if (_tok) askHeaders['Authorization'] = 'Bearer ' + _tok;
   }
+  const _body = JSON.stringify({ system: system, messages: msgArray });
   const _askCtrl = new AbortController();
   const _askTimer = setTimeout(function() { _askCtrl.abort(); }, 35000);
   let res;
   try {
-    res = await fetch('/api/ask', {
-      method: 'POST',
-      headers: askHeaders,
-      body: JSON.stringify({ system: system, messages: msgArray }),
-      signal: _askCtrl.signal
-    });
+    res = await fetch('/api/ask', { method: 'POST', headers: askHeaders, body: _body, signal: _askCtrl.signal });
   } finally {
     clearTimeout(_askTimer);
+  }
+  if (res.status === 401 && _supabase) {
+    var _ref = await _supabase.auth.refreshSession();
+    if (!_ref.error && _ref.data && _ref.data.session) {
+      askHeaders['Authorization'] = 'Bearer ' + _ref.data.session.access_token;
+      const _askCtrl2 = new AbortController();
+      const _askTimer2 = setTimeout(function() { _askCtrl2.abort(); }, 35000);
+      try {
+        res = await fetch('/api/ask', { method: 'POST', headers: askHeaders, body: _body, signal: _askCtrl2.signal });
+      } finally {
+        clearTimeout(_askTimer2);
+      }
+    }
   }
   const data = await res.json();
   if (data.error) throw new Error(data.error);
