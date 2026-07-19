@@ -612,6 +612,11 @@ function _incDailyCleared() {
   var n = getTodayCleared() + 1;
   lsSet('dc_' + _todayKey(), String(n));
   _renderDailyGoalBar();
+  // 連続クリアボーナス（5問ごと）
+  if (n > 0 && n % 5 === 0) {
+    var bonus = addSP(50);
+    showToast('🔥 ' + n + '問連続クリア！ ボーナス +' + bonus + ' SP！');
+  }
 }
 function setDailyGoal(n) {
   _dailyGoal = Math.max(1, Math.min(20, parseInt(n) || 3));
@@ -1185,7 +1190,11 @@ function recordLoginDay() {
       login_date: today
     }).then(function() {}).catch(function() {});
   }
-  if (isNew) checkLevelUp(); // 新規ログイン日なら EXP を加算・判定
+  if (isNew) {
+    checkLevelUp();
+    var spGained = addSP(20);
+    showToast('🪙 ログインボーナス +' + spGained + ' SP！');
+  }
 }
 
 async function getLoginStreak() {
@@ -1440,9 +1449,12 @@ function getSP() {
 }
 
 function addSP(amount) {
+  var multiplier = currentUserIsPremium ? 2 : 1;
+  var actual = Math.round(amount * multiplier);
   var current = getSP();
-  localStorage.setItem('sp_balance', String(current + amount));
+  localStorage.setItem('sp_balance', String(current + actual));
   updateSPDisplay();
+  return actual;
 }
 
 function spendSP(amount) {
@@ -1561,6 +1573,36 @@ function selectTitle(id) {
   setActiveTitle(current === id ? '' : id);
   renderShopTitles();
   showToast(current === id ? '称号を外しました' : '称号を設定しました');
+}
+
+// ===== 友達招待 =====
+function getReferralUrl() {
+  var uid = currentUser ? currentUser.id.slice(0, 8) : null;
+  if (!uid) return null;
+  return 'https://cpp-step.vercel.app/?ref=' + uid;
+}
+
+function copyReferralUrl() {
+  var url = getReferralUrl();
+  if (!url) { showToast('ログインすると招待リンクを生成できます'); return; }
+  navigator.clipboard.writeText(url).then(function() {
+    showToast('🔗 招待リンクをコピーしました！');
+  }).catch(function() {
+    prompt('招待リンク（コピーしてシェアしよう）', url);
+  });
+}
+
+function _checkReferralBonus() {
+  var params = new URLSearchParams(window.location.search);
+  var ref = params.get('ref');
+  if (!ref) return;
+  var alreadyGiven = localStorage.getItem('ref_bonus_given');
+  if (alreadyGiven) return;
+  localStorage.setItem('ref_bonus_given', '1');
+  setTimeout(function() {
+    var gained = addSP(100);
+    showToast('🎁 招待ボーナス +' + gained + ' SP ゲット！');
+  }, 2000);
 }
 
 function openShopModal() {
@@ -1761,6 +1803,53 @@ function getDailyChallenge() {
   var chosen = pool[seed % pool.length];
   if (chosen) lsSet(cacheKey, String(chosen.id));
   return chosen;
+}
+
+// ===== 週次チャレンジ =====
+function _getWeekKey() {
+  var d = new Date();
+  var jan1 = new Date(d.getFullYear(), 0, 1);
+  var week = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+  return d.getFullYear() + '_w' + week;
+}
+
+function getWeeklyChallengeProblems() {
+  var allLangs = [
+    { lang: 'cpp', probs: problems },
+    { lang: 'python', probs: pythonProblems },
+    { lang: 'javascript', probs: javascriptProblems },
+    { lang: 'typescript', probs: typescriptProblems },
+    { lang: 'go', probs: goProblems },
+  ];
+  var wk = _getWeekKey();
+  var seed = wk.split('').reduce(function(a, c) { return (a * 31 + c.charCodeAt(0)) >>> 0; }, 0);
+  var result = [];
+  allLangs.forEach(function(entry, i) {
+    var available = entry.probs.filter(function(p) {
+      return !isPremiumRequired(p.rank) || currentUserIsPremium;
+    });
+    if (!available.length) return;
+    var chosen = available[(seed + i * 137) % available.length];
+    if (chosen) result.push({ lang: entry.lang, problem: chosen });
+  });
+  return result;
+}
+
+function getWeeklyClearedIds() {
+  return lsGetJSON('weekly_cleared_' + _getWeekKey(), []);
+}
+
+function markWeeklyCleared(lang, id) {
+  var key = lang + ':' + id;
+  var list = getWeeklyClearedIds();
+  if (list.includes(key)) return;
+  list.push(key);
+  lsSet('weekly_cleared_' + _getWeekKey(), JSON.stringify(list));
+  var weekly = getWeeklyChallengeProblems();
+  if (list.length >= weekly.length) {
+    var bonus = addSP(300);
+    showToast('🏆 週次チャレンジ全完！ ボーナス +' + bonus + ' SP！');
+  }
 }
 
 function isDailyChallengeCleared() {
@@ -3019,8 +3108,13 @@ function saveProgress(id) {
     markDailyChallengeCleared();
     checkLevelUp();
     showToast('🎯 デイリーチャレンジ達成！ +50 XP ボーナス！');
-    renderList(); // バッジ更新
+    renderList();
   }
+
+  // 週次チャレンジ達成チェック
+  var weekly = getWeeklyChallengeProblems();
+  var wMatch = weekly.find(function(w) { return w.lang === (currentLanguage || 'cpp') && w.problem.id === id; });
+  if (wMatch) markWeeklyCleared(wMatch.lang, id);
 }
 
 function removeProgress(id) {
@@ -7004,6 +7098,88 @@ function switchTab(tab) {
 
 // ===== ガイドページの描画 =====
 
+function _buildCourseHTML() {
+  var coursePaths = [
+    { name: 'Web入門', icon: '🌐', steps: [
+      { lang: 'html', label: 'HTML', probs: htmlProblems },
+      { lang: 'javascript', label: 'JavaScript', probs: javascriptProblems },
+      { lang: 'typescript', label: 'TypeScript', probs: typescriptProblems },
+    ]},
+    { name: 'バックエンド', icon: '⚙️', steps: [
+      { lang: 'python', label: 'Python', probs: pythonProblems },
+      { lang: 'sql', label: 'SQL', probs: sqlProblems },
+      { lang: 'go', label: 'Go', probs: goProblems },
+    ]},
+    { name: 'システム', icon: '⚡', steps: [
+      { lang: 'c', label: 'C', probs: cProblems },
+      { lang: 'cpp', label: 'C++', probs: problems },
+      { lang: 'rust', label: 'Rust', probs: rustProblems },
+    ]},
+  ];
+
+  var html = '<div class="course-section">' +
+    '<div class="guide-title" style="margin-bottom:6px;">◆ COURSE</div>' +
+    '<div class="guide-sub" style="margin-bottom:20px;">ルートに沿って学習しよう。次にやる問題を自動でピックアップします。</div>';
+
+  coursePaths.forEach(function(path) {
+    html += '<div class="course-path">' +
+      '<div class="course-path-title">' + path.icon + ' ' + escapeHtml(path.name) + '</div>' +
+      '<div class="course-steps">';
+
+    path.steps.forEach(function(step) {
+      var savedKey = 'progress_' + step.lang;
+      var cleared = lsGetJSON(savedKey, []);
+      var total = step.probs ? step.probs.length : 0;
+      var done = Math.min(cleared.length, total);
+      var pct = total > 0 ? Math.round(done / total * 100) : 0;
+      var nextProb = step.probs ? step.probs.find(function(p) { return !cleared.includes(p.id); }) : null;
+
+      html += '<div class="course-step">' +
+        '<div class="course-step-head">' +
+          '<span class="course-step-lang">' + escapeHtml(step.label) + '</span>' +
+          '<span class="course-step-count">' + done + ' / ' + total + '</span>' +
+        '</div>' +
+        '<div class="course-step-bar"><div class="course-step-fill" style="width:' + pct + '%"></div></div>';
+
+      if (nextProb) {
+        html += '<div class="course-next" onclick="selectLanguage(\'' + step.lang + '\');switchTab(\'problems\');setTimeout(function(){renderDetail(' + nextProb.id + ');},300)">' +
+          '▶ 次: ' + escapeHtml(nextProb.title) + '</div>';
+      } else if (total > 0) {
+        html += '<div class="course-complete">✓ 完了！</div>';
+      }
+      html += '</div>';
+    });
+
+    html += '</div></div>';
+  });
+
+  // 週次チャレンジ
+  var weekly = getWeeklyChallengeProblems();
+  var wCleared = getWeeklyClearedIds();
+  if (weekly.length > 0) {
+    html += '<div class="course-path">' +
+      '<div class="course-path-title">🗓 今週のチャレンジ <span class="weekly-sp-badge">全完で +300 SP</span></div>' +
+      '<div class="course-steps">';
+    weekly.forEach(function(w) {
+      var key = w.lang + ':' + w.problem.id;
+      var done = wCleared.includes(key);
+      html += '<div class="course-step' + (done ? ' course-step-done' : '') + '">' +
+        '<div class="course-step-head">' +
+          '<span class="course-step-lang">' + escapeHtml(w.lang.toUpperCase()) + '</span>' +
+          '<span class="weekly-badge-rank" style="color:' + (_RANK_COLORS[w.problem.rank] || '#888') + '">' + (w.problem.rank || '') + '</span>' +
+        '</div>' +
+        '<div class="course-next" onclick="selectLanguage(\'' + w.lang + '\');switchTab(\'problems\');setTimeout(function(){renderDetail(' + w.problem.id + ');},300)">' +
+          (done ? '✓ ' : '▶ ') + escapeHtml(w.problem.title) +
+        '</div>' +
+      '</div>';
+    });
+    html += '</div></div>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
 function _buildRoadmapHTML() {
   var paths = [
     {
@@ -7107,6 +7283,11 @@ function renderGuide() {
     '<div class="guide-sub">単元の説明・重要ポイント・用語集をまとめています。</div>';
   content.appendChild(header);
 
+  // コース（進捗付きルート + 週次チャレンジ）
+  var course = document.createElement('div');
+  course.innerHTML = _buildCourseHTML();
+  content.appendChild(course);
+
   // ロードマップ
   var roadmap = document.createElement('div');
   roadmap.innerHTML = _buildRoadmapHTML();
@@ -7185,12 +7366,14 @@ function saveMissionProgress(id) {
       mission_id: id
     }).then(function() {}).catch(function() {});
   }
-  checkLevelUp(); // EXP・レベルアップ判定
-  // ミッションXPをサーバー側user_statsにも反映（ランキングのtotal_xpズレ防止）
+  checkLevelUp();
   var mDef = getMissions().find(function(m) { return m.id === id; });
   if (mDef) {
     var mXp = MISSION_EXP[(mDef.rank || 'rookie').toLowerCase()] || 50;
     syncUserStats(mXp, currentLanguage || 'cpp');
+    var mSpRewards = { rookie:15, bronze:25, silver:40, gold:65, platinum:100, diamond:140, master:200 };
+    var mSp = addSP(mSpRewards[(mDef.rank || 'rookie').toLowerCase()] || 15);
+    showToast('🪙 ミッションクリア！ +' + mSp + ' SP獲得！');
   }
 }
 
@@ -8139,6 +8322,13 @@ async function renderProfile() {
       '<div class="profile-avatar" style="--rank-color:' + rank.color + '">' + avatarLetter + '</div>' +
       '<div class="profile-hero-info">' +
         '<div class="profile-email">' + escapeHtml(displayName) + '</div>' +
+        (function() {
+          var tid = getActiveTitle();
+          if (!tid) return '';
+          var titem = GACHA_POOL.find(function(p) { return p.id === tid; });
+          if (!titem) return '';
+          return '<div class="profile-title-badge" style="color:' + titem.color + ';border-color:' + titem.color + '55">✦ ' + escapeHtml(titem.name) + ' ✦</div>';
+        })() +
         (_premiumStatusCache ? '<div class="plus-badge-label">◆ CODE STEP PLUS</div>' : '') +
         (currentUserIsAdmin ? '<div class="admin-badge-label">⚙ ADMIN</div>' : '') +
         '<div class="profile-rank-badge" style="color:' + rank.color + ';border-color:' + rank.color + ';box-shadow:0 0 12px ' + rank.color + '33">' +
@@ -8157,7 +8347,11 @@ async function renderProfile() {
               '</span>' +
             '</div>'
           : '') +
-        '<button class="profile-share-btn" onclick="shareProfile()">𝕏 シェア</button>' +
+        '<div class="profile-action-row">' +
+          '<button class="profile-share-btn" onclick="shareProfile()">𝕏 シェア</button>' +
+          (currentUser ? '<button class="profile-invite-btn" onclick="copyReferralUrl()">🔗 友達を招待 (+100 SP)</button>' : '') +
+          '<button class="profile-shop-btn" onclick="openShopModal()">🪙 ' + getSP().toLocaleString() + ' SP</button>' +
+        '</div>' +
       '</div>' +
     '</div>' +
     (_realUserIsAdmin
@@ -9328,6 +9522,9 @@ initAuth();
 
 // SP表示を初期化
 updateSPDisplay();
+
+// 友達招待ボーナスチェック
+_checkReferralBonus();
 
 // ===== 背景スライドショー =====
 (function() {
