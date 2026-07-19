@@ -7241,6 +7241,130 @@ function switchTab(tab) {
 
 // ===== ガイドページの描画 =====
 
+// ===== 苦手分析・パーソナライズ問題 =====
+function analyzeWeakAreas() {
+  var probs   = getProblems();
+  var cleared = loadProgress();
+  var wrong   = getWrongAnswers();
+  if (!probs || probs.length === 0) return null;
+
+  // 挑戦済み問題ID（クリア済み + 間違え済み）
+  var attempted = new Set(cleared.concat(wrong));
+  if (attempted.size < 10) return null; // データ不足
+
+  // 単元スコア算出
+  var unitScore   = {};
+  var unitWrong   = {};
+  var unitUnclr   = {};
+  var unitAttempt = {};
+
+  wrong.forEach(function(id) {
+    var p = probs.find(function(x) { return x.id === id; });
+    if (!p) return;
+    var u = p.unit || '—';
+    unitWrong[u]   = (unitWrong[u]   || 0) + 1;
+    unitAttempt[u] = true;
+  });
+
+  cleared.forEach(function(id) {
+    var p = probs.find(function(x) { return x.id === id; });
+    if (p) unitAttempt[p.unit || '—'] = true;
+  });
+
+  probs.forEach(function(p) {
+    var u = p.unit || '—';
+    if (!unitAttempt[u]) return;
+    if (!cleared.includes(p.id)) {
+      unitUnclr[u] = (unitUnclr[u] || 0) + 1;
+    }
+  });
+
+  Object.keys(unitAttempt).forEach(function(u) {
+    unitScore[u] = ((unitWrong[u] || 0) * 3) + (unitUnclr[u] || 0);
+  });
+
+  var sorted = Object.keys(unitScore)
+    .filter(function(u) { return (unitWrong[u] || 0) > 0; })
+    .sort(function(a, b) { return unitScore[b] - unitScore[a]; });
+
+  return sorted.slice(0, 3).map(function(u) {
+    return { unit: u, wrongCount: unitWrong[u] || 0, uncleared: unitUnclr[u] || 0 };
+  });
+}
+
+function getPersonalizedProblems(weakUnits) {
+  var probs   = getProblems();
+  var cleared = loadProgress();
+  var result  = [];
+
+  weakUnits.forEach(function(w) {
+    var unitProbs = probs.filter(function(p) {
+      return p.unit === w.unit && !cleared.includes(p.id);
+    });
+    // 難易度低い順（ROOKIEから）で最大3問
+    var ranked = unitProbs.sort(function(a, b) {
+      var order = ['ROOKIE','BRONZE','SILVER','GOLD','PLATINUM','DIAMOND','MASTER','LEGEND','TITAN'];
+      return order.indexOf(a.rank) - order.indexOf(b.rank);
+    });
+    result = result.concat(ranked.slice(0, 3));
+  });
+
+  return result.slice(0, 9);
+}
+
+function _buildWeakAreaHTML() {
+  var weak = analyzeWeakAreas();
+  if (!weak || weak.length === 0) {
+    var probs   = getProblems();
+    var cleared = loadProgress();
+    var wrong   = getWrongAnswers();
+    var attempted = new Set((cleared || []).concat(wrong || []));
+    if (attempted.size < 10) {
+      return '<div class="weak-section weak-pending">' +
+        '<div class="guide-title" style="margin-bottom:6px;">◆ 苦手分析</div>' +
+        '<div class="weak-pending-msg">あと <strong>' + Math.max(0, 10 - attempted.size) + ' 問</strong> 解くと苦手分析が始まります</div>' +
+        '<div class="weak-pending-bar"><div class="weak-pending-fill" style="width:' + Math.round(attempted.size / 10 * 100) + '%"></div></div>' +
+      '</div>';
+    }
+    return '';
+  }
+
+  var personalProbs = getPersonalizedProblems(weak);
+  var cleared = loadProgress();
+
+  var _RANK_CLR = { ROOKIE:'#9B9B9B',BRONZE:'#C47A2F',SILVER:'#B8C8D8',GOLD:'#EFC050',PLATINUM:'#00C8B4',DIAMOND:'#5588FF',MASTER:'#C040FF',LEGEND:'#FF2244',TITAN:'#FF2020' };
+
+  var unitsHtml = weak.map(function(w) {
+    return '<div class="weak-unit-chip">' +
+      '<span class="weak-unit-name">' + escapeHtml(w.unit.split('◆')[0].trim()) + '</span>' +
+      '<span class="weak-unit-wrong">✗ ' + w.wrongCount + '問</span>' +
+    '</div>';
+  }).join('');
+
+  var probsHtml = personalProbs.map(function(p) {
+    var done  = cleared.includes(p.id);
+    var color = _RANK_CLR[(p.rank || '').toUpperCase()] || '#888';
+    return '<div class="weak-prob-card' + (done ? ' weak-prob-done' : '') + '" onclick="renderDetail(' + p.id + ')">' +
+      '<div class="weak-prob-rank" style="color:' + color + ';border-color:' + color + '44">' + escapeHtml(p.rank || '') + '</div>' +
+      '<div class="weak-prob-title">' + escapeHtml(p.title) + '</div>' +
+      (done ? '<div class="weak-prob-check">✓</div>' : '') +
+    '</div>';
+  }).join('');
+
+  var doneCount = personalProbs.filter(function(p) { return cleared.includes(p.id); }).length;
+
+  return '<div class="weak-section">' +
+    '<div class="guide-title" style="margin-bottom:6px;">◆ 苦手克服セット</div>' +
+    '<div class="guide-sub" style="margin-bottom:14px;">あなたの間違え傾向から選んだ問題です。克服するとSPボーナス！</div>' +
+    '<div class="weak-units-row">' + unitsHtml + '</div>' +
+    '<div class="weak-prob-grid">' + probsHtml + '</div>' +
+    '<div class="weak-progress-row">' +
+      '<div class="weak-prog-bar"><div class="weak-prog-fill" style="width:' + Math.round(doneCount / Math.max(personalProbs.length,1) * 100) + '%"></div></div>' +
+      '<span class="weak-prog-text">' + doneCount + ' / ' + personalProbs.length + ' 克服済み</span>' +
+    '</div>' +
+  '</div>';
+}
+
 function _buildCourseHTML() {
   var coursePaths = [
     { name: 'Web入門', icon: '🌐', steps: [
@@ -7425,6 +7549,14 @@ function renderGuide() {
     '<div class="guide-title">◆ GUIDE</div>' +
     '<div class="guide-sub">単元の説明・重要ポイント・用語集をまとめています。</div>';
   content.appendChild(header);
+
+  // 苦手克服セット（データがある場合のみ）
+  var weakHtml = _buildWeakAreaHTML();
+  if (weakHtml) {
+    var weakSection = document.createElement('div');
+    weakSection.innerHTML = weakHtml;
+    content.appendChild(weakSection);
+  }
 
   // コース（進捗付きルート + 週次チャレンジ）
   var course = document.createElement('div');
