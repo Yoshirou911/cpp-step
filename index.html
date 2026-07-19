@@ -711,6 +711,38 @@
     <div id="career-quiz-box"></div>
   </div>
 
+  <!-- オンボーディングモーダル -->
+  <div id="onboarding-modal" class="hidden">
+    <div class="onb-overlay"></div>
+    <div class="onb-box">
+      <div class="onb-title">◆ CODE STEP へようこそ！</div>
+      <div class="onb-sub">どの分野に興味がありますか？</div>
+      <div class="onb-paths">
+        <div class="onb-path" onclick="onbSelect('html','web')">
+          <div class="onb-path-icon">🌐</div>
+          <div class="onb-path-name">Webを作りたい</div>
+          <div class="onb-path-desc">HTML → JavaScript → TypeScript</div>
+        </div>
+        <div class="onb-path" onclick="onbSelect('python','data')">
+          <div class="onb-path-icon">🐍</div>
+          <div class="onb-path-name">データ・AIに興味がある</div>
+          <div class="onb-path-desc">Python → SQL → Bash</div>
+        </div>
+        <div class="onb-path" onclick="onbSelect('cpp','system')">
+          <div class="onb-path-icon">⚡</div>
+          <div class="onb-path-name">システム・ゲームを作りたい</div>
+          <div class="onb-path-desc">C → C++ → Rust</div>
+        </div>
+        <div class="onb-path" onclick="onbSelect('kotlin','mobile')">
+          <div class="onb-path-icon">📱</div>
+          <div class="onb-path-name">アプリ開発がしたい</div>
+          <div class="onb-path-desc">Kotlin / Swift / Java</div>
+        </div>
+      </div>
+      <button class="onb-skip" onclick="onbSkip()">スキップ（自分で選ぶ）</button>
+    </div>
+  </div>
+
   <!-- ショップモーダル -->
   <div id="shop-modal" class="hidden">
     <div class="shop-overlay" onclick="closeShopModal()"></div>

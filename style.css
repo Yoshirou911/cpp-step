@@ -11286,3 +11286,150 @@ html {
   font-weight: 800;
   letter-spacing: 0.08em;
 }
+
+/* ===== 期間限定ガチャ ===== */
+.shop-limited {
+  border: 1px solid rgba(239,192,80,0.30);
+  background: rgba(239,192,80,0.04);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+
+.shop-limited-title {
+  color: #EFC050 !important;
+  opacity: 1 !important;
+}
+
+.ltd-badge {
+  font-size: 0.60rem;
+  background: rgba(239,192,80,0.18);
+  border: 1px solid rgba(239,192,80,0.40);
+  color: #EFC050;
+  padding: 2px 8px;
+  border-radius: 2px;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+}
+
+.shop-limited-items {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.ltd-item-chip {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border: 1px solid;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.03);
+}
+
+.ltd-gacha-btn {
+  border-color: rgba(239,192,80,0.45) !important;
+  width: 100%;
+}
+.ltd-gacha-btn:hover {
+  background: rgba(239,192,80,0.12) !important;
+  border-color: #EFC050 !important;
+}
+
+/* ===== オンボーディング ===== */
+#onboarding-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#onboarding-modal.hidden { display: none; }
+
+.onb-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.82);
+  backdrop-filter: blur(6px);
+}
+
+.onb-box {
+  position: relative;
+  background: #0d0a07;
+  border: 1px solid rgba(255,107,0,0.30);
+  border-top: 2px solid var(--orange);
+  width: min(540px, 94vw);
+  padding: 32px 28px 24px;
+  box-shadow: 0 0 60px rgba(255,107,0,0.12), 0 30px 80px rgba(0,0,0,0.8);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+}
+
+.onb-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.80rem;
+  font-weight: 800;
+  color: var(--orange);
+  letter-spacing: 0.25em;
+  text-shadow: 0 0 14px rgba(255,107,0,0.45);
+  margin-bottom: 8px;
+}
+
+.onb-sub {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.80);
+  margin-bottom: 24px;
+  font-weight: 600;
+}
+
+.onb-paths {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.onb-path {
+  background: rgba(255,107,0,0.05);
+  border: 1px solid rgba(255,107,0,0.18);
+  padding: 16px 14px;
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  transition: background 0.18s, border-color 0.18s, transform 0.15s;
+}
+.onb-path:hover {
+  background: rgba(255,107,0,0.12);
+  border-color: var(--orange);
+  transform: translateY(-2px);
+}
+
+.onb-path-icon {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+
+.onb-path-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.onb-path-desc {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.40);
+  line-height: 1.4;
+}
+
+.onb-skip {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.30);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 8px;
+  transition: color 0.18s;
+}
+.onb-skip:hover { color: rgba(255,255,255,0.60); }

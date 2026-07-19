@@ -1194,6 +1194,19 @@ function recordLoginDay() {
     checkLevelUp();
     var spGained = addSP(20);
     showToast('🪙 ログインボーナス +' + spGained + ' SP！');
+
+    // ストリークSPボーナス（7日ごと）
+    var streak = calcStreak(local);
+    var cur = streak.current;
+    var lastAt = parseInt(localStorage.getItem('streak_bonus_last_at') || '0', 10);
+    if (cur >= 7 && cur > lastAt && cur % 7 === 0) {
+      localStorage.setItem('streak_bonus_last_at', String(cur));
+      var streakSp = cur >= 30 ? 200 : 50;
+      setTimeout(function() {
+        var sg = addSP(streakSp);
+        showToast('🔥 ' + cur + '日連続ログイン！ ボーナス +' + sg + ' SP！');
+      }, 2000);
+    }
   }
 }
 
@@ -1444,6 +1457,74 @@ var GACHA_POOL = [
 
 var _GACHA_WEIGHTS = { common: 60, rare: 25, super_rare: 12, legend: 3 };
 
+// 期間限定ガチャ（月ごとに入れ替え）
+var LIMITED_GACHA_POOL = {
+  1:  [ // 1月
+    { id: 'ltd_winter_coder',  name: '冬のコーダー',       rarity: 'rare',       color: '#88CCFF' },
+    { id: 'ltd_new_year_dev',  name: '新春デベロッパー',   rarity: 'super_rare', color: '#EFC050' },
+    { id: 'ltd_icy_algo',      name: '氷のアルゴリスト',   rarity: 'legend',     color: '#5BDFFF' },
+  ],
+  4:  [ // 4月
+    { id: 'ltd_spring_coder',  name: '春風コーダー',       rarity: 'rare',       color: '#FFB7C5' },
+    { id: 'ltd_sakura_dev',    name: '桜ディベロッパー',   rarity: 'super_rare', color: '#FF80AB' },
+    { id: 'ltd_new_season',    name: '新シーズン開拓者',   rarity: 'legend',     color: '#FF4081' },
+  ],
+  7:  [ // 7月
+    { id: 'ltd_summer_coder',  name: '夏のコーダー',       rarity: 'rare',       color: '#FFB347' },
+    { id: 'ltd_summer_bug',    name: 'サマーバグハンター', rarity: 'super_rare', color: '#FF6B00' },
+    { id: 'ltd_flame_algo',    name: '炎のアルゴリスト',   rarity: 'legend',     color: '#FF2244' },
+  ],
+  10: [ // 10月
+    { id: 'ltd_autumn_coder',  name: '秋のコーダー',       rarity: 'rare',       color: '#CD7F32' },
+    { id: 'ltd_harvest_dev',   name: '収穫期デベロッパー', rarity: 'super_rare', color: '#C47A2F' },
+    { id: 'ltd_phantom_algo',  name: '怪奇アルゴリスト',   rarity: 'legend',     color: '#9400D3' },
+  ],
+  12: [ // 12月
+    { id: 'ltd_xmas_coder',    name: 'クリスマスコーダー', rarity: 'rare',       color: '#00C853' },
+    { id: 'ltd_santa_dev',     name: 'サンタデベロッパー', rarity: 'super_rare', color: '#FF1744' },
+    { id: 'ltd_year_end_god',  name: '年末コードの神',     rarity: 'legend',     color: '#EFC050' },
+  ],
+};
+var _LTD_WEIGHTS = { rare: 60, super_rare: 30, legend: 10 };
+
+function getCurrentLimitedPool() {
+  var month = new Date().getMonth() + 1;
+  return LIMITED_GACHA_POOL[month] || null;
+}
+
+function _drawLimitedGacha() {
+  var pool = getCurrentLimitedPool();
+  if (!pool) return null;
+  var total = 0;
+  pool.forEach(function(item) { total += _LTD_WEIGHTS[item.rarity] || 10; });
+  var rand = Math.random() * total;
+  var cum = 0;
+  for (var i = 0; i < pool.length; i++) {
+    cum += _LTD_WEIGHTS[pool[i].rarity] || 10;
+    if (rand < cum) return pool[i];
+  }
+  return pool[0];
+}
+
+function doLimitedGacha() {
+  var pool = getCurrentLimitedPool();
+  if (!pool) { showToast('現在は期間限定ガチャがありません'); return; }
+  var cost = 150;
+  if (getSP() < cost) { showToast('SPが足りません！（必要: ' + cost + ' SP）'); return; }
+  spendSP(cost);
+  var item = _drawLimitedGacha();
+  if (!item) return;
+  var owned = getOwnedTitles();
+  if (!owned.includes(item.id)) owned.push(item.id);
+  localStorage.setItem('sp_titles', JSON.stringify(owned));
+  renderShopTitles();
+  showGachaResult([item]);
+  // LEGEND出現でコンフェッティ
+  if (item.rarity === 'legend' && typeof confetti === 'function') {
+    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+  }
+}
+
 function getSP() {
   return parseInt(localStorage.getItem('sp_balance') || '0', 10);
 }
@@ -1575,6 +1656,32 @@ function selectTitle(id) {
   showToast(current === id ? '称号を外しました' : '称号を設定しました');
 }
 
+// ===== オンボーディング =====
+function _checkOnboarding() {
+  if (localStorage.getItem('onboarding_done')) return;
+  // ランディングページ表示中のみ
+  setTimeout(function() {
+    var landing = document.getElementById('page-landing');
+    if (landing && !landing.classList.contains('hidden')) {
+      document.getElementById('onboarding-modal').classList.remove('hidden');
+    }
+  }, 800);
+}
+
+function onbSelect(lang, _path) {
+  localStorage.setItem('onboarding_done', '1');
+  document.getElementById('onboarding-modal').classList.add('hidden');
+  selectLanguage(lang);
+  switchTab('problems');
+  // ガイド付きコースをGUIDEで開けるようトースト
+  showToast('💡 GUIDEタブでルートを確認できます！');
+}
+
+function onbSkip() {
+  localStorage.setItem('onboarding_done', '1');
+  document.getElementById('onboarding-modal').classList.add('hidden');
+}
+
 // ===== 友達招待 =====
 function getReferralUrl() {
   var uid = currentUser ? currentUser.id.slice(0, 8) : null;
@@ -1605,9 +1712,45 @@ function _checkReferralBonus() {
   }, 2000);
 }
 
+function _renderLimitedGachaSection() {
+  var pool = getCurrentLimitedPool();
+  var existing = document.getElementById('shop-limited-section');
+  if (existing) existing.remove();
+  if (!pool) return;
+
+  var month = new Date().getMonth() + 1;
+  var monthNames = {1:'1月',4:'4月',7:'7月',10:'10月',12:'12月'};
+  var label = (monthNames[month] || month + '月') + '限定';
+
+  var section = document.createElement('div');
+  section.id = 'shop-limited-section';
+  section.className = 'shop-section shop-limited';
+  section.innerHTML =
+    '<div class="shop-section-title shop-limited-title">🎴 期間限定ガチャ <span class="ltd-badge">' + label + '</span></div>' +
+    '<div class="shop-gacha-rates">' +
+      '<span class="gacha-rate rare">RARE 60%</span>' +
+      '<span class="gacha-rate super-rare">S.RARE 30%</span>' +
+      '<span class="gacha-rate legend">LEGEND 10%</span>' +
+    '</div>' +
+    '<div class="shop-limited-items">' +
+      pool.map(function(item) {
+        return '<div class="ltd-item-chip" style="color:' + item.color + ';border-color:' + item.color + '55">' + escapeHtml(item.name) + '</div>';
+      }).join('') +
+    '</div>' +
+    '<button class="shop-gacha-btn ltd-gacha-btn" onclick="doLimitedGacha()">' +
+      '<span class="gacha-btn-label">期間限定 1回ガチャ</span>' +
+      '<span class="gacha-btn-cost">🪙 150 SP</span>' +
+    '</button>';
+
+  var shopBox = document.querySelector('.shop-box');
+  var firstSection = shopBox.querySelector('.shop-section');
+  if (firstSection) shopBox.insertBefore(section, firstSection);
+}
+
 function openShopModal() {
   updateSPDisplay();
   renderShopTitles();
+  _renderLimitedGachaSection();
   var modal = document.getElementById('shop-modal');
   if (modal) modal.classList.remove('hidden');
 }
@@ -9525,6 +9668,9 @@ updateSPDisplay();
 
 // 友達招待ボーナスチェック
 _checkReferralBonus();
+
+// 初回オンボーディング
+_checkOnboarding();
 
 // ===== 背景スライドショー =====
 (function() {
