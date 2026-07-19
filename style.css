@@ -1726,6 +1726,129 @@ code { font-family: 'Share Tech Mono', 'Consolas', monospace; }
   line-height: 1.72;
 }
 
+/* ===== ROADMAP ===== */
+.roadmap-section {
+  margin-bottom: 32px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid rgba(255,107,0,0.12);
+}
+
+.roadmap-paths {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.roadmap-card {
+  background: rgba(8,5,3,0.60);
+  border: 1px solid rgba(255,107,0,0.13);
+  border-left: 2px solid rgba(255,107,0,0.35);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  padding: 16px 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.roadmap-card:hover {
+  border-left-color: var(--orange);
+  box-shadow: 0 0 18px rgba(255,107,0,0.08);
+}
+
+.roadmap-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.roadmap-icon { font-size: 1.35rem; }
+
+.roadmap-name {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--orange);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(255,107,0,0.30);
+}
+
+.roadmap-target {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.38);
+  margin-top: 2px;
+}
+
+.roadmap-desc {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.60);
+  line-height: 1.55;
+}
+
+.roadmap-steps {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.roadmap-step {
+  background: rgba(255,107,0,0.08);
+  border: 1px solid rgba(255,107,0,0.22);
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.18s, border-color 0.18s, transform 0.15s;
+  min-width: 52px;
+}
+.roadmap-step:hover {
+  background: rgba(255,107,0,0.18);
+  border-color: var(--orange);
+  transform: translateY(-2px);
+}
+
+.roadmap-step-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--orange);
+  letter-spacing: 0.05em;
+}
+
+.roadmap-step-note {
+  font-size: 0.64rem;
+  color: rgba(255,255,255,0.42);
+  margin-top: 2px;
+}
+
+.roadmap-arrow {
+  font-size: 1.1rem;
+  color: rgba(255,107,0,0.35);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.roadmap-start-btn {
+  margin-top: 4px;
+  background: transparent;
+  border: 1px solid rgba(255,107,0,0.35);
+  color: var(--orange);
+  font-size: 0.70rem;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  padding: 7px 14px;
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  transition: background 0.18s, border-color 0.18s;
+  text-transform: uppercase;
+  align-self: flex-start;
+}
+.roadmap-start-btn:hover {
+  background: rgba(255,107,0,0.12);
+  border-color: var(--orange);
+}
+
 /* ========== 繝溘ャ繧ｷ繝ｧ繝ｳ荳隕ｧ ========== */
 #mission-back-btn {
   background: transparent;
@@ -10697,4 +10820,305 @@ html {
 }
 @media (max-width: 600px) {
   .profile-tools-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ===== SP バッジ（ヘッダー） ===== */
+.sp-badge-header {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #EFC050;
+  border: 1px solid rgba(239,192,80,0.35);
+  padding: 3px 10px;
+  cursor: pointer;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  transition: color 0.2s, border-color 0.2s, text-shadow 0.2s;
+  white-space: nowrap;
+}
+.sp-badge-header:hover {
+  border-color: #EFC050;
+  text-shadow: 0 0 10px rgba(239,192,80,0.6);
+}
+
+/* ===== ショップモーダル ===== */
+#shop-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#shop-modal.hidden { display: none; }
+
+.shop-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(4px);
+}
+
+.shop-box {
+  position: relative;
+  background: #0d0a07;
+  border: 1px solid rgba(239,192,80,0.25);
+  border-top: 2px solid rgba(239,192,80,0.55);
+  width: min(520px, 94vw);
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 24px 24px 28px;
+  box-shadow: 0 0 40px rgba(239,192,80,0.10), 0 20px 60px rgba(0,0,0,0.7);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+}
+
+.shop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(239,192,80,0.15);
+}
+
+.shop-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #EFC050;
+  letter-spacing: 0.22em;
+  text-shadow: 0 0 14px rgba(239,192,80,0.45);
+}
+
+.shop-close-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.45);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+.shop-close-btn:hover { color: #fff; }
+
+.shop-sp-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(239,192,80,0.06);
+  border: 1px solid rgba(239,192,80,0.18);
+  padding: 10px 20px;
+  margin-bottom: 22px;
+}
+
+.shop-sp-label {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.12em;
+}
+
+.shop-sp-value {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #EFC050;
+  text-shadow: 0 0 10px rgba(239,192,80,0.5);
+}
+
+.shop-section {
+  margin-bottom: 24px;
+}
+
+.shop-section-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #EFC050;
+  letter-spacing: 0.22em;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.shop-gacha-rates {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.gacha-rate {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+}
+.gacha-rate.common    { background: rgba(155,155,155,0.12); color: #9B9B9B; border: 1px solid rgba(155,155,155,0.25); }
+.gacha-rate.rare      { background: rgba(85,136,255,0.10);  color: #5588FF; border: 1px solid rgba(85,136,255,0.25); }
+.gacha-rate.super-rare{ background: rgba(192,64,255,0.10);  color: #C040FF; border: 1px solid rgba(192,64,255,0.25); }
+.gacha-rate.legend    { background: rgba(255,34,68,0.10);   color: #FF2244; border: 1px solid rgba(255,34,68,0.25); }
+
+.shop-gacha-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.shop-gacha-btn {
+  flex: 1;
+  background: rgba(239,192,80,0.07);
+  border: 1px solid rgba(239,192,80,0.30);
+  padding: 12px 10px;
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  transition: background 0.18s, border-color 0.18s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.shop-gacha-btn:hover {
+  background: rgba(239,192,80,0.14);
+  border-color: #EFC050;
+}
+.shop-gacha-btn.gacha-10 {
+  border-color: rgba(255,107,0,0.35);
+}
+.shop-gacha-btn.gacha-10:hover {
+  border-color: var(--orange);
+  background: rgba(255,107,0,0.10);
+}
+
+.gacha-btn-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.08em;
+}
+
+.gacha-btn-cost {
+  font-size: 0.80rem;
+  color: #EFC050;
+  font-weight: 700;
+}
+.gacha-btn-cost small { font-size: 0.68rem; color: rgba(239,192,80,0.65); }
+
+/* 所持称号グリッド */
+.shop-titles-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.shop-titles-empty {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.35);
+  padding: 10px 0;
+}
+
+.shop-title-chip {
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border: 1px solid;
+  border-radius: 3px;
+  cursor: pointer;
+  background: rgba(255,255,255,0.03);
+  transition: background 0.18s, transform 0.15s;
+  position: relative;
+}
+.shop-title-chip:hover {
+  background: rgba(255,255,255,0.07);
+  transform: translateY(-1px);
+}
+.shop-title-chip.active {
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 0 10px rgba(255,255,255,0.08);
+}
+
+.title-active-mark {
+  font-size: 0.65rem;
+  margin-left: 5px;
+  opacity: 0.7;
+}
+
+/* ガチャ結果オーバーレイ */
+#gacha-result-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  z-index: 10;
+}
+#gacha-result-overlay.hidden { display: none; }
+
+.gacha-result-box {
+  width: 100%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.gacha-result-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.gacha-card {
+  width: 100px;
+  padding: 14px 8px;
+  border: 1px solid;
+  border-radius: 4px;
+  text-align: center;
+  animation: gacha-flip 0.45s ease both;
+  background: rgba(255,255,255,0.03);
+}
+.gacha-card.rarity-common    { border-color: rgba(155,155,155,0.35); }
+.gacha-card.rarity-rare      { border-color: rgba(85,136,255,0.45);  box-shadow: 0 0 12px rgba(85,136,255,0.15); }
+.gacha-card.rarity-super_rare{ border-color: rgba(192,64,255,0.50);  box-shadow: 0 0 14px rgba(192,64,255,0.20); }
+.gacha-card.rarity-legend    { border-color: rgba(255,34,68,0.60);   box-shadow: 0 0 20px rgba(255,34,68,0.30); }
+
+@keyframes gacha-flip {
+  from { opacity: 0; transform: rotateY(90deg) scale(0.8); }
+  to   { opacity: 1; transform: rotateY(0deg) scale(1); }
+}
+
+.gacha-card-rarity {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  margin-bottom: 6px;
+  opacity: 0.8;
+}
+
+.gacha-card-name {
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.gacha-result-close {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.7);
+  font-size: 0.78rem;
+  padding: 8px 28px;
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  transition: background 0.18s, border-color 0.18s;
+}
+.gacha-result-close:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.5);
 }

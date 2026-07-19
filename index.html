@@ -86,6 +86,7 @@
         <span id="streak-badge" class="streak-badge-header hidden" onclick="openProfile()" title="連続学習日数"></span>
         <span id="streak-reminder" class="streak-reminder hidden" onclick="switchTab('problems')" title="今日まだ学習していません">⚠️ 今日の学習を忘れずに！</span>
         <span id="lv-badge" class="lv-badge-header" onclick="openProfile()" title="プロフィールを開く">Lv.1</span>
+        <span id="sp-badge" class="sp-badge-header" onclick="openShopModal()" title="STEP SHOP">🪙 0</span>
         <button id="auth-btn" onclick="openAuthModal()">◆ LOGIN</button>
         <div id="user-info" class="hidden">
           <span id="user-email-display"></span>
@@ -708,6 +709,53 @@
   <div id="career-quiz-modal" class="hidden">
     <div id="career-quiz-overlay" onclick="closeCareerQuizModal()"></div>
     <div id="career-quiz-box"></div>
+  </div>
+
+  <!-- ショップモーダル -->
+  <div id="shop-modal" class="hidden">
+    <div class="shop-overlay" onclick="closeShopModal()"></div>
+    <div class="shop-box">
+      <div class="shop-header">
+        <span class="shop-title">🪙 STEP SHOP</span>
+        <button class="shop-close-btn" onclick="closeShopModal()" aria-label="閉じる">✕</button>
+      </div>
+      <div class="shop-sp-display">
+        <span class="shop-sp-label">所持SP</span>
+        <span id="shop-sp-value" class="shop-sp-value">0 SP</span>
+      </div>
+
+      <div class="shop-section">
+        <div class="shop-section-title">◆ GACHA — 称号をゲットしよう</div>
+        <div class="shop-gacha-rates">
+          <span class="gacha-rate common">COMMON 60%</span>
+          <span class="gacha-rate rare">RARE 25%</span>
+          <span class="gacha-rate super-rare">S.RARE 12%</span>
+          <span class="gacha-rate legend">LEGEND 3%</span>
+        </div>
+        <div class="shop-gacha-btns">
+          <button class="shop-gacha-btn" onclick="doGacha(1)">
+            <span class="gacha-btn-label">1回ガチャ</span>
+            <span class="gacha-btn-cost">🪙 100 SP</span>
+          </button>
+          <button class="shop-gacha-btn gacha-10" onclick="doGacha(10)">
+            <span class="gacha-btn-label">10連ガチャ</span>
+            <span class="gacha-btn-cost">🪙 900 SP <small>（10%お得）</small></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="shop-section">
+        <div class="shop-section-title">◆ 所持称号</div>
+        <div id="shop-titles-grid" class="shop-titles-grid"></div>
+      </div>
+
+      <div id="gacha-result-overlay" class="hidden">
+        <div class="gacha-result-box">
+          <div id="gacha-result-items" class="gacha-result-items"></div>
+          <button class="gacha-result-close" onclick="closeGachaResult()">閉じる</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- コンフェッティ -->

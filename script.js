@@ -1404,6 +1404,178 @@ var MISSION_EXP = {
 var LOGIN_EXP = 20; // ユニークログイン1日あたり
 var TOOL_EXP  = 30; // TOOLSコマンド1問あたり
 
+// ===== SP（ステップポイント）システム =====
+var SP_REWARDS = {
+  rookie: 5, bronze: 10, silver: 20, gold: 35,
+  platinum: 55, diamond: 80, master: 120, legend: 170, titan: 200
+};
+
+var GACHA_POOL = [
+  // COMMON 60%
+  { id: 'title_looper',   name: 'ループの使い手',     rarity: 'common',     color: '#9B9B9B' },
+  { id: 'title_var',      name: '変数マスター',       rarity: 'common',     color: '#9B9B9B' },
+  { id: 'title_debugger', name: 'デバッガー',         rarity: 'common',     color: '#9B9B9B' },
+  { id: 'title_coder',    name: 'コーダー',           rarity: 'common',     color: '#9B9B9B' },
+  { id: 'title_graduate', name: '初心者卒業',         rarity: 'common',     color: '#9B9B9B' },
+  { id: 'title_compiler', name: 'コンパイラー',       rarity: 'common',     color: '#9B9B9B' },
+  // RARE 25%
+  { id: 'title_algo',     name: 'アルゴリズム使い',   rarity: 'rare',       color: '#5588FF' },
+  { id: 'title_bughunt',  name: 'バグハンター',       rarity: 'rare',       color: '#5588FF' },
+  { id: 'title_refactor', name: 'リファクタラー',     rarity: 'rare',       color: '#5588FF' },
+  { id: 'title_oop',      name: 'オブジェクト使い',   rarity: 'rare',       color: '#5588FF' },
+  { id: 'title_speed',    name: '最適化の鬼',         rarity: 'rare',       color: '#5588FF' },
+  // SUPER RARE 12%
+  { id: 'title_architect',name: 'コード設計士',       rarity: 'super_rare', color: '#C040FF' },
+  { id: 'title_alchemy',  name: 'コード錬金術師',     rarity: 'super_rare', color: '#C040FF' },
+  { id: 'title_parallel', name: '並列処理の申し子',   rarity: 'super_rare', color: '#C040FF' },
+  // LEGEND 3%
+  { id: 'title_god',      name: 'コードの神',         rarity: 'legend',     color: '#FF2244' },
+  { id: 'title_overlord', name: 'プログラミング覇者', rarity: 'legend',     color: '#FF2244' },
+];
+
+var _GACHA_WEIGHTS = { common: 60, rare: 25, super_rare: 12, legend: 3 };
+
+function getSP() {
+  return parseInt(localStorage.getItem('sp_balance') || '0', 10);
+}
+
+function addSP(amount) {
+  var current = getSP();
+  localStorage.setItem('sp_balance', String(current + amount));
+  updateSPDisplay();
+}
+
+function spendSP(amount) {
+  var current = getSP();
+  if (current < amount) return false;
+  localStorage.setItem('sp_balance', String(current - amount));
+  updateSPDisplay();
+  return true;
+}
+
+function updateSPDisplay() {
+  var sp = getSP();
+  var badge = document.getElementById('sp-badge');
+  if (badge) badge.textContent = '🪙 ' + sp.toLocaleString();
+  var shopVal = document.getElementById('shop-sp-value');
+  if (shopVal) shopVal.textContent = sp.toLocaleString() + ' SP';
+}
+
+function getOwnedTitles() {
+  return JSON.parse(localStorage.getItem('sp_titles') || '[]');
+}
+
+function getActiveTitle() {
+  return localStorage.getItem('sp_active_title') || '';
+}
+
+function setActiveTitle(id) {
+  localStorage.setItem('sp_active_title', id);
+}
+
+function _drawGacha() {
+  var total = 0;
+  var weights = [];
+  GACHA_POOL.forEach(function(item) {
+    var w = _GACHA_WEIGHTS[item.rarity] || 1;
+    total += w;
+    weights.push(w);
+  });
+  var rand = Math.random() * total;
+  var cum = 0;
+  for (var i = 0; i < GACHA_POOL.length; i++) {
+    cum += weights[i];
+    if (rand < cum) return GACHA_POOL[i];
+  }
+  return GACHA_POOL[0];
+}
+
+function doGacha(count) {
+  var cost = count === 10 ? 900 : 100 * count;
+  if (getSP() < cost) {
+    showToast('SPが足りません！（必要: ' + cost + ' SP）');
+    return;
+  }
+  spendSP(cost);
+  var owned = getOwnedTitles();
+  var results = [];
+  for (var i = 0; i < count; i++) {
+    var item = _drawGacha();
+    results.push(item);
+    if (!owned.includes(item.id)) owned.push(item.id);
+  }
+  localStorage.setItem('sp_titles', JSON.stringify(owned));
+  renderShopTitles();
+  showGachaResult(results);
+}
+
+function showGachaResult(results) {
+  var overlay = document.getElementById('gacha-result-overlay');
+  var container = document.getElementById('gacha-result-items');
+  if (!overlay || !container) return;
+
+  var rarityLabel = { common: 'COMMON', rare: 'RARE', super_rare: 'S.RARE', legend: 'LEGEND' };
+  container.innerHTML = results.map(function(item, i) {
+    return '<div class="gacha-card rarity-' + item.rarity + '" style="animation-delay:' + (i * 0.08) + 's">' +
+      '<div class="gacha-card-rarity" style="color:' + item.color + '">' + (rarityLabel[item.rarity] || item.rarity) + '</div>' +
+      '<div class="gacha-card-name" style="color:' + item.color + '">' + escapeHtml(item.name) + '</div>' +
+    '</div>';
+  }).join('');
+  overlay.classList.remove('hidden');
+
+  // LEGEND が出たらコンフェッティ
+  if (results.some(function(r) { return r.rarity === 'legend'; }) && typeof confetti === 'function') {
+    confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+  }
+}
+
+function closeGachaResult() {
+  var overlay = document.getElementById('gacha-result-overlay');
+  if (overlay) overlay.classList.add('hidden');
+}
+
+function renderShopTitles() {
+  var grid = document.getElementById('shop-titles-grid');
+  if (!grid) return;
+  var owned = getOwnedTitles();
+  var activeId = getActiveTitle();
+  if (owned.length === 0) {
+    grid.innerHTML = '<div class="shop-titles-empty">まだ称号がありません。ガチャで入手しよう！</div>';
+    return;
+  }
+  grid.innerHTML = owned.map(function(id) {
+    var item = GACHA_POOL.find(function(p) { return p.id === id; });
+    if (!item) return '';
+    var isActive = activeId === id;
+    return '<div class="shop-title-chip' + (isActive ? ' active' : '') + '" ' +
+      'style="border-color:' + item.color + ';color:' + item.color + '" ' +
+      'onclick="selectTitle(\'' + id + '\')">' +
+      escapeHtml(item.name) +
+      (isActive ? '<span class="title-active-mark">✓</span>' : '') +
+    '</div>';
+  }).join('');
+}
+
+function selectTitle(id) {
+  var current = getActiveTitle();
+  setActiveTitle(current === id ? '' : id);
+  renderShopTitles();
+  showToast(current === id ? '称号を外しました' : '称号を設定しました');
+}
+
+function openShopModal() {
+  updateSPDisplay();
+  renderShopTitles();
+  var modal = document.getElementById('shop-modal');
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closeShopModal() {
+  var modal = document.getElementById('shop-modal');
+  if (modal) modal.classList.add('hidden');
+  closeGachaResult();
+}
+
 // 全進捗から合計EXP＋内訳を計算（localStorage のみ、同期）
 function calculateEXP() {
   var problemExp = 0;
@@ -2833,6 +3005,13 @@ function saveProgress(id) {
     syncUserStats(_xp, currentLanguage || 'cpp');
   }
   checkLevelUp(); // EXP・レベルアップ判定
+
+  // SP付与（初回クリア時のみ）
+  var _spProb = getProblems().find(function(x) { return x.id === id; });
+  var _spRank = (_spProb && _spProb.rank || 'rookie').toLowerCase();
+  var _spEarned = SP_REWARDS[_spRank] || 5;
+  addSP(_spEarned);
+  showToast('🪙 +' + _spEarned + ' SP獲得！');
 
   // デイリーチャレンジ達成チェック
   var dc = getDailyChallenge();
@@ -6825,6 +7004,97 @@ function switchTab(tab) {
 
 // ===== ガイドページの描画 =====
 
+function _buildRoadmapHTML() {
+  var paths = [
+    {
+      id: 'web', name: 'Web開発 入門', icon: '🌐',
+      desc: '完全初心者向けの王道ルート。Webの仕組みをゼロから学べる',
+      target: '完全初心者',
+      steps: [
+        { lang: 'html', label: 'HTML', note: 'ページ構造' },
+        { lang: 'javascript', label: 'JS', note: 'Web動作' },
+        { lang: 'typescript', label: 'TS', note: '型安全' },
+      ]
+    },
+    {
+      id: 'backend', name: 'バックエンド', icon: '⚙️',
+      desc: 'サーバー・DB・API開発。Webアプリのエンジン部分を担う',
+      target: 'JS/Python経験者',
+      steps: [
+        { lang: 'python', label: 'Python', note: '汎用言語' },
+        { lang: 'sql', label: 'SQL', note: 'データベース' },
+        { lang: 'go', label: 'Go', note: '高速API' },
+      ]
+    },
+    {
+      id: 'mobile', name: 'モバイルアプリ', icon: '📱',
+      desc: 'iOSとAndroidアプリ開発。どちらから始めてもOK',
+      target: 'プログラミング経験者',
+      steps: [
+        { lang: 'java', label: 'Java', note: 'Android基礎' },
+        { lang: 'kotlin', label: 'Kotlin', note: 'Android現代' },
+        { lang: 'swift', label: 'Swift', note: 'iOS' },
+      ]
+    },
+    {
+      id: 'system', name: 'システム / 低レイヤー', icon: '⚡',
+      desc: 'OS・ゲームエンジン・組み込み系。高速・省メモリが求められる分野',
+      target: 'プログラミング経験者',
+      steps: [
+        { lang: 'c', label: 'C', note: '基礎' },
+        { lang: 'cpp', label: 'C++', note: 'ゲーム/組込' },
+        { lang: 'rust', label: 'Rust', note: '安全高速' },
+      ]
+    },
+    {
+      id: 'script', name: 'スクリプト / 自動化', icon: '🤖',
+      desc: '作業自動化・テキスト処理。エンジニアの生産性を大幅に上げるスキル',
+      target: '業務効率化を目指す人',
+      steps: [
+        { lang: 'python', label: 'Python', note: '自動化' },
+        { lang: 'bash', label: 'Bash', note: 'シェル操作' },
+        { lang: 'regex', label: 'Regex', note: '文字列処理' },
+      ]
+    },
+  ];
+
+  var html = '<div class="roadmap-section">' +
+    '<div class="guide-title" style="margin-bottom:6px;">◆ ROADMAP</div>' +
+    '<div class="guide-sub" style="margin-bottom:20px;">目標に合った学習ルートを選ぼう。言語名をクリックすると問題一覧へ移動します。</div>' +
+    '<div class="roadmap-paths">';
+
+  paths.forEach(function(path) {
+    var firstLang = path.steps[0].lang;
+    html += '<div class="roadmap-card">' +
+      '<div class="roadmap-card-head">' +
+        '<span class="roadmap-icon">' + path.icon + '</span>' +
+        '<div>' +
+          '<div class="roadmap-name">' + escapeHtml(path.name) + '</div>' +
+          '<div class="roadmap-target">対象: ' + escapeHtml(path.target) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="roadmap-desc">' + escapeHtml(path.desc) + '</div>' +
+      '<div class="roadmap-steps">';
+
+    path.steps.forEach(function(step, i) {
+      html += '<div class="roadmap-step" onclick="selectLanguage(\'' + step.lang + '\');switchTab(\'problems\')">' +
+        '<div class="roadmap-step-label">' + escapeHtml(step.label) + '</div>' +
+        '<div class="roadmap-step-note">' + escapeHtml(step.note) + '</div>' +
+      '</div>';
+      if (i < path.steps.length - 1) html += '<div class="roadmap-arrow">›</div>';
+    });
+
+    html += '</div>' +
+      '<button class="roadmap-start-btn" onclick="selectLanguage(\'' + firstLang + '\');switchTab(\'problems\')">' +
+        'ここから始める' +
+      '</button>' +
+    '</div>';
+  });
+
+  html += '</div></div>';
+  return html;
+}
+
 function renderGuide() {
   const content = document.getElementById('guide-content');
   content.innerHTML = '';
@@ -6836,6 +7106,11 @@ function renderGuide() {
     '<div class="guide-title">◆ GUIDE</div>' +
     '<div class="guide-sub">単元の説明・重要ポイント・用語集をまとめています。</div>';
   content.appendChild(header);
+
+  // ロードマップ
+  var roadmap = document.createElement('div');
+  roadmap.innerHTML = _buildRoadmapHTML();
+  content.appendChild(roadmap);
 
   getUnitGuides().forEach(function(unit) {
     var section = document.createElement('div');
@@ -9050,6 +9325,9 @@ window.addEventListener('online', function() {
 
 // Supabase 認証を初期化（非同期）
 initAuth();
+
+// SP表示を初期化
+updateSPDisplay();
 
 // ===== 背景スライドショー =====
 (function() {
