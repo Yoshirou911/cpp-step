@@ -11576,3 +11576,174 @@ html {
   transition: color 0.18s;
 }
 .onb-skip:hover { color: rgba(255,255,255,0.60); }
+
+/* ===== ランク行 ===== */
+.rank-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.rank-info-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.20);
+  color: rgba(255,255,255,0.50);
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.rank-info-btn:hover {
+  border-color: rgba(255,255,255,0.50);
+  color: rgba(255,255,255,0.85);
+}
+
+/* ===== ランク説明モーダル ===== */
+#rank-info-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#rank-info-modal.hidden { display: none; }
+.ri-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+}
+.ri-box {
+  position: relative;
+  background: #1a1a2e;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 28px 28px 20px;
+  width: 90%;
+  max-width: 480px;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 1;
+}
+.ri-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.ri-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.04em;
+}
+.ri-close {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.40);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 4px;
+}
+.ri-close:hover { color: #fff; }
+.ri-intro {
+  font-size: 0.80rem;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 14px;
+}
+.ri-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 14px;
+}
+.ri-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  font-size: 0.78rem;
+  vertical-align: middle;
+}
+.ri-label {
+  color: rgba(255,255,255,0.80);
+  font-weight: 600;
+  width: 64px;
+}
+.ri-desc {
+  color: rgba(255,255,255,0.50);
+  line-height: 1.4;
+}
+.ri-tip {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.45);
+  text-align: center;
+}
+
+/* ===== 単元イントロ ===== */
+.unit-intro-section .unit-intro-btn {
+  background: rgba(100,180,255,0.08);
+  border-color: rgba(100,180,255,0.25);
+  color: rgba(100,180,255,0.85);
+}
+.unit-intro-section .unit-intro-btn:hover {
+  background: rgba(100,180,255,0.14);
+  border-color: rgba(100,180,255,0.50);
+}
+.unit-intro-body {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-top: 8px;
+}
+.unit-intro-summary {
+  font-size: 0.84rem;
+  color: rgba(255,255,255,0.70);
+  line-height: 1.65;
+  margin-bottom: 14px;
+}
+.unit-intro-points {
+  margin-bottom: 14px;
+}
+.unit-intro-points strong {
+  display: block;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 8px;
+  letter-spacing: 0.03em;
+}
+.unit-intro-points ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.unit-intro-points li {
+  font-size: 0.80rem;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.6;
+  margin-bottom: 4px;
+}
+.unit-intro-words strong {
+  display: block;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 8px;
+  letter-spacing: 0.03em;
+}
+.unit-intro-word {
+  display: flex;
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  align-items: baseline;
+}
+.uiw-term {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  color: #7ecfff;
+  min-width: 120px;
+  flex-shrink: 0;
+}
+.uiw-desc {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.50);
+  line-height: 1.45;
+}

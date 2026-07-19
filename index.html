@@ -711,6 +711,22 @@
     <div id="career-quiz-box"></div>
   </div>
 
+  <!-- ランク説明モーダル -->
+  <div id="rank-info-modal" class="hidden" onclick="if(event.target===this)closeRankInfoModal()">
+    <div class="ri-overlay" onclick="closeRankInfoModal()"></div>
+    <div class="ri-box">
+      <div class="ri-header">
+        <span class="ri-title">◆ ランクについて</span>
+        <button class="ri-close" onclick="closeRankInfoModal()">✕</button>
+      </div>
+      <p class="ri-intro">問題はROOKIEからTITANまで9段階の難易度に分かれています。</p>
+      <table class="ri-table">
+        <tbody class="ri-table-body"></tbody>
+      </table>
+      <p class="ri-tip">💡 まずはROOKIE・BRONZEの問題から始めましょう！</p>
+    </div>
+  </div>
+
   <!-- オンボーディングモーダル -->
   <div id="onboarding-modal" class="hidden">
     <div class="onb-overlay"></div>

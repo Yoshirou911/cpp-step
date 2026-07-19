@@ -3722,6 +3722,65 @@ function escapeHtml(text) {
     .replace(/'/g, "&#39;");
 }
 
+// ===== ランク説明ポップアップ =====
+
+var _RANK_INFO = [
+  { rank: 'ROOKIE',   color: '#9B9B9B', label: '入門',   desc: 'はじめての一歩。Hello World や基本構文を学ぶ。' },
+  { rank: 'BRONZE',   color: '#CD7F32', label: '基礎',   desc: '変数・演算・条件分岐など基本的な書き方を習得。' },
+  { rank: 'SILVER',   color: '#B0B0B0', label: '標準',   desc: 'ループ・配列・関数など典型的なパターンを扱う。' },
+  { rank: 'GOLD',     color: '#FFD700', label: '応用',   desc: 'クラス・再帰・ポインタなどより高度な概念へ。' },
+  { rank: 'PLATINUM', color: '#00C8FF', label: '発展',   desc: 'アルゴリズム・データ構造・設計パターン。' },
+  { rank: 'DIAMOND',  color: '#B9F2FF', label: '上級',   desc: '実践的な問題解決力と最適化を問われる。' },
+  { rank: 'MASTER',   color: '#E040FB', label: 'マスター', desc: '高難度アルゴリズム・競技プログラミング相当。' },
+  { rank: 'LEGEND',   color: '#FF6B00', label: '達人',   desc: 'トップエンジニアレベルの難問。' },
+  { rank: 'TITAN',    color: '#FF2244', label: '最高峰',  desc: '最上位。解けたら本物のコーダー。' }
+];
+
+function showRankInfoModal() {
+  var rows = _RANK_INFO.map(function(r) {
+    return '<tr>' +
+      '<td><span class="rank-badge rank-' + r.rank.toLowerCase() + '" style="font-size:11px">' + r.rank + '</span></td>' +
+      '<td class="ri-label">' + r.label + '</td>' +
+      '<td class="ri-desc">' + r.desc + '</td>' +
+    '</tr>';
+  }).join('');
+  var el = document.getElementById('rank-info-modal');
+  if (!el) return;
+  el.querySelector('.ri-table-body').innerHTML = rows;
+  el.classList.remove('hidden');
+}
+function closeRankInfoModal() {
+  var el = document.getElementById('rank-info-modal');
+  if (el) el.classList.add('hidden');
+}
+
+// ===== 単元イントロHTML生成 =====
+
+function _buildUnitIntroHTML(p) {
+  var ugs = getUnitGuides();
+  var ug = ugs.find(function(u) { return u.name === p.unit; });
+  if (!ug) return '';
+  var pointsHtml = ug.points ? ug.points.map(function(pt) {
+    return '<li>' + escapeHtml(pt) + '</li>';
+  }).join('') : '';
+  var wordsHtml = ug.words ? ug.words.slice(0, 6).map(function(w) {
+    return '<div class="unit-intro-word"><span class="uiw-term">' + escapeHtml(w.term) + '</span>' +
+      '<span class="uiw-desc">' + escapeHtml(w.desc) + '</span></div>';
+  }).join('') : '';
+  return '<div class="section unit-intro-section">' +
+    '<button class="toggle-btn unit-intro-btn" onclick="toggleSection(\'unit-intro-' + p.id + '\')" ' +
+      'data-toggle-for="unit-intro-' + p.id + '" ' +
+      'data-open="📘 この単元について" data-close="📘 この単元について（閉じる）">' +
+      '📘 この単元について' +
+    '</button>' +
+    '<div id="unit-intro-' + p.id + '" class="hidden toggle-content unit-intro-body">' +
+      '<p class="unit-intro-summary">' + escapeHtml(ug.summary) + '</p>' +
+      (pointsHtml ? '<div class="unit-intro-points"><strong>✅ この単元のポイント</strong><ul>' + pointsHtml + '</ul></div>' : '') +
+      (wordsHtml ? '<div class="unit-intro-words"><strong>📖 重要キーワード</strong>' + wordsHtml + '</div>' : '') +
+    '</div>' +
+  '</div>';
+}
+
 // ===== 問題詳細の描画 =====
 
 function renderDetail(id) {
@@ -3785,7 +3844,12 @@ function renderDetail(id) {
       '<div class="detail-unit-fill" style="width:' + Math.round(unitCleared / unitTotal * 100) + '%"></div>' +
     '</div>' +
     '<h2>' + escapeHtml(p.title) + '</h2>' +
-    '<span class="rank-badge rank-' + p.rank.toLowerCase() + ' rank-badge-lg" style="display:inline-block;margin-bottom:18px;">' + escapeHtml(p.rank) + '</span>' +
+    '<div class="rank-row">' +
+      '<span class="rank-badge rank-' + p.rank.toLowerCase() + ' rank-badge-lg">' + escapeHtml(p.rank) + '</span>' +
+      '<button class="rank-info-btn" onclick="showRankInfoModal()" title="ランクの説明">ランクとは？</button>' +
+    '</div>' +
+
+    _buildUnitIntroHTML(p) +
 
     '<div class="section">' +
       '<h3>問題</h3>' +
@@ -5246,13 +5310,33 @@ function showJudgeResult(problemId, passed, byAI) {
     _comboCount = 0;
     trackWrongAnswer(problemId);
     _incWrongCount(problemId);
+    var wc = getWrongCount(problemId);
     var judgeArea = document.getElementById("judge-area");
     if (judgeArea) {
+      var failMsg = wc === 1
+        ? '✗ まだ違います。出力を確認してもう一度試してみましょう。'
+        : wc === 2
+          ? '✗ もう一度！ 解説も参考にしてみましょう。'
+          : '✗ ヒント・解説・正解例をじっくり確認してみましょう！';
       judgeArea.innerHTML =
-        '<div class="judge-fail">✗ まだ違います。出力を確認してもう一度試してみましょう。</div>' +
+        '<div class="judge-fail">' + failMsg + '</div>' +
         '<button class="judge-hint-btn" onclick="toggleSection(\'hint-' + problemId + '\')">💡 ヒントを確認する</button>';
       judgeArea.classList.remove("hidden");
     }
+    // 1回目の不正解でヒント自動展開
+    setTimeout(function() {
+      var hintSec = document.getElementById('hint-' + problemId);
+      if (hintSec && hintSec.classList.contains('hidden')) {
+        toggleSection('hint-' + problemId);
+      }
+      // 2回目以降は解説も自動展開
+      if (wc >= 2) {
+        var explSec = document.getElementById('explanation-' + problemId);
+        if (explSec && explSec.classList.contains('hidden')) {
+          toggleSection('explanation-' + problemId);
+        }
+      }
+    }, 300);
   }
 }
 
