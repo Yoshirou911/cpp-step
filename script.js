@@ -1663,9 +1663,43 @@ function _checkOnboarding() {
   setTimeout(function() {
     var landing = document.getElementById('page-landing');
     if (landing && !landing.classList.contains('hidden')) {
-      document.getElementById('onboarding-modal').classList.remove('hidden');
+      // スキルチェック未実施ならスキルチェックを先に表示
+      if (!localStorage.getItem('skill_check_done')) {
+        document.getElementById('skill-check-modal').classList.remove('hidden');
+      } else {
+        document.getElementById('onboarding-modal').classList.remove('hidden');
+      }
     }
   }, 800);
+}
+
+// ===== スキルチェック =====
+
+function skillCheckSelect(level) {
+  localStorage.setItem('skill_check_done', '1');
+  localStorage.setItem('skill_level', level);
+  document.getElementById('skill-check-modal').classList.add('hidden');
+
+  if (level === 'zero') {
+    // プログラミング入門説明を表示
+    document.getElementById('prog-intro-modal').classList.remove('hidden');
+  } else {
+    // 言語選択オンボーディングへ
+    document.getElementById('onboarding-modal').classList.remove('hidden');
+    // 経験あり・スキルアップは言語選択後にBRONZE以上から開始するフラグ
+    if (level === 'experienced') {
+      localStorage.setItem('onboarding_done', '1');
+      document.getElementById('onboarding-modal').classList.add('hidden');
+      // 全言語から自分で選べるようランディングを抜ける
+      switchTab('problems');
+      showToast('🔥 経験者モード！好きな言語・ランクから挑戦してください。');
+    }
+  }
+}
+
+function progIntroNext() {
+  document.getElementById('prog-intro-modal').classList.add('hidden');
+  document.getElementById('onboarding-modal').classList.remove('hidden');
 }
 
 function onbSelect(lang, _path) {
@@ -1673,8 +1707,19 @@ function onbSelect(lang, _path) {
   document.getElementById('onboarding-modal').classList.add('hidden');
   selectLanguage(lang);
   switchTab('problems');
-  // ガイド付きコースをGUIDEで開けるようトースト
-  showToast('💡 GUIDEタブでルートを確認できます！');
+  // レベルに応じたウェルカムメッセージ
+  var level = localStorage.getItem('skill_level') || 'newbie';
+  if (level === 'zero' || level === 'newbie') {
+    setTimeout(function() {
+      showToast('🌱 ROOKIE の問題からスタート！まずは Hello World を動かしてみよう。');
+    }, 600);
+  } else if (level === 'some') {
+    setTimeout(function() {
+      showToast('💡 少し慣れてきたらBRONZE・SILVERの問題に挑戦しよう！');
+    }, 600);
+  } else {
+    showToast('💡 GUIDEタブでルートを確認できます！');
+  }
 }
 
 function onbSkip() {

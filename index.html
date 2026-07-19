@@ -727,6 +727,80 @@
     </div>
   </div>
 
+  <!-- スキルチェックモーダル -->
+  <div id="skill-check-modal" class="hidden">
+    <div class="sc-overlay"></div>
+    <div class="sc-box">
+      <div class="sc-logo">◆ CODE STEP</div>
+      <div class="sc-title">プログラミングの経験はありますか？</div>
+      <div class="sc-sub">あなたに合ったスタート地点からご案内します</div>
+      <div class="sc-options">
+        <button class="sc-opt" onclick="skillCheckSelect('zero')">
+          <span class="sc-opt-icon">🌱</span>
+          <span class="sc-opt-body">
+            <span class="sc-opt-label">まったくない</span>
+            <span class="sc-opt-desc">プログラミングって何？という方</span>
+          </span>
+          <span class="sc-opt-arrow">→</span>
+        </button>
+        <button class="sc-opt" onclick="skillCheckSelect('newbie')">
+          <span class="sc-opt-icon">👀</span>
+          <span class="sc-opt-body">
+            <span class="sc-opt-label">聞いたことはあるけど触ったことはない</span>
+            <span class="sc-opt-desc">興味はあるけど何から始めればいいか分からない</span>
+          </span>
+          <span class="sc-opt-arrow">→</span>
+        </button>
+        <button class="sc-opt" onclick="skillCheckSelect('some')">
+          <span class="sc-opt-icon">💻</span>
+          <span class="sc-opt-body">
+            <span class="sc-opt-label">少し書いたことがある</span>
+            <span class="sc-opt-desc">学校や独学でちょっとだけやってみたことがある</span>
+          </span>
+          <span class="sc-opt-arrow">→</span>
+        </button>
+        <button class="sc-opt" onclick="skillCheckSelect('experienced')">
+          <span class="sc-opt-icon">🔥</span>
+          <span class="sc-opt-body">
+            <span class="sc-opt-label">経験あり・スキルアップしたい</span>
+            <span class="sc-opt-desc">すでに書けるが練習・腕試しがしたい</span>
+          </span>
+          <span class="sc-opt-arrow">→</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- プログラミング入門説明モーダル（ゼロ初心者向け） -->
+  <div id="prog-intro-modal" class="hidden">
+    <div class="pi-overlay"></div>
+    <div class="pi-box">
+      <div class="pi-step">STEP 1 / 2　— プログラミングってなに？</div>
+      <h2 class="pi-title">コンピュータへの<br>「命令書」を書くこと</h2>
+      <div class="pi-cards">
+        <div class="pi-card">
+          <span class="pi-card-icon">📱</span>
+          <p>スマホのアプリも、<br>ゲームも、ウェブサイトも<br>すべてプログラムで動いている</p>
+        </div>
+        <div class="pi-card">
+          <span class="pi-card-icon">💬</span>
+          <p>プログラムは英語に似た<br>「プログラミング言語」で書く<br>文法を覚えれば誰でも書ける</p>
+        </div>
+        <div class="pi-card">
+          <span class="pi-card-icon">🎮</span>
+          <p>CODE STEPでは<br>「Hello, World!」という<br>1行から始められる</p>
+        </div>
+      </div>
+      <div class="pi-example">
+        <div class="pi-example-label">例：Pythonで「Hello, World!」を表示する</div>
+        <pre class="pi-code">print("Hello, World!")</pre>
+        <div class="pi-example-arrow">↓ 実行すると</div>
+        <div class="pi-example-output">Hello, World!</div>
+      </div>
+      <button class="pi-next-btn" onclick="progIntroNext()">次へ：どの分野から始める？ →</button>
+    </div>
+  </div>
+
   <!-- オンボーディングモーダル -->
   <div id="onboarding-modal" class="hidden">
     <div class="onb-overlay"></div>
