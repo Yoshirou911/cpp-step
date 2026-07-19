@@ -1686,6 +1686,11 @@ function skillCheckSelect(level) {
   } else {
     // 言語選択オンボーディングへ
     document.getElementById('onboarding-modal').classList.remove('hidden');
+    // zero/newbie には「プログラミング言語とは」ノートを表示
+    var onbNote = document.getElementById('onb-beginner-note');
+    if (onbNote && (level === 'zero' || level === 'newbie')) {
+      onbNote.classList.remove('hidden');
+    }
     // 経験あり・スキルアップは言語選択後にBRONZE以上から開始するフラグ
     if (level === 'experienced') {
       localStorage.setItem('onboarding_done', '1');
@@ -3898,7 +3903,7 @@ function renderDetail(id) {
 
     '<div class="section">' +
       '<h3>問題</h3>' +
-      '<p>' + escapeHtml(p.question) + '</p>' +
+      '<p>' + escapeHtml(p.question).replace(/\n/g, '<br>') + '</p>' +
     '</div>' +
 
     '<div class="section">' +

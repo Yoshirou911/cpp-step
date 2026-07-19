@@ -6,7 +6,7 @@ const problems = [
   {
     id: 1, unit: "UNIT 01  ◆  基礎入力・出力", rank: "ROOKIE",
     title: "Hello World",
-    question: "「Hello, World!」と画面に出力するプログラムを書いてください。",
+    question: "はじめてのプログラムです。コンピュータに「Hello, World!」という文字を表示させてみましょう。\n\nプログラムとは「コンピュータへの命令書」。この1行を動かすことがプログラミングの第一歩です。",
     hint: "cout を使って出力します。endl で改行できます。",
     answer:
 `#include <iostream>

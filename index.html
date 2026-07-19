@@ -196,6 +196,40 @@
         </div>
       </div>
 
+      <!-- プログラミングとは？ブロック -->
+      <div class="landing-what-is">
+        <div class="lwi-label">◆ プログラミングって何？</div>
+        <div class="lwi-main">コンピュータへの「命令書」を書くこと</div>
+        <div class="lwi-examples">
+          <div class="lwi-ex">
+            <span class="lwi-ex-icon">📱</span>
+            <span class="lwi-ex-text">スマホアプリ</span>
+          </div>
+          <div class="lwi-arrow">+</div>
+          <div class="lwi-ex">
+            <span class="lwi-ex-icon">🌐</span>
+            <span class="lwi-ex-text">Webサイト</span>
+          </div>
+          <div class="lwi-arrow">+</div>
+          <div class="lwi-ex">
+            <span class="lwi-ex-icon">🎮</span>
+            <span class="lwi-ex-text">ゲーム</span>
+          </div>
+          <div class="lwi-arrow">=</div>
+          <div class="lwi-ex lwi-ex-all">
+            <span class="lwi-ex-icon">💻</span>
+            <span class="lwi-ex-text">すべてコードで動いている</span>
+          </div>
+        </div>
+        <div class="lwi-code-demo">
+          <div class="lwi-code-label">たった1行で画面に文字を表示できる</div>
+          <div class="lwi-code-line"><span class="lwi-kw">print</span>(<span class="lwi-str">"Hello, World!"</span>)</div>
+          <div class="lwi-code-arrow">↓ 実行すると</div>
+          <div class="lwi-code-output">Hello, World!</div>
+        </div>
+        <div class="lwi-note">難しそう？ CODE STEPはこの1行から始められます。</div>
+      </div>
+
       <div class="landing-cards">
         <div class="landing-card">
           <div class="lc-icon">🎯</div>
@@ -805,8 +839,12 @@
   <div id="onboarding-modal" class="hidden">
     <div class="onb-overlay"></div>
     <div class="onb-box">
-      <div class="onb-title">◆ CODE STEP へようこそ！</div>
-      <div class="onb-sub">どの分野に興味がありますか？</div>
+      <div class="onb-title">◆ どの分野に興味がありますか？</div>
+      <div class="onb-sub">選んだ分野に合わせた順番で学習をご案内します</div>
+      <div id="onb-beginner-note" class="onb-beginner-note hidden">
+        💡 プログラミング言語とは「コンピュータへの命令を書くための言葉」です。<br>
+        どれを選んでも、まずは簡単な1行から始まるので安心してください。
+      </div>
       <div class="onb-paths">
         <div class="onb-path" onclick="onbSelect('html','web')">
           <div class="onb-path-icon">🌐</div>
