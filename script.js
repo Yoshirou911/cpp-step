@@ -9938,6 +9938,303 @@ _checkReferralBonus();
 // 初回オンボーディング
 _checkOnboarding();
 
+// ===== 開発者コンソール =====
+
+(function() {
+  var _dcHistory = [];
+  var _dcHistIdx = -1;
+
+  function dcPrint(text, type) {
+    var out = document.getElementById('dc-output');
+    if (!out) return;
+    var line = document.createElement('div');
+    line.className = 'dc-line dc-' + (type || 'out');
+    line.textContent = text;
+    out.appendChild(line);
+    out.scrollTop = out.scrollHeight;
+  }
+
+  function dcPrintHTML(html, type) {
+    var out = document.getElementById('dc-output');
+    if (!out) return;
+    var line = document.createElement('div');
+    line.className = 'dc-line dc-' + (type || 'out');
+    line.innerHTML = html;
+    out.appendChild(line);
+    out.scrollTop = out.scrollHeight;
+  }
+
+  window.dcClose = function() {
+    document.getElementById('dev-console').classList.add('hidden');
+  };
+
+  window.dcOpen = function() {
+    var el = document.getElementById('dev-console');
+    el.classList.remove('hidden');
+    document.getElementById('dc-input').focus();
+  };
+
+  window.dcToggle = function() {
+    var el = document.getElementById('dev-console');
+    if (el.classList.contains('hidden')) { dcOpen(); } else { dcClose(); }
+  };
+
+  function dcExec(raw) {
+    var cmd = raw.trim();
+    if (!cmd) return;
+    _dcHistory.unshift(cmd);
+    _dcHistIdx = -1;
+    dcPrint('▶ ' + cmd, 'cmd');
+
+    var parts = cmd.split(/\s+/);
+    var c = parts[0].toLowerCase();
+
+    // ---------- help ----------
+    if (c === 'help') {
+      [
+        '─── チュートリアル ───',
+        '  tutorial            スキルチェックを表示',
+        '  tutorial intro      プログラミング入門説明を表示',
+        '  tutorial lang       言語選択オンボーディングを表示',
+        '  tutorial reset      チュートリアル完了フラグをリセット',
+        '─── SP / ゲーム ───',
+        '  sp <n>              SP を n 加算',
+        '  sp set <n>          SP を n にセット',
+        '  sp show             現在の SP を表示',
+        '  premium             プレミアムOn/Offを切替',
+        '─── 進捗 ───',
+        '  info                現在の状態を表示',
+        '  reset               localStorage を全消去',
+        '  reset progress      進捗のみリセット',
+        '  wrong <id> <n>      問題idの誤答数をnに設定',
+        '─── ナビ ───',
+        '  goto <id>           問題IDに移動',
+        '  lang <name>         言語を切替（cpp/python/js...）',
+        '  unlock              全ランクフィルタを解除',
+        '─── ストレージ ───',
+        '  ls                  localStorage の全キーを表示',
+        '  ls get <key>        指定キーの値を表示',
+        '  ls del <key>        指定キーを削除',
+        '─── その他 ───',
+        '  skill <level>       スキルレベルを変更（zero/newbie/some/experienced）',
+        '  clear               出力をクリア',
+        '  close / exit        コンソールを閉じる',
+      ].forEach(function(l) { dcPrint(l, 'help'); });
+      return;
+    }
+
+    // ---------- clear ----------
+    if (c === 'clear') {
+      document.getElementById('dc-output').innerHTML = '';
+      return;
+    }
+
+    // ---------- close / exit ----------
+    if (c === 'close' || c === 'exit') { dcClose(); return; }
+
+    // ---------- tutorial ----------
+    if (c === 'tutorial') {
+      var sub = (parts[1] || '').toLowerCase();
+      // まず全モーダルを閉じる
+      ['skill-check-modal','prog-intro-modal','onboarding-modal'].forEach(function(id) {
+        document.getElementById(id).classList.add('hidden');
+      });
+      if (!sub || sub === 'skill') {
+        document.getElementById('skill-check-modal').classList.remove('hidden');
+        dcPrint('✓ スキルチェックモーダルを表示', 'ok');
+      } else if (sub === 'intro') {
+        document.getElementById('prog-intro-modal').classList.remove('hidden');
+        dcPrint('✓ プログラミング入門説明を表示', 'ok');
+      } else if (sub === 'lang') {
+        document.getElementById('onboarding-modal').classList.remove('hidden');
+        dcPrint('✓ 言語選択オンボーディングを表示', 'ok');
+      } else if (sub === 'reset') {
+        localStorage.removeItem('skill_check_done');
+        localStorage.removeItem('skill_level');
+        localStorage.removeItem('onboarding_done');
+        dcPrint('✓ チュートリアルフラグをリセット。次回訪問時に再表示されます', 'ok');
+      } else {
+        dcPrint('! サブコマンド不明。tutorial / tutorial intro / tutorial lang / tutorial reset', 'err');
+      }
+      return;
+    }
+
+    // ---------- sp ----------
+    if (c === 'sp') {
+      var sub = (parts[1] || '').toLowerCase();
+      if (sub === 'show') {
+        dcPrint('現在のSP: ' + getSP() + ' SP', 'ok');
+      } else if (sub === 'set') {
+        var n = parseInt(parts[2]);
+        if (isNaN(n)) { dcPrint('! sp set <数値>', 'err'); return; }
+        localStorage.setItem('sp_balance', String(n));
+        updateSPDisplay();
+        dcPrint('✓ SP を ' + n + ' にセット', 'ok');
+      } else {
+        var n = parseInt(parts[1]);
+        if (isNaN(n)) { dcPrint('! sp <数値> または sp set <数値>', 'err'); return; }
+        var gained = addSP(n);
+        dcPrint('✓ SP +' + gained + '（現在: ' + getSP() + ' SP）', 'ok');
+      }
+      return;
+    }
+
+    // ---------- premium ----------
+    if (c === 'premium') {
+      currentUserIsPremium = !currentUserIsPremium;
+      dcPrint('✓ プレミアム: ' + (currentUserIsPremium ? 'ON 🔥' : 'OFF'), 'ok');
+      return;
+    }
+
+    // ---------- info ----------
+    if (c === 'info') {
+      var probs = getProblems();
+      var cleared = loadProgress().length;
+      dcPrint('--- 現在の状態 ---', 'help');
+      dcPrint('  言語: ' + (currentLanguage || 'cpp'), 'out');
+      dcPrint('  問題数: ' + probs.length + '問 / クリア: ' + cleared + '問', 'out');
+      dcPrint('  SP: ' + getSP(), 'out');
+      dcPrint('  プレミアム: ' + (currentUserIsPremium ? 'ON' : 'OFF'), 'out');
+      dcPrint('  スキルレベル: ' + (localStorage.getItem('skill_level') || '未設定'), 'out');
+      dcPrint('  ログイン: ' + (currentUser ? currentUser.email : '未ログイン'), 'out');
+      dcPrint('  チュートリアル完了: ' + (localStorage.getItem('onboarding_done') ? 'YES' : 'NO'), 'out');
+      dcPrint('  連続ログイン: ' + (localStorage.getItem('login_days') ? JSON.parse(localStorage.getItem('login_days')).length + '日' : '0日'), 'out');
+      return;
+    }
+
+    // ---------- reset ----------
+    if (c === 'reset') {
+      var sub = (parts[1] || '').toLowerCase();
+      if (sub === 'progress') {
+        var lang = currentLanguage || 'cpp';
+        localStorage.removeItem(lang + '_progress');
+        _progressCache = null;
+        updateProgressDisplay();
+        renderList();
+        dcPrint('✓ ' + lang + ' の進捗をリセット', 'ok');
+      } else {
+        localStorage.clear();
+        dcPrint('✓ localStorage を全消去。ページをリロードします...', 'ok');
+        setTimeout(function() { location.reload(); }, 1200);
+      }
+      return;
+    }
+
+    // ---------- wrong ----------
+    if (c === 'wrong') {
+      var id = parseInt(parts[1]);
+      var n  = parseInt(parts[2]);
+      if (isNaN(id) || isNaN(n)) { dcPrint('! wrong <問題ID> <回数>', 'err'); return; }
+      localStorage.setItem('wc_' + id, String(n));
+      dcPrint('✓ 問題 #' + id + ' の誤答数を ' + n + ' に設定', 'ok');
+      return;
+    }
+
+    // ---------- goto ----------
+    if (c === 'goto') {
+      var id = parseInt(parts[1]);
+      if (isNaN(id)) { dcPrint('! goto <問題ID>', 'err'); return; }
+      var p = getProblems().find(function(x) { return x.id === id; });
+      if (!p) { dcPrint('! 問題 #' + id + ' が見つかりません', 'err'); return; }
+      switchTab('problems');
+      renderDetail(id);
+      dcPrint('✓ 問題 #' + id + '「' + p.title + '」に移動', 'ok');
+      return;
+    }
+
+    // ---------- lang ----------
+    if (c === 'lang') {
+      var name = parts[1];
+      if (!name) { dcPrint('! lang <cpp|python|javascript|ruby|typescript|go|rust|c|java|csharp|kotlin|swift|html|sql|bash|regex|php>', 'err'); return; }
+      selectLanguage(name);
+      switchTab('problems');
+      dcPrint('✓ 言語を ' + name + ' に切替', 'ok');
+      return;
+    }
+
+    // ---------- unlock ----------
+    if (c === 'unlock') {
+      var btns = document.querySelectorAll('.rank-filter-btn');
+      btns.forEach(function(b) { b.classList.remove('locked'); });
+      dcPrint('✓ 全ランクフィルタを解除（表示のみ）', 'ok');
+      return;
+    }
+
+    // ---------- ls ----------
+    if (c === 'ls') {
+      var sub = (parts[1] || '').toLowerCase();
+      if (!sub) {
+        var keys = Object.keys(localStorage).sort();
+        dcPrint('localStorage (' + keys.length + ' keys):', 'help');
+        keys.forEach(function(k) {
+          var v = localStorage.getItem(k);
+          var short = v && v.length > 60 ? v.slice(0, 60) + '…' : v;
+          dcPrint('  ' + k + ' = ' + short, 'out');
+        });
+      } else if (sub === 'get') {
+        var key = parts[2];
+        if (!key) { dcPrint('! ls get <key>', 'err'); return; }
+        var val = localStorage.getItem(key);
+        dcPrint(key + ' = ' + (val === null ? '(存在しない)' : val), val === null ? 'err' : 'ok');
+      } else if (sub === 'del') {
+        var key = parts[2];
+        if (!key) { dcPrint('! ls del <key>', 'err'); return; }
+        localStorage.removeItem(key);
+        dcPrint('✓ ' + key + ' を削除', 'ok');
+      } else {
+        dcPrint('! ls / ls get <key> / ls del <key>', 'err');
+      }
+      return;
+    }
+
+    // ---------- skill ----------
+    if (c === 'skill') {
+      var level = (parts[1] || '').toLowerCase();
+      var valid = ['zero','newbie','some','experienced'];
+      if (valid.indexOf(level) < 0) { dcPrint('! skill <zero|newbie|some|experienced>', 'err'); return; }
+      localStorage.setItem('skill_level', level);
+      localStorage.setItem('skill_check_done', '1');
+      dcPrint('✓ スキルレベルを ' + level + ' に設定', 'ok');
+      return;
+    }
+
+    dcPrint('! 不明なコマンド: ' + c + '  (help で一覧)', 'err');
+  }
+
+  // キーボードイベント
+  document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+      e.preventDefault();
+      dcToggle();
+    }
+    var inp = document.getElementById('dc-input');
+    if (document.getElementById('dev-console').classList.contains('hidden')) return;
+    if (document.activeElement !== inp) return;
+    if (e.key === 'Enter') {
+      dcExec(inp.value);
+      inp.value = '';
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (_dcHistIdx < _dcHistory.length - 1) {
+        _dcHistIdx++;
+        inp.value = _dcHistory[_dcHistIdx];
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (_dcHistIdx > 0) {
+        _dcHistIdx--;
+        inp.value = _dcHistory[_dcHistIdx];
+      } else {
+        _dcHistIdx = -1;
+        inp.value = '';
+      }
+    }
+  });
+
+  // 起動メッセージ
+  dcPrint('CODE STEP DEV CONSOLE  |  Ctrl+Shift+D で開閉  |  help でコマンド一覧', 'help');
+})();
+
 // ===== 背景スライドショー =====
 (function() {
   const BG_IMAGES = [

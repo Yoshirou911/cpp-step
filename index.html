@@ -871,6 +871,20 @@
     </div>
   </div>
 
+  <!-- 開発者コンソール -->
+  <div id="dev-console" class="hidden">
+    <div class="dc-header">
+      <span class="dc-title">⚡ DEV CONSOLE</span>
+      <span class="dc-hint">Ctrl+Shift+D で開閉</span>
+      <button class="dc-close" onclick="dcClose()">✕</button>
+    </div>
+    <div id="dc-output" class="dc-output"></div>
+    <div class="dc-input-row">
+      <span class="dc-prompt">▶</span>
+      <input id="dc-input" class="dc-input" type="text" placeholder="コマンドを入力（help で一覧）" autocomplete="off" spellcheck="false">
+    </div>
+  </div>
+
   <!-- ショップモーダル -->
   <div id="shop-modal" class="hidden">
     <div class="shop-overlay" onclick="closeShopModal()"></div>
