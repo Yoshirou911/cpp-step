@@ -1402,6 +1402,7 @@ var MISSION_EXP = {
   platinum: 280, diamond: 380, master: 500
 };
 var LOGIN_EXP = 20; // ユニークログイン1日あたり
+var TOOL_EXP  = 30; // TOOLSコマンド1問あたり
 
 // 全進捗から合計EXP＋内訳を計算（localStorage のみ、同期）
 function calculateEXP() {
@@ -1463,6 +1464,16 @@ function calculateEXP() {
       }
     });
   });
+
+  // TOOLS クリア EXP
+  if (typeof TOOL_GROUPS !== 'undefined') {
+    TOOL_GROUPS.forEach(function(tg) {
+      var tp = getToolProgress(tg.id);
+      tg.problems.forEach(function(p) {
+        if (tp.indexOf(p.id) !== -1) problemExp += TOOL_EXP;
+      });
+    });
+  }
 
   // ログイン EXP
   var loginDays = lsGetJSON('login_days', []);
@@ -6732,7 +6743,13 @@ function checkToolAnswer(toolId, problemId) {
   if (isCorrect) {
     feedback.className = 'tp-feedback tp-correct';
     feedback.innerHTML = '✓ 正解！　<code>' + escapeHtml(matchedAnswer) + '</code>';
+    var wasNew = getToolProgress(toolId).indexOf(problemId) === -1;
     saveToolProgress(toolId, problemId);
+    if (wasNew) {
+      _incDailyCleared();
+      playClearSound();
+      showClearEffect(TOOL_EXP);
+    }
     var newProgress = getToolProgress(toolId);
     var newCleared = tg.problems.filter(function(pr) { return newProgress.indexOf(pr.id) !== -1; }).length;
     var countEl = document.querySelector('.tool-list-count');
