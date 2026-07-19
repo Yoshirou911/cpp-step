@@ -10643,3 +10643,58 @@ html {
   .ctc-name { font-size: 0.7rem; }
 }
 
+
+/* ===== プロフィール TOOLS スタッツ ===== */
+.profile-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+.profile-tool-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 8px;
+  padding: 12px 14px;
+  transition: border-color 0.2s;
+}
+.profile-tool-card.ptc-active {
+  border-color: var(--ptc, #FFA500);
+  background: rgba(255,255,255,0.05);
+}
+.ptc-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.ptc-icon { font-size: 1.1rem; }
+.ptc-name { font-size: 0.82rem; font-weight: 600; }
+.ptc-done {
+  font-size: 0.58rem;
+  color: #FFD700;
+  border: 1px solid #FFD70066;
+  border-radius: 3px;
+  padding: 1px 5px;
+  letter-spacing: 0.04em;
+}
+.ptc-bar-wrap {
+  height: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.ptc-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+.ptc-count {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.4);
+  text-align: right;
+}
+@media (max-width: 600px) {
+  .profile-tools-grid { grid-template-columns: repeat(2, 1fr); }
+}

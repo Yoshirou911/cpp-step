@@ -2548,6 +2548,7 @@ function restoreState(state) {
     renderCareer();
     showPage('career');
   } else if (state.page === 'profile') {
+    setActiveTab('');
     renderProfile();
     showPage('profile');
   } else if (state.page === 'tools') {
@@ -8076,6 +8077,33 @@ async function renderProfile() {
         _statCardHTML('Rust',       '#CE412B', stats.rust,   strength.rust,   stats.rustM,   58, pct['rust']) +
       '</div>' +
     '</div>' +
+
+    // ─── TOOLS スタッツ ───
+    (typeof TOOL_GROUPS !== 'undefined' && TOOL_GROUPS.length > 0 ? (function() {
+      var totalCleared = 0, totalProblems = 0;
+      var cards = TOOL_GROUPS.map(function(tg) {
+        var tp = getToolProgress(tg.id);
+        var total = tg.problems.length;
+        var cleared = tg.problems.filter(function(p) { return tp.indexOf(p.id) !== -1; }).length;
+        totalCleared += cleared; totalProblems += total;
+        var pct = total > 0 ? Math.round(cleared / total * 100) : 0;
+        var isActive = cleared > 0;
+        return '<div class="profile-tool-card' + (isActive ? ' ptc-active' : '') + '" style="--ptc:' + tg.color + '">' +
+          '<div class="ptc-head">' +
+            '<span class="ptc-icon">' + tg.icon + '</span>' +
+            '<span class="ptc-name" style="color:' + tg.color + '">' + escapeHtml(tg.name) + '</span>' +
+            (pct >= 100 ? '<span class="ptc-done">COMPLETE</span>' : '') +
+          '</div>' +
+          '<div class="ptc-bar-wrap"><div class="ptc-bar" style="width:' + pct + '%;background:' + tg.color + '"></div></div>' +
+          '<div class="ptc-count">' + cleared + ' / ' + total + '</div>' +
+        '</div>';
+      }).join('');
+      var overallPct = totalProblems > 0 ? Math.round(totalCleared / totalProblems * 100) : 0;
+      return '<div class="profile-section">' +
+        '<div class="profile-section-title">// TOOLS STATS <span style="color:rgba(255,165,0,0.6);font-size:0.8em">' + totalCleared + ' / ' + totalProblems + ' (' + overallPct + '%)</span></div>' +
+        '<div class="profile-tools-grid">' + cards + '</div>' +
+      '</div>';
+    })() : '') +
 
     // ─── 学習時間グラフ ───
     _buildStudyTimeChartHTML() +
